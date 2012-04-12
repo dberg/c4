@@ -30,13 +30,13 @@ directories:
 	mkdir -p $(obj) $(bin)
 
 # main djp
-$(bin)/djp: $(obj)/cmd_input.o \
+$(bin)/djp: $(obj)/CmdInput.o \
             $(obj)/parser.o \
             $(obj)/djp.o
-	$(CXX) $(CFLAGS) $(INC) $(obj)/djp.o -o $@
+	$(CXX) $(obj)/CmdInput.o $(CFLAGS) $(INC) $(obj)/djp.o -o $@
 
 # modules
-$(obj)/cmd_input.o: $(libdir)/cmd_input.cpp $(incdir)/cmd_input.h
+$(obj)/CmdInput.o: $(libdir)/CmdInput.cpp $(incdir)/CmdInput.h
 	$(CXX) $(CFLAGS) $(INC) -c $< -o $@
 
 $(obj)/parser.o: $(libdir)/parser.cpp $(incdir)/parser.h
