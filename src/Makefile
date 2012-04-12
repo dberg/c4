@@ -1,6 +1,6 @@
 MAKEFLAGS=-r
 
-CC ?= gcc
+CXX ?= g++
 BUILDTYPE ?= Debug
 
 # Release type
@@ -33,14 +33,14 @@ directories:
 $(bin)/djp: $(obj)/cmd_input.o \
             $(obj)/parser.o \
             $(obj)/djp.o
-	$(CC) $(CFLAGS) $(INC) $(obj)/djp.o -o $@
+	$(CXX) $(CFLAGS) $(INC) $(obj)/djp.o -o $@
 
 # modules
-$(obj)/cmd_input.o: $(libdir)/cmd_input.c $(incdir)/cmd_input.h
-	$(CC) $(CFLAGS) $(INC) -c $< -o $@
+$(obj)/cmd_input.o: $(libdir)/cmd_input.cpp $(incdir)/cmd_input.h
+	$(CXX) $(CFLAGS) $(INC) -c $< -o $@
 
-$(obj)/parser.o: $(libdir)/parser.c $(incdir)/parser.h
-	$(CC) $(CFLAGS) $(INC) -c $< -o $@
+$(obj)/parser.o: $(libdir)/parser.cpp $(incdir)/parser.h
+	$(CXX) $(CFLAGS) $(INC) -c $< -o $@
 
-$(obj)/djp.o: $(libdir)/djp.c
-	$(CC) $(CFLAGS) $(INC) -c $< -o $@
+$(obj)/djp.o: $(libdir)/djp.cpp
+	$(CXX) $(CFLAGS) $(INC) -c $< -o $@
