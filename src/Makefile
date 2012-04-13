@@ -31,12 +31,16 @@ directories:
 
 # main djp
 $(bin)/djp: $(obj)/CmdInput.o \
+            $(obj)/File.o \
             $(obj)/parser.o \
             $(obj)/djp.o
-	$(CXX) $(obj)/CmdInput.o $(CFLAGS) $(INC) $(obj)/djp.o -o $@
+	$(CXX) $(obj)/CmdInput.o $(obj)/File.o $(CFLAGS) $(INC) $(obj)/djp.o -o $@
 
 # modules
 $(obj)/CmdInput.o: $(libdir)/CmdInput.cpp $(incdir)/CmdInput.h
+	$(CXX) $(CFLAGS) $(INC) -c $< -o $@
+
+$(obj)/File.o: $(libdir)/File.cpp $(incdir)/File.h
 	$(CXX) $(CFLAGS) $(INC) -c $< -o $@
 
 $(obj)/parser.o: $(libdir)/parser.cpp $(incdir)/parser.h
