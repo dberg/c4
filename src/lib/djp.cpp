@@ -2,6 +2,7 @@
 #include <string>
 #include "CmdInput.h"
 #include "File.h"
+#include "Parser.h"
 using namespace djp;
 
 int main(int argc, const char **argv) {
@@ -16,6 +17,12 @@ int main(int argc, const char **argv) {
   File file;
   if (file.read(ci.filename, buffer)) {
     std::cerr << "Error: Failed to read file:" << ci.filename << std::endl;
+    return 1;
+  }
+
+  Parser parser;
+  if (parser.parse(buffer)) {
+    std::cerr << "Error: " << parser.error << std::endl;
     return 1;
   }
 
