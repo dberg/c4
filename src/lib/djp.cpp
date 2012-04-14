@@ -20,9 +20,11 @@ int main(int argc, const char **argv) {
     return 1;
   }
 
-  Parser parser;
-  if (parser.parse(buffer)) {
-    std::cerr << "Error: " << parser.error << std::endl;
+  Parser parser(ci.filename, buffer);
+  parser.parse();
+  if (parser.error) {
+    std::cerr << "Error( " << parser.error << "): "
+      << parser.error_msg << std::endl;
     return 1;
   }
 
