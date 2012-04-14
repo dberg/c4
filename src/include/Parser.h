@@ -3,6 +3,8 @@
 #define __PARSER_H__
 #include <string>
 #include <vector>
+#include "AST.h"
+#include "Token.h"
 
 namespace djp {
 class Parser {
@@ -14,6 +16,8 @@ class Parser {
 
   int curToken;
   std::string curTokenStr;
+
+
 
   // lexer
   const char getChar();
@@ -30,6 +34,6 @@ public:
   std::string error_msg;
   void parse();
 };
-}
+} // namespace
 
 #endif

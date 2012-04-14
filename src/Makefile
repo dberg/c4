@@ -34,7 +34,10 @@ $(bin)/djp: $(obj)/CmdInput.o \
             $(obj)/File.o \
             $(obj)/Parser.o \
             $(obj)/djp.o
-	$(CXX) $(obj)/CmdInput.o $(obj)/File.o $(obj)/Parser.o $(CFLAGS) $(INC) $(obj)/djp.o -o $@
+	$(CXX) $(obj)/CmdInput.o \
+               $(obj)/File.o \
+               $(obj)/Parser.o \
+               $(CFLAGS) $(INC) $(obj)/djp.o -o $@
 
 # modules
 $(obj)/CmdInput.o: $(libdir)/CmdInput.cpp $(incdir)/CmdInput.h
@@ -43,7 +46,10 @@ $(obj)/CmdInput.o: $(libdir)/CmdInput.cpp $(incdir)/CmdInput.h
 $(obj)/File.o: $(libdir)/File.cpp $(incdir)/File.h
 	$(CXX) $(CFLAGS) $(INC) -c $< -o $@
 
-$(obj)/Parser.o: $(libdir)/Parser.cpp $(incdir)/Parser.h
+$(obj)/Parser.o: $(libdir)/Parser.cpp \
+                 $(incdir)/Parser.h \
+                 $(incdir)/AST.h \
+                 $(incdir)/Token.h
 	$(CXX) $(CFLAGS) $(INC) -c $< -o $@
 
 $(obj)/djp.o: $(libdir)/djp.cpp
