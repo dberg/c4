@@ -2,6 +2,7 @@
 #ifndef __PARSER_H__
 #define __PARSER_H__
 #include <string>
+#include <vector>
 
 namespace djp {
 class Parser {
@@ -19,7 +20,8 @@ class Parser {
   void getNextToken();
   int getToken();
 
-  void handleCompilationUnit();
+  void parseCompilationUnit();
+  void parseAnnotations();
 
 public:
   Parser(std::string _filename, std::string &_buffer)

@@ -25,9 +25,19 @@ int Parser::getToken() {
   return c;
 }
 
-/// CompilationUnit: Top level parsing
+/// Annotations.
+/// @ QualifiedIdentifier [ ( [AnnotationElement] ) ]
+void Parser::parseAnnotations() {
+
+}
+
+/// CompilationUnit: Top level parsing.
 ///  PackageDeclaration(opt) ImportDeclaration(opt) typeDeclarations(opt)
-void Parser::handleCompilationUnit() {
+void Parser::parseCompilationUnit() {
+  if (curToken == '@') {
+    parseAnnotations();
+  }
+
   if (curToken == TOK_PACKAGE) {
 
   }
@@ -44,7 +54,7 @@ void Parser::parse() {
     case TOK_ERROR:
       return;
     default:
-      handleCompilationUnit();
+      parseCompilationUnit();
     }
   }
 }
