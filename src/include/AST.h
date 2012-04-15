@@ -29,6 +29,7 @@ typedef boost::shared_ptr<struct DecimalNumeral> spDecimalNumeral;
 ///   {TypeDeclarations}
 struct CompilationUnit {
   spPackageDeclaration pkgDecl;
+  CompilationUnit() : pkgDecl(spPackageDeclaration()) {}
   // ImportDeclarations impDecls;
   // TypeDeclarations typeDecls;
 };
@@ -46,6 +47,9 @@ struct Annotation {
   int pos, len, posTokAt;
   spQualifiedIdentifier qualifiedId;
   spAnnotationElement elem;
+  Annotation() : pos(-1), len(-1), posTokAt(-1),
+    qualifiedId(spQualifiedIdentifier()),
+    elem(spAnnotationElement()) {}
 };
 
 /// QualifiedIdentifier: Identifier { . Identifier }
@@ -59,12 +63,14 @@ struct QualifiedIdentifier {
 struct AnnotationElement {
   std::vector<spElementValuePair> pairs;
   spElementValue value;
+  AnnotationElement() : value(spElementValue()) {}
 };
 
 /// ElementValuePair: Identifier = ElementValue
 struct ElementValuePair {
   spIdentifier id;
   spElementValue value;
+  ElementValuePair(): id(spIdentifier()), value(spElementValue()) {}
 };
 
 /// TODO: probably string and position
@@ -77,6 +83,7 @@ struct ElementValue {
   //Annotation annotation;
   spExpression1 expr1;
   //ElementValueArrayInitializer elemValArrayInit;
+  ElementValue() : expr1(spExpression1()) {}
 };
 
 /// Expression1: Expression2 [Expression1Rest]
@@ -84,6 +91,7 @@ struct ElementValue {
 struct Expression1 {
   spExpression2 expr2;
   // [ Expression1Rest ]
+  Expression1() : expr2(spExpression2()) {}
 };
 
 /// Expression2: Expression3 [ Expression2Rest ]
@@ -91,6 +99,7 @@ struct Expression1 {
 struct Expression2 {
   spExpression3 expr3;
   // [ Expression2Rest ]
+  Expression2() : expr3(spExpression3()) {}
 };
 
 /// Expression3:
@@ -100,6 +109,7 @@ struct Expression2 {
 /// TODO: deal with 1st and 3rd case using union
 struct Expression3 {
   spPrimary primary; // TODO: { Selector } { PostfixOp }
+  Expression3() : primary(spPrimary()) {}
 };
 
 /// Primary: 
@@ -116,6 +126,7 @@ struct Expression3 {
 /// TODO: We're only dealing with Literal now
 struct Primary {
   spLiteral literal;
+  Primary() : literal(spLiteral()) {}
 };
 
 /// Literal:
@@ -127,7 +138,8 @@ struct Primary {
 ///   NullLiteral
 /// TODO: We're only dealing with IntegerLiteral now
 struct Literal {
-  spIntegerLiteral intLit;
+  spIntegerLiteral intLiteral;
+  Literal() : intLiteral(spIntegerLiteral()) {}
 };
 
 /// IntegerLiteral:
@@ -137,7 +149,8 @@ struct Literal {
 ///   BinaryIntegerLiteral
 /// TODO: We're only dealing with DecimalIntegerLiteral now
 struct IntegerLiteral {
-  spDecimalIntegerLiteral decIntLit;
+  spDecimalIntegerLiteral decIntLiteral;
+  IntegerLiteral() : decIntLiteral(spDecimalIntegerLiteral()) {}
 };
 
 /// DecimalIntegerLiteral: DecimalNumeral [IntegerTypeSuffix]
@@ -145,6 +158,7 @@ struct IntegerLiteral {
 struct DecimalIntegerLiteral {
   spDecimalNumeral decNumeral;
   //IntegerTypeSuffix suffix;
+  DecimalIntegerLiteral() : decNumeral(spDecimalNumeral()) {}
 };
 
 /// DecimalNumeral:

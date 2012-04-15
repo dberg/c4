@@ -17,7 +17,7 @@ class Parser {
   int curToken;
   std::string curTokenStr;
 
-
+  spCompilationUnit compilationUnit;
 
   // lexer
   const char getChar();
@@ -29,7 +29,10 @@ class Parser {
 
 public:
   Parser(std::string _filename, std::string &_buffer)
-    : filename(_filename), buffer(_buffer), cursor(0), line(0), error(0) {}
+    : filename(_filename), buffer(_buffer), cursor(0), line(0),
+      compilationUnit(spCompilationUnit(new CompilationUnit)),
+      error(0), error_msg("") {}
+
   int error;
   std::string error_msg;
   void parse();
