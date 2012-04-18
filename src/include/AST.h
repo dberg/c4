@@ -44,10 +44,11 @@ struct PackageDeclaration {
 
 /// Annotation: @ QualifiedIdentifier [ ( [AnnotationElement] ) ]
 struct Annotation {
-  int pos, len, posTokAt;
+  int pos, len;
+  bool err;
   spQualifiedIdentifier qualifiedId;
   spAnnotationElement elem;
-  Annotation() : pos(-1), len(-1), posTokAt(-1),
+  Annotation() : pos(-1), len(-1), err(false),
     qualifiedId(spQualifiedIdentifier()),
     elem(spAnnotationElement()) {}
 };
@@ -56,14 +57,17 @@ struct Annotation {
 struct QualifiedIdentifier {
   int pos;
   std::string value;
+  QualifiedIdentifier(int _pos, std::string _value)
+    : pos(_pos), value(_value) {}
 };
 
 /// ElementValuePair: ElementValuePairs | ElementValue
 /// TODO: they should be a union
 struct AnnotationElement {
+  bool err;
   std::vector<spElementValuePair> pairs;
   spElementValue value;
-  AnnotationElement() : value(spElementValue()) {}
+  AnnotationElement() : err(false), value(spElementValue()) {}
 };
 
 /// ElementValuePair: Identifier = ElementValue
@@ -73,9 +77,13 @@ struct ElementValuePair {
   ElementValuePair(): id(spIdentifier()), value(spElementValue()) {}
 };
 
-/// TODO: probably string and position
+/// Identifier: IdentifierChars but not Keyword or BooleanLiteral or NullLiteral
+/// IdentifierChars: JavaLetter | IdentifierChars JavaLetterOrDigit
+/// JavaLetter: any Unicode character that is a Java letter
+/// JavaLetterOrDigit: any Unicde character that is a Java letter or digit
 struct Identifier {
-
+  int pos;
+  std::string value;
 };
 
 /// TODO: Enable the commented structures as union

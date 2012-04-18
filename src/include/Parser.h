@@ -2,6 +2,7 @@
 #ifndef __PARSER_H__
 #define __PARSER_H__
 #include <string>
+#include <sstream>
 #include <vector>
 #include "AST.h"
 #include "Token.h"
@@ -19,17 +20,29 @@ class Parser {
 
   spCompilationUnit compilationUnit;
 
+  // helper methods
+  bool isJavaLetter(char c);
+  bool isJavaLetterOrDigit(char c);
+
   // lexer
   const char getChar();
+  const char ungetChar(int count);
+  bool lookaheadInterface(int point);
+
   void getNextToken();
   int getToken();
+  int getAnnotationToken();
+  int getTokenIdentifier(char c);
 
   void parseCompilationUnit();
-  void parseAnnotations();
+  spAnnotation parseAnnotation();
+  spAnnotationElement parseAnnotationElement();
+  void parseAnnotations(std::vector<spAnnotation> &annotations);
+  spQualifiedIdentifier parseQualifiedIdentifier();
 
 public:
   Parser(std::string _filename, std::string &_buffer)
-    : filename(_filename), buffer(_buffer), cursor(0), line(0),
+    : filename(_filename), buffer(_buffer), cursor(0), line(1),
       compilationUnit(spCompilationUnit(new CompilationUnit)),
       error(0), error_msg("") {}
 
