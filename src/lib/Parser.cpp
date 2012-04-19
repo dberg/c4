@@ -111,7 +111,7 @@ int Parser::getTokenIdentifier(char c) {
 
 /// Annotation: @ QualifiedIdentifier [ ( [AnnotationElement] ) ]
 spAnnotation Parser::parseAnnotation() {
-  spAnnotation annotation;
+  spAnnotation annotation = spAnnotation(new Annotation());
   // Current token is '@' we mark it as the init position of the annotation
   annotation->pos = cursor - 1;
   getNextToken(); // Consume '@'
@@ -166,9 +166,7 @@ spAnnotationElement Parser::parseAnnotationElement() {
 void Parser::parseAnnotations(std::vector<spAnnotation> &annotations) {
   while (curToken == TOK_ANNOTATION) {
     spAnnotation annotation = parseAnnotation();
-    // TODO:
-    // If annotation is not null we append annotation to annotations
-    // Else we have an error
+    annotations.push_back(annotation);
   }
 }
 
@@ -209,8 +207,14 @@ void Parser::parseCompilationUnit() {
   }
 
   if (curToken == TOK_PACKAGE) {
-
+    // Annotations, if any, belong to the package statement
   }
+
+  // TODO:
+  // Import Declaration
+
+  // TODO:
+  // Type Declarations
 
   getNextToken();
 }
