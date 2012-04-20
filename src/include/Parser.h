@@ -18,8 +18,6 @@ class Parser {
   int curToken;
   std::string curTokenStr;
 
-  spCompilationUnit compilationUnit;
-
   // helper methods
   bool isJavaLetter(char c);
   bool isJavaLetterOrDigit(char c);
@@ -46,6 +44,7 @@ public:
       compilationUnit(spCompilationUnit(new CompilationUnit)),
       error(0), error_msg("") {}
 
+  spCompilationUnit compilationUnit;
   int error;
   std::string error_msg;
   void parse();

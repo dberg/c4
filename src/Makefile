@@ -33,10 +33,12 @@ directories:
 $(bin)/djp: $(obj)/CmdInput.o \
             $(obj)/File.o \
             $(obj)/Parser.o \
+            $(obj)/Output.o \
             $(obj)/djp.o
 	$(CXX) $(obj)/CmdInput.o \
                $(obj)/File.o \
                $(obj)/Parser.o \
+               $(obj)/Output.o \
                $(CFLAGS) $(INC) $(obj)/djp.o -o $@
 
 # modules
@@ -50,6 +52,10 @@ $(obj)/Parser.o: $(libdir)/Parser.cpp \
                  $(incdir)/Parser.h \
                  $(incdir)/AST.h \
                  $(incdir)/Token.h
+	$(CXX) $(CFLAGS) $(INC) -c $< -o $@
+
+$(obj)/Output.o: $(libdir)/Output.cpp \
+                 $(incdir)/AST.h
 	$(CXX) $(CFLAGS) $(INC) -c $< -o $@
 
 $(obj)/djp.o: $(libdir)/djp.cpp

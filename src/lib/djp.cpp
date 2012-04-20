@@ -3,6 +3,7 @@
 #include "CmdInput.h"
 #include "File.h"
 #include "Parser.h"
+#include "Output.h"
 using namespace djp;
 
 int main(int argc, const char **argv) {
@@ -28,6 +29,8 @@ int main(int argc, const char **argv) {
     return 1;
   }
 
-  std::cout << "Work in progress:" << std::endl << buffer;
+  Output output(parser.compilationUnit);
+  output.print();
+
   return 0;
 }
