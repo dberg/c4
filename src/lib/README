@@ -1,0 +1,24 @@
+Djp - emacs mode for the Java language
+--------------------------------------------------------------------------------
+WARNING: Djp is not ready yet.
+
+Install
+--------------------------------------------------------------------------------
+
+0) Install the Boost library
+
+    Fedora:
+    su -c 'yum install boost-devel'
+
+    Ubuntu:
+    sudo apt-get install libboost-dev
+
+    OSX:
+    sudo port install boost
+
+1) Checkout the code.
+    git clone git://github.com/dberg/djp.git
+
+2) Build it
+    cd phpz/src; make;
+
