@@ -1,6 +1,6 @@
 //-*- C++ -*-
-#ifndef __FILE_H
-#define __FILE_H
+#ifndef __FILE_H__
+#define __FILE_H__
 #include <string>
 #include <fstream>
 #include <streambuf>

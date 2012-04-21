@@ -1,3 +1,17 @@
+###############################################################################
+#
+# OPTIONS:
+#         BUILDTYPE: Debug (default) or Release. The build is generated under
+#        	     /out/BUILDTYPE/.
+#                    Ex.: make BUILDTYPE=Release
+#
+#         clean: remove directory out.
+#                    Ex.: make clean
+#
+# LIBRARIES: boost
+# OSX: We rely in the Boost installation from MacPorts for OSX:
+#      /opt/local/include
+###############################################################################
 MAKEFLAGS=-r
 
 CXX ?= g++
@@ -17,6 +31,12 @@ bin = $(builddir)/bin
 incdir := include
 libdir := lib
 INC = -I$(incdir)
+
+# Darwin
+UNAME := $(shell uname)
+ifeq ($(UNAME), Darwin)
+INC = -I$(incdir) -I/opt/local/include
+endif
 
 .PHONY: all
 all: directories $(bin)/djp
@@ -48,14 +68,10 @@ $(obj)/CmdInput.o: $(libdir)/CmdInput.cpp $(incdir)/CmdInput.h
 $(obj)/File.o: $(libdir)/File.cpp $(incdir)/File.h
 	$(CXX) $(CFLAGS) $(INC) -c $< -o $@
 
-$(obj)/Parser.o: $(libdir)/Parser.cpp \
-                 $(incdir)/Parser.h \
-                 $(incdir)/AST.h \
-                 $(incdir)/Token.h
+$(obj)/Parser.o: $(libdir)/Parser.cpp $(incdir)/Parser.h $(incdir)/AST.h
 	$(CXX) $(CFLAGS) $(INC) -c $< -o $@
 
-$(obj)/Output.o: $(libdir)/Output.cpp \
-                 $(incdir)/AST.h
+$(obj)/Output.o: $(libdir)/Output.cpp $(incdir)/Output.h $(incdir)/AST.h
 	$(CXX) $(CFLAGS) $(INC) -c $< -o $@
 
 $(obj)/djp.o: $(libdir)/djp.cpp

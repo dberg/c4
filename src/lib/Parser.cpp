@@ -206,7 +206,7 @@ void Parser::parseCompilationUnit() {
     parseAnnotations(annotations);
   }
 
-  if (curToken == TOK_PACKAGE) {
+  if (curToken == TOK_KEY_PACKAGE) {
     // Annotations, if any, belong to the package statement
   }
 
