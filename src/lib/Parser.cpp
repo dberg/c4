@@ -10,6 +10,20 @@ bool Parser::isJavaLetterOrDigit(char c) {
   return (isJavaLetter(c) || isdigit(c));
 }
 
+void Parser::saveState(State &state) {
+  state.cursor = cursor;
+  state.line = line;
+  state.token = curToken;
+  state.tokenStr = curTokenStr;
+}
+
+void Parser::restoreState(State &state) {
+  cursor = state.cursor;
+  line = state.line;
+  curToken = state.token;
+  curTokenStr = state.tokenStr;
+}
+
 /// Return the next char in the buffer or '\0' if we hit the end of the buffer.
 const char Parser::getChar() {
   if (cursor > buffer.length()) {
@@ -51,6 +65,9 @@ int Parser::getToken() {
   // Annotation and Annotation Type Declarations
   if (c == '@') return getAnnotationToken();
 
+  // Period
+  if (c == '.') return TOK_PERIOD;
+
   // Identifier
   if (isJavaLetter(c))
     return getTokenIdentifier(c);
@@ -88,6 +105,7 @@ int Parser::getAnnotationToken() {
   return TOK_ANNOTATION;
 }
 
+/// Return TOK_IDENTIFIER | TOK_KEY_*
 int Parser::getTokenIdentifier(char c) {
   std::stringstream ss; ss << c;
   while ((c = getChar())) {
@@ -101,8 +119,12 @@ int Parser::getTokenIdentifier(char c) {
 
   curTokenStr = ss.str();
 
-  // TODO:
   // If keyword return the matching token
+  if (int keywordToken = tokenUtil.getKeywordToken(curTokenStr)) {
+    return keywordToken;
+  }
+
+  // TODO:
   // If BooleanLiteral return matching token
   // If NullLiteral return matching token
 
@@ -172,29 +194,37 @@ void Parser::parseAnnotations(std::vector<spAnnotation> &annotations) {
 
 /// QualifiedIdentifier: Identifer { . Identifier }
 spQualifiedIdentifier Parser::parseQualifiedIdentifier() {
-  std::stringstream ss;
-  ss << curTokenStr;
+  std::vector<spIdentifier> identifiers;
+  // Save current identifier
+  spIdentifier id = spIdentifier(
+    new Identifier(cursor - curTokenStr.length(), curTokenStr));
+  identifiers.push_back(id);
 
+  State backup;
   while (true) {
-    int pos = cursor;
     getNextToken();
-    if ('.' != curToken) {
-      cursor = pos;
+    if (TOK_PERIOD != curToken) {
       break;
     }
+
+    // We have a period, if the next token is not an identifier we restore
+    // the period token state and exit the while loop
+    saveState(backup);
     getNextToken();
     if (TOK_IDENTIFIER != curToken) {
-      cursor = pos;
+      restoreState(backup);
       break;
     }
 
-    ss << curToken;
+    // Save the identifier
+    spIdentifier id = spIdentifier(
+      new Identifier(cursor - curTokenStr.length(), curTokenStr));
+    identifiers.push_back(id);
   }
 
-  curTokenStr = ss.str();
+  // We have at least one identifier to build the QualifiedIdentifier
   spQualifiedIdentifier qualifiedId = spQualifiedIdentifier(
-    new QualifiedIdentifier(cursor - curTokenStr.length(), curTokenStr));
-
+    new QualifiedIdentifier(identifiers));
   return qualifiedId;
 }
 

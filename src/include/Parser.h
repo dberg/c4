@@ -18,9 +18,18 @@ class Parser {
   int curToken;
   std::string curTokenStr;
 
+  struct State {
+    int cursor, line, token;
+    std::string tokenStr;
+  };
+
+  TokenUtil tokenUtil;
+
   // helper methods
   bool isJavaLetter(char c);
   bool isJavaLetterOrDigit(char c);
+  void saveState(State &state);
+  void restoreState(State &state);
 
   // lexer
   const char getChar();
