@@ -38,8 +38,16 @@ ifeq ($(UNAME), Darwin)
 INC = -I$(incdir) -I/opt/local/include
 endif
 
+# Tests
+gtest_dir = third_party/gtest
+gtest_obj = $(builddir)/third_party/gtest
+gtest_inc = $(gtest_dir)/include
+
+test_libdir = tests/lib
+
+
 .PHONY: all
-all: directories $(bin)/djp
+all: directories $(bin)/djp $(bin)/tests
 
 .PHONY: clean
 clean:
@@ -47,7 +55,7 @@ clean:
 
 .PHONY: directories
 directories:
-	mkdir -p $(obj) $(bin)
+	mkdir -p $(obj) $(bin) $(gtest_obj) $(test_obj)
 
 # main djp
 $(bin)/djp: $(obj)/CmdInput.o \
@@ -76,3 +84,22 @@ $(obj)/Output.o: $(libdir)/Output.cpp $(incdir)/Output.h $(incdir)/AST.h
 
 $(obj)/djp.o: $(libdir)/djp.cpp
 	$(CXX) $(CFLAGS) $(INC) -c $< -o $@
+
+# tests
+$(bin)/tests: $(test_libdir)/ParserTest.cpp \
+              $(obj)/Parser.o \
+              $(obj)/Output.o \
+              $(gtest_obj)/libgtest.a
+
+	$(CXX) $(INC) -I$(gtest_inc) $(obj)/Parser.o \
+                                     $(obj)/Output.o \
+                                     $< -o $@ \
+                                     $(gtest_obj)/libgtest.a \
+                                     -lpthread
+
+$(gtest_obj)/libgtest.a: $(gtest_obj)/gtest-all.o
+	ar -rv $@ $<
+
+$(gtest_obj)/gtest-all.o: $(gtest_dir)/src/gtest-all.cc
+	$(CXX) -I$(gtest_dir)/include -I$(gtest_dir) \
+               -c $< -o $@
