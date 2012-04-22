@@ -55,10 +55,9 @@ struct Annotation {
 
 /// QualifiedIdentifier: Identifier { . Identifier }
 struct QualifiedIdentifier {
-  int pos;
-  std::string value;
-  QualifiedIdentifier(int _pos, std::string _value)
-    : pos(_pos), value(_value) {}
+  std::vector<spIdentifier> identifiers;
+  QualifiedIdentifier(std::vector<spIdentifier> _identifiers)
+    : identifiers(_identifiers) {}
 };
 
 /// ElementValuePair: ElementValuePairs | ElementValue
@@ -84,6 +83,7 @@ struct ElementValuePair {
 struct Identifier {
   int pos;
   std::string value;
+  Identifier(int _pos, std::string _value) : pos(_pos), value(_value) {}
 };
 
 /// TODO: Enable the commented structures as union
