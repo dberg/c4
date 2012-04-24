@@ -63,10 +63,10 @@ int Parser::getToken() {
   if (!c) return TOK_EOF;
 
   // Annotation and Annotation Type Declarations
-  if (c == '@') return getAnnotationToken();
+  if ('@' == c) return getAnnotationToken();
 
-  // Period
-  if (c == '.') return TOK_PERIOD;
+  if ('.' == c) return TOK_PERIOD;
+  if (';' == c) return TOK_SEMICOLON;
 
   // Identifier
   if (isJavaLetter(c))
@@ -192,6 +192,35 @@ void Parser::parseAnnotations(std::vector<spAnnotation> &annotations) {
   }
 }
 
+/// PackageDeclaration: [ [Annotations]  package QualifiedIdentifier ; ]
+spPackageDeclaration Parser::parsePackageDeclaration(
+  std::vector<spAnnotation> annotations) {
+  spPackageDeclaration pkgDecl = spPackageDeclaration(new PackageDeclaration());
+  // If we have annotations they belong to the package declaration
+  if (annotations.size()) {
+    pkgDecl->annotations = annotations;
+    annotations.clear();
+  }
+  pkgDecl->pkgTokPos = cursor - 7;
+  pkgDecl->pkgTokLen = 7;
+
+  getNextToken(); // Consume 'package'
+
+  if (TOK_IDENTIFIER != curToken) {
+    pkgDecl->err = true;
+    return pkgDecl;
+  }
+
+  pkgDecl->qualifiedId = parseQualifiedIdentifier();
+  if (TOK_SEMICOLON != curToken) {
+    pkgDecl->err = true;
+    return pkgDecl;
+  }
+
+  getNextToken(); // Consume ';'
+  return pkgDecl;
+}
+
 /// QualifiedIdentifier: Identifer { . Identifier }
 spQualifiedIdentifier Parser::parseQualifiedIdentifier() {
   std::vector<spIdentifier> identifiers;
@@ -237,7 +266,7 @@ void Parser::parseCompilationUnit() {
   }
 
   if (curToken == TOK_KEY_PACKAGE) {
-    // Annotations, if any, belong to the package statement
+    compilationUnit->pkgDecl = parsePackageDeclaration(annotations);
   }
 
   // TODO:

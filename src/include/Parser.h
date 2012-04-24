@@ -45,6 +45,8 @@ class Parser {
   spAnnotation parseAnnotation();
   spAnnotationElement parseAnnotationElement();
   void parseAnnotations(std::vector<spAnnotation> &annotations);
+  spPackageDeclaration parsePackageDeclaration(
+    std::vector<spAnnotation> annotations);
   spQualifiedIdentifier parseQualifiedIdentifier();
 
 public:

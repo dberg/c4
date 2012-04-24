@@ -29,17 +29,19 @@ typedef boost::shared_ptr<struct DecimalNumeral> spDecimalNumeral;
 ///   {TypeDeclarations}
 struct CompilationUnit {
   spPackageDeclaration pkgDecl;
-  CompilationUnit() : pkgDecl(spPackageDeclaration()) {}
   // ImportDeclarations impDecls;
   // TypeDeclarations typeDecls;
+  CompilationUnit() : pkgDecl(spPackageDeclaration()) {}
 };
 
 /// PackageDeclaration: [ [Annotations]  package QualifiedIdentifier ; ]
 struct PackageDeclaration {
-  int pos, len;
   std::vector<spAnnotation> annotations;
-  // package keyword
-  // QualifiedIdentifier
+  int pkgTokPos, pkgTokLen;
+  spQualifiedIdentifier qualifiedId;
+  bool err;
+  PackageDeclaration() : pkgTokPos(0), pkgTokLen(0),
+    qualifiedId(spQualifiedIdentifier()), err(false) {}
 };
 
 /// Annotation: @ QualifiedIdentifier [ ( [AnnotationElement] ) ]
