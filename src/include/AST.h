@@ -46,20 +46,35 @@ struct PackageDeclaration {
 
 /// Annotation: @ QualifiedIdentifier [ ( [AnnotationElement] ) ]
 struct Annotation {
-  int pos, len;
+  int posTokAt;
   bool err;
   spQualifiedIdentifier qualifiedId;
   spAnnotationElement elem;
-  Annotation() : pos(-1), len(-1), err(false),
+  Annotation() : posTokAt(-1), err(false),
     qualifiedId(spQualifiedIdentifier()),
     elem(spAnnotationElement()) {}
+};
+
+/// Identifier: IdentifierChars but not Keyword or BooleanLiteral or NullLiteral
+/// IdentifierChars: JavaLetter | IdentifierChars JavaLetterOrDigit
+/// JavaLetter: any Unicode character that is a Java letter
+/// JavaLetterOrDigit: any Unicde character that is a Java letter or digit
+struct Identifier {
+  int pos;
+  std::string value;
+  Identifier(int _pos, std::string _value) : pos(_pos), value(_value) {}
 };
 
 /// QualifiedIdentifier: Identifier { . Identifier }
 struct QualifiedIdentifier {
   std::vector<spIdentifier> identifiers;
-  QualifiedIdentifier(std::vector<spIdentifier> _identifiers)
-    : identifiers(_identifiers) {}
+  int pos, len;
+  QualifiedIdentifier(std::vector<spIdentifier> _identifiers) {
+    identifiers = _identifiers;
+    pos = (identifiers[0])->pos;
+    spIdentifier last = identifiers[identifiers.size() - 1];
+    len = last->pos + last->value.length() - 1;
+  }
 };
 
 /// ElementValuePair: ElementValuePairs | ElementValue
@@ -76,16 +91,6 @@ struct ElementValuePair {
   spIdentifier id;
   spElementValue value;
   ElementValuePair(): id(spIdentifier()), value(spElementValue()) {}
-};
-
-/// Identifier: IdentifierChars but not Keyword or BooleanLiteral or NullLiteral
-/// IdentifierChars: JavaLetter | IdentifierChars JavaLetterOrDigit
-/// JavaLetter: any Unicode character that is a Java letter
-/// JavaLetterOrDigit: any Unicde character that is a Java letter or digit
-struct Identifier {
-  int pos;
-  std::string value;
-  Identifier(int _pos, std::string _value) : pos(_pos), value(_value) {}
 };
 
 /// TODO: Enable the commented structures as union

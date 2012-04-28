@@ -134,18 +134,16 @@ int Parser::getTokenIdentifier(char c) {
 /// Annotation: @ QualifiedIdentifier [ ( [AnnotationElement] ) ]
 spAnnotation Parser::parseAnnotation() {
   spAnnotation annotation = spAnnotation(new Annotation());
-  // Current token is '@' we mark it as the init position of the annotation
-  annotation->pos = cursor - 1;
+  annotation->posTokAt = cursor - 1;
   getNextToken(); // Consume '@'
 
   // We're now parsing QualifiedIdentifier
   if (curToken != TOK_IDENTIFIER) {
-    annotation->len = cursor;
     annotation->err = true;
     return annotation;
   }
 
-  spQualifiedIdentifier qualifiedId = parseQualifiedIdentifier();
+  annotation->qualifiedId = parseQualifiedIdentifier();
 
   // If the current token is '(' we consume the token and expect
   // an optional AnnotaionElement followed by ')'
@@ -156,7 +154,6 @@ spAnnotation Parser::parseAnnotation() {
     if (')' != curToken) {
       spAnnotationElement annotationElem = parseAnnotationElement();
       if (annotationElem->err) {
-        annotation->len = cursor;
         annotation->err = true;
         return annotation;
       }
@@ -165,7 +162,6 @@ spAnnotation Parser::parseAnnotation() {
     }
 
     if (')' != curToken) {
-      annotation->len = cursor;
       annotation->err = true;
       return annotation;
     }
@@ -173,7 +169,6 @@ spAnnotation Parser::parseAnnotation() {
     getNextToken(); // consume ')'
   }
 
-  annotation->len = cursor;
   return annotation;
 }
 
