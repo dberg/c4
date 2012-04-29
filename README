@@ -22,3 +22,13 @@ Install
 2) Build it
     cd phpz/src; make;
 
+3) Open the file /src/djp-mode/djp-mode.el and set the variable
+    'djp-executable' to 'PATH/TO/src/out/Debug/bin/djp'.
+
+4) Add the following to your .emacs file:
+    (add-to-list 'load-path "~/PATH/TO/src/djp-mode")
+    (autoload 'djp-mode "djp-mode" "Major mode for Java." t)
+    (add-to-list 'auto-mode-alist '("\\.javad$" . djp-mode))
+
+    Note that we're using the file extension 'javad' and not 'java'
+

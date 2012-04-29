@@ -33,8 +33,8 @@ void Output::setAnnotations(std::vector<spAnnotation> &annotations) {
     std::stringstream qid_iniss; qid_iniss << ini;
     std::stringstream qid_endss; qid_endss << end;
 
-    output += "(annotation " + ann_ini.str() + " " + ann_err.str()
-      + " (qualified-id " + qid_iniss.str() + " " + qid_endss.str() + "))";
+    output += "(djp-node-annotation " + ann_ini.str() + " " + ann_err.str()
+      + " (djp-node-qualified-id " + qid_iniss.str() + " " + qid_endss.str() + "))";
   }
 }
 } // namespace
