@@ -1,4 +1,5 @@
 #include "Output.h"
+#include "Token.h"
 
 namespace djp {
 void Output::print() {
@@ -12,6 +13,11 @@ void Output::print() {
 
 void Output::setPackageDeclaration(spPackageDeclaration &pkgDecl) {
   setAnnotations(pkgDecl->annotations);
+
+  // package keyword
+  std::stringstream ini; ini << pkgDecl->pkgTokPos + 1;
+  std::stringstream end; end << pkgDecl->pkgTokPos + TOK_PACKAGE_LENGTH + 1;
+  output += "(djp-node-keyword " + ini.str() + " " + end.str() + ")";
 }
 
 /// We return zero or more of the form:

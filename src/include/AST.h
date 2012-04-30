@@ -37,11 +37,11 @@ struct CompilationUnit {
 /// PackageDeclaration: [ [Annotations]  package QualifiedIdentifier ; ]
 struct PackageDeclaration {
   std::vector<spAnnotation> annotations;
-  int pkgTokPos, pkgTokLen;
+  int pkgTokPos;
   spQualifiedIdentifier qualifiedId;
   bool err;
-  PackageDeclaration() : pkgTokPos(0), pkgTokLen(0),
-    qualifiedId(spQualifiedIdentifier()), err(false) {}
+  PackageDeclaration() : pkgTokPos(-1), qualifiedId(spQualifiedIdentifier()),
+    err(false) {}
 };
 
 /// Annotation: @ QualifiedIdentifier [ ( [AnnotationElement] ) ]

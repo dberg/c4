@@ -10,6 +10,7 @@
 ;; Font faces
 (defvar djp-face-annotation-tok-at 'nil)
 (defvar djp-face-annotation-qualified-id 'nil)
+(defvar djp-face-keyword 'font-lock-keyword-face)
 
 ;; timer
 (defvar djp-mode-parser-timer nil)
@@ -127,6 +128,10 @@ The output of the compiler is used to build djp-parse-tree."
 (defun djp-node-qualified-id (ini end)
   (if djp-face-annotation-qualified-id
       (put-text-property ini end 'face djp-face-annotation-qualified-id)))
+
+(defun djp-node-keyword (ini end)
+  (if djp-face-keyword
+      (put-text-property ini end 'face djp-face-keyword)))
 
 ;; Stolen from js2-mode where you can read:
 ;; `Stolen shamelessly from James Clark's nxml-mode.'

@@ -196,8 +196,7 @@ spPackageDeclaration Parser::parsePackageDeclaration(
     pkgDecl->annotations = annotations;
     annotations.clear();
   }
-  pkgDecl->pkgTokPos = cursor - 7;
-  pkgDecl->pkgTokLen = 7;
+  pkgDecl->pkgTokPos = cursor - TOK_PACKAGE_LENGTH;
 
   getNextToken(); // Consume 'package'
 

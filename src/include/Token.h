@@ -134,5 +134,7 @@ public:
     return it->second;
   }
 };
+
+  const int TOK_PACKAGE_LENGTH = 7;
 } // namespace
 #endif
