@@ -1,3 +1,8 @@
+- [ ] Update Parser::parseCompilationUnit to handle PackageDeclaration
+- [ ] Test emacs output
+- [ ] Add helper function to handle tokens in the Output.
+      Ex.: QualifiedId
 - [X] Add unit test framework
-- [ ] Update Parser::parseCompilationUnit to handle PackageDeclarion
-- [ ] Start output of compilation unit
+- [X] Start output of compilation unit
+- [X] Fix length of package qualified-id
+      package com.mypackge;

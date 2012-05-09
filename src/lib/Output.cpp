@@ -12,12 +12,24 @@ void Output::print() {
 }
 
 void Output::setPackageDeclaration(spPackageDeclaration &pkgDecl) {
+  output += "(djp-package-declaration ";
   setAnnotations(pkgDecl->annotations);
 
   // package keyword
   std::stringstream ini; ini << pkgDecl->pkgTokPos + 1;
   std::stringstream end; end << pkgDecl->pkgTokPos + TOK_PACKAGE_LENGTH + 1;
   output += "(djp-node-keyword " + ini.str() + " " + end.str() + ")";
+
+  // package qualified identifier
+  if (pkgDecl->qualifiedId) {
+    std::stringstream ini;
+    ini << pkgDecl->qualifiedId->ini + 1;
+    std::stringstream end;
+    end << pkgDecl->qualifiedId->end + 2;
+    output += "(djp-node-qualified-id " + ini.str() + " " + end.str() + ")";
+  }
+
+  output += ")";
 }
 
 /// We return zero or more of the form:
@@ -32,8 +44,8 @@ void Output::setAnnotations(std::vector<spAnnotation> &annotations) {
 
     int ini = 0; int end = 0;
     if (annotations[i]->qualifiedId) {
-      ini = annotations[i]->qualifiedId->pos + 1;
-      end = ini + annotations[i]->qualifiedId->len;
+      ini = annotations[i]->qualifiedId->ini + 1;
+      end = annotations[i]->qualifiedId->end + 2;
     }
 
     std::stringstream qid_iniss; qid_iniss << ini;

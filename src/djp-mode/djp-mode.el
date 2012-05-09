@@ -9,7 +9,7 @@
 
 ;; Font faces
 (defvar djp-face-annotation-tok-at 'nil)
-(defvar djp-face-annotation-qualified-id 'nil)
+(defvar djp-face-qualified-id 'nil)
 (defvar djp-face-keyword 'font-lock-keyword-face)
 
 ;; timer
@@ -121,13 +121,15 @@ The output of the compiler is used to build djp-parse-tree."
   "Traverse djp-parse-tree applying font-lock face for each node)"
   (loop for node in djp-parse-tree do (eval node)))
 
+(defun djp-package-declaration (&rest ignore-completely) nil)
+
 (defun djp-node-annotation (pos-tok-at err &optional ignore)
   (if djp-face-annotation-tok-at
       (put-text-property pos-tok-at (+ pos-tok-at 1) 'face djp-face-annotation-tok-at)))
 
 (defun djp-node-qualified-id (ini end)
-  (if djp-face-annotation-qualified-id
-      (put-text-property ini end 'face djp-face-annotation-qualified-id)))
+  (if djp-face-qualified-id
+      (put-text-property ini end 'face djp-face-qualified-id)))
 
 (defun djp-node-keyword (ini end)
   (if djp-face-keyword

@@ -68,12 +68,12 @@ struct Identifier {
 /// QualifiedIdentifier: Identifier { . Identifier }
 struct QualifiedIdentifier {
   std::vector<spIdentifier> identifiers;
-  int pos, len;
+  int ini, end;
   QualifiedIdentifier(std::vector<spIdentifier> _identifiers) {
     identifiers = _identifiers;
-    pos = (identifiers[0])->pos;
+    ini = (identifiers[0])->pos;
     spIdentifier last = identifiers[identifiers.size() - 1];
-    len = last->pos + last->value.length() - 1;
+    end = last->pos + last->value.length() - 1;
   }
 };
 
