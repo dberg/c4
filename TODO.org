@@ -1,4 +1,6 @@
 - [ ] Update Parser::parseCompilationUnit to handle PackageDeclaration
+- [X] Initial work on import delarations
+- [ ] Update emacs output with import declarations
 - [ ] Test emacs output
 - [ ] Add helper function to handle tokens in the Output.
       Ex.: QualifiedId

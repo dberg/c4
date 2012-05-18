@@ -48,6 +48,8 @@ class Parser {
   spPackageDeclaration parsePackageDeclaration(
     std::vector<spAnnotation> annotations);
   spQualifiedIdentifier parseQualifiedIdentifier();
+  spImportDeclarations parseImportDeclarations();
+  spImportDeclaration parseImportDeclaration();
 
 public:
   Parser(std::string _filename, std::string &_buffer)

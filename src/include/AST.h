@@ -3,11 +3,14 @@
 #define __ANNOTATIONS_H__
 #include <vector>
 #include <boost/shared_ptr.hpp>
+#include "Token.h"
 
 namespace djp {
 
 typedef boost::shared_ptr<struct CompilationUnit> spCompilationUnit;
 typedef boost::shared_ptr<struct PackageDeclaration> spPackageDeclaration;
+typedef boost::shared_ptr<struct ImportDeclarations> spImportDeclarations;
+typedef boost::shared_ptr<struct ImportDeclaration> spImportDeclaration;
 typedef boost::shared_ptr<struct Annotation> spAnnotation;
 typedef boost::shared_ptr<struct QualifiedIdentifier> spQualifiedIdentifier;
 typedef boost::shared_ptr<struct AnnotationElement> spAnnotationElement;
@@ -29,7 +32,7 @@ typedef boost::shared_ptr<struct DecimalNumeral> spDecimalNumeral;
 ///   {TypeDeclarations}
 struct CompilationUnit {
   spPackageDeclaration pkgDecl;
-  // ImportDeclarations impDecls;
+  spImportDeclarations impDecls;
   // TypeDeclarations typeDecls;
   CompilationUnit() : pkgDecl(spPackageDeclaration()) {}
 };
@@ -42,6 +45,15 @@ struct PackageDeclaration {
   bool err;
   PackageDeclaration() : pkgTokPos(-1), qualifiedId(spQualifiedIdentifier()),
     err(false) {}
+};
+
+/// ImportDeclarations:
+///   ImportDeclaration
+///   ImportDeclarations ImportDeclaration
+struct ImportDeclarations {
+  std::vector<spImportDeclaration> imports;
+  ImportDeclarations(std::vector<spImportDeclaration> imports)
+    : imports(imports) {}
 };
 
 /// Annotation: @ QualifiedIdentifier [ ( [AnnotationElement] ) ]
@@ -74,6 +86,56 @@ struct QualifiedIdentifier {
     ini = (identifiers[0])->pos;
     spIdentifier last = identifiers[identifiers.size() - 1];
     end = last->pos + last->value.length() - 1;
+  }
+
+  // We currently use this for test purposes only
+  std::string getQualifiedIdentifier() {
+    std::string qualifiedId = "";
+    int last_key = identifiers.size() - 1;
+    for (int i = 0; i <= last_key ; i++) {
+      qualifiedId += identifiers[i]->value;
+      if (i != last_key) {
+	qualifiedId += ".";
+      }
+    }
+
+    return qualifiedId;
+  }
+};
+
+/// For simplicity we adopt the following rule
+/// ImportDeclaration: import [static] QualifiedId [.*]
+/// For reference, a more detailed ImportDeclaration follows:
+/// ImportDeclaration
+///   SingleTypeImportDeclaration
+///   TypeImportOnDemandDeclaration
+///   SingleStaticImportDeclaration
+///   StaticImportOnDemandDeclaration
+struct ImportDeclaration {
+  int posTokImport;
+  int posTokStatic;
+
+  // [.*]
+  int iniOnDemand;
+  int endOnDemand;
+
+  bool err;
+  spQualifiedIdentifier qualifiedId;
+  ImportType type;
+
+  ImportDeclaration() {
+    err = false;
+    posTokImport = posTokStatic = iniOnDemand = endOnDemand = -1;
+    type = SINGLE_TYPE_IMPORT_DECLARATION;
+  }
+
+  // We currently use this for test purposes only
+  std::string getImport() {
+    std::string import = qualifiedId->getQualifiedIdentifier();
+    if (iniOnDemand > 0) {
+      import += ".*";
+    }
+    return import;
   }
 };
 

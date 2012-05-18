@@ -67,6 +67,7 @@ int Parser::getToken() {
 
   if ('.' == c) return TOK_PERIOD;
   if (';' == c) return TOK_SEMICOLON;
+  if ('*' == c) return TOK_ASTERISK;
 
   // Identifier
   if (isJavaLetter(c))
@@ -215,6 +216,69 @@ spPackageDeclaration Parser::parsePackageDeclaration(
   return pkgDecl;
 }
 
+/// ImportDeclarations:
+///   ImportDeclaration
+///   ImportDeclarations ImportDeclaration
+/// ImportDeclaration: import [static] QualifiedId [.*];
+spImportDeclarations Parser::parseImportDeclarations() {
+  std::vector<spImportDeclaration> imports;
+  while (TOK_KEY_IMPORT == curToken) {
+    spImportDeclaration import = parseImportDeclaration();
+    imports.push_back(import);
+    getNextToken(); // consume ';'
+  }
+
+  spImportDeclarations impDecls = spImportDeclarations(
+    new ImportDeclarations(imports));
+  return impDecls;
+}
+
+spImportDeclaration Parser::parseImportDeclaration() {
+  spImportDeclaration import = spImportDeclaration(new ImportDeclaration());
+  import->type = SINGLE_TYPE_IMPORT_DECLARATION;
+  import->posTokImport = cursor - TOK_IMPORT_LENGTH;
+  getNextToken(); // consume 'import' keyword
+
+  if (TOK_KEY_STATIC == curToken) {
+    import->posTokStatic = cursor - TOK_STATIC_LENGTH;
+    import->type = SINGLE_STATIC_IMPORT_DECLARATION;
+    getNextToken();
+  }
+
+  if (TOK_IDENTIFIER != curToken) {
+    import->err = true;
+    return import;
+  }
+
+  import->qualifiedId = parseQualifiedIdentifier();
+
+  // Check [.*]
+  if (TOK_PERIOD == curToken) {
+    import->iniOnDemand = cursor - 1;
+    getNextToken(); // consume '.'
+    if (TOK_ASTERISK != curToken) {
+      import->err = true;
+      return import;
+    }
+
+    import->endOnDemand = cursor - 1;
+    if (import->posTokStatic > 0) {
+      import->type = STATIC_IMPORT_ON_DEMAND_DECLARATION;
+    } else {
+      import->type = TYPE_IMPORT_ON_DEMAND_DECLARATION;
+    }
+
+    getNextToken(); // consume '*'
+  }
+
+  if (TOK_SEMICOLON != curToken) {
+    import->err = true;
+    return import;
+  }
+
+  return import;
+}
+
 /// QualifiedIdentifier: Identifer { . Identifier }
 spQualifiedIdentifier Parser::parseQualifiedIdentifier() {
   std::vector<spIdentifier> identifiers;
@@ -263,8 +327,10 @@ void Parser::parseCompilationUnit() {
     compilationUnit->pkgDecl = parsePackageDeclaration(annotations);
   }
 
-  // TODO:
   // Import Declaration
+  if (curToken == TOK_KEY_IMPORT) {
+    compilationUnit->impDecls = parseImportDeclarations();
+  }
 
   // TODO:
   // Type Declarations
