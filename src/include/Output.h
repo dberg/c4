@@ -11,16 +11,21 @@ namespace djp {
 /// The first position in the buffer is 1.
 class Output {
   spCompilationUnit compilationUnit;
-  std::string output;
 
   void setAnnotations(std::vector<spAnnotation> &annotations);
   void setPackageDeclaration(spPackageDeclaration &pkgDecl);
+  void setImportDeclarations(spImportDeclarations &impDecls);
+  void setImportDeclaration(spImportDeclaration &import);
+  void setKeyword(int ini, int end);
+  void setQualifiedId(int ini, int end);
 
 public:
+  std::string output;
+
   Output(spCompilationUnit _compilationUnit)
     : compilationUnit(_compilationUnit) {}
 
-  void print();
+  void build();
 };
 
 }

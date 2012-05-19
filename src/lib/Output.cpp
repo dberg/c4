@@ -2,13 +2,17 @@
 #include "Token.h"
 
 namespace djp {
-void Output::print() {
+void Output::build() {
   output = "(";
   if (compilationUnit->pkgDecl) {
     setPackageDeclaration(compilationUnit->pkgDecl);
   }
+
+  if (compilationUnit->impDecls) {
+    setImportDeclarations(compilationUnit->impDecls);
+  }
+
   output += ")";
-  std::cout << output;
 }
 
 void Output::setPackageDeclaration(spPackageDeclaration &pkgDecl) {
@@ -16,20 +20,58 @@ void Output::setPackageDeclaration(spPackageDeclaration &pkgDecl) {
   setAnnotations(pkgDecl->annotations);
 
   // package keyword
-  std::stringstream ini; ini << pkgDecl->pkgTokPos + 1;
-  std::stringstream end; end << pkgDecl->pkgTokPos + TOK_PACKAGE_LENGTH + 1;
-  output += "(djp-node-keyword " + ini.str() + " " + end.str() + ")";
+  setKeyword(pkgDecl->pkgTokPos + 1,
+    pkgDecl->pkgTokPos + TOK_PACKAGE_LENGTH + 1);
 
   // package qualified identifier
   if (pkgDecl->qualifiedId) {
-    std::stringstream ini;
-    ini << pkgDecl->qualifiedId->ini + 1;
-    std::stringstream end;
-    end << pkgDecl->qualifiedId->end + 2;
-    output += "(djp-node-qualified-id " + ini.str() + " " + end.str() + ")";
+    setQualifiedId(pkgDecl->qualifiedId->ini + 1,
+     pkgDecl->qualifiedId->end + 2);
   }
 
   output += ")";
+}
+
+void Output::setImportDeclarations(spImportDeclarations &impDecls) {
+  output += "(djp-import-declarations ";
+  for (std::string::size_type i = 0; i < impDecls->imports.size(); i++) {
+    setImportDeclaration(impDecls->imports[i]);
+  }
+  output += ")";
+}
+
+void Output::setImportDeclaration(spImportDeclaration &import) {
+  output += "(djp-import-declaration ";
+  setKeyword(import->posTokImport + 1,
+    import->posTokImport + TOK_IMPORT_LENGTH + 1);
+
+  if (import->posTokStatic > 0) {
+    setKeyword(import->posTokStatic + 1,
+      import->posTokStatic + TOK_STATIC_LENGTH + 1);
+    }
+
+  if (import->qualifiedId) {
+    int ini = import->qualifiedId->ini + 1;
+    int end = import->qualifiedId->end + 2;
+    if (import->iniOnDemand > 0) {
+      end = import->endOnDemand + 2;
+    }
+    setQualifiedId(ini, end);
+  }
+
+  output += ")";
+}
+
+void Output::setKeyword(int ini, int end) {
+  std::stringstream ini_s; ini_s << ini;
+  std::stringstream end_s; end_s << end;
+  output += "(djp-node-keyword " + ini_s.str() + " " + end_s.str() + ")";
+}
+
+void Output::setQualifiedId(int ini, int end) {
+  std::stringstream ini_s; ini_s << ini;
+  std::stringstream end_s; end_s << end;
+  output += "(djp-node-qualified-id " + ini_s.str() + " " + end_s.str() + ")";
 }
 
 /// We return zero or more of the form:

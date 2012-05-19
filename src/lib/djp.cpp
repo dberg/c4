@@ -30,7 +30,8 @@ int main(int argc, const char **argv) {
   }
 
   Output output(parser.compilationUnit);
-  output.print();
+  output.build();
+  std::cout << output.output;
 
   return 0;
 }

@@ -87,13 +87,16 @@ $(obj)/djp.o: $(libdir)/djp.cpp
 
 # tests
 $(bin)/tests: $(test_libdir)/ParserTest.cpp \
+              $(test_libdir)/EmacsOutputTest.cpp \
               $(obj)/Parser.o \
               $(obj)/Output.o \
               $(gtest_obj)/libgtest.a
 
 	$(CXX) $(INC) -I$(gtest_inc) $(obj)/Parser.o \
                                      $(obj)/Output.o \
-                                     $< -o $@ \
+                                     $(test_libdir)/ParserTest.cpp \
+                                     $(test_libdir)/EmacsOutputTest.cpp \
+                                     -o $@ \
                                      $(gtest_obj)/libgtest.a \
                                      -lpthread
 

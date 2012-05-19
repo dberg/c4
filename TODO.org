@@ -1,9 +1,12 @@
-- [ ] Update Parser::parseCompilationUnit to handle PackageDeclaration
-- [X] Initial work on import delarations
-- [ ] Update emacs output with import declarations
-- [ ] Test emacs output
-- [ ] Add helper function to handle tokens in the Output.
+- [ ] Handle errors on emacs mode
+- [ ] Parse TokenIdentifier BooleanLiteral and NullLiteral
+- [ ] Parse Annotation value pairs
+- [ ] Start work on TypeDeclarations
+- [X] Test emacs output
+- [X] Add helper function to handle tokens in the Output.
       Ex.: QualifiedId
+- [X] Update emacs output with import declarations
+- [X] Initial work on import delarations
 - [X] Add unit test framework
 - [X] Start output of compilation unit
 - [X] Fix length of package qualified-id
