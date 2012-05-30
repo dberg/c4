@@ -82,6 +82,22 @@ TEST(Parser, ImportDeclarations) {
     parser.compilationUnit->impDecls->imports[3]->type);
 }
 
+TEST(Parser, ClassDeclaration) {
+  std::string filename = "Test.java";
+  std::string buffer = "@myinterface\npublic class A { }";
+  Parser parser(filename, buffer);
+  parser.parse();
+  ASSERT_EQ(1, parser.compilationUnit->typeDecls.size());
+  ASSERT_EQ(1, parser.compilationUnit->typeDecls[0]->decl
+    ->modifier->annotations.size());
+  ASSERT_EQ(1, parser.compilationUnit->typeDecls[0]->decl
+    ->modifier->tokens.size());
+  ASSERT_EQ(13, parser.compilationUnit->typeDecls[0]->decl
+    ->modifier->tokens[0]->pos);
+  ASSERT_EQ(TOK_KEY_PUBLIC, parser.compilationUnit->typeDecls[0]->decl
+    ->modifier->tokens[0]->type);
+}
+
 int main(int argc, char **argv) {
   ::testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();

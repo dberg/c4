@@ -1,7 +1,11 @@
+- [ ] Start emacs output of TypeDeclarations
 - [ ] Handle errors on emacs mode
 - [ ] Parse TokenIdentifier BooleanLiteral and NullLiteral
 - [ ] Parse Annotation value pairs
-- [ ] Start work on TypeDeclarations
+- [X] Handle multiple TypeDeclarations
+- [X] Start work on TypeDeclarations
+- [X] Fix annotations in example
+      "@myinterface\npublic class A{}"
 - [X] Test emacs output
 - [X] Add helper function to handle tokens in the Output.
       Ex.: QualifiedId

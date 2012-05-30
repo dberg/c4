@@ -2,12 +2,41 @@
 
 namespace djp {
 
+/// ClassModifier: one of
+///   Annotation public protected private
+///   abstract static final strictfp
+bool Parser::isClassModifierToken(int token) {
+  if (TOK_KEY_PUBLIC == token ||
+      TOK_KEY_PROTECTED == token ||
+      TOK_KEY_PRIVATE == token ||
+      TOK_KEY_ABSTRACT == token ||
+      TOK_KEY_STATIC == token ||
+      TOK_KEY_FINAL == token ||
+      TOK_KEY_STRICTFP == token) {
+    return true;
+  }
+
+  return false;
+}
+
 bool Parser::isJavaLetter(char c) {
   return (isalpha(c) || c == '$' || c == '_');
 }
 
 bool Parser::isJavaLetterOrDigit(char c) {
   return (isJavaLetter(c) || isdigit(c));
+}
+
+bool Parser::isValidInitTokenOfTypeDeclaration(int token) {
+  if (isClassModifierToken(token)) {
+    return true;
+  }
+
+  if (TOK_ANNOTATION == curToken || TOK_KEY_CLASS == curToken || TOK_KEY_INTERFACE == curToken) {
+    return true;
+  }
+
+  return false;
 }
 
 void Parser::saveState(State &state) {
@@ -315,6 +344,75 @@ spQualifiedIdentifier Parser::parseQualifiedIdentifier() {
   return qualifiedId;
 }
 
+/// TypeDeclarations: { TypeDeclaration }
+/// TypeDeclaration: ClassOrInterfaceDeclaration ;
+std::vector<spTypeDeclaration> Parser::parseTypeDeclarations(
+  std::vector<spAnnotation> &annotations) {
+
+  std::vector<spTypeDeclaration> typeDecls = std::vector<spTypeDeclaration>();
+
+  if (annotations.size() > 0) {
+    spModifier modifier = spModifier(new Modifier());
+    modifier->annotations = annotations;
+
+    spTypeDeclaration typeDecl = spTypeDeclaration(new TypeDeclaration());
+    typeDecl->decl = spClassOrInterfaceDeclaration(new ClassOrInterfaceDeclaration());
+    typeDecl->decl->modifier = modifier;
+
+    parseClassOrInterfaceDeclaration(typeDecl->decl);
+    typeDecls.push_back(typeDecl);
+  }
+
+  while (isValidInitTokenOfTypeDeclaration(curToken)) {
+    spTypeDeclaration typeDecl = spTypeDeclaration(new TypeDeclaration());
+    typeDecl->decl = spClassOrInterfaceDeclaration(new ClassOrInterfaceDeclaration());
+    parseClassOrInterfaceDeclaration(typeDecl->decl);
+  }
+
+  return typeDecls;
+}
+
+/// ClassOrInterfaceDeclaration: {Modifier} (ClassDeclaration | InterfaceDeclaration)
+void Parser::parseClassOrInterfaceDeclaration(spClassOrInterfaceDeclaration& decl) {
+
+  // Modifier
+  if (!decl->modifier) {
+    decl->modifier = spModifier(new Modifier());
+  }
+
+  parseModifier(decl->modifier);
+
+  // TODO:
+  if (TOK_KEY_CLASS == curToken) {
+    //spClassOrInterfaceDeclaration(new ClassOrInterfaceDeclaration());
+    getNextToken();
+    return;
+  }
+
+  // TODO:
+  if (TOK_KEY_INTERFACE == curToken) {
+    getNextToken();
+    return;
+  }
+
+  // TODO: handle error
+}
+
+void Parser::parseModifier(spModifier &modifier) {
+  // Annotations
+  if (curToken == TOK_ANNOTATION) {
+    parseAnnotations(modifier->annotations);
+  }
+
+  // Tokens
+  while (isClassModifierToken(curToken)) {
+    spTokenExp token = spTokenExp(
+      new TokenExp(cursor - TOK_KEY_PUBLIC_LENGTH, curToken));
+    modifier->tokens.push_back(token);
+    getNextToken();
+  }
+}
+
 /// CompilationUnit: Top level parsing.
 ///   [PackageDeclaration] [ImportDeclaration] [TypeDeclarations]
 void Parser::parseCompilationUnit() {
@@ -329,13 +427,17 @@ void Parser::parseCompilationUnit() {
 
   // Import Declaration
   if (curToken == TOK_KEY_IMPORT) {
+    // If we still have annotations we're in an invalid state
+    if (annotations.size()) {
+      // TODO: handle annotation error.
+      // We should error flag all annotations and insert an error message.
+    }
+
     compilationUnit->impDecls = parseImportDeclarations();
   }
 
-  // TODO:
   // Type Declarations
-
-  getNextToken();
+  compilationUnit->typeDecls = parseTypeDeclarations(annotations);
 }
 
 void Parser::parse() {
@@ -348,6 +450,7 @@ void Parser::parse() {
       return;
     default:
       parseCompilationUnit();
+      return;
     }
   }
 }

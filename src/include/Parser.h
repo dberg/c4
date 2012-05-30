@@ -26,8 +26,10 @@ class Parser {
   TokenUtil tokenUtil;
 
   // helper methods
+  bool isClassModifierToken(int token);
   bool isJavaLetter(char c);
   bool isJavaLetterOrDigit(char c);
+  bool isValidInitTokenOfTypeDeclaration(int token);
   void saveState(State &state);
   void restoreState(State &state);
 
@@ -42,14 +44,25 @@ class Parser {
   int getTokenIdentifier(char c);
 
   void parseCompilationUnit();
+
   spAnnotation parseAnnotation();
   spAnnotationElement parseAnnotationElement();
   void parseAnnotations(std::vector<spAnnotation> &annotations);
+
   spPackageDeclaration parsePackageDeclaration(
     std::vector<spAnnotation> annotations);
-  spQualifiedIdentifier parseQualifiedIdentifier();
+
   spImportDeclarations parseImportDeclarations();
   spImportDeclaration parseImportDeclaration();
+
+  std::vector<spTypeDeclaration> parseTypeDeclarations(
+    std::vector<spAnnotation> &annotations);
+
+  void parseClassOrInterfaceDeclaration(spClassOrInterfaceDeclaration& decl);
+
+  void parseModifier(spModifier &modifier);
+
+  spQualifiedIdentifier parseQualifiedIdentifier();
 
 public:
   Parser(std::string _filename, std::string &_buffer)

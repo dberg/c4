@@ -25,6 +25,13 @@ typedef boost::shared_ptr<struct Literal> spLiteral;
 typedef boost::shared_ptr<struct IntegerLiteral> spIntegerLiteral;
 typedef boost::shared_ptr<struct DecimalIntegerLiteral> spDecimalIntegerLiteral;
 typedef boost::shared_ptr<struct DecimalNumeral> spDecimalNumeral;
+typedef boost::shared_ptr<struct TypeDeclarations> spTypeDeclarations;
+typedef boost::shared_ptr<struct TypeDeclaration> spTypeDeclaration;
+typedef boost::shared_ptr<struct ClassOrInterfaceDeclaration> spClassOrInterfaceDeclaration;
+typedef boost::shared_ptr<struct ClassDeclaration> spClassDeclaration;
+typedef boost::shared_ptr<struct InterfaceDeclaration> spInterfaceDeclaration;
+typedef boost::shared_ptr<struct Modifier> spModifier;
+typedef boost::shared_ptr<struct TokenExp> spTokenExp;
 
 /// CompilationUnit:
 ///   [PackageDeclaration]
@@ -33,7 +40,7 @@ typedef boost::shared_ptr<struct DecimalNumeral> spDecimalNumeral;
 struct CompilationUnit {
   spPackageDeclaration pkgDecl;
   spImportDeclarations impDecls;
-  // TypeDeclarations typeDecls;
+  std::vector<spTypeDeclaration> typeDecls;
   CompilationUnit() : pkgDecl(spPackageDeclaration()) {}
 };
 
@@ -45,6 +52,59 @@ struct PackageDeclaration {
   bool err;
   PackageDeclaration() : pkgTokPos(-1), qualifiedId(spQualifiedIdentifier()),
     err(false) {}
+};
+
+/// TypeDeclaration: ClassOrInterfaceDeclaration ;
+struct TypeDeclaration {
+  spClassOrInterfaceDeclaration decl;
+};
+
+/// ClassOrInterfaceDeclaration: {Modifier} (ClassDeclaration | InterfaceDeclaration)
+struct ClassOrInterfaceDeclaration {
+  spModifier modifier;
+  spClassDeclaration classDecl;
+  spInterfaceDeclaration interfaceDecl;
+};
+
+struct TokenExp {
+  int pos;
+  int type;
+
+  TokenExp(int pos = -1, int type = -1) : pos(pos), type(type) {}
+};
+
+/// Modifier:
+///   Annotations
+///   public
+///   protected
+///   private
+///   static
+///   abstract
+///   final
+///   native
+///   synchronized
+///   transient
+///   volatile
+///   strictfp
+struct Modifier {
+  std::vector<spAnnotation> annotations;
+  std::vector<spTokenExp> tokens;
+};
+
+/// ClassDeclaration:
+///   NormalClassDeclaration
+///   EnumDeclaration
+// TODO:
+struct ClassDeclaration {
+
+};
+
+/// InterfaceDeclaration:
+///   NormalInterfaceDeclaration
+///   AnnotationTypeDeclaration
+// TODO:
+struct InterfaceDeclaration {
+
 };
 
 /// ImportDeclarations:

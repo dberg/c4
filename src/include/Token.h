@@ -139,6 +139,7 @@ public:
   const int TOK_PACKAGE_LENGTH = 7;
   const int TOK_IMPORT_LENGTH = 6;
   const int TOK_STATIC_LENGTH = 6;
+  const int TOK_KEY_PUBLIC_LENGTH = 6;
 
   enum ImportType {
     SINGLE_TYPE_IMPORT_DECLARATION,
