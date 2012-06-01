@@ -219,14 +219,14 @@ void Parser::parseAnnotations(std::vector<spAnnotation> &annotations) {
 
 /// PackageDeclaration: [ [Annotations]  package QualifiedIdentifier ; ]
 spPackageDeclaration Parser::parsePackageDeclaration(
-  std::vector<spAnnotation> annotations) {
+  std::vector<spAnnotation> &annotations) {
   spPackageDeclaration pkgDecl = spPackageDeclaration(new PackageDeclaration());
   // If we have annotations they belong to the package declaration
   if (annotations.size()) {
     pkgDecl->annotations = annotations;
     annotations.clear();
   }
-  pkgDecl->pkgTokPos = cursor - TOK_PACKAGE_LENGTH;
+  pkgDecl->pkgTokPos = cursor - tokenUtil.getTokenLength(TOK_KEY_PACKAGE);
 
   getNextToken(); // Consume 'package'
 
@@ -265,11 +265,11 @@ spImportDeclarations Parser::parseImportDeclarations() {
 spImportDeclaration Parser::parseImportDeclaration() {
   spImportDeclaration import = spImportDeclaration(new ImportDeclaration());
   import->type = SINGLE_TYPE_IMPORT_DECLARATION;
-  import->posTokImport = cursor - TOK_IMPORT_LENGTH;
+  import->posTokImport = cursor - tokenUtil.getTokenLength(TOK_KEY_IMPORT);
   getNextToken(); // consume 'import' keyword
 
   if (TOK_KEY_STATIC == curToken) {
-    import->posTokStatic = cursor - TOK_STATIC_LENGTH;
+    import->posTokStatic = cursor - tokenUtil.getTokenLength(TOK_KEY_STATIC);
     import->type = SINGLE_STATIC_IMPORT_DECLARATION;
     getNextToken();
   }
@@ -407,7 +407,7 @@ void Parser::parseModifier(spModifier &modifier) {
   // Tokens
   while (isClassModifierToken(curToken)) {
     spTokenExp token = spTokenExp(
-      new TokenExp(cursor - TOK_KEY_PUBLIC_LENGTH, curToken));
+      new TokenExp(cursor - tokenUtil.getTokenLength(TOK_KEY_PUBLIC), curToken));
     modifier->tokens.push_back(token);
     getNextToken();
   }

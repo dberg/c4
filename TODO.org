@@ -1,7 +1,8 @@
-- [ ] Start emacs output of TypeDeclarations
+- [ ] Start symbol table and helper mapper for elisp (pos -> symbol table)
 - [ ] Handle errors on emacs mode
 - [ ] Parse TokenIdentifier BooleanLiteral and NullLiteral
 - [ ] Parse Annotation value pairs
+- [X] Start emacs output of TypeDeclarations
 - [X] Handle multiple TypeDeclarations
 - [X] Start work on TypeDeclarations
 - [X] Fix annotations in example

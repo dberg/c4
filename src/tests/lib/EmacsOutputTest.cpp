@@ -12,7 +12,8 @@ TEST(EmacsOutput, PackageDeclaration) {
   parser.parse();
   Output output(parser.compilationUnit);
   output.build();
-  std::string expected = "((djp-package-declaration "
+  std::string expected =
+    "((djp-package-declaration "
     "(djp-node-annotation 1 0 "
     "(djp-node-qualified-id 2 13))"
     "(djp-node-keyword 14 21)"

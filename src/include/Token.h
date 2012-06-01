@@ -73,6 +73,10 @@ enum Token {
 class TokenUtil {
   typedef std::map<std::string, int> KeywordMap;
   KeywordMap keywords;
+
+  typedef std::map<int, int> TokenLengthMap;
+  TokenLengthMap tokensLen;
+
 public:
   TokenUtil() {
     keywords["abstract"] = TOK_KEY_ABSTRACT;
@@ -125,6 +129,11 @@ public:
     keywords["void"] = TOK_KEY_VOID;
     keywords["volatile"] = TOK_KEY_VOLATILE;
     keywords["while"] = TOK_KEY_WHILE;
+
+    tokensLen[TOK_KEY_PACKAGE] = 7;
+    tokensLen[TOK_KEY_IMPORT] = 6;
+    tokensLen[TOK_KEY_STATIC] = 6;
+    tokensLen[TOK_KEY_PUBLIC] = 6;
   }
 
   int getKeywordToken(std::string identifier) {
@@ -134,12 +143,15 @@ public:
     }
     return it->second;
   }
-};
 
-  const int TOK_PACKAGE_LENGTH = 7;
-  const int TOK_IMPORT_LENGTH = 6;
-  const int TOK_STATIC_LENGTH = 6;
-  const int TOK_KEY_PUBLIC_LENGTH = 6;
+  int getTokenLength(int token) {
+    TokenLengthMap::iterator it = tokensLen.find(token);
+    if (it == tokensLen.end()) {
+      return 0;
+    }
+    return it->second;
+  }
+};
 
   enum ImportType {
     SINGLE_TYPE_IMPORT_DECLARATION,

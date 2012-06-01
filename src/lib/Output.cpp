@@ -12,6 +12,10 @@ void Output::build() {
     setImportDeclarations(compilationUnit->impDecls);
   }
 
+  if (compilationUnit->typeDecls.size()) {
+    setTypeDeclarations(compilationUnit->typeDecls);
+  }
+
   output += ")";
 }
 
@@ -21,7 +25,7 @@ void Output::setPackageDeclaration(spPackageDeclaration &pkgDecl) {
 
   // package keyword
   setKeyword(pkgDecl->pkgTokPos + 1,
-    pkgDecl->pkgTokPos + TOK_PACKAGE_LENGTH + 1);
+    pkgDecl->pkgTokPos + tokenUtil.getTokenLength(TOK_KEY_PACKAGE) + 1);
 
   // package qualified identifier
   if (pkgDecl->qualifiedId) {
@@ -43,11 +47,11 @@ void Output::setImportDeclarations(spImportDeclarations &impDecls) {
 void Output::setImportDeclaration(spImportDeclaration &import) {
   output += "(djp-import-declaration ";
   setKeyword(import->posTokImport + 1,
-    import->posTokImport + TOK_IMPORT_LENGTH + 1);
+    import->posTokImport + tokenUtil.getTokenLength(TOK_KEY_IMPORT) + 1);
 
   if (import->posTokStatic > 0) {
     setKeyword(import->posTokStatic + 1,
-      import->posTokStatic + TOK_STATIC_LENGTH + 1);
+      import->posTokStatic + tokenUtil.getTokenLength(TOK_KEY_STATIC) + 1);
     }
 
   if (import->qualifiedId) {
@@ -60,6 +64,37 @@ void Output::setImportDeclaration(spImportDeclaration &import) {
   }
 
   output += ")";
+}
+
+void Output::setTypeDeclarations(std::vector<spTypeDeclaration> &typeDecls) {
+  for (std::size_t i = 0; i < typeDecls.size(); i++) {
+    if (typeDecls[i]->decl) {
+      setClassOrInterfaceDeclaration(typeDecls[i]->decl);
+    }
+  }
+}
+
+void Output::setClassOrInterfaceDeclaration(
+  spClassOrInterfaceDeclaration &decl) {
+
+  if (decl->modifier) {
+    setModifier(decl->modifier);
+  }
+}
+
+void Output::setModifier(spModifier &modifier) {
+  if (modifier->annotations.size()) {
+    setAnnotations(modifier->annotations);
+  }
+
+  for (std::size_t i = 0; i < modifier->tokens.size(); i++) {
+    setKeyword(modifier->tokens[i]);
+  }
+}
+
+void Output::setKeyword(spTokenExp &token) {
+  setKeyword(token->pos + 1, token->pos + 1
+    + tokenUtil.getTokenLength(token->type));
 }
 
 void Output::setKeyword(int ini, int end) {

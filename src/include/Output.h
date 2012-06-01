@@ -11,13 +11,18 @@ namespace djp {
 /// The first position in the buffer is 1.
 class Output {
   spCompilationUnit compilationUnit;
+  TokenUtil tokenUtil;
 
   void setAnnotations(std::vector<spAnnotation> &annotations);
-  void setPackageDeclaration(spPackageDeclaration &pkgDecl);
+  void setClassOrInterfaceDeclaration(spClassOrInterfaceDeclaration &decl);
   void setImportDeclarations(spImportDeclarations &impDecls);
   void setImportDeclaration(spImportDeclaration &import);
   void setKeyword(int ini, int end);
+  void setKeyword(spTokenExp &token);
+  void setModifier(spModifier &modifier);
+  void setPackageDeclaration(spPackageDeclaration &pkgDecl);
   void setQualifiedId(int ini, int end);
+  void setTypeDeclarations(std::vector<spTypeDeclaration> &typeDecls);
 
 public:
   std::string output;

@@ -50,7 +50,7 @@ class Parser {
   void parseAnnotations(std::vector<spAnnotation> &annotations);
 
   spPackageDeclaration parsePackageDeclaration(
-    std::vector<spAnnotation> annotations);
+    std::vector<spAnnotation> &annotations);
 
   spImportDeclarations parseImportDeclarations();
   spImportDeclaration parseImportDeclaration();
