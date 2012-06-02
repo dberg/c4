@@ -1,5 +1,4 @@
 #include "Output.h"
-#include "Token.h"
 
 namespace djp {
 void Output::build() {
@@ -14,6 +13,10 @@ void Output::build() {
 
   if (compilationUnit->typeDecls.size()) {
     setTypeDeclarations(compilationUnit->typeDecls);
+  }
+
+  if (compilationUnit->errors.size()) {
+    setErrors(compilationUnit->errors);
   }
 
   output += ")";
@@ -98,15 +101,12 @@ void Output::setKeyword(spTokenExp &token) {
 }
 
 void Output::setKeyword(int ini, int end) {
-  std::stringstream ini_s; ini_s << ini;
-  std::stringstream end_s; end_s << end;
-  output += "(djp-node-keyword " + ini_s.str() + " " + end_s.str() + ")";
+  output += "(djp-node-keyword " + itos(ini) + " " + itos(end) + ")";
 }
 
 void Output::setQualifiedId(int ini, int end) {
-  std::stringstream ini_s; ini_s << ini;
-  std::stringstream end_s; end_s << end;
-  output += "(djp-node-qualified-id " + ini_s.str() + " " + end_s.str() + ")";
+  output += "(djp-node-qualified-id "
+    + itos(ini) + " " + itos(end) + ")";
 }
 
 /// We return zero or more of the form:
@@ -115,21 +115,37 @@ void Output::setQualifiedId(int ini, int end) {
 /// qualified-id as one element being the ini the first identifier and the end
 /// the last identifier.
 void Output::setAnnotations(std::vector<spAnnotation> &annotations) {
-  for (unsigned int i = 0; i < annotations.size(); i++) {
-    std::stringstream ann_ini; ann_ini << annotations[i]->posTokAt + 1;
-    std::stringstream ann_err; ann_err << (int) annotations[i]->err;
-
+  for (std::size_t i = 0; i < annotations.size(); i++) {
     int ini = 0; int end = 0;
     if (annotations[i]->qualifiedId) {
       ini = annotations[i]->qualifiedId->ini + 1;
       end = annotations[i]->qualifiedId->end + 2;
     }
 
-    std::stringstream qid_iniss; qid_iniss << ini;
-    std::stringstream qid_endss; qid_endss << end;
-
-    output += "(djp-node-annotation " + ann_ini.str() + " " + ann_err.str()
-      + " (djp-node-qualified-id " + qid_iniss.str() + " " + qid_endss.str() + "))";
+    output += "(djp-node-annotation "
+      + itos(annotations[i]->posTokAt + 1) + " "
+      + itos((int) annotations[i]->err)
+      + " (djp-node-qualified-id "
+      + itos(ini) + " "
+      + itos(end) + "))";
   }
 }
+
+void Output::setErrors(std::vector<spError> &errors) {
+  for (std::size_t i = 0; i < errors.size(); i++) {
+    output += "(djp-error "
+      + itos(errors[i]->ini + 1) + " "
+      + itos(errors[i]->end + 1) + " \""
+      + errUtil.getMessage(errors[i]->type) + "\")";
+
+  }
+}
+
+// Helper methods
+const std::string Output::itos(int i) {
+  std::stringstream s;
+  s << i;
+  return s.str();
+}
+
 } // namespace

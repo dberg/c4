@@ -4,6 +4,7 @@
 #include <vector>
 #include <boost/shared_ptr.hpp>
 #include "Token.h"
+#include "ErrorCodes.h"
 
 namespace djp {
 
@@ -27,11 +28,14 @@ typedef boost::shared_ptr<struct DecimalIntegerLiteral> spDecimalIntegerLiteral;
 typedef boost::shared_ptr<struct DecimalNumeral> spDecimalNumeral;
 typedef boost::shared_ptr<struct TypeDeclarations> spTypeDeclarations;
 typedef boost::shared_ptr<struct TypeDeclaration> spTypeDeclaration;
-typedef boost::shared_ptr<struct ClassOrInterfaceDeclaration> spClassOrInterfaceDeclaration;
+typedef boost::shared_ptr<struct ClassOrInterfaceDeclaration>
+  spClassOrInterfaceDeclaration;
 typedef boost::shared_ptr<struct ClassDeclaration> spClassDeclaration;
 typedef boost::shared_ptr<struct InterfaceDeclaration> spInterfaceDeclaration;
 typedef boost::shared_ptr<struct Modifier> spModifier;
 typedef boost::shared_ptr<struct TokenExp> spTokenExp;
+typedef boost::shared_ptr<struct Error> spError;
+typedef boost::shared_ptr<struct Warning> spWarning;
 
 /// CompilationUnit:
 ///   [PackageDeclaration]
@@ -41,6 +45,8 @@ struct CompilationUnit {
   spPackageDeclaration pkgDecl;
   spImportDeclarations impDecls;
   std::vector<spTypeDeclaration> typeDecls;
+  std::vector<spError> errors;
+  std::vector<spWarning> warnings;
   CompilationUnit() : pkgDecl(spPackageDeclaration()) {}
 };
 
@@ -308,6 +314,11 @@ struct DecimalIntegerLiteral {
 struct DecimalNumeral {
   int pos, len;
   long decimal;
+};
+
+struct Error {
+  int ini, end, type;
+  Error(int ini, int end, int type) : ini(ini), end(end), type(type) {}
 };
 
 }

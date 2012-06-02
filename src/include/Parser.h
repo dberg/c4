@@ -5,6 +5,7 @@
 #include <sstream>
 #include <vector>
 #include "AST.h"
+#include "ErrorCodes.h"
 #include "Token.h"
 
 namespace djp {
@@ -32,6 +33,7 @@ class Parser {
   bool isValidInitTokenOfTypeDeclaration(int token);
   void saveState(State &state);
   void restoreState(State &state);
+  void addError(int ini, int end, int err);
 
   // lexer
   const char getChar();

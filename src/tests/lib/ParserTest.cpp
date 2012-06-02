@@ -98,6 +98,14 @@ TEST(Parser, ClassDeclaration) {
     ->modifier->tokens[0]->type);
 }
 
+TEST(Parser, Errors) {
+  std::string filename = "Test.java";
+  std::string buffer = "@";
+  Parser parser(filename, buffer);
+  parser.parse();
+  ASSERT_EQ(1, parser.compilationUnit->errors.size());
+}
+
 int main(int argc, char **argv) {
   ::testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();

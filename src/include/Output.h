@@ -2,6 +2,8 @@
 #ifndef __OUTPUT_H__
 #define __OUTPUT_H__
 #include "AST.h"
+#include "ErrorCodes.h"
+#include "Token.h"
 #include <iostream>
 #include <sstream>
 
@@ -12,6 +14,7 @@ namespace djp {
 class Output {
   spCompilationUnit compilationUnit;
   TokenUtil tokenUtil;
+  ErrorUtil errUtil;
 
   void setAnnotations(std::vector<spAnnotation> &annotations);
   void setClassOrInterfaceDeclaration(spClassOrInterfaceDeclaration &decl);
@@ -23,6 +26,10 @@ class Output {
   void setPackageDeclaration(spPackageDeclaration &pkgDecl);
   void setQualifiedId(int ini, int end);
   void setTypeDeclarations(std::vector<spTypeDeclaration> &typeDecls);
+  void setErrors(std::vector<spError> &errors);
+
+  // Helper methods
+  const std::string itos(int i);
 
 public:
   std::string output;

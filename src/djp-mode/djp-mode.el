@@ -12,6 +12,15 @@
 (defvar djp-face-qualified-id 'nil)
 (defvar djp-face-keyword 'font-lock-keyword-face)
 
+(defface djp-error-face
+  `((((class color) (background light))
+     (:underline  "orange"))
+    (((class color) (background dark))
+     (:underline "orange"))
+    (t (:underline t)))
+  "Face for Java errors."
+  :group 'djp-mode)
+
 ;; timer
 (defvar djp-mode-parser-timer nil)
 
@@ -138,6 +147,18 @@ The output of the compiler is used to build djp-parse-tree."
 (defun djp-node-keyword (ini end)
   (if djp-face-keyword
       (put-text-property ini end 'face djp-face-keyword)))
+
+(defun djp-error (ini end msg)
+  (let ((ovl (make-overlay ini end)))
+    (overlay-put ovl 'face 'djp-error-face)
+    (put-text-property ini end 'help-echo msg)
+    (put-text-property ini end 'point-entered #'djp-echo-error)))
+
+(defun djp-echo-error (old-point new-point)
+  "Called by point-motion hooks."
+  (let ((msg (get-text-property new-point 'help-echo)))
+    (if msg
+        (message msg))))
 
 ;; Stolen from js2-mode where you can read:
 ;; `Stolen shamelessly from James Clark's nxml-mode.'

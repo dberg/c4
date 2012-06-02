@@ -53,6 +53,11 @@ void Parser::restoreState(State &state) {
   curTokenStr = state.tokenStr;
 }
 
+void Parser::addError(int ini, int end, int err) {
+  spError error = spError(new Error(ini, end, err));
+  compilationUnit->errors.push_back(error);
+}
+
 /// Return the next char in the buffer or '\0' if we hit the end of the buffer.
 const char Parser::getChar() {
   if (cursor > buffer.length()) {
@@ -105,7 +110,7 @@ int Parser::getToken() {
   return c;
 }
 
-/// Return TOK_ANNOTATION | TOK_ANNOTATION_TYPE_DECLARATION | TOK_ERROR.
+/// Return TOK_ANNOTATION | TOK_ANNOTATION_TYPE_DECLARATION
 int Parser::getAnnotationToken() {
   // We look ahead for the keyword 'interface' and if it's a match we
   // have an annotation type declaration, otherwise it's an annotation.
@@ -120,9 +125,11 @@ int Parser::getAnnotationToken() {
     c = getChar();
   }
 
-  // We hit the end of the buffer.
+  // We hit the end of the buffer. At this point we know it's an error but we
+  // return TOK_ANNOTATION so the parser can handle this error.
   if (!c) {
-    return TOK_ERROR;
+    ungetChar(lookahead);
+    return TOK_ANNOTATION;
   }
 
   bool isNextTokenInterface = lookaheadInterface(cursor - 1);
@@ -170,6 +177,7 @@ spAnnotation Parser::parseAnnotation() {
   // We're now parsing QualifiedIdentifier
   if (curToken != TOK_IDENTIFIER) {
     annotation->err = true;
+    addError(annotation->posTokAt, annotation->posTokAt + 1, ERR_EXP_QID);
     return annotation;
   }
 
@@ -178,6 +186,7 @@ spAnnotation Parser::parseAnnotation() {
   // If the current token is '(' we consume the token and expect
   // an optional AnnotaionElement followed by ')'
   if ('(' == curToken) {
+    int openParenPos = cursor - 1;
     getNextToken(); // consume ')'
 
     // Empty annotation element
@@ -185,6 +194,7 @@ spAnnotation Parser::parseAnnotation() {
       spAnnotationElement annotationElem = parseAnnotationElement();
       if (annotationElem->err) {
         annotation->err = true;
+	addError(annotation->posTokAt, openParenPos, ERR_NVAL_ANNOT_ELEM);
         return annotation;
       }
 
@@ -193,6 +203,7 @@ spAnnotation Parser::parseAnnotation() {
 
     if (')' != curToken) {
       annotation->err = true;
+      addError(annotation->posTokAt, openParenPos, ERR_EXP_CLOSE_PAREN);
       return annotation;
     }
 
