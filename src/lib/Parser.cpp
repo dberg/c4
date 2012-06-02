@@ -32,7 +32,10 @@ bool Parser::isValidInitTokenOfTypeDeclaration(int token) {
     return true;
   }
 
-  if (TOK_ANNOTATION == curToken || TOK_KEY_CLASS == curToken || TOK_KEY_INTERFACE == curToken) {
+  if (TOK_ANNOTATION == curToken
+    || TOK_KEY_CLASS == curToken
+    || TOK_KEY_INTERFACE == curToken) {
+
     return true;
   }
 
@@ -367,7 +370,8 @@ std::vector<spTypeDeclaration> Parser::parseTypeDeclarations(
     modifier->annotations = annotations;
 
     spTypeDeclaration typeDecl = spTypeDeclaration(new TypeDeclaration());
-    typeDecl->decl = spClassOrInterfaceDeclaration(new ClassOrInterfaceDeclaration());
+    typeDecl->decl = spClassOrInterfaceDeclaration(
+      new ClassOrInterfaceDeclaration());
     typeDecl->decl->modifier = modifier;
 
     parseClassOrInterfaceDeclaration(typeDecl->decl);
@@ -376,15 +380,18 @@ std::vector<spTypeDeclaration> Parser::parseTypeDeclarations(
 
   while (isValidInitTokenOfTypeDeclaration(curToken)) {
     spTypeDeclaration typeDecl = spTypeDeclaration(new TypeDeclaration());
-    typeDecl->decl = spClassOrInterfaceDeclaration(new ClassOrInterfaceDeclaration());
+    typeDecl->decl = spClassOrInterfaceDeclaration(
+      new ClassOrInterfaceDeclaration());
     parseClassOrInterfaceDeclaration(typeDecl->decl);
   }
 
   return typeDecls;
 }
 
-/// ClassOrInterfaceDeclaration: {Modifier} (ClassDeclaration | InterfaceDeclaration)
-void Parser::parseClassOrInterfaceDeclaration(spClassOrInterfaceDeclaration& decl) {
+/// ClassOrInterfaceDeclaration:
+///   {Modifier} (ClassDeclaration | InterfaceDeclaration)
+void Parser::parseClassOrInterfaceDeclaration(
+  spClassOrInterfaceDeclaration& decl) {
 
   // Modifier
   if (!decl->modifier) {
@@ -417,8 +424,8 @@ void Parser::parseModifier(spModifier &modifier) {
 
   // Tokens
   while (isClassModifierToken(curToken)) {
-    spTokenExp token = spTokenExp(
-      new TokenExp(cursor - tokenUtil.getTokenLength(TOK_KEY_PUBLIC), curToken));
+    spTokenExp token = spTokenExp(new TokenExp(
+      cursor - tokenUtil.getTokenLength(TOK_KEY_PUBLIC), curToken));
     modifier->tokens.push_back(token);
     getNextToken();
   }
