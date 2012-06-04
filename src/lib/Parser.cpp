@@ -383,6 +383,7 @@ std::vector<spTypeDeclaration> Parser::parseTypeDeclarations(
     typeDecl->decl = spClassOrInterfaceDeclaration(
       new ClassOrInterfaceDeclaration());
     parseClassOrInterfaceDeclaration(typeDecl->decl);
+    typeDecls.push_back(typeDecl);
   }
 
   return typeDecls;
@@ -400,10 +401,9 @@ void Parser::parseClassOrInterfaceDeclaration(
 
   parseModifier(decl->modifier);
 
-  // TODO:
-  if (TOK_KEY_CLASS == curToken) {
-    //spClassOrInterfaceDeclaration(new ClassOrInterfaceDeclaration());
-    getNextToken();
+  if (TOK_KEY_CLASS == curToken || TOK_KEY_ENUM == curToken) {
+    decl->classDecl = spClassDeclaration(new ClassDeclaration());
+    parseClassDeclaration(decl->classDecl);
     return;
   }
 
@@ -429,6 +429,67 @@ void Parser::parseModifier(spModifier &modifier) {
     modifier->tokens.push_back(token);
     getNextToken();
   }
+}
+
+/// ClassDeclaration: NormalClassDeclaration | EnumDeclaration
+void Parser::parseClassDeclaration(spClassDeclaration &classDecl) {
+  if (TOK_KEY_CLASS == curToken) {
+    classDecl->nClassDecl = spNormalClassDeclaration(
+      new NormalClassDeclaration());
+    parseNormalClassDeclaration(classDecl->nClassDecl);
+    return;
+  }
+
+  // TODO:
+  if (TOK_KEY_ENUM == curToken) {
+    getNextToken();
+    return;
+  }
+
+  // TODO: handle error
+  getNextToken();
+}
+
+/// NormalClassDeclaration:
+///   class Identifier [TypeParameters] [extends Type] [implements TypeList]
+///     ClassBody
+void Parser::parseNormalClassDeclaration(spNormalClassDeclaration &nClassDecl) {
+  // TODO: handle error
+  if (TOK_KEY_CLASS != curToken) {
+    return;
+  }
+
+  nClassDecl->classTok = spTokenExp(new TokenExp(
+    cursor - tokenUtil.getTokenLength(TOK_KEY_CLASS), curToken));
+  getNextToken(); // consume 'class'
+
+  // TODO: handle error
+  // Identifier
+  if (TOK_IDENTIFIER != curToken) {
+    return;
+  }
+
+  nClassDecl->identifier = spIdentifier(new Identifier(
+    cursor - curTokenStr.length(), curTokenStr));
+  getNextToken(); // consume Identifier
+
+  // TODO: [TypeParameters]
+  // TODO: [extends Type]
+  // TODO: [implements TypeList]
+
+  // TODO: handle error
+  if (TOK_LCURLY_BRACKET != curToken) {
+    return;
+  }
+  getNextToken(); // consume '{'
+
+  // TODO: ClassBody
+  getNextToken();
+
+  if (TOK_RCURLY_BRACKET != curToken) {
+    return;
+  }
+  getNextToken(); // consume '}'
 }
 
 /// CompilationUnit: Top level parsing.

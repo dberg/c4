@@ -84,7 +84,7 @@ TEST(Parser, ImportDeclarations) {
 
 TEST(Parser, ClassDeclaration) {
   std::string filename = "Test.java";
-  std::string buffer = "@myinterface\npublic class A { }";
+  std::string buffer = "@myinterface\npublic class Abc { }";
   Parser parser(filename, buffer);
   parser.parse();
   ASSERT_EQ(1, parser.compilationUnit->typeDecls.size());
@@ -96,6 +96,14 @@ TEST(Parser, ClassDeclaration) {
     ->modifier->tokens[0]->pos);
   ASSERT_EQ(TOK_KEY_PUBLIC, parser.compilationUnit->typeDecls[0]->decl
     ->modifier->tokens[0]->type);
+  ASSERT_EQ(TOK_KEY_CLASS, parser.compilationUnit->typeDecls[0]->decl
+    ->classDecl->nClassDecl->classTok->type);
+  ASSERT_EQ(20, parser.compilationUnit->typeDecls[0]->decl
+    ->classDecl->nClassDecl->classTok->pos);
+  ASSERT_EQ(26, parser.compilationUnit->typeDecls[0]->decl
+    ->classDecl->nClassDecl->identifier->pos);
+  ASSERT_EQ("Abc", parser.compilationUnit->typeDecls[0]->decl
+    ->classDecl->nClassDecl->identifier->value);
 }
 
 TEST(Parser, Errors) {

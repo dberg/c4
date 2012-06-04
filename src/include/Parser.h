@@ -64,6 +64,9 @@ class Parser {
 
   void parseModifier(spModifier &modifier);
 
+  void parseClassDeclaration(spClassDeclaration &classDecl);
+  void parseNormalClassDeclaration(spNormalClassDeclaration &nClassDecl);
+
   spQualifiedIdentifier parseQualifiedIdentifier();
 
 public:

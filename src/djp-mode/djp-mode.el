@@ -10,6 +10,7 @@
 ;; Font faces
 (defvar djp-face-annotation-tok-at 'nil)
 (defvar djp-face-qualified-id 'nil)
+(defvar djp-face-identifier 'font-lock-function-name-face)
 (defvar djp-face-keyword 'font-lock-keyword-face)
 
 (defface djp-error-face
@@ -131,9 +132,11 @@ The output of the compiler is used to build djp-parse-tree."
   (loop for node in djp-parse-tree do (eval node)))
 
 ;;; Ignored
-(defun djp-package-declaration (&rest ignore-completely) nil)
-(defun djp-import-declarations (&rest ignore-completely) nil)
-(defun djp-import-declaration (&rest ignore-completely) nil)
+(defun djp-package-declaration (&rest ignore) nil)
+(defun djp-import-declarations (&rest ignore) nil)
+(defun djp-import-declaration (&rest ignore) nil)
+(defun djp-class-or-interface-declaration (&rest ignore) nil)
+(defun djp-normal-class-declaration (&rest ignore) nil)
 
 (defun djp-node-annotation (pos-tok-at err &optional ignore)
   (if djp-face-annotation-tok-at
@@ -147,6 +150,10 @@ The output of the compiler is used to build djp-parse-tree."
 (defun djp-node-keyword (ini end)
   (if djp-face-keyword
       (put-text-property ini end 'face djp-face-keyword)))
+
+(defun djp-node-identifier (ini end)
+  (if djp-face-identifier
+      (put-text-property ini end 'face djp-face-identifier)))
 
 (defun djp-error (ini end msg)
   (let ((ovl (make-overlay ini end)))

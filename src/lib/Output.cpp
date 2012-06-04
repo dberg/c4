@@ -80,9 +80,22 @@ void Output::setTypeDeclarations(std::vector<spTypeDeclaration> &typeDecls) {
 void Output::setClassOrInterfaceDeclaration(
   spClassOrInterfaceDeclaration &decl) {
 
+  output += "(djp-class-or-interface-declaration ";
+
   if (decl->modifier) {
     setModifier(decl->modifier);
   }
+
+  if (decl->classDecl) {
+    if (decl->classDecl->nClassDecl) {
+      setNormalClassDeclaration(decl->classDecl->nClassDecl);
+    } else if (decl->classDecl->enumDecl) {
+      // TODO:
+      //setEnumDeclaration(decl->classDecl->enumDecl);
+    }
+  }
+
+  output += ")";
 }
 
 void Output::setModifier(spModifier &modifier) {
@@ -95,9 +108,29 @@ void Output::setModifier(spModifier &modifier) {
   }
 }
 
+void Output::setNormalClassDeclaration(spNormalClassDeclaration &nClassDecl) {
+  output += "(djp-normal-class-declaration ";
+
+  if (nClassDecl->classTok) {
+    setKeyword(nClassDecl->classTok);
+  }
+
+  if (nClassDecl->identifier) {
+    setIdentifier(nClassDecl->identifier);
+  }
+
+  output += ")";
+}
+
 void Output::setKeyword(spTokenExp &token) {
   setKeyword(token->pos + 1, token->pos + 1
     + tokenUtil.getTokenLength(token->type));
+}
+
+void Output::setIdentifier(spIdentifier &identifier) {
+  int ini = identifier->pos + 1;
+  int end = ini + identifier->value.length();
+  output += "(djp-node-identifier " + itos(ini) + " " + itos(end) + ")";
 }
 
 void Output::setKeyword(int ini, int end) {

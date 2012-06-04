@@ -18,15 +18,17 @@ class Output {
 
   void setAnnotations(std::vector<spAnnotation> &annotations);
   void setClassOrInterfaceDeclaration(spClassOrInterfaceDeclaration &decl);
+  void setErrors(std::vector<spError> &errors);
+  void setIdentifier(spIdentifier &identifier);
   void setImportDeclarations(spImportDeclarations &impDecls);
   void setImportDeclaration(spImportDeclaration &import);
   void setKeyword(int ini, int end);
   void setKeyword(spTokenExp &token);
   void setModifier(spModifier &modifier);
+  void setNormalClassDeclaration(spNormalClassDeclaration &nClassDecl);
   void setPackageDeclaration(spPackageDeclaration &pkgDecl);
   void setQualifiedId(int ini, int end);
   void setTypeDeclarations(std::vector<spTypeDeclaration> &typeDecls);
-  void setErrors(std::vector<spError> &errors);
 
   // Helper methods
   const std::string itos(int i);

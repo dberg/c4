@@ -31,6 +31,12 @@ typedef boost::shared_ptr<struct TypeDeclaration> spTypeDeclaration;
 typedef boost::shared_ptr<struct ClassOrInterfaceDeclaration>
   spClassOrInterfaceDeclaration;
 typedef boost::shared_ptr<struct ClassDeclaration> spClassDeclaration;
+typedef boost::shared_ptr<struct NormalClassDeclaration>
+  spNormalClassDeclaration;
+typedef boost::shared_ptr<struct ClassBody> spClassBody;
+typedef boost::shared_ptr<struct ClassBodyDeclaration> spClassBodyDeclaration;
+typedef boost::shared_ptr<struct EnumDeclaration>
+  spEnumDeclaration;
 typedef boost::shared_ptr<struct InterfaceDeclaration> spInterfaceDeclaration;
 typedef boost::shared_ptr<struct Modifier> spModifier;
 typedef boost::shared_ptr<struct TokenExp> spTokenExp;
@@ -65,7 +71,8 @@ struct TypeDeclaration {
   spClassOrInterfaceDeclaration decl;
 };
 
-/// ClassOrInterfaceDeclaration: {Modifier} (ClassDeclaration | InterfaceDeclaration)
+/// ClassOrInterfaceDeclaration:
+///   {Modifier} (ClassDeclaration | InterfaceDeclaration)
 struct ClassOrInterfaceDeclaration {
   spModifier modifier;
   spClassDeclaration classDecl;
@@ -97,11 +104,40 @@ struct Modifier {
   std::vector<spTokenExp> tokens;
 };
 
-/// ClassDeclaration:
-///   NormalClassDeclaration
-///   EnumDeclaration
-// TODO:
+/// ClassDeclaration: NormalClassDeclaration | EnumDeclaration
 struct ClassDeclaration {
+  spNormalClassDeclaration nClassDecl;
+  spEnumDeclaration enumDecl;
+};
+
+/// NormalClassDeclaration:
+///   class Identifier [TypeParameters] [extends Type] [implements TypeList]
+///     ClassBody
+/// Detailed reference:
+/// ClassModifiers(opt) class Identifier TypeParameters(opt)
+/// Super(opt) Interfaces(opt) ClassBody
+struct NormalClassDeclaration {
+  spTokenExp classTok;
+  spIdentifier identifier;
+  //std::vector<spTypeParameters>
+  //spTokenExp extends;
+  //spType
+  //spTokenExp implements
+  //spTypeList
+  spClassBody classBody;
+};
+
+struct ClassBody {
+  std::vector<spClassBodyDeclaration> decls;
+};
+
+/// TODO:
+struct ClassBodyDeclaration {
+
+};
+
+/// TODO:
+struct EnumDeclaration {
 
 };
 

@@ -49,3 +49,20 @@ TEST(EmacsOutput, ImportDeclaration) {
     "(djp-node-qualified-id 90 101))))";
   ASSERT_EQ(expected, output.output);
 }
+
+TEST(EmacsOutput, NormalClassDeclaration) {
+  std::string filename = "Test.java";
+  std::string buffer =
+    "public class Test {}\n";
+  Parser parser(filename, buffer);
+  parser.parse();
+  Output output(parser.compilationUnit);
+  output.build();
+  std::string expected =
+    "((djp-class-or-interface-declaration "
+    "(djp-node-keyword 1 7)"
+    "(djp-normal-class-declaration "
+    "(djp-node-keyword 8 13)"
+    "(djp-node-identifier 14 18))))";
+  ASSERT_EQ(expected, output.output);
+}
