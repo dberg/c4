@@ -22,7 +22,7 @@ void Output::build() {
   output += ")";
 }
 
-void Output::setPackageDeclaration(spPackageDeclaration &pkgDecl) {
+void Output::setPackageDeclaration(const spPackageDeclaration &pkgDecl) {
   output += "(djp-package-declaration ";
   setAnnotations(pkgDecl->annotations);
 
@@ -39,7 +39,7 @@ void Output::setPackageDeclaration(spPackageDeclaration &pkgDecl) {
   output += ")";
 }
 
-void Output::setImportDeclarations(spImportDeclarations &impDecls) {
+void Output::setImportDeclarations(const spImportDeclarations &impDecls) {
   output += "(djp-import-declarations ";
   for (std::string::size_type i = 0; i < impDecls->imports.size(); i++) {
     setImportDeclaration(impDecls->imports[i]);
@@ -47,7 +47,7 @@ void Output::setImportDeclarations(spImportDeclarations &impDecls) {
   output += ")";
 }
 
-void Output::setImportDeclaration(spImportDeclaration &import) {
+void Output::setImportDeclaration(const spImportDeclaration &import) {
   output += "(djp-import-declaration ";
   setKeyword(import->posTokImport + 1,
     import->posTokImport + tokenUtil.getTokenLength(TOK_KEY_IMPORT) + 1);
@@ -69,7 +69,9 @@ void Output::setImportDeclaration(spImportDeclaration &import) {
   output += ")";
 }
 
-void Output::setTypeDeclarations(std::vector<spTypeDeclaration> &typeDecls) {
+void Output::setTypeDeclarations(
+  const std::vector<spTypeDeclaration> &typeDecls) {
+
   for (std::size_t i = 0; i < typeDecls.size(); i++) {
     if (typeDecls[i]->decl) {
       setClassOrInterfaceDeclaration(typeDecls[i]->decl);
@@ -78,7 +80,7 @@ void Output::setTypeDeclarations(std::vector<spTypeDeclaration> &typeDecls) {
 }
 
 void Output::setClassOrInterfaceDeclaration(
-  spClassOrInterfaceDeclaration &decl) {
+  const spClassOrInterfaceDeclaration &decl) {
 
   output += "(djp-class-or-interface-declaration ";
 
@@ -98,7 +100,7 @@ void Output::setClassOrInterfaceDeclaration(
   output += ")";
 }
 
-void Output::setModifier(spModifier &modifier) {
+void Output::setModifier(const spModifier &modifier) {
   if (modifier->annotations.size()) {
     setAnnotations(modifier->annotations);
   }
@@ -108,7 +110,9 @@ void Output::setModifier(spModifier &modifier) {
   }
 }
 
-void Output::setNormalClassDeclaration(spNormalClassDeclaration &nClassDecl) {
+void Output::setNormalClassDeclaration(
+  const spNormalClassDeclaration &nClassDecl) {
+
   output += "(djp-normal-class-declaration ";
 
   if (nClassDecl->classTok) {
@@ -122,12 +126,12 @@ void Output::setNormalClassDeclaration(spNormalClassDeclaration &nClassDecl) {
   output += ")";
 }
 
-void Output::setKeyword(spTokenExp &token) {
+void Output::setKeyword(const spTokenExp &token) {
   setKeyword(token->pos + 1, token->pos + 1
     + tokenUtil.getTokenLength(token->type));
 }
 
-void Output::setIdentifier(spIdentifier &identifier) {
+void Output::setIdentifier(const spIdentifier &identifier) {
   int ini = identifier->pos + 1;
   int end = ini + identifier->value.length();
   output += "(djp-node-identifier " + itos(ini) + " " + itos(end) + ")";
@@ -147,7 +151,9 @@ void Output::setQualifiedId(int ini, int end) {
 /// where the annotation ini marks the position of the token '@' and we delimit
 /// qualified-id as one element being the ini the first identifier and the end
 /// the last identifier.
-void Output::setAnnotations(std::vector<spAnnotation> &annotations) {
+void Output::setAnnotations(
+  const std::vector<spAnnotation> &annotations) {
+
   for (std::size_t i = 0; i < annotations.size(); i++) {
     int ini = 0; int end = 0;
     if (annotations[i]->qualifiedId) {
@@ -164,7 +170,7 @@ void Output::setAnnotations(std::vector<spAnnotation> &annotations) {
   }
 }
 
-void Output::setErrors(std::vector<spError> &errors) {
+void Output::setErrors(const std::vector<spError> &errors) {
   for (std::size_t i = 0; i < errors.size(); i++) {
     output += "(djp-error "
       + itos(errors[i]->ini + 1) + " "
