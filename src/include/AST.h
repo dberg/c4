@@ -53,7 +53,7 @@ struct CompilationUnit {
   std::vector<spTypeDeclaration> typeDecls;
   std::vector<spError> errors;
   std::vector<spWarning> warnings;
-  CompilationUnit() : pkgDecl(spPackageDeclaration()) {}
+  CompilationUnit() {}
 };
 
 /// PackageDeclaration: [ [Annotations]  package QualifiedIdentifier ; ]
@@ -62,8 +62,7 @@ struct PackageDeclaration {
   int pkgTokPos;
   spQualifiedIdentifier qualifiedId;
   bool err;
-  PackageDeclaration() : pkgTokPos(-1), qualifiedId(spQualifiedIdentifier()),
-    err(false) {}
+  PackageDeclaration() : pkgTokPos(-1), err(false) {}
 };
 
 /// TypeDeclaration: ClassOrInterfaceDeclaration ;
@@ -164,9 +163,7 @@ struct Annotation {
   bool err;
   spQualifiedIdentifier qualifiedId;
   spAnnotationElement elem;
-  Annotation() : posTokAt(-1), err(false),
-    qualifiedId(spQualifiedIdentifier()),
-    elem(spAnnotationElement()) {}
+  Annotation() : posTokAt(-1), err(false) {}
 };
 
 /// Identifier: IdentifierChars but not Keyword or BooleanLiteral or NullLiteral
@@ -175,16 +172,16 @@ struct Annotation {
 /// JavaLetterOrDigit: any Unicde character that is a Java letter or digit
 struct Identifier {
   int pos;
-  std::string value;
-  Identifier(int _pos, std::string _value) : pos(_pos), value(_value) {}
+  const std::string value;
+  Identifier(int pos, const std::string &value) : pos(pos), value(value) {}
 };
 
 /// QualifiedIdentifier: Identifier { . Identifier }
 struct QualifiedIdentifier {
   std::vector<spIdentifier> identifiers;
   int ini, end;
-  QualifiedIdentifier(std::vector<spIdentifier> _identifiers) {
-    identifiers = _identifiers;
+  QualifiedIdentifier(std::vector<spIdentifier> identifiers)
+    : identifiers(identifiers) {
     ini = (identifiers[0])->pos;
     spIdentifier last = identifiers[identifiers.size() - 1];
     end = last->pos + last->value.length() - 1;
@@ -225,11 +222,9 @@ struct ImportDeclaration {
   spQualifiedIdentifier qualifiedId;
   ImportType type;
 
-  ImportDeclaration() {
-    err = false;
-    posTokImport = posTokStatic = iniOnDemand = endOnDemand = -1;
-    type = SINGLE_TYPE_IMPORT_DECLARATION;
-  }
+  ImportDeclaration()
+    : posTokImport(-1), posTokStatic(-1), iniOnDemand(-1), endOnDemand(-1),
+      err(false), type(SINGLE_TYPE_IMPORT_DECLARATION) {}
 
   // We currently use this for test purposes only
   std::string getImport() {
@@ -247,14 +242,14 @@ struct AnnotationElement {
   bool err;
   std::vector<spElementValuePair> pairs;
   spElementValue value;
-  AnnotationElement() : err(false), value(spElementValue()) {}
+  AnnotationElement() : err(false) {}
 };
 
 /// ElementValuePair: Identifier = ElementValue
 struct ElementValuePair {
   spIdentifier id;
   spElementValue value;
-  ElementValuePair(): id(spIdentifier()), value(spElementValue()) {}
+  ElementValuePair() {}
 };
 
 /// TODO: Enable the commented structures as union
@@ -262,7 +257,7 @@ struct ElementValue {
   //Annotation annotation;
   spExpression1 expr1;
   //ElementValueArrayInitializer elemValArrayInit;
-  ElementValue() : expr1(spExpression1()) {}
+  ElementValue() {}
 };
 
 /// Expression1: Expression2 [Expression1Rest]
@@ -270,7 +265,7 @@ struct ElementValue {
 struct Expression1 {
   spExpression2 expr2;
   // [ Expression1Rest ]
-  Expression1() : expr2(spExpression2()) {}
+  Expression1() {}
 };
 
 /// Expression2: Expression3 [ Expression2Rest ]
@@ -278,7 +273,7 @@ struct Expression1 {
 struct Expression2 {
   spExpression3 expr3;
   // [ Expression2Rest ]
-  Expression2() : expr3(spExpression3()) {}
+  Expression2() {}
 };
 
 /// Expression3:
@@ -288,7 +283,7 @@ struct Expression2 {
 /// TODO: deal with 1st and 3rd case using union
 struct Expression3 {
   spPrimary primary; // TODO: { Selector } { PostfixOp }
-  Expression3() : primary(spPrimary()) {}
+  Expression3() {}
 };
 
 /// Primary: 
@@ -305,7 +300,7 @@ struct Expression3 {
 /// TODO: We're only dealing with Literal now
 struct Primary {
   spLiteral literal;
-  Primary() : literal(spLiteral()) {}
+  Primary() {}
 };
 
 /// Literal:
@@ -318,7 +313,7 @@ struct Primary {
 /// TODO: We're only dealing with IntegerLiteral now
 struct Literal {
   spIntegerLiteral intLiteral;
-  Literal() : intLiteral(spIntegerLiteral()) {}
+  Literal() {}
 };
 
 /// IntegerLiteral:
@@ -329,7 +324,7 @@ struct Literal {
 /// TODO: We're only dealing with DecimalIntegerLiteral now
 struct IntegerLiteral {
   spDecimalIntegerLiteral decIntLiteral;
-  IntegerLiteral() : decIntLiteral(spDecimalIntegerLiteral()) {}
+  IntegerLiteral() {}
 };
 
 /// DecimalIntegerLiteral: DecimalNumeral [IntegerTypeSuffix]
@@ -337,7 +332,7 @@ struct IntegerLiteral {
 struct DecimalIntegerLiteral {
   spDecimalNumeral decNumeral;
   //IntegerTypeSuffix suffix;
-  DecimalIntegerLiteral() : decNumeral(spDecimalNumeral()) {}
+  DecimalIntegerLiteral() {}
 };
 
 /// DecimalNumeral:
