@@ -45,7 +45,6 @@ gtest_inc = $(gtest_dir)/include
 
 test_libdir = tests/lib
 
-
 .PHONY: all
 all: directories $(bin)/djp $(bin)/tests
 
@@ -62,11 +61,13 @@ $(bin)/djp: $(obj)/CmdInput.o \
             $(obj)/File.o \
             $(obj)/Parser.o \
             $(obj)/Output.o \
+            $(obj)/SymbolTable.o \
             $(obj)/djp.o
 	$(CXX) $(obj)/CmdInput.o \
                $(obj)/File.o \
                $(obj)/Parser.o \
                $(obj)/Output.o \
+               $(obj)/SymbolTable.o \
                $(CFLAGS) $(INC) $(obj)/djp.o -o $@
 
 # modules
@@ -90,6 +91,10 @@ $(obj)/Output.o: $(libdir)/Output.cpp \
                  $(incdir)/Token.h
 	$(CXX) $(CFLAGS) $(INC) -c $< -o $@
 
+$(obj)/SymbolTable.o: $(libdir)/SymbolTable.cpp \
+                 $(incdir)/SymbolTable.h
+	$(CXX) $(CFLAGS) $(INC) -c $< -o $@
+
 $(obj)/djp.o: $(libdir)/djp.cpp
 	$(CXX) $(CFLAGS) $(INC) -c $< -o $@
 
@@ -98,10 +103,12 @@ $(bin)/tests: $(test_libdir)/ParserTest.cpp \
               $(test_libdir)/EmacsOutputTest.cpp \
               $(obj)/Parser.o \
               $(obj)/Output.o \
+              $(obj)/SymbolTable.o \
               $(gtest_obj)/libgtest.a
 
 	$(CXX) $(INC) -I$(gtest_inc) $(obj)/Parser.o \
                                      $(obj)/Output.o \
+                                     $(obj)/SymbolTable.o \
                                      $(test_libdir)/ParserTest.cpp \
                                      $(test_libdir)/EmacsOutputTest.cpp \
                                      -o $@ \

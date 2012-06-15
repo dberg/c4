@@ -1,6 +1,7 @@
 #include <iostream>
 #include "Output.h"
 #include "Parser.h"
+#include "SymbolTable.h"
 #include "gtest/gtest.h"
 using namespace djp;
 
@@ -87,6 +88,7 @@ TEST(Parser, ClassDeclaration) {
   std::string buffer = "@myinterface\npublic class Abc { }";
   Parser parser(filename, buffer);
   parser.parse();
+
   ASSERT_EQ(1, parser.compilationUnit->typeDecls.size());
   ASSERT_EQ(1, parser.compilationUnit->typeDecls[0]->decl
     ->modifier->annotations.size());
@@ -104,6 +106,27 @@ TEST(Parser, ClassDeclaration) {
     ->classDecl->nClassDecl->identifier->pos);
   ASSERT_EQ("Abc", parser.compilationUnit->typeDecls[0]->decl
     ->classDecl->nClassDecl->identifier->value);
+
+  ASSERT_EQ(2, parser.st.symbols.size());
+  spSymbol sym = parser.st.scopePeek();
+  ASSERT_EQ(ST_CLASS, sym->type);
+  ASSERT_EQ(0, sym->scope);
+}
+
+TEST(Parser, ClassConstructor) {
+  std::string filename = "Test.java";
+  std::string buffer = "class Abc { Abc() {} }";
+  Parser parser(filename, buffer);
+  parser.parse();
+
+  spClassBodyDeclaration classBodyDecl = parser.compilationUnit->typeDecls[0]
+    ->decl->classDecl->nClassDecl->classBody->decls[0];
+  ASSERT_EQ(ClassBodyDeclaration::OPT_MODIFIER_MEMBER_DECL,
+    classBodyDecl->opt);
+  ASSERT_EQ(MemberDecl::OPT_IDENTIFIER_CONSTRUCTOR_DECLARATOR_REST,
+    classBodyDecl->memberDecl->opt);
+  ASSERT_EQ(12, classBodyDecl->memberDecl->identifier->pos);
+  ASSERT_EQ("Abc", classBodyDecl->memberDecl->identifier->value);
 }
 
 TEST(Parser, Errors) {

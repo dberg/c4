@@ -137,6 +137,8 @@ The output of the compiler is used to build djp-parse-tree."
 (defun djp-import-declaration (&rest ignore) nil)
 (defun djp-class-or-interface-declaration (&rest ignore) nil)
 (defun djp-normal-class-declaration (&rest ignore) nil)
+(defun djp-member-decl-1 (&rest ignore) nil)
+(defun djp-member-decl-2 (&rest ignore) nil)
 
 (defun djp-node-annotation (pos-tok-at err &optional ignore)
   (if djp-face-annotation-tok-at

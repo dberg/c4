@@ -1,6 +1,13 @@
-- [ ] Start symbol table and helper mapper for elisp (pos -> symbol table)
+- [ ] Export Symbol table and helper mapper to elisp (pos -> symbol table)
 - [ ] Parse TokenIdentifier BooleanLiteral and NullLiteral
 - [ ] Parse Annotation value pairs
+- [ ] Parse ClassBodyDeclaration
+- [ ] Parse MemberDecl
+- [ ] Parse EnumDeclaration
+- [ ] Parse InterfaceDeclaration
+- [ ] Improve AST structures with Unions
+- [X] Start parsing Constructor
+- [X] Start symbol table and helper
 - [X] Handle errors on emacs mode. Underline and error message.
 - [X] Start emacs output of TypeDeclarations
 - [X] Handle multiple TypeDeclarations

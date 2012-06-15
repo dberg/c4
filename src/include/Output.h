@@ -17,14 +17,19 @@ class Output {
   ErrorUtil errUtil;
 
   void setAnnotations(const std::vector<spAnnotation> &annotations);
+  void setClassBody(const spClassBody &classBody);
+  void setClassBodyDeclaration(const spClassBodyDeclaration &decl);
   void setClassOrInterfaceDeclaration(
     const spClassOrInterfaceDeclaration &decl);
+  void setConstructorDeclaratorRest(
+    const spConstructorDeclaratorRest &constDeclRest);
   void setErrors(const std::vector<spError> &errors);
   void setIdentifier(const spIdentifier &identifier);
   void setImportDeclarations(const spImportDeclarations &impDecls);
   void setImportDeclaration(const spImportDeclaration &import);
   void setKeyword(int ini, int end);
   void setKeyword(const spTokenExp &token);
+  void setMemberDecl(const spMemberDecl &memberDecl);
   void setModifier(const spModifier &modifier);
   void setNormalClassDeclaration(const spNormalClassDeclaration &nClassDecl);
   void setPackageDeclaration(const spPackageDeclaration &pkgDecl);

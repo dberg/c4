@@ -35,9 +35,14 @@ typedef boost::shared_ptr<struct NormalClassDeclaration>
   spNormalClassDeclaration;
 typedef boost::shared_ptr<struct ClassBody> spClassBody;
 typedef boost::shared_ptr<struct ClassBodyDeclaration> spClassBodyDeclaration;
+typedef boost::shared_ptr<struct ConstructorDeclaratorRest> spConstructorDeclaratorRest;
+typedef boost::shared_ptr<struct FormalParameterDecl> spFormalParameterDecl;
+typedef boost::shared_ptr<struct Block> spBlock;
+typedef boost::shared_ptr<struct BlockStatement> spBlockStatement;
 typedef boost::shared_ptr<struct EnumDeclaration>
   spEnumDeclaration;
 typedef boost::shared_ptr<struct InterfaceDeclaration> spInterfaceDeclaration;
+typedef boost::shared_ptr<struct MemberDecl> spMemberDecl;
 typedef boost::shared_ptr<struct Modifier> spModifier;
 typedef boost::shared_ptr<struct TokenExp> spTokenExp;
 typedef boost::shared_ptr<struct Error> spError;
@@ -114,7 +119,7 @@ struct ClassDeclaration {
 ///     ClassBody
 /// Detailed reference:
 /// ClassModifiers(opt) class Identifier TypeParameters(opt)
-/// Super(opt) Interfaces(opt) ClassBody
+///                           Super(opt) Interfaces(opt) ClassBody
 struct NormalClassDeclaration {
   spTokenExp classTok;
   spIdentifier identifier;
@@ -126,12 +131,110 @@ struct NormalClassDeclaration {
   spClassBody classBody;
 };
 
+/// ClassBody: '{' {ClassBodyDeclaration} '}'
 struct ClassBody {
   std::vector<spClassBodyDeclaration> decls;
 };
 
-/// TODO:
+/// ClassBodyDeclaration:
+///   ;
+///   {Modifier} MemberDecl
+///   [static] Block
+/// Our Modifier structure defines an array of annotation and tokens so we treat
+/// {Modifier} as spModifier.
+///
+/// For further reference.
+/// ClassBodyDeclaration:
+///   ClassMemberDeclaration
+///   InstanceInitializer
+///   StaticInitializer
+///   ConstructorDeclaration
 struct ClassBodyDeclaration {
+  enum ClassBodyDeclarationOpt {
+    OPT_UNDEFINED,
+    OPT_MODIFIER_MEMBER_DECL,  // { Modifier } MemberDecl
+    OPT_STATIC_BLOCK,          // [static] Block
+  };
+
+  ClassBodyDeclarationOpt opt;
+
+  spModifier modifier;
+  spMemberDecl memberDecl;
+
+  // TODO:
+  //spTokenExp staticToken;
+  //spBlock block;
+
+  ClassBodyDeclaration() : opt(OPT_UNDEFINED) {}
+};
+
+/// MemberDecl:
+///   MethodOrFieldDecl
+///   void Identifier VoidMethodDeclaratorRest
+///   Identifier ConstructorDeclaratorRest
+///   GenericMethodOrConstructorDecl
+///   ClassDeclaration
+///   InterfaceDeclaration
+struct MemberDecl {
+  enum MemberDeclOpt {
+    OPT_UNDEFINED,
+    OPT_METHOD_OR_FIELD_DECL,
+    OPT_VOID_IDENTIFIER_VOID_METHOD_DECLARATOR_REST,
+    OPT_IDENTIFIER_CONSTRUCTOR_DECLARATOR_REST,
+    OPT_GENERIC_METHOD_OR_CONSTRUCTOR_DECL,
+    OPT_CLASS_DECLARATION,
+    OPT_INTERFACE_DECLARATION,
+  };
+
+  MemberDeclOpt opt;
+
+  // TODO:
+  // MethodOrFieldDecl
+
+  // TODO:
+  // void Identifier VoidMethodDeclaratorRest
+
+  // Identifier ConstructorDeclaratorRest
+  spIdentifier identifier;
+  spConstructorDeclaratorRest constDeclRest;
+
+  // TODO:
+  // GenericMethodOrConstructorDecl
+
+  // TODO:
+  // ClassDeclaration
+
+  // TODO:
+  // InterfaceDeclaration
+
+  MemberDecl() : opt(OPT_UNDEFINED) {}
+};
+
+/// MethodOrFieldDecl: Type Identifier MethodOrFieldRest
+
+/// ConstructorDeclaratorRest:
+///   FormalParameters [throws QualifiedIdentifierList] Block
+struct ConstructorDeclaratorRest {
+  std::vector<spFormalParameterDecl> formParamDecls;
+  // spIdentifier throws;
+  // spQualifiedIdentifierList
+  spBlock block;
+};
+
+/// FormalParameters: ( [FormalParameterDecls] )
+struct FormalParameterDecl {
+
+};
+
+/// FormalParameterDecls: {VariableModifier} Type FormalParameterDeclsRest
+
+/// Block: { BlockStatements }
+struct Block {
+  std::vector<spBlockStatement> blockStmts;
+};
+
+/// TODO:
+struct BlockStatement {
 
 };
 

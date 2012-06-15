@@ -22,6 +22,41 @@ void Output::build() {
   output += ")";
 }
 
+void Output::setClassBody(const spClassBody &classBody) {
+  for (std::size_t i = 0; i < classBody->decls.size(); i++) {
+    setClassBodyDeclaration(classBody->decls[i]);
+  }
+}
+
+/// We have 2 options export:
+///   (djp-member-decl-1 ...) -> {Modifier} MemberDecl
+///   (djp-member-decl-2 ...) -> [static] Block
+void Output::setClassBodyDeclaration(const spClassBodyDeclaration &decl) {
+  if (decl->opt == 1) {
+    output += "(djp-member-decl-1 ";
+    if (decl->modifier) {
+      setModifier(decl->modifier);
+    }
+
+    if (decl->memberDecl) {
+      setMemberDecl(decl->memberDecl);
+    }
+
+    output += ")";
+    return;
+  }
+
+  // TODO:
+  if (decl->opt == 2) {
+    return;
+  }
+}
+
+void Output::setConstructorDeclaratorRest(
+  const spConstructorDeclaratorRest &constDeclRest) {
+  // TODO:
+}
+
 void Output::setPackageDeclaration(const spPackageDeclaration &pkgDecl) {
   output += "(djp-package-declaration ";
   setAnnotations(pkgDecl->annotations);
@@ -100,6 +135,44 @@ void Output::setClassOrInterfaceDeclaration(
   output += ")";
 }
 
+void Output::setMemberDecl(const spMemberDecl &memberDecl) {
+  // TODO:
+  if (memberDecl->opt == 1) {
+    return;
+  }
+
+  // TODO:
+  if (memberDecl->opt == 2) {
+    return;
+  }
+
+  if (memberDecl->opt == 3) {
+    if (memberDecl->identifier) {
+      setIdentifier(memberDecl->identifier);
+    }
+
+    if (memberDecl->constDeclRest) {
+      setConstructorDeclaratorRest(memberDecl->constDeclRest);
+    }
+    return;
+  }
+
+  // TODO:
+  if (memberDecl->opt == 4) {
+    return;
+  }
+
+  // TODO:
+  if (memberDecl->opt == 5) {
+    return;
+  }
+
+  // TODO:
+  if (memberDecl->opt == 6) {
+    return;
+  }
+}
+
 void Output::setModifier(const spModifier &modifier) {
   if (modifier->annotations.size()) {
     setAnnotations(modifier->annotations);
@@ -121,6 +194,10 @@ void Output::setNormalClassDeclaration(
 
   if (nClassDecl->identifier) {
     setIdentifier(nClassDecl->identifier);
+  }
+
+  if (nClassDecl->classBody) {
+    setClassBody(nClassDecl->classBody);
   }
 
   output += ")";

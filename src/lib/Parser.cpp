@@ -5,7 +5,9 @@ namespace djp {
 /// ClassModifier: one of
 ///   Annotation public protected private
 ///   abstract static final strictfp
-bool Parser::isClassModifierToken(int token) {
+/// ConstructorModifier: one of
+///   Annotation public protected private
+bool Parser::isModifierToken(int token) {
   if (TOK_KEY_PUBLIC == token ||
       TOK_KEY_PROTECTED == token ||
       TOK_KEY_PRIVATE == token ||
@@ -13,6 +15,10 @@ bool Parser::isClassModifierToken(int token) {
       TOK_KEY_STATIC == token ||
       TOK_KEY_FINAL == token ||
       TOK_KEY_STRICTFP == token) {
+    return true;
+  }
+
+  if (TOK_ANNOTATION == token) {
     return true;
   }
 
@@ -27,8 +33,35 @@ bool Parser::isJavaLetterOrDigit(char c) {
   return (isJavaLetter(c) || isdigit(c));
 }
 
+bool Parser::isValidInitTokenOfClassBodyDeclaration(int token) {
+  // Prior to a MemberDecl
+  if (isModifierToken(token)) {
+    return true;
+  }
+
+  // MemberDecl
+  // TODO: What else?
+  if (TOK_IDENTIFIER == token) {
+    return true;
+  }
+
+  // Prior to a Block
+  if (TOK_KEY_STATIC == token) {
+    return true;
+  }
+
+  // TODO: Block?
+
+  // A happy and lost semicolon
+  if (TOK_SEMICOLON == token) {
+    return true;
+  }
+
+  return false;
+}
+
 bool Parser::isValidInitTokenOfTypeDeclaration(int token) {
-  if (isClassModifierToken(token)) {
+  if (isModifierToken(token)) {
     return true;
   }
 
@@ -105,6 +138,8 @@ int Parser::getToken() {
   if ('.' == c) return TOK_PERIOD;
   if (';' == c) return TOK_SEMICOLON;
   if ('*' == c) return TOK_ASTERISK;
+  if ('{' == c) return TOK_LCURLY_BRACKET;
+  if ('}' == c) return TOK_RCURLY_BRACKET;
 
   // Identifier
   if (isJavaLetter(c))
@@ -417,15 +452,17 @@ void Parser::parseClassOrInterfaceDeclaration(
 }
 
 void Parser::parseModifier(spModifier &modifier) {
-  // Annotations
-  if (curToken == TOK_ANNOTATION) {
-    parseAnnotations(modifier->annotations);
-  }
 
-  // Tokens
-  while (isClassModifierToken(curToken)) {
+  while (isModifierToken(curToken)) {
+    // Annotations
+    if (curToken == TOK_ANNOTATION) {
+      parseAnnotations(modifier->annotations);
+      continue;
+    }
+
+    // Tokens
     spTokenExp token = spTokenExp(new TokenExp(
-      cursor - tokenUtil.getTokenLength(TOK_KEY_PUBLIC), curToken));
+      cursor - tokenUtil.getTokenLength(curToken), curToken));
     modifier->tokens.push_back(token);
     getNextToken();
   }
@@ -454,7 +491,7 @@ void Parser::parseClassDeclaration(spClassDeclaration &classDecl) {
 ///   class Identifier [TypeParameters] [extends Type] [implements TypeList]
 ///     ClassBody
 void Parser::parseNormalClassDeclaration(spNormalClassDeclaration &nClassDecl) {
-  // TODO: handle error
+  // TODO: Handle error.
   if (TOK_KEY_CLASS != curToken) {
     return;
   }
@@ -469,27 +506,114 @@ void Parser::parseNormalClassDeclaration(spNormalClassDeclaration &nClassDecl) {
     return;
   }
 
-  nClassDecl->identifier = spIdentifier(new Identifier(
-    cursor - curTokenStr.length(), curTokenStr));
+  int pos = cursor - curTokenStr.length();
+  nClassDecl->identifier = spIdentifier(new Identifier(pos, curTokenStr));
+  st.addSym(ST_CLASS, curToken, pos, line, curTokenStr);
   getNextToken(); // consume Identifier
 
   // TODO: [TypeParameters]
   // TODO: [extends Type]
   // TODO: [implements TypeList]
 
+  nClassDecl->classBody = spClassBody(new ClassBody());
+  parseClassBody(nClassDecl->classBody);
+}
+
+/// ClassBody: '{' { ClassBodyDeclaration } '}'
+void Parser::parseClassBody(spClassBody &classBody) {
   // TODO: handle error
   if (TOK_LCURLY_BRACKET != curToken) {
     return;
   }
+
   getNextToken(); // consume '{'
 
-  // TODO: ClassBody
-  getNextToken();
+  // ClassBodyDeclaration
+  while (isValidInitTokenOfClassBodyDeclaration(curToken)) {
+    if (TOK_SEMICOLON == curToken) {
+      getNextToken(); // consume ';'
+      continue;
+    }
+
+    spClassBodyDeclaration decl = spClassBodyDeclaration(
+      new ClassBodyDeclaration());
+    parseClassBodyDeclaration(decl);
+    classBody->decls.push_back(decl);
+  }
 
   if (TOK_RCURLY_BRACKET != curToken) {
     return;
   }
   getNextToken(); // consume '}'
+}
+
+/// ClassBodyDeclaration:
+///   ;
+///   {Modifier} MemberDecl
+///   [static] Block
+void Parser::parseClassBodyDeclaration(spClassBodyDeclaration &decl) {
+  if (isModifierToken(curToken) || TOK_IDENTIFIER == curToken) {
+    decl->opt = ClassBodyDeclaration::OPT_MODIFIER_MEMBER_DECL;
+    parseModifier(decl->modifier);
+    decl->memberDecl = spMemberDecl(new MemberDecl());
+    parseMemberDecl(decl->memberDecl);
+    return;
+  }
+
+  // TODO: [static] Block
+
+  // TODO:
+  getNextToken();
+}
+
+/// MemberDecl:
+///   MethodOrFieldDecl
+///   void Identifier VoidMethodDeclaratorRest
+///   Identifier ConstructorDeclaratorRest
+///   GenericMethodOrConstructorDecl
+///   ClassDeclaration
+///   InterfaceDeclaration
+void Parser::parseMemberDecl(spMemberDecl &memberDecl) {
+  // We have an Identifier but we have to discern between a TypeParameter and a
+  // Constructor Identifier. For example, the identifier we found can represent
+  // the return type of the following method:
+  //     ReturnType method(...) {}
+  //     ----------
+  // Or, our identifier can represent the constructor of the following class:
+  //     class MyClass { MyClass() {...} }
+  //                     ---------
+  // We consult the symbol to check if the Identifier name is the same as the
+  // class name in our current scope.
+  if (TOK_IDENTIFIER == curToken) {
+    if (st.isConstructor(curTokenStr)) {
+      memberDecl->opt = MemberDecl::OPT_IDENTIFIER_CONSTRUCTOR_DECLARATOR_REST;
+
+      // Identifier
+      int pos = cursor - curTokenStr.length();
+      memberDecl->identifier = spIdentifier(new Identifier(pos, curTokenStr));
+      st.addSym(ST_CLASS, curToken, pos, line, curTokenStr);
+      getNextToken(); // consume Identifier
+
+      // ConstructorDeclaratorRest
+      memberDecl->constDeclRest = spConstructorDeclaratorRest(
+        new ConstructorDeclaratorRest());
+      parseConstructorDeclaratorRest(memberDecl->constDeclRest);
+      return;
+    }
+  }
+
+
+  // TODO: MethodOrFieldDecl
+  // TODO: void Identifier VoidMethodDeclaratorRest
+
+  // TODO: Identifier ConstructorDeclaratorRest
+
+  // TODO: GenericMethodOrConstructorDecl
+  // TODO: ClassDeclaration
+  // TODO: InterfaceDeclaration
+
+  // TODO:
+  getNextToken();
 }
 
 /// CompilationUnit: Top level parsing.
@@ -517,6 +641,14 @@ void Parser::parseCompilationUnit() {
 
   // Type Declarations
   compilationUnit->typeDecls = parseTypeDeclarations(annotations);
+}
+
+/// ConstructorDeclaratorRest:
+///   FormalParameters [throws QualifiedIdentifierList] Block
+void Parser::parseConstructorDeclaratorRest(
+  spConstructorDeclaratorRest &constDeclRest) {
+  // TODO:
+  getNextToken();
 }
 
 void Parser::parse() {
