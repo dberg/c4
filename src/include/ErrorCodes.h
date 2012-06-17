@@ -6,7 +6,9 @@ namespace djp {
 
 enum ErrorCode {
   ERR_EXP_QID,
-  ERR_EXP_CLOSE_PAREN,
+  ERR_EXP_IDENTIFIER,
+  ERR_EXP_LPAREN,
+  ERR_EXP_RPAREN,
   ERR_NVAL_ANNOT_ELEM,
 };
 
@@ -17,7 +19,9 @@ class ErrorUtil {
 public:
   ErrorUtil() {
     msgs[ERR_EXP_QID] = "Expected qualified id";
-    msgs[ERR_EXP_CLOSE_PAREN] = "Expected closing parenthesis";
+    msgs[ERR_EXP_IDENTIFIER] = "Expected identifier";
+    msgs[ERR_EXP_LPAREN] = "Expected opening parenthesis";
+    msgs[ERR_EXP_RPAREN] = "Expected closing parenthesis";
     msgs[ERR_NVAL_ANNOT_ELEM] = "Invalid annotation element";
   }
 
