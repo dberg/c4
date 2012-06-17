@@ -9,6 +9,7 @@ enum ErrorCode {
   ERR_EXP_IDENTIFIER,
   ERR_EXP_LPAREN,
   ERR_EXP_RPAREN,
+  ERR_EXP_TYPE,
   ERR_NVAL_ANNOT_ELEM,
 };
 
@@ -22,6 +23,7 @@ public:
     msgs[ERR_EXP_IDENTIFIER] = "Expected identifier";
     msgs[ERR_EXP_LPAREN] = "Expected opening parenthesis";
     msgs[ERR_EXP_RPAREN] = "Expected closing parenthesis";
+    msgs[ERR_EXP_TYPE] = "Expected Type";
     msgs[ERR_NVAL_ANNOT_ELEM] = "Invalid annotation element";
   }
 
