@@ -47,6 +47,7 @@ class Parser {
   void getNextToken();
   int getToken();
   int getAnnotationToken();
+  int getPeriodOrEllipsisToken();
   int getTokenIdentifier(char c);
 
   // Parsing

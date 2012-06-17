@@ -134,8 +134,8 @@ int Parser::getToken() {
 
   // Annotation and Annotation Type Declarations
   if ('@' == c) return getAnnotationToken();
+  if ('.' == c) return getPeriodOrEllipsisToken();
 
-  if ('.' == c) return TOK_PERIOD;
   if (';' == c) return TOK_SEMICOLON;
   if ('*' == c) return TOK_ASTERISK;
   if ('{' == c) return TOK_LCURLY_BRACKET;
@@ -178,6 +178,23 @@ int Parser::getAnnotationToken() {
   }
 
   return TOK_ANNOTATION;
+}
+
+/// Return TOK_PERIOD | TOK_ELLIPSIS
+int Parser::getPeriodOrEllipsisToken() {
+  // We look 2 chars ahead to decide if we have an ellipsis.
+  // At this point we have already found one dot char and the
+  // cursor is pointing to the next char.
+  // .??
+  //  ^
+  //  cursor
+  if (cursor + 1 <= buffer.length()
+    && buffer[cursor] == '.'
+    && buffer[cursor+1] == '.') {
+    return TOK_ELLIPSIS;
+  }
+
+  return TOK_PERIOD;
 }
 
 /// Return TOK_IDENTIFIER | TOK_KEY_*
