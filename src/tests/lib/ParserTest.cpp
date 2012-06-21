@@ -129,6 +129,90 @@ TEST(Parser, ClassConstructor) {
   ASSERT_EQ("Abc", classBodyDecl->memberDecl->identifier->value);
 }
 
+TEST(Parser, ClassConstructorParameter) {
+  std::string filename = "Test.java";
+  std::string buffer = "class Abc { Abc(int a) {} }";
+  Parser parser(filename, buffer);
+  parser.parse();
+
+  spFormalParameterDecls formParamDecls = parser.compilationUnit->typeDecls[0]
+    ->decl->classDecl->nClassDecl->classBody->decls[0]->memberDecl
+    ->constDeclRest->formParams->formParamDecls;
+  ASSERT_EQ(Type::OPT_BASIC_TYPE, formParamDecls->type->opt);
+  ASSERT_EQ(16, formParamDecls->type->basicType->token->pos);
+  ASSERT_EQ(TOK_KEY_INT, formParamDecls->type->basicType->token->type);
+  ASSERT_EQ(20, formParamDecls->formParamDeclsRest->varDeclId->identifier->pos);
+  ASSERT_EQ("a",
+    formParamDecls->formParamDeclsRest->varDeclId->identifier->value);
+}
+
+TEST(Parser, ClassConstructorParameterArray) {
+  std::string filename = "Test.java";
+  std::string buffer = "class Abc { Abc(int[] a) {} }";
+  Parser parser(filename, buffer);
+  parser.parse();
+
+  spFormalParameterDecls formParamDecls = parser.compilationUnit->typeDecls[0]
+    ->decl->classDecl->nClassDecl->classBody->decls[0]->memberDecl
+    ->constDeclRest->formParams->formParamDecls;
+  // TODO:
+}
+
+TEST(Parser, ClassConstructorParameters) {
+  std::string filename = "Test.java";
+  std::string buffer = "class Abc { Abc(int a, double b) {} }";
+  Parser parser(filename, buffer);
+  parser.parse();
+
+  spFormalParameterDecls formParamDecls = parser.compilationUnit->typeDecls[0]
+    ->decl->classDecl->nClassDecl->classBody->decls[0]->memberDecl
+    ->constDeclRest->formParams->formParamDecls;
+
+  // param 1
+  ASSERT_EQ(Type::OPT_BASIC_TYPE, formParamDecls->type->opt);
+  ASSERT_EQ(16, formParamDecls->type->basicType->token->pos);
+  ASSERT_EQ(TOK_KEY_INT, formParamDecls->type->basicType->token->type);
+  ASSERT_EQ(20, formParamDecls->formParamDeclsRest->varDeclId->identifier->pos);
+  ASSERT_EQ("a",
+    formParamDecls->formParamDeclsRest->varDeclId->identifier->value);
+
+  // param 2
+  spFormalParameterDecls formParamDecls2 = formParamDecls->formParamDeclsRest->formParamDecls;
+  ASSERT_EQ(Type::OPT_BASIC_TYPE, formParamDecls2->type->opt);
+  ASSERT_EQ(23, formParamDecls2->type->basicType->token->pos);
+  ASSERT_EQ(TOK_KEY_DOUBLE, formParamDecls2->type->basicType->token->type);
+  ASSERT_EQ(30, formParamDecls2->formParamDeclsRest->varDeclId->identifier->pos);
+  ASSERT_EQ("b",
+    formParamDecls2->formParamDeclsRest->varDeclId->identifier->value);
+}
+
+TEST(Parser, ClassConstructorParameterEllipsis) {
+  std::string filename = "Test.java";
+  std::string buffer = "class Abc { Abc(int ... a) {} }";
+  Parser parser(filename, buffer);
+  parser.parse();
+
+  spFormalParameterDeclsRest formParamDeclsRest = parser.compilationUnit
+    ->typeDecls[0]->decl->classDecl->nClassDecl->classBody->decls[0]
+    ->memberDecl->constDeclRest->formParams->formParamDecls->formParamDeclsRest;
+  ASSERT_EQ(FormalParameterDeclsRest::OPT_VAR_ARITY, formParamDeclsRest->opt);
+  ASSERT_EQ(24, formParamDeclsRest->varDeclId->identifier->pos);
+  ASSERT_EQ("a", formParamDeclsRest->varDeclId->identifier->value);
+}
+
+TEST(Parser, ClassConstructorAnnotationParameter) {
+  std::string filename = "Test.java";
+  std::string buffer = "class Abc { Abc(@myannotation int a) {} }";
+  Parser parser(filename, buffer);
+  parser.parse();
+
+  spFormalParameterDecls formParamDecls = parser.compilationUnit->typeDecls[0]
+    ->decl->classDecl->nClassDecl->classBody->decls[0]->memberDecl
+    ->constDeclRest->formParams->formParamDecls;
+  ASSERT_EQ(1, formParamDecls->varModifier->annotations.size());
+  ASSERT_EQ(16, formParamDecls->varModifier->annotations[0]->posTokAt);
+}
+
 TEST(Parser, Errors) {
   std::string filename = "Test.java";
   std::string buffer = "@";

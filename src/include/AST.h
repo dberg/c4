@@ -8,6 +8,8 @@
 
 namespace djp {
 
+typedef boost::shared_ptr<struct BasicType> spBasicType;
+typedef boost::shared_ptr<struct ReferenceType> spReferenceType;
 typedef boost::shared_ptr<struct CompilationUnit> spCompilationUnit;
 typedef boost::shared_ptr<struct PackageDeclaration> spPackageDeclaration;
 typedef boost::shared_ptr<struct ImportDeclarations> spImportDeclarations;
@@ -26,7 +28,6 @@ typedef boost::shared_ptr<struct Literal> spLiteral;
 typedef boost::shared_ptr<struct IntegerLiteral> spIntegerLiteral;
 typedef boost::shared_ptr<struct DecimalIntegerLiteral> spDecimalIntegerLiteral;
 typedef boost::shared_ptr<struct DecimalNumeral> spDecimalNumeral;
-typedef boost::shared_ptr<struct TypeDeclarations> spTypeDeclarations;
 typedef boost::shared_ptr<struct TypeDeclaration> spTypeDeclaration;
 typedef boost::shared_ptr<struct ClassOrInterfaceDeclaration>
   spClassOrInterfaceDeclaration;
@@ -35,8 +36,13 @@ typedef boost::shared_ptr<struct NormalClassDeclaration>
   spNormalClassDeclaration;
 typedef boost::shared_ptr<struct ClassBody> spClassBody;
 typedef boost::shared_ptr<struct ClassBodyDeclaration> spClassBodyDeclaration;
-typedef boost::shared_ptr<struct ConstructorDeclaratorRest> spConstructorDeclaratorRest;
-typedef boost::shared_ptr<struct FormalParameterDecl> spFormalParameterDecl;
+typedef boost::shared_ptr<struct ConstructorDeclaratorRest>
+  spConstructorDeclaratorRest;
+typedef boost::shared_ptr<struct FormalParameters> spFormalParameters;
+typedef boost::shared_ptr<struct FormalParameterDecls> spFormalParameterDecls;
+typedef boost::shared_ptr<struct VariableModifier> spVariableModifier;
+typedef boost::shared_ptr<struct FormalParameterDeclsRest>
+  spFormalParameterDeclsRest;
 typedef boost::shared_ptr<struct Block> spBlock;
 typedef boost::shared_ptr<struct BlockStatement> spBlockStatement;
 typedef boost::shared_ptr<struct EnumDeclaration>
@@ -45,6 +51,8 @@ typedef boost::shared_ptr<struct InterfaceDeclaration> spInterfaceDeclaration;
 typedef boost::shared_ptr<struct MemberDecl> spMemberDecl;
 typedef boost::shared_ptr<struct Modifier> spModifier;
 typedef boost::shared_ptr<struct TokenExp> spTokenExp;
+typedef boost::shared_ptr<struct VariableDeclaratorId> spVariableDeclaratorId;
+typedef boost::shared_ptr<struct Type> spType;
 typedef boost::shared_ptr<struct Error> spError;
 typedef boost::shared_ptr<struct Warning> spWarning;
 
@@ -158,10 +166,12 @@ struct ClassBodyDeclaration {
 
   ClassBodyDeclarationOpt opt;
 
+  // OPT_MODIFIER_MEMBER_DECL
   spModifier modifier;
   spMemberDecl memberDecl;
 
   // TODO:
+  // OPT_STATIC_BLOCK
   //spTokenExp staticToken;
   //spBlock block;
 
@@ -215,18 +225,99 @@ struct MemberDecl {
 /// ConstructorDeclaratorRest:
 ///   FormalParameters [throws QualifiedIdentifierList] Block
 struct ConstructorDeclaratorRest {
-  std::vector<spFormalParameterDecl> formParamDecls;
+  spFormalParameters formParams;
   // spIdentifier throws;
   // spQualifiedIdentifierList
   spBlock block;
 };
 
 /// FormalParameters: ( [FormalParameterDecls] )
-struct FormalParameterDecl {
-
+struct FormalParameters {
+  int error;
+  spFormalParameterDecls formParamDecls;
+  FormalParameters() : error(0) {}
 };
 
 /// FormalParameterDecls: {VariableModifier} Type FormalParameterDeclsRest
+struct FormalParameterDecls {
+  spVariableModifier varModifier;
+  spType type;
+  spFormalParameterDeclsRest formParamDeclsRest;
+};
+
+/// VariableModifier:
+///   final
+///   Annotation
+/// One 'final' keyword is allowed, while we can have zero or more annotations.
+struct VariableModifier {
+  spTokenExp tokFinal;
+  std::vector<spAnnotation> annotations;
+
+  bool isEmpty() {
+    if (!tokFinal && annotations.size() == 0) {
+      return true;
+    }
+
+    return false;
+  }
+};
+
+/// Type:
+///   BasicType {[]}
+///   ReferenceType {[]}
+struct Type {
+  enum TypeOpt {
+    OPT_UNDEFINED,
+    OPT_BASIC_TYPE,
+    OPT_REFERENCE_TYPE,
+  };
+
+  TypeOpt opt;
+  spBasicType basicType;
+  spReferenceType refType;
+  int arrayCount;
+
+  Type() : opt(OPT_UNDEFINED), arrayCount(0) {}
+  bool isEmpty() { return opt == OPT_UNDEFINED; }
+};
+
+/// FormalParameterDeclsRest:
+///   VariableDeclaratorId [ , FormalParameterDecls ]
+///   ... VariableDeclaratorId
+/// The variable arity parameter must be the last parameter.
+struct FormalParameterDeclsRest {
+  enum FormalParameterDeclsRestOpt {
+    OPT_UNDEFINED,
+    OPT_VAR_DECL_ID,
+    OPT_VAR_ARITY,
+  };
+
+  FormalParameterDeclsRestOpt opt;
+  spVariableDeclaratorId varDeclId;
+  spFormalParameterDecls formParamDecls;
+
+  FormalParameterDeclsRest() : opt(OPT_UNDEFINED) {}
+};
+
+/// VariableDeclaratorId: Identifier {[]}
+struct VariableDeclaratorId {
+  spIdentifier identifier;
+  int arrayCount;
+
+  VariableDeclaratorId() : arrayCount(0) {}
+};
+
+/// BasicType: byte | short | char | int | long | float | double | boolean
+struct BasicType {
+  spTokenExp token;
+  BasicType(spTokenExp token) : token(token) {}
+};
+
+/// ReferenceType:
+///   Identifier [TypeArguments] { . Identifier [TypeArguments] }
+struct ReferenceType {
+
+};
 
 /// Block: { BlockStatements }
 struct Block {

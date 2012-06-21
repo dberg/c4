@@ -30,6 +30,7 @@ class Parser {
   TokenUtil tokenUtil;
 
   // Helper methods
+  bool isBasicType(int token);
   bool isJavaLetter(char c);
   bool isJavaLetterOrDigit(char c);
   bool isModifierToken(int token);
@@ -37,6 +38,7 @@ class Parser {
   bool isValidInitTokenOfTypeDeclaration(int token);
   void saveState(State &state);
   void restoreState(State &state);
+  void addError(int err);
   void addError(int ini, int end, int err);
 
   // Lexer
@@ -59,7 +61,13 @@ class Parser {
   void parseClassDeclaration(spClassDeclaration &classDecl);
   void parseClassOrInterfaceDeclaration(spClassOrInterfaceDeclaration& decl);
   void parseCompilationUnit();
-  void parseConstructorDeclaratorRest(spConstructorDeclaratorRest &constDeclRest);
+  void parseConstructorDeclaratorRest(
+    spConstructorDeclaratorRest &constDeclRest);
+  void parseVariableDeclaratorId(spVariableDeclaratorId &varDeclId);
+  void parseFormalParameters(spFormalParameters &formParams);
+  void parseFormalParameterDecls(spFormalParameterDecls &formParamDecls);
+  void parseFormalParameterDeclsRest(
+    spFormalParameterDeclsRest &formParamDeclsRest);
   spImportDeclaration parseImportDeclaration();
   spImportDeclarations parseImportDeclarations();
   void parseModifier(spModifier &modifier);
@@ -68,8 +76,10 @@ class Parser {
   spPackageDeclaration parsePackageDeclaration(
     std::vector<spAnnotation> &annotations);
   spQualifiedIdentifier parseQualifiedIdentifier();
+  void parseType(spType &type);
   std::vector<spTypeDeclaration> parseTypeDeclarations(
     std::vector<spAnnotation> &annotations);
+  void parseVariableModifier(spVariableModifier &varModifier);
 
 public:
   Parser(const std::string _filename, const std::string &_buffer)

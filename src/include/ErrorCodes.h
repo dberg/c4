@@ -11,6 +11,7 @@ enum ErrorCode {
   ERR_EXP_RPAREN,
   ERR_EXP_TYPE,
   ERR_NVAL_ANNOT_ELEM,
+  ERR_NVAL_ARRAY,
 };
 
 class ErrorUtil {
@@ -25,6 +26,7 @@ public:
     msgs[ERR_EXP_RPAREN] = "Expected closing parenthesis";
     msgs[ERR_EXP_TYPE] = "Expected Type";
     msgs[ERR_NVAL_ANNOT_ELEM] = "Invalid annotation element";
+    msgs[ERR_NVAL_ARRAY] = "Invalid array notation";
   }
 
   const std::string getMessage(int error) {

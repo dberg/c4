@@ -6,6 +6,7 @@
 - [ ] Parse EnumDeclaration
 - [ ] Parse InterfaceDeclaration
 - [ ] Improve AST structures with Unions
+- [X] Start parsing method parameters
 - [X] Start parsing Constructor
 - [X] Start symbol table and helper
 - [X] Handle errors on emacs mode. Underline and error message.

@@ -2,6 +2,21 @@
 
 namespace djp {
 
+bool Parser::isBasicType(int token) {
+  if (TOK_KEY_BYTE == token ||
+      TOK_KEY_SHORT == token ||
+      TOK_KEY_CHAR == token ||
+      TOK_KEY_INT == token ||
+      TOK_KEY_LONG == token ||
+      TOK_KEY_FLOAT == token ||
+      TOK_KEY_DOUBLE == token ||
+      TOK_KEY_BOOLEAN == token) {
+    return true;
+  }
+
+  return false;
+}
+
 /// ClassModifier: one of
 ///   Annotation public protected private
 ///   abstract static final strictfp
@@ -89,6 +104,10 @@ void Parser::restoreState(State &state) {
   curTokenStr = state.tokenStr;
 }
 
+void Parser::addError(int err) {
+  addError(cursor - curTokenStr.length(), cursor, err);
+}
+
 void Parser::addError(int ini, int end, int err) {
   spError error = spError(new Error(ini, end, err));
   compilationUnit->errors.push_back(error);
@@ -135,11 +154,13 @@ int Parser::getToken() {
   // Annotation and Annotation Type Declarations
   if ('@' == c) return getAnnotationToken();
   if ('.' == c) return getPeriodOrEllipsisToken();
-
+  if (',' == c) return TOK_COMMA;
   if (';' == c) return TOK_SEMICOLON;
   if ('*' == c) return TOK_ASTERISK;
   if ('{' == c) return TOK_LCURLY_BRACKET;
   if ('}' == c) return TOK_RCURLY_BRACKET;
+  if ('(' == c) return TOK_LPAREN;
+  if (')' == c) return TOK_RPAREN;
 
   // Identifier
   if (isJavaLetter(c))
@@ -191,6 +212,7 @@ int Parser::getPeriodOrEllipsisToken() {
   if (cursor + 1 <= buffer.length()
     && buffer[cursor] == '.'
     && buffer[cursor+1] == '.') {
+    cursor = cursor + 2;
     return TOK_ELLIPSIS;
   }
 
@@ -258,7 +280,7 @@ spAnnotation Parser::parseAnnotation() {
 
     if (')' != curToken) {
       annotation->err = true;
-      addError(annotation->posTokAt, openParenPos, ERR_EXP_CLOSE_PAREN);
+      addError(annotation->posTokAt, openParenPos, ERR_EXP_LPAREN);
       return annotation;
     }
 
@@ -664,8 +686,175 @@ void Parser::parseCompilationUnit() {
 ///   FormalParameters [throws QualifiedIdentifierList] Block
 void Parser::parseConstructorDeclaratorRest(
   spConstructorDeclaratorRest &constDeclRest) {
+
+  // FormalParameters
+  constDeclRest->formParams = spFormalParameters(new FormalParameters());
+  parseFormalParameters(constDeclRest->formParams);
+
   // TODO:
+  // [throws QualifiedIdentifierList] Block
   getNextToken();
+}
+
+/// FormalParameters: ( [FormalParameterDecls] )
+void Parser::parseFormalParameters(spFormalParameters &formParams) {
+  if (TOK_LPAREN != curToken) {
+    addError(ERR_EXP_LPAREN);
+    formParams->error = 1;
+    return;
+  }
+  getNextToken(); // consume '('
+
+  // If our current token is a closing paren we're done and we skip trying
+  // to parse FormalParameterDecls.
+  if (TOK_RPAREN == curToken) {
+    getNextToken(); // consume ')'
+    return;
+  }
+
+  formParams->formParamDecls = spFormalParameterDecls(
+    new FormalParameterDecls());
+  parseFormalParameterDecls(formParams->formParamDecls);
+
+  if (TOK_RPAREN != curToken) {
+    addError(ERR_EXP_RPAREN);
+    formParams->error = 1;
+    return;
+  }
+  getNextToken(); // consume ')'
+}
+
+/// FormalParameterDecls: {VariableModifier} Type FormalParameterDeclsRest
+void Parser::parseFormalParameterDecls(spFormalParameterDecls &formParamDecls) {
+  // {VariableModifier}
+  formParamDecls->varModifier = spVariableModifier(new VariableModifier());
+  parseVariableModifier(formParamDecls->varModifier);
+
+  // Type
+  formParamDecls->type = spType(new Type());
+  parseType(formParamDecls->type);
+
+  // At this point if we have a VariableModifier and no Type we're in an
+  // inconsistent state. For example:
+  // Constructor(final var) or Constructor(@Annot var).
+  if (formParamDecls->varModifier->isEmpty() == false
+      && formParamDecls->type->isEmpty()) {
+    addError(ERR_EXP_TYPE);
+  }
+
+  // If we have a Type we expect a FormalParameterDeclRest
+  if (formParamDecls->type->isEmpty() == false) {
+    formParamDecls->formParamDeclsRest = spFormalParameterDeclsRest(
+      new FormalParameterDeclsRest());
+    parseFormalParameterDeclsRest(formParamDecls->formParamDeclsRest);
+  }
+}
+
+/// VariableModifier:
+///   final
+///   Annotation
+/// One 'final' keyword is allowed, while we can have zero or more annotations.
+void Parser::parseVariableModifier(spVariableModifier &varModifier) {
+
+  while (TOK_KEY_FINAL == curToken || TOK_ANNOTATION == curToken) {
+    if (TOK_KEY_FINAL == curToken) {
+      if (varModifier->tokFinal) {
+        // TODO: Handle error. We already have a 'final' token.
+      } else {
+	varModifier->tokFinal = spTokenExp(new TokenExp(
+          cursor - tokenUtil.getTokenLength(curToken), curToken));
+      }
+
+      getNextToken(); // consume 'final'
+    }
+
+    // Add annotations to varModifier->annotations
+    if (TOK_ANNOTATION == curToken) {
+      parseAnnotations(varModifier->annotations);
+    }
+  }
+}
+
+/// Type:
+///   BasicType {[]}
+///   ReferenceType {[]}
+void Parser::parseType(spType &type) {
+  if (isBasicType(curToken)) {
+    spTokenExp token = spTokenExp(new TokenExp(
+      cursor - tokenUtil.getTokenLength(curToken), curToken));
+    type->opt = Type::OPT_BASIC_TYPE;
+    type->basicType = spBasicType(new BasicType(token));
+    getNextToken(); // consume basic type
+    return;
+  }
+
+  // TODO: ReferenceType
+}
+
+/// FormalParameterDeclsRest:
+///   VariableDeclaratorId [ , FormalParameterDecls ]
+///   ... VariableDeclaratorId
+void Parser::parseFormalParameterDeclsRest(
+  spFormalParameterDeclsRest &formParamDeclsRest) {
+
+  formParamDeclsRest->varDeclId = spVariableDeclaratorId(
+    new VariableDeclaratorId());
+
+  if (TOK_ELLIPSIS == curToken) {
+    formParamDeclsRest->opt = FormalParameterDeclsRest::OPT_VAR_ARITY;
+    getNextToken(); // consume '...'
+
+    // We expect a VariableDeclaratorId
+    if (TOK_IDENTIFIER != curToken) {
+      addError(ERR_EXP_IDENTIFIER);
+      return;
+    }
+
+    parseVariableDeclaratorId(formParamDeclsRest->varDeclId);
+
+    // Corner case in the grammar. The array form is invalid in the form:
+    // (int ... a[])
+    if (formParamDeclsRest->varDeclId->arrayCount > 0) {
+      addError(ERR_NVAL_ARRAY);
+    }
+
+    return;
+  }
+
+  formParamDeclsRest->opt = FormalParameterDeclsRest::OPT_VAR_DECL_ID;
+
+  // VariableDeclaratorId
+  parseVariableDeclaratorId(formParamDeclsRest->varDeclId);
+
+  // Handle error
+  if (formParamDeclsRest->varDeclId->identifier->value.length() == 0) {
+    addError(ERR_EXP_IDENTIFIER);
+  }
+
+  // [ , FormalParameterDecls ]
+  if (TOK_COMMA == curToken) {
+    getNextToken(); // consume ','
+
+    formParamDeclsRest->formParamDecls = spFormalParameterDecls(
+      new FormalParameterDecls());
+    parseFormalParameterDecls(formParamDeclsRest->formParamDecls);
+  }
+}
+
+/// VariableDeclaratorId: Identifier {[]}
+void Parser::parseVariableDeclaratorId(spVariableDeclaratorId &varDeclId) {
+  if (TOK_IDENTIFIER == curToken) {
+    varDeclId->identifier = spIdentifier(new Identifier(
+      cursor - curTokenStr.length(), curTokenStr));
+    getNextToken(); // consume Identifier
+
+    // TODO: consume brackets
+    /*
+    if (TOK_LBRACKET == curToken) {
+
+    }
+    */
+  }
 }
 
 void Parser::parse() {
