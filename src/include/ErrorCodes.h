@@ -7,6 +7,7 @@ namespace djp {
 enum ErrorCode {
   ERR_EXP_QID,
   ERR_EXP_IDENTIFIER,
+  ERR_EXP_RBRACKET,
   ERR_EXP_LPAREN,
   ERR_EXP_RPAREN,
   ERR_EXP_TYPE,
@@ -22,6 +23,7 @@ public:
   ErrorUtil() {
     msgs[ERR_EXP_QID] = "Expected qualified id";
     msgs[ERR_EXP_IDENTIFIER] = "Expected identifier";
+    msgs[ERR_EXP_RBRACKET] = "Expected ']'";
     msgs[ERR_EXP_LPAREN] = "Expected opening parenthesis";
     msgs[ERR_EXP_RPAREN] = "Expected closing parenthesis";
     msgs[ERR_EXP_TYPE] = "Expected Type";

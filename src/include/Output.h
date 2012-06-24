@@ -17,6 +17,7 @@ class Output {
   ErrorUtil errUtil;
 
   void setAnnotations(const std::vector<spAnnotation> &annotations);
+  void setBlock(const spBlock &block);
   void setClassBody(const spClassBody &classBody);
   void setClassBodyDeclaration(const spClassBodyDeclaration &decl);
   void setClassOrInterfaceDeclaration(
@@ -24,6 +25,9 @@ class Output {
   void setConstructorDeclaratorRest(
     const spConstructorDeclaratorRest &constDeclRest);
   void setErrors(const std::vector<spError> &errors);
+  void setFormalParameterDecls(const spFormalParameterDecls &formParamDecls);
+  void setFormalParameterDeclsRest(
+    const spFormalParameterDeclsRest &formParamDeclsRest);
   void setIdentifier(const spIdentifier &identifier);
   void setImportDeclarations(const spImportDeclarations &impDecls);
   void setImportDeclaration(const spImportDeclaration &import);
@@ -33,7 +37,10 @@ class Output {
   void setModifier(const spModifier &modifier);
   void setNormalClassDeclaration(const spNormalClassDeclaration &nClassDecl);
   void setPackageDeclaration(const spPackageDeclaration &pkgDecl);
+  void setType(const spType &type);
   void setQualifiedId(int ini, int end);
+  void setVariableDeclaratorId(const spVariableDeclaratorId &varDeclId);
+  void setVariableModifier(const spVariableModifier &varModifier);
   void setTypeDeclarations(const std::vector<spTypeDeclaration> &typeDecls);
 
   // Helper methods

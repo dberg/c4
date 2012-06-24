@@ -1,3 +1,7 @@
+- [ ] Emacs Output bug:
+      class A {A() {}}
+                     ^
+                     "Expected opening parenthesis"
 - [ ] Export Symbol table and helper mapper to elisp (pos -> symbol table)
 - [ ] Parse TokenIdentifier BooleanLiteral and NullLiteral
 - [ ] Parse Annotation value pairs

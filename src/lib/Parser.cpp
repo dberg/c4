@@ -161,6 +161,8 @@ int Parser::getToken() {
   if ('}' == c) return TOK_RCURLY_BRACKET;
   if ('(' == c) return TOK_LPAREN;
   if (')' == c) return TOK_RPAREN;
+  if ('[' == c) return TOK_LBRACKET;
+  if (']' == c) return TOK_RBRACKET;
 
   // Identifier
   if (isJavaLetter(c))
@@ -303,6 +305,24 @@ void Parser::parseAnnotations(std::vector<spAnnotation> &annotations) {
     spAnnotation annotation = parseAnnotation();
     annotations.push_back(annotation);
   }
+}
+
+/// {[]}
+int Parser::parseArrayDepth() {
+  int depth;
+  while (TOK_LBRACKET == curToken) {
+    depth += 1;
+    getNextToken(); // consume '['
+
+    if (TOK_RBRACKET != curToken) {
+      addError(ERR_EXP_RBRACKET);
+      return depth;
+    }
+
+    getNextToken(); // consume ']'
+  }
+
+  return depth;
 }
 
 /// PackageDeclaration: [ [Annotations]  package QualifiedIdentifier ; ]
@@ -785,6 +805,7 @@ void Parser::parseType(spType &type) {
     type->opt = Type::OPT_BASIC_TYPE;
     type->basicType = spBasicType(new BasicType(token));
     getNextToken(); // consume basic type
+    type->arrayDepth = parseArrayDepth();
     return;
   }
 
@@ -814,7 +835,7 @@ void Parser::parseFormalParameterDeclsRest(
 
     // Corner case in the grammar. The array form is invalid in the form:
     // (int ... a[])
-    if (formParamDeclsRest->varDeclId->arrayCount > 0) {
+    if (formParamDeclsRest->varDeclId->arrayDepth > 0) {
       addError(ERR_NVAL_ARRAY);
     }
 
@@ -847,13 +868,7 @@ void Parser::parseVariableDeclaratorId(spVariableDeclaratorId &varDeclId) {
     varDeclId->identifier = spIdentifier(new Identifier(
       cursor - curTokenStr.length(), curTokenStr));
     getNextToken(); // consume Identifier
-
-    // TODO: consume brackets
-    /*
-    if (TOK_LBRACKET == curToken) {
-
-    }
-    */
+    varDeclId->arrayDepth = parseArrayDepth();
   }
 }
 

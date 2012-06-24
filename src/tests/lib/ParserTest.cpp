@@ -155,7 +155,7 @@ TEST(Parser, ClassConstructorParameterArray) {
   spFormalParameterDecls formParamDecls = parser.compilationUnit->typeDecls[0]
     ->decl->classDecl->nClassDecl->classBody->decls[0]->memberDecl
     ->constDeclRest->formParams->formParamDecls;
-  // TODO:
+  ASSERT_EQ(1, formParamDecls->formParamDeclsRest->varDeclId->arrayDepth);
 }
 
 TEST(Parser, ClassConstructorParameters) {

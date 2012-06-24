@@ -56,6 +56,7 @@ class Parser {
   spAnnotation parseAnnotation();
   spAnnotationElement parseAnnotationElement();
   void parseAnnotations(std::vector<spAnnotation> &annotations);
+  int parseArrayDepth();
   void parseClassBody(spClassBody &classBody);
   void parseClassBodyDeclaration(spClassBodyDeclaration &decl);
   void parseClassDeclaration(spClassDeclaration &classDecl);

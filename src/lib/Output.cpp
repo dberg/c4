@@ -22,6 +22,10 @@ void Output::build() {
   output += ")";
 }
 
+void Output::setBlock(const spBlock &block) {
+  // TODO:
+}
+
 void Output::setClassBody(const spClassBody &classBody) {
   for (std::size_t i = 0; i < classBody->decls.size(); i++) {
     setClassBodyDeclaration(classBody->decls[i]);
@@ -29,11 +33,11 @@ void Output::setClassBody(const spClassBody &classBody) {
 }
 
 /// We have 2 options export:
-///   (djp-member-decl-1 ...) -> {Modifier} MemberDecl
-///   (djp-member-decl-2 ...) -> [static] Block
+///   (djp-member-decl-modifier-member-decl ...) -> {Modifier} MemberDecl
+///   (djp-member-decl-modifier-static-block ...) -> [static] Block
 void Output::setClassBodyDeclaration(const spClassBodyDeclaration &decl) {
-  if (decl->opt == 1) {
-    output += "(djp-member-decl-1 ";
+  if (decl->opt == ClassBodyDeclaration::OPT_MODIFIER_MEMBER_DECL) {
+    output += "(djp-member-decl-modifier-member-decl ";
     if (decl->modifier) {
       setModifier(decl->modifier);
     }
@@ -47,14 +51,58 @@ void Output::setClassBodyDeclaration(const spClassBodyDeclaration &decl) {
   }
 
   // TODO:
-  if (decl->opt == 2) {
+  if (decl->opt == ClassBodyDeclaration::OPT_STATIC_BLOCK) {
+    //output += "(djp-member-decl-modifier-static-block ";
     return;
   }
 }
 
 void Output::setConstructorDeclaratorRest(
   const spConstructorDeclaratorRest &constDeclRest) {
-  // TODO:
+  output += "(djp-constructor-declarator-rest ";
+
+  if (constDeclRest->formParams && constDeclRest->formParams->formParamDecls) {
+    setFormalParameterDecls(constDeclRest->formParams->formParamDecls);
+  }
+
+  if (constDeclRest->block) {
+    setBlock(constDeclRest->block);
+  }
+
+  output += ")";
+}
+
+void Output::setFormalParameterDecls(
+  const spFormalParameterDecls &formParamDecls) {
+  if (formParamDecls->varModifier) {
+    setVariableModifier(formParamDecls->varModifier);
+  }
+
+  if (formParamDecls->type) {
+    setType(formParamDecls->type);
+  }
+
+  if (formParamDecls->formParamDeclsRest) {
+    setFormalParameterDeclsRest(formParamDecls->formParamDeclsRest);
+  }
+}
+
+void Output::setFormalParameterDeclsRest(
+  const spFormalParameterDeclsRest &formParamDeclsRest) {
+
+  if (formParamDeclsRest->opt ==
+    FormalParameterDeclsRest::OPT_VAR_DECL_ID) {
+    setVariableDeclaratorId(formParamDeclsRest->varDeclId);
+    if (formParamDeclsRest->formParamDecls) {
+      setFormalParameterDecls(formParamDeclsRest->formParamDecls);
+    }
+    return;
+  }
+
+  if (formParamDeclsRest->opt ==
+      FormalParameterDeclsRest::OPT_VAR_ARITY) {
+    setVariableDeclaratorId(formParamDeclsRest->varDeclId);
+  }
 }
 
 void Output::setPackageDeclaration(const spPackageDeclaration &pkgDecl) {
@@ -104,6 +152,19 @@ void Output::setImportDeclaration(const spImportDeclaration &import) {
   output += ")";
 }
 
+void Output::setType(const spType &type) {
+  if (type->opt == Type::OPT_BASIC_TYPE) {
+    if (type->basicType->token) {
+      setKeyword(type->basicType->token);
+    }
+    return;
+  }
+
+  if (type->opt == Type::OPT_REFERENCE_TYPE) {
+    // TODO:
+  }
+}
+
 void Output::setTypeDeclarations(
   const std::vector<spTypeDeclaration> &typeDecls) {
 
@@ -137,16 +198,18 @@ void Output::setClassOrInterfaceDeclaration(
 
 void Output::setMemberDecl(const spMemberDecl &memberDecl) {
   // TODO:
-  if (memberDecl->opt == 1) {
+  if (memberDecl->opt == MemberDecl::OPT_METHOD_OR_FIELD_DECL) {
     return;
   }
 
   // TODO:
-  if (memberDecl->opt == 2) {
+  if (memberDecl->opt ==
+    MemberDecl::OPT_VOID_IDENTIFIER_VOID_METHOD_DECLARATOR_REST) {
     return;
   }
 
-  if (memberDecl->opt == 3) {
+  if (memberDecl->opt ==
+    MemberDecl::OPT_IDENTIFIER_CONSTRUCTOR_DECLARATOR_REST) {
     if (memberDecl->identifier) {
       setIdentifier(memberDecl->identifier);
     }
@@ -158,17 +221,17 @@ void Output::setMemberDecl(const spMemberDecl &memberDecl) {
   }
 
   // TODO:
-  if (memberDecl->opt == 4) {
+  if (memberDecl->opt == MemberDecl::OPT_GENERIC_METHOD_OR_CONSTRUCTOR_DECL) {
     return;
   }
 
   // TODO:
-  if (memberDecl->opt == 5) {
+  if (memberDecl->opt == MemberDecl::OPT_CLASS_DECLARATION) {
     return;
   }
 
   // TODO:
-  if (memberDecl->opt == 6) {
+  if (memberDecl->opt == MemberDecl::OPT_INTERFACE_DECLARATION) {
     return;
   }
 }
@@ -221,6 +284,21 @@ void Output::setKeyword(int ini, int end) {
 void Output::setQualifiedId(int ini, int end) {
   output += "(djp-node-qualified-id "
     + itos(ini) + " " + itos(end) + ")";
+}
+
+void Output::setVariableDeclaratorId(
+  const spVariableDeclaratorId &varDeclId) {
+  if (varDeclId->identifier) {
+    setIdentifier(varDeclId->identifier);
+  }
+}
+
+void Output::setVariableModifier(const spVariableModifier &varModifier) {
+  if (varModifier->tokFinal) {
+    setKeyword(varModifier->tokFinal);
+  }
+
+  setAnnotations(varModifier->annotations);
 }
 
 /// We return zero or more of the form:

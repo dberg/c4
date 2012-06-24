@@ -275,9 +275,9 @@ struct Type {
   TypeOpt opt;
   spBasicType basicType;
   spReferenceType refType;
-  int arrayCount;
+  int arrayDepth;
 
-  Type() : opt(OPT_UNDEFINED), arrayCount(0) {}
+  Type() : opt(OPT_UNDEFINED), arrayDepth(0) {}
   bool isEmpty() { return opt == OPT_UNDEFINED; }
 };
 
@@ -302,9 +302,9 @@ struct FormalParameterDeclsRest {
 /// VariableDeclaratorId: Identifier {[]}
 struct VariableDeclaratorId {
   spIdentifier identifier;
-  int arrayCount;
+  int arrayDepth;
 
-  VariableDeclaratorId() : arrayCount(0) {}
+  VariableDeclaratorId() : arrayDepth(0) {}
 };
 
 /// BasicType: byte | short | char | int | long | float | double | boolean

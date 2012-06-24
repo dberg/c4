@@ -79,7 +79,30 @@ TEST(EmacsOutput, ClassConstructor) {
     "(djp-normal-class-declaration "
     "(djp-node-keyword 1 6)"
     "(djp-node-identifier 7 10)"
-    "(djp-member-decl-1 "
-    "(djp-node-identifier 13 16)))))";
+    "(djp-member-decl-modifier-member-decl "
+    "(djp-node-identifier 13 16)"
+    "(djp-constructor-declarator-rest )))))";
+  ASSERT_EQ(expected, output.output);
+}
+
+TEST(EmacsOutput, ClassConstructorParameters) {
+  std::string filename = "Test.java";
+  std::string buffer = "class Abc { Abc(int a, double b) {} }";
+  Parser parser(filename, buffer);
+  parser.parse();
+  Output output(parser.compilationUnit);
+  output.build();
+  std::string expected =
+    "((djp-class-or-interface-declaration "
+    "(djp-normal-class-declaration "
+    "(djp-node-keyword 1 6)"
+    "(djp-node-identifier 7 10)"
+    "(djp-member-decl-modifier-member-decl "
+    "(djp-node-identifier 13 16)"
+    "(djp-constructor-declarator-rest "
+    "(djp-node-keyword 17 20)"
+    "(djp-node-identifier 21 22)"
+    "(djp-node-keyword 24 30)"
+    "(djp-node-identifier 31 32))))))";
   ASSERT_EQ(expected, output.output);
 }
