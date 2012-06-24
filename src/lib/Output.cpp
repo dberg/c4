@@ -22,6 +22,30 @@ void Output::build() {
   output += ")";
 }
 
+/// We return zero or more of the form:
+/// (annotation INI ERR (qualified-id INI END))
+/// where the annotation ini marks the position of the token '@' and we delimit
+/// qualified-id as one element being the ini the first identifier and the end
+/// the last identifier.
+void Output::setAnnotations(
+  const std::vector<spAnnotation> &annotations) {
+
+  for (std::size_t i = 0; i < annotations.size(); i++) {
+    int ini = 0; int end = 0;
+    if (annotations[i]->qualifiedId) {
+      ini = annotations[i]->qualifiedId->ini + 1;
+      end = annotations[i]->qualifiedId->end + 2;
+    }
+
+    output += "(djp-node-annotation "
+      + itos(annotations[i]->posTokAt + 1) + " "
+      + itos((int) annotations[i]->err)
+      + " (djp-node-qualified-id "
+      + itos(ini) + " "
+      + itos(end) + "))";
+  }
+}
+
 void Output::setBlock(const spBlock &block) {
   // TODO:
 }
@@ -57,6 +81,27 @@ void Output::setClassBodyDeclaration(const spClassBodyDeclaration &decl) {
   }
 }
 
+void Output::setClassOrInterfaceDeclaration(
+  const spClassOrInterfaceDeclaration &decl) {
+
+  output += "(djp-class-or-interface-declaration ";
+
+  if (decl->modifier) {
+    setModifier(decl->modifier);
+  }
+
+  if (decl->classDecl) {
+    if (decl->classDecl->nClassDecl) {
+      setNormalClassDeclaration(decl->classDecl->nClassDecl);
+    } else if (decl->classDecl->enumDecl) {
+      // TODO:
+      //setEnumDeclaration(decl->classDecl->enumDecl);
+    }
+  }
+
+  output += ")";
+}
+
 void Output::setConstructorDeclaratorRest(
   const spConstructorDeclaratorRest &constDeclRest) {
   output += "(djp-constructor-declarator-rest ";
@@ -70,6 +115,16 @@ void Output::setConstructorDeclaratorRest(
   }
 
   output += ")";
+}
+
+void Output::setErrors(const std::vector<spError> &errors) {
+  for (std::size_t i = 0; i < errors.size(); i++) {
+    output += "(djp-error "
+      + itos(errors[i]->ini + 1) + " "
+      + itos(errors[i]->end + 1) + " \""
+      + errUtil.getMessage(errors[i]->type) + "\")";
+
+  }
 }
 
 void Output::setFormalParameterDecls(
@@ -105,29 +160,10 @@ void Output::setFormalParameterDeclsRest(
   }
 }
 
-void Output::setPackageDeclaration(const spPackageDeclaration &pkgDecl) {
-  output += "(djp-package-declaration ";
-  setAnnotations(pkgDecl->annotations);
-
-  // package keyword
-  setKeyword(pkgDecl->pkgTokPos + 1,
-    pkgDecl->pkgTokPos + tokenUtil.getTokenLength(TOK_KEY_PACKAGE) + 1);
-
-  // package qualified identifier
-  if (pkgDecl->qualifiedId) {
-    setQualifiedId(pkgDecl->qualifiedId->ini + 1,
-     pkgDecl->qualifiedId->end + 2);
-  }
-
-  output += ")";
-}
-
-void Output::setImportDeclarations(const spImportDeclarations &impDecls) {
-  output += "(djp-import-declarations ";
-  for (std::string::size_type i = 0; i < impDecls->imports.size(); i++) {
-    setImportDeclaration(impDecls->imports[i]);
-  }
-  output += ")";
+void Output::setIdentifier(const spIdentifier &identifier) {
+  int ini = identifier->pos + 1;
+  int end = ini + identifier->value.length();
+  output += "(djp-node-identifier " + itos(ini) + " " + itos(end) + ")";
 }
 
 void Output::setImportDeclaration(const spImportDeclaration &import) {
@@ -152,48 +188,21 @@ void Output::setImportDeclaration(const spImportDeclaration &import) {
   output += ")";
 }
 
-void Output::setType(const spType &type) {
-  if (type->opt == Type::OPT_BASIC_TYPE) {
-    if (type->basicType->token) {
-      setKeyword(type->basicType->token);
-    }
-    return;
+void Output::setImportDeclarations(const spImportDeclarations &impDecls) {
+  output += "(djp-import-declarations ";
+  for (std::string::size_type i = 0; i < impDecls->imports.size(); i++) {
+    setImportDeclaration(impDecls->imports[i]);
   }
-
-  if (type->opt == Type::OPT_REFERENCE_TYPE) {
-    // TODO:
-  }
-}
-
-void Output::setTypeDeclarations(
-  const std::vector<spTypeDeclaration> &typeDecls) {
-
-  for (std::size_t i = 0; i < typeDecls.size(); i++) {
-    if (typeDecls[i]->decl) {
-      setClassOrInterfaceDeclaration(typeDecls[i]->decl);
-    }
-  }
-}
-
-void Output::setClassOrInterfaceDeclaration(
-  const spClassOrInterfaceDeclaration &decl) {
-
-  output += "(djp-class-or-interface-declaration ";
-
-  if (decl->modifier) {
-    setModifier(decl->modifier);
-  }
-
-  if (decl->classDecl) {
-    if (decl->classDecl->nClassDecl) {
-      setNormalClassDeclaration(decl->classDecl->nClassDecl);
-    } else if (decl->classDecl->enumDecl) {
-      // TODO:
-      //setEnumDeclaration(decl->classDecl->enumDecl);
-    }
-  }
-
   output += ")";
+}
+
+void Output::setKeyword(const spTokenExp &token) {
+  setKeyword(token->pos + 1, token->pos + 1
+    + tokenUtil.getTokenLength(token->type));
+}
+
+void Output::setKeyword(int ini, int end) {
+  output += "(djp-node-keyword " + itos(ini) + " " + itos(end) + ")";
 }
 
 void Output::setMemberDecl(const spMemberDecl &memberDecl) {
@@ -266,24 +275,49 @@ void Output::setNormalClassDeclaration(
   output += ")";
 }
 
-void Output::setKeyword(const spTokenExp &token) {
-  setKeyword(token->pos + 1, token->pos + 1
-    + tokenUtil.getTokenLength(token->type));
-}
+void Output::setPackageDeclaration(const spPackageDeclaration &pkgDecl) {
+  output += "(djp-package-declaration ";
+  setAnnotations(pkgDecl->annotations);
 
-void Output::setIdentifier(const spIdentifier &identifier) {
-  int ini = identifier->pos + 1;
-  int end = ini + identifier->value.length();
-  output += "(djp-node-identifier " + itos(ini) + " " + itos(end) + ")";
-}
+  // package keyword
+  setKeyword(pkgDecl->pkgTokPos + 1,
+    pkgDecl->pkgTokPos + tokenUtil.getTokenLength(TOK_KEY_PACKAGE) + 1);
 
-void Output::setKeyword(int ini, int end) {
-  output += "(djp-node-keyword " + itos(ini) + " " + itos(end) + ")";
+  // package qualified identifier
+  if (pkgDecl->qualifiedId) {
+    setQualifiedId(pkgDecl->qualifiedId->ini + 1,
+     pkgDecl->qualifiedId->end + 2);
+  }
+
+  output += ")";
 }
 
 void Output::setQualifiedId(int ini, int end) {
   output += "(djp-node-qualified-id "
     + itos(ini) + " " + itos(end) + ")";
+}
+
+void Output::setType(const spType &type) {
+  if (type->opt == Type::OPT_BASIC_TYPE) {
+    if (type->basicType->token) {
+      setKeyword(type->basicType->token);
+    }
+    return;
+  }
+
+  if (type->opt == Type::OPT_REFERENCE_TYPE) {
+    // TODO:
+  }
+}
+
+void Output::setTypeDeclarations(
+  const std::vector<spTypeDeclaration> &typeDecls) {
+
+  for (std::size_t i = 0; i < typeDecls.size(); i++) {
+    if (typeDecls[i]->decl) {
+      setClassOrInterfaceDeclaration(typeDecls[i]->decl);
+    }
+  }
 }
 
 void Output::setVariableDeclaratorId(
@@ -299,40 +333,6 @@ void Output::setVariableModifier(const spVariableModifier &varModifier) {
   }
 
   setAnnotations(varModifier->annotations);
-}
-
-/// We return zero or more of the form:
-/// (annotation INI ERR (qualified-id INI END))
-/// where the annotation ini marks the position of the token '@' and we delimit
-/// qualified-id as one element being the ini the first identifier and the end
-/// the last identifier.
-void Output::setAnnotations(
-  const std::vector<spAnnotation> &annotations) {
-
-  for (std::size_t i = 0; i < annotations.size(); i++) {
-    int ini = 0; int end = 0;
-    if (annotations[i]->qualifiedId) {
-      ini = annotations[i]->qualifiedId->ini + 1;
-      end = annotations[i]->qualifiedId->end + 2;
-    }
-
-    output += "(djp-node-annotation "
-      + itos(annotations[i]->posTokAt + 1) + " "
-      + itos((int) annotations[i]->err)
-      + " (djp-node-qualified-id "
-      + itos(ini) + " "
-      + itos(end) + "))";
-  }
-}
-
-void Output::setErrors(const std::vector<spError> &errors) {
-  for (std::size_t i = 0; i < errors.size(); i++) {
-    output += "(djp-error "
-      + itos(errors[i]->ini + 1) + " "
-      + itos(errors[i]->end + 1) + " \""
-      + errUtil.getMessage(errors[i]->type) + "\")";
-
-  }
 }
 
 // Helper methods

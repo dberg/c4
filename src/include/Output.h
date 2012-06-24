@@ -29,19 +29,19 @@ class Output {
   void setFormalParameterDeclsRest(
     const spFormalParameterDeclsRest &formParamDeclsRest);
   void setIdentifier(const spIdentifier &identifier);
-  void setImportDeclarations(const spImportDeclarations &impDecls);
   void setImportDeclaration(const spImportDeclaration &import);
+  void setImportDeclarations(const spImportDeclarations &impDecls);
   void setKeyword(int ini, int end);
   void setKeyword(const spTokenExp &token);
   void setMemberDecl(const spMemberDecl &memberDecl);
   void setModifier(const spModifier &modifier);
   void setNormalClassDeclaration(const spNormalClassDeclaration &nClassDecl);
   void setPackageDeclaration(const spPackageDeclaration &pkgDecl);
-  void setType(const spType &type);
   void setQualifiedId(int ini, int end);
+  void setType(const spType &type);
+  void setTypeDeclarations(const std::vector<spTypeDeclaration> &typeDecls);
   void setVariableDeclaratorId(const spVariableDeclaratorId &varDeclId);
   void setVariableModifier(const spVariableModifier &varModifier);
-  void setTypeDeclarations(const std::vector<spTypeDeclaration> &typeDecls);
 
   // Helper methods
   const std::string itos(int i);
