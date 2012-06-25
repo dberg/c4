@@ -1,7 +1,3 @@
-- [ ] Emacs Output bug:
-      class A {A() {}}
-                     ^
-                     "Expected opening parenthesis"
 - [ ] Export Symbol table and helper mapper to elisp (pos -> symbol table)
 - [ ] Parse TokenIdentifier BooleanLiteral and NullLiteral
 - [ ] Parse Annotation value pairs
@@ -10,6 +6,10 @@
 - [ ] Parse EnumDeclaration
 - [ ] Parse InterfaceDeclaration
 - [ ] Improve AST structures with Unions
+- [X] Emacs Output bug:
+      class A {A() {}}
+                     ^
+                     "Expected opening parenthesis"
 - [X] Start parsing method parameters
 - [X] Start parsing Constructor
 - [X] Start symbol table and helper
