@@ -253,7 +253,7 @@ spAnnotation Parser::parseAnnotation() {
   annotation->posTokAt = cursor - 1;
   getNextToken(); // Consume '@'
 
-  // We're now parsing QualifiedIdentifier
+  // QualifiedIdentifier
   if (curToken != TOK_IDENTIFIER) {
     annotation->err = true;
     addError(annotation->posTokAt, annotation->posTokAt + 1, ERR_EXP_QID);
@@ -264,12 +264,12 @@ spAnnotation Parser::parseAnnotation() {
 
   // If the current token is '(' we consume the token and expect
   // an optional AnnotaionElement followed by ')'
-  if ('(' == curToken) {
+  if (TOK_LPAREN == curToken) {
     int openParenPos = cursor - 1;
     getNextToken(); // consume ')'
 
     // Empty annotation element
-    if (')' != curToken) {
+    if (TOK_RPAREN != curToken) {
       spAnnotationElement annotationElem = parseAnnotationElement();
       if (annotationElem->err) {
         annotation->err = true;
@@ -280,7 +280,7 @@ spAnnotation Parser::parseAnnotation() {
       annotation->elem = annotationElem;
     }
 
-    if (')' != curToken) {
+    if (TOK_RPAREN != curToken) {
       annotation->err = true;
       addError(annotation->posTokAt, openParenPos, ERR_EXP_LPAREN);
       return annotation;
