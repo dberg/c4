@@ -107,6 +107,7 @@
 	    (djp-with-unmodifying-text-property-changes
 	      (remove-text-properties (point-min) (point-max) '(syntax-table))
 	      (remove-text-properties (point-min) (point-max) '(face nil))
+	      (djp-remove-overlays)
 	      (setq interrupted-p
 		    (catch 'interrupted
 		      (djp-parse)
@@ -160,6 +161,8 @@ The output of the compiler is used to build djp-parse-tree."
 
 (defun djp-error (ini end msg)
   (let ((ovl (make-overlay ini end)))
+    ;; Add identifier so we can delete this overlay when reparsing
+    (overlay-put ovl 'djp-error t)
     (overlay-put ovl 'face 'djp-error-face)
     (put-text-property ini end 'help-echo msg)
     (put-text-property ini end 'point-entered #'djp-echo-error)))
@@ -169,6 +172,15 @@ The output of the compiler is used to build djp-parse-tree."
   (let ((msg (get-text-property new-point 'help-echo)))
     (if msg
         (message msg))))
+
+(defun djp-remove-overlays ()
+  "Remove overlays from buffer that have a `djp-error' property."
+  (let ((beg (point-min))
+	(end (point-max)))
+    (save-excursion
+      (dolist (o (overlays-in beg end))
+	(when (overlay-get o 'djp-error)
+	  (delete-overlay o))))))
 
 ;; Stolen from js2-mode where you can read:
 ;; `Stolen shamelessly from James Clark's nxml-mode.'
