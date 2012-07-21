@@ -34,6 +34,8 @@ class Parser {
   bool isJavaLetter(char c);
   bool isJavaLetterOrDigit(char c);
   bool isModifierToken(int token);
+  bool isPrefixOp(int token);
+  bool isPostfixOp(int token);
   bool isValidInitTokenOfClassBodyDeclaration(int token);
   bool isValidInitTokenOfTypeDeclaration(int token);
   void saveState(State &state);
@@ -44,17 +46,22 @@ class Parser {
   // Lexer
   const char getChar();
   const char ungetChar(int count);
+  bool lookaheadAssignment();
   bool lookaheadInterface(int point);
 
   void getNextToken();
   int getToken();
   int getAnnotationToken();
+  int getEqualsOrEqualsEqualsToken();
+  int getMinusOrMinusMinusToken();
+  int getNumberToken(char c);
   int getPeriodOrEllipsisToken();
+  int getPlusOrPlusPlusToken();
   int getTokenIdentifier(char c);
 
   // Parsing
   spAnnotation parseAnnotation();
-  spAnnotationElement parseAnnotationElement();
+  void parseAnnotationElement(spAnnotationElement &elem);
   void parseAnnotations(std::vector<spAnnotation> &annotations);
   int parseArrayDepth();
   void parseClassBody(spClassBody &classBody);
@@ -64,22 +71,32 @@ class Parser {
   void parseCompilationUnit();
   void parseConstructorDeclaratorRest(
     spConstructorDeclaratorRest &constDeclRest);
-  void parseVariableDeclaratorId(spVariableDeclaratorId &varDeclId);
+  void parseDecimalIntegerLiteral(spDecimalIntegerLiteral &decIntLiteral);
+  void parseElementValue(spElementValue &value);
+  void parseElementValuePairs(std::vector<spElementValuePair> &pairs);
+  void parseExpression(spExpression &expr);
+  void parseExpression1(spExpression1 &expr1);
+  void parseExpression2(spExpression2 &expr2);
+  void parseExpression3(spExpression3 &expr3);
+  spImportDeclaration parseImportDeclaration();
+  spImportDeclarations parseImportDeclarations();
   void parseFormalParameters(spFormalParameters &formParams);
   void parseFormalParameterDecls(spFormalParameterDecls &formParamDecls);
   void parseFormalParameterDeclsRest(
     spFormalParameterDeclsRest &formParamDeclsRest);
-  spImportDeclaration parseImportDeclaration();
-  spImportDeclarations parseImportDeclarations();
+  void parseIntegerLiteral(spIntegerLiteral &intLiteral);
+  void parseLiteral(spLiteral &literal);
   void parseModifier(spModifier &modifier);
   void parseMemberDecl(spMemberDecl &memberDecl);
   void parseNormalClassDeclaration(spNormalClassDeclaration &nClassDecl);
   spPackageDeclaration parsePackageDeclaration(
     std::vector<spAnnotation> &annotations);
+  void parsePrimary(spPrimary &primary);
   spQualifiedIdentifier parseQualifiedIdentifier();
   void parseType(spType &type);
   std::vector<spTypeDeclaration> parseTypeDeclarations(
     std::vector<spAnnotation> &annotations);
+  void parseVariableDeclaratorId(spVariableDeclaratorId &varDeclId);
   void parseVariableModifier(spVariableModifier &varModifier);
 
 public:

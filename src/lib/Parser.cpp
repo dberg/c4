@@ -40,6 +40,28 @@ bool Parser::isModifierToken(int token) {
   return false;
 }
 
+bool Parser::isPrefixOp(int token) {
+  if (TOK_OP_PLUS_PLUS == token ||
+      TOK_OP_MINUS_MINUS == token ||
+      TOK_OP_EXCLAMATION == token ||
+      TOK_OP_TILDE == token ||
+      TOK_OP_PLUS == token ||
+      TOK_OP_MINUS == token) {
+    return true;
+  }
+
+  return false;
+}
+
+bool Parser::isPostfixOp(int token) {
+  if (TOK_OP_PLUS_PLUS == token ||
+      TOK_OP_MINUS_MINUS == token) {
+    return true;
+  }
+
+  return false;
+}
+
 bool Parser::isJavaLetter(char c) {
   return (isalpha(c) || c == '$' || c == '_');
 }
@@ -154,9 +176,14 @@ int Parser::getToken() {
   // Annotation and Annotation Type Declarations
   if ('@' == c) return getAnnotationToken();
   if ('.' == c) return getPeriodOrEllipsisToken();
+  if ('+' == c) return getPlusOrPlusPlusToken();
+  if ('-' == c) return getMinusOrMinusMinusToken();
+  if ('=' == c) return getEqualsOrEqualsEqualsToken();
   if (',' == c) return TOK_COMMA;
   if (';' == c) return TOK_SEMICOLON;
   if ('*' == c) return TOK_ASTERISK;
+  if ('~' == c) return TOK_OP_TILDE;
+  if ('!' == c) return TOK_OP_EXCLAMATION;
   if ('{' == c) return TOK_LCURLY_BRACKET;
   if ('}' == c) return TOK_RCURLY_BRACKET;
   if ('(' == c) return TOK_LPAREN;
@@ -164,9 +191,10 @@ int Parser::getToken() {
   if ('[' == c) return TOK_LBRACKET;
   if (']' == c) return TOK_RBRACKET;
 
+  if (isdigit(c)) return getNumberToken(c);
+
   // Identifier
-  if (isJavaLetter(c))
-    return getTokenIdentifier(c);
+  if (isJavaLetter(c)) return getTokenIdentifier(c);
 
   return c;
 }
@@ -203,6 +231,38 @@ int Parser::getAnnotationToken() {
   return TOK_ANNOTATION;
 }
 
+int Parser::getEqualsOrEqualsEqualsToken() {
+  // We look 1 char ahead to decided if we have '=='.
+  if (buffer[cursor] == '=') {
+    cursor++;
+    return TOK_EQUALS_EQUALS;
+  }
+
+  return TOK_EQUALS;
+}
+
+/// TOK_DECIMAL_NUMERAL or 0 on error
+/// DecimalNumeral:
+///   0 | NonZeroDigit [Digits] | NonZeroDigit Underscores Digits
+int Parser::getNumberToken(char c) {
+  std::stringstream ss; ss << c;
+
+  // We look ahead to decide if we have 0 (zero)
+  if (c == '0' && isspace(buffer[cursor])) {
+    curTokenStr = ss.str();
+    return TOK_DECIMAL_NUMERAL;
+  }
+
+  if (c < '1' || c > '9') { return 0; }
+
+  while ((c = getChar()) && (isdigit(c) || c == '_')) {
+    ss << c;
+  }
+  ungetChar(1);
+  curTokenStr = ss.str();
+  return TOK_DECIMAL_NUMERAL;
+}
+
 /// Return TOK_PERIOD | TOK_ELLIPSIS
 int Parser::getPeriodOrEllipsisToken() {
   // We look 2 chars ahead to decide if we have an ellipsis.
@@ -219,6 +279,26 @@ int Parser::getPeriodOrEllipsisToken() {
   }
 
   return TOK_PERIOD;
+}
+
+int Parser::getPlusOrPlusPlusToken() {
+  // We look 1 char ahead to decided if we have '++'.
+  if (buffer[cursor] == '+') {
+    cursor++;
+    return TOK_OP_PLUS_PLUS;
+  }
+
+  return TOK_OP_PLUS;
+}
+
+int Parser::getMinusOrMinusMinusToken() {
+  // We look 1 char ahead to decided if we have '--'.
+  if (buffer[cursor] == '-') {
+    cursor++;
+    return TOK_OP_MINUS_MINUS;
+  }
+
+  return TOK_OP_MINUS;
 }
 
 /// Return TOK_IDENTIFIER | TOK_KEY_*
@@ -270,14 +350,13 @@ spAnnotation Parser::parseAnnotation() {
 
     // Empty annotation element
     if (TOK_RPAREN != curToken) {
-      spAnnotationElement annotationElem = parseAnnotationElement();
-      if (annotationElem->err) {
+      annotation->elem = spAnnotationElement(new AnnotationElement());
+      parseAnnotationElement(annotation->elem);
+      if (annotation->elem->err) {
         annotation->err = true;
-	addError(annotation->posTokAt, openParenPos, ERR_NVAL_ANNOT_ELEM);
+        addError(annotation->posTokAt, openParenPos, ERR_NVAL_ANNOT_ELEM);
         return annotation;
       }
-
-      annotation->elem = annotationElem;
     }
 
     if (TOK_RPAREN != curToken) {
@@ -293,10 +372,19 @@ spAnnotation Parser::parseAnnotation() {
 }
 
 /// AnnotationElement: ElementValuePairs | ElementValue
-spAnnotationElement Parser::parseAnnotationElement() {
-  // TODO:
-  getNextToken();
-  return spAnnotationElement();
+void Parser::parseAnnotationElement(spAnnotationElement &elem) {
+  // ElementValuePairs
+  parseElementValuePairs(elem->pairs);
+  if (elem->pairs.size() > 0) {
+    elem->opt = AnnotationElement::OPT_ELEMENT_VALUE_PAIRS;
+    return;
+  }
+
+  // ElementValue
+  parseElementValue(elem->value);
+  if (elem->value) {
+    elem->opt = AnnotationElement::OPT_ELEMENT_VALUE;
+  }
 }
 
 /// Annotations.
@@ -323,6 +411,173 @@ int Parser::parseArrayDepth() {
   }
 
   return depth;
+}
+
+/// DecimalIntegerLiteral: DecimalNumeral [IntegerTypeSuffix]
+void Parser::parseDecimalIntegerLiteral(
+  spDecimalIntegerLiteral &decIntLiteral) {
+  if (curToken != TOK_DECIMAL_NUMERAL) { return; }
+
+  decIntLiteral->decNumeral = spDecimalNumeral(new DecimalNumeral());
+  decIntLiteral->decNumeral->pos = cursor - curTokenStr.length();
+  decIntLiteral->decNumeral->value = curTokenStr;
+  getNextToken(); // consume decimal
+}
+
+/// ElementValue: Annotation | Expression1 | ElementValueArrayInitializer
+void Parser::parseElementValue(spElementValue &value) {
+  if (TOK_ANNOTATION == curToken) {
+    value->opt = ElementValue::OPT_ANNOTATION;
+    value->annotation = parseAnnotation();
+    return;
+  }
+
+  // Expression1
+  spExpression1 expr1 = spExpression1(new Expression1());
+  parseExpression1(expr1);
+  if (expr1->isEmpty() == false) {
+    value->opt = ElementValue::OPT_EXPRESSION1;
+    value->expr1 = expr1;
+    return;
+  }
+
+  // TODO: ElementValueArrayInitializer
+}
+
+/// Expression: Expression1 [ AssignmentOperator Expression1 ]
+void Parser::parseExpression(spExpression &expr) {
+  spExpression1 expr1 = spExpression1(new Expression1());
+  parseExpression1(expr1);
+  if (expr1->isEmpty()) {
+    return;
+  }
+
+  expr->expr1 = expr1;
+
+  // TODO: [ AssignmentOperator Expression1 ]
+}
+
+/// Expression1: Expression2 [Expression1Rest]
+void Parser::parseExpression1(spExpression1 &expr1) {
+  spExpression2 expr2 = spExpression2(new Expression2());
+  parseExpression2(expr2);
+  if (expr2->isEmpty()) {
+    return;
+  }
+
+  expr1->expr2 = expr2;
+
+  // TODO:
+  // Expression1Rest
+}
+
+/// Expression2: Expression3 [ Expression2Rest ]
+void Parser::parseExpression2(spExpression2 &expr2) {
+  spExpression3 expr3 = spExpression3(new Expression3());
+  parseExpression3(expr3);
+  if (expr3->isEmpty()) {
+    return;
+  }
+
+  expr2->expr3 = expr3;
+
+  // TODO:
+  // Expression2Rest
+}
+
+/// Expression3:
+///   PrefixOp Expression3
+///   ( Expression | Type ) Expression3
+///   Primary { Selector } { PostfixOp }
+///
+/// The first option is recursive only if the prefixes are '!' and '~'.
+/// For example: !!a; ~~b; are legal expressions but ++++a; is invalid
+/// while ~++c; is valid;
+void Parser::parseExpression3(spExpression3 &expr3) {
+  // PrefixOp Expression3
+  if (isPrefixOp(curToken)) {
+    expr3->opt = Expression3::OPT_PREFIXOP_EXPRESSION3;
+    expr3->prefixOp = spPrefixOp(new PrefixOp(
+      cursor - curTokenStr.size(), curToken));
+    expr3->expr3 = spExpression3(new Expression3());
+    parseExpression3(expr3->expr3);
+    return;
+  }
+
+  // ( Expression | Type ) Expression3
+  /*
+  // TODO:
+  // Expression will lead us back to Expression3 checks.
+  // We should check if we have a token that is a candidate for Expression3
+  // before we check for Expression or we can be stuck an infinite loop.
+  spExpression expr = spExpression(new Expression());
+  parseExpression(expr);
+  if (expr->isEmpty() == false) {
+    expr3->opt = Expression3::OPT_EXPRESSION_TYPE_EXPRESSION3;
+    expr3->expr = expr;
+    expr3->expr3 = spExpression3(new Expression3());
+    parseExpression3(expr3->expr3);
+    return;
+  }
+
+  spType type = spType(new Type());
+  parseType(type);
+  if (type->isEmpty() == false) {
+    expr3->opt = Expression3::OPT_EXPRESSION_TYPE_EXPRESSION3;
+    expr3->type = type;
+    expr3->expr3 = spExpression3(new Expression3());
+    parseExpression3(expr3->expr3);
+    return;
+  }
+  */
+
+  // Primary { Selector } { PostfixOp }
+  spPrimary primary = spPrimary(new Primary());
+  parsePrimary(primary);
+  if (primary->isEmpty() == false) {
+    primary->opt = Primary::OPT_LITERAL;
+    expr3->opt = Expression3::OPT_PRIMARY_SELECTOR_POSTFIXOP;
+    expr3->primary = primary;
+
+    // TODO: { Selector } { PostfixOp }
+  }
+}
+
+/// ElementValuePairs: ElementValuePair {, ElementValuePair }
+/// ElementValuePair: Identifier = ElementValue
+void Parser::parseElementValuePairs(std::vector<spElementValuePair> &pairs) {
+  if (TOK_IDENTIFIER != curToken) {
+    return;
+  }
+
+  // Lookahed for a '='.
+  State identifierState;
+  saveState(identifierState);
+  getNextToken(); // consume Identifier
+  if (TOK_EQUALS != curToken) {
+    restoreState(identifierState);
+    return;
+  }
+
+  // We know we have an identifier in our saved state and the current token is
+  // an assignment. We should process the identifier and expect an ElementValue.
+  getNextToken(); // consume '='
+  spElementValuePair pair = spElementValuePair(new ElementValuePair());
+  pair->id = spIdentifier(new Identifier(
+    identifierState.cursor - identifierState.tokenStr.length(),
+    identifierState.tokenStr));
+  pair->value = spElementValue(new ElementValue());
+  parseElementValue(pair->value);
+  if (pair->value->opt == ElementValue::OPT_UNDEFINED) {
+    addError(ERR_EXP_ELEMENT_VALUE);
+  }
+
+  // Even if we have an error while parsing the element value we add the pair
+  // indicating this is an ElementValuePair node.
+  pairs.push_back(pair);
+
+  // We can have multiple ElementValuePair nodes.
+  parseElementValuePairs(pairs);
 }
 
 /// PackageDeclaration: [ [Annotations]  package QualifiedIdentifier ; ]
@@ -414,6 +669,61 @@ spImportDeclaration Parser::parseImportDeclaration() {
   }
 
   return import;
+}
+
+/// IntegerLiteral:
+///   DecimalIntegerLiteral
+///   HexIntegerLiteral
+///   OctalIntegerLiteral
+///   BinaryIntegerLiteral
+void Parser::parseIntegerLiteral(spIntegerLiteral &intLiteral) {
+  if (TOK_DECIMAL_NUMERAL == curToken) {
+    intLiteral->opt = IntegerLiteral::OPT_DECIMAL;
+    intLiteral->decIntLiteral = spDecimalIntegerLiteral(
+      new DecimalIntegerLiteral());
+    parseDecimalIntegerLiteral(intLiteral->decIntLiteral);
+  }
+}
+
+/// Literal:
+///   IntegerLiteral
+///   FloatingPointLiteral
+///   CharacterLiteral
+///   StringLiteral
+///   BooleanLiteral
+///   NullLiteral
+void Parser::parseLiteral(spLiteral &literal) {
+  if (TOK_DECIMAL_NUMERAL == curToken) {
+    literal->opt = Literal::OPT_INTEGER;
+    literal->intLiteral = spIntegerLiteral(new IntegerLiteral());
+    parseIntegerLiteral(literal->intLiteral);
+    return;
+  }
+
+  // TODO:
+}
+
+/// Primary:
+///   Literal
+///   ParExpression
+///   this [Arguments]
+///   super SuperSuffix
+///   new Creator
+///   NonWildcardTypeArguments
+///     ( ExplicitGenericInvocationSuffix | this Arguments )
+///   Identifier { . Identifier } [IdentifierSuffix]
+///   BasicType {[]} . class
+///   void . class
+void Parser::parsePrimary(spPrimary &primary) {
+  spLiteral literal = spLiteral(new Literal());
+  parseLiteral(literal);
+  if (literal->isEmpty() == false) {
+    primary->opt = Primary::OPT_LITERAL;
+    primary->literal = literal;
+    return;
+  }
+
+  // TODO:
 }
 
 /// QualifiedIdentifier: Identifer { . Identifier }

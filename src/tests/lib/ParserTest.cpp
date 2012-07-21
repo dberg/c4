@@ -5,6 +5,32 @@
 #include "gtest/gtest.h"
 using namespace djp;
 
+TEST(Parser, AnnotationElementValuePairs) {
+  std::string filename = "Test.java";
+  std::string buffer =
+    "@myinterface(age=25)\n"
+    "package com.test;";
+  Parser parser(filename, buffer);
+  parser.parse();
+
+  std::vector<spElementValuePair> pairs = parser.compilationUnit->pkgDecl
+    ->annotations[0]->elem->pairs;
+  spElementValuePair pair = pairs[0];
+  spExpression3 expr3 = pair->value->expr1->expr2->expr3;
+  spIntegerLiteral intLiteral = expr3->primary->literal->intLiteral;
+
+  ASSERT_EQ(1, pairs.size());
+  ASSERT_EQ(13, pair->id->pos);
+  ASSERT_EQ("age", pair->id->value);
+  ASSERT_EQ(ElementValue::OPT_EXPRESSION1, pair->value->opt);
+  ASSERT_EQ(Expression3::OPT_PRIMARY_SELECTOR_POSTFIXOP, expr3->opt);
+  ASSERT_EQ(Primary::OPT_LITERAL, expr3->primary->opt);
+  ASSERT_EQ(Literal::OPT_INTEGER, expr3->primary->literal->opt);
+  ASSERT_EQ(IntegerLiteral::OPT_DECIMAL, intLiteral->opt);
+  ASSERT_EQ(17, intLiteral->decIntLiteral->decNumeral->pos);
+  ASSERT_EQ("25", intLiteral->decIntLiteral->decNumeral->value);
+}
+
 TEST(Parser, PackageDeclaration) {
   std::string filename = "Test.java";
   std::string buffer = "@myinterface\npackage com.test;";

@@ -1,6 +1,19 @@
+- [ ] Errors are not flushed from buffer
+      If we type:
+        "@ class A {}"
+         -
+
+      And then fix it, the error is not removed
+        "@Ann class A {}"
+         _
+- [ ] Parse Annotation value pairs
+- [ ] Parser::parseElementValue Expression1
+- [ ] Parser::parseElementValue ElementValueArrayInitializer
+- [ ] Parser::parseExpression2 Expression2Rest
+- [ ] Parser::parseExpression3 Primary { Selector } { PostfixOp }
+- [ ] Parser::parseExpression1 Expression1Rest
 - [ ] Export Symbol table and helper mapper to elisp (pos -> symbol table)
 - [ ] Parse TokenIdentifier BooleanLiteral and NullLiteral
-- [ ] Parse Annotation value pairs
 - [ ] Parse ClassBodyDeclaration
 - [ ] Parse MemberDecl
 - [ ] Parse EnumDeclaration
