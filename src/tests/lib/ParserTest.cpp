@@ -8,7 +8,7 @@ using namespace djp;
 TEST(Parser, AnnotationElementValuePairs) {
   std::string filename = "Test.java";
   std::string buffer =
-    "@myinterface(id=10, group=20)\n"
+    "@myinterface(id=10, group=20L)\n"
     "package com.test;";
   Parser parser(filename, buffer);
   parser.parse();
@@ -32,6 +32,7 @@ TEST(Parser, AnnotationElementValuePairs) {
   ASSERT_EQ(IntegerLiteral::OPT_DECIMAL, intLiteralPair1->opt);
   ASSERT_EQ(16, intLiteralPair1->decIntLiteral->decNumeral->pos);
   ASSERT_EQ("10", intLiteralPair1->decIntLiteral->decNumeral->value);
+  ASSERT_EQ(false, intLiteralPair1->decIntLiteral->intTypeSuffix);
 
   // Pair 2
   spElementValuePair pair2 = pairs[1];
@@ -47,6 +48,7 @@ TEST(Parser, AnnotationElementValuePairs) {
   ASSERT_EQ(IntegerLiteral::OPT_DECIMAL, intLiteralPair2->opt);
   ASSERT_EQ(26, intLiteralPair2->decIntLiteral->decNumeral->pos);
   ASSERT_EQ("20", intLiteralPair2->decIntLiteral->decNumeral->value);
+  ASSERT_EQ(true, intLiteralPair2->decIntLiteral->intTypeSuffix);
 }
 
 TEST(Parser, PackageDeclaration) {

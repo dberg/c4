@@ -653,8 +653,8 @@ struct IntegerLiteral {
 /// DecimalIntegerLiteral: DecimalNumeral [IntegerTypeSuffix]
 struct DecimalIntegerLiteral {
   spDecimalNumeral decNumeral;
-  // TODO:
-  //IntegerTypeSuffix suffix;
+  bool intTypeSuffix;
+  DecimalIntegerLiteral() : intTypeSuffix(false) {}
 };
 
 /// DecimalNumeral:

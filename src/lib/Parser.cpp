@@ -306,7 +306,7 @@ int Parser::getMinusOrMinusMinusToken() {
   return TOK_OP_MINUS;
 }
 
-/// Return TOK_IDENTIFIER | TOK_KEY_*
+/// Return TOK_IDENTIFIER | TOK_INTEGER_TYPE_SUFFIX | TOK_KEY_*
 int Parser::getTokenIdentifier(char c) {
   std::stringstream ss; ss << c;
   while ((c = getChar())) {
@@ -323,6 +323,12 @@ int Parser::getTokenIdentifier(char c) {
   // If keyword return the matching token
   if (int keywordToken = tokenUtil.getKeywordToken(curTokenStr)) {
     return keywordToken;
+  }
+
+  // 1234L or 1234l
+  if (curToken == TOK_DECIMAL_NUMERAL
+    && (curTokenStr.compare("l") || curTokenStr.compare("L"))) {
+    return TOK_INTEGER_TYPE_SUFFIX;
   }
 
   // TODO:
@@ -427,6 +433,11 @@ void Parser::parseDecimalIntegerLiteral(
   decIntLiteral->decNumeral->pos = cursor - curTokenStr.length();
   decIntLiteral->decNumeral->value = curTokenStr;
   getNextToken(); // consume decimal
+
+  if (curToken == TOK_INTEGER_TYPE_SUFFIX) {
+    decIntLiteral->intTypeSuffix = true;
+    getNextToken(); // consume type suffix
+  }
 }
 
 /// ElementValue: Annotation | Expression1 | ElementValueArrayInitializer
