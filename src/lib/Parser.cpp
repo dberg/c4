@@ -241,24 +241,29 @@ int Parser::getEqualsOrEqualsEqualsToken() {
   return TOK_EQUALS;
 }
 
-/// TOK_DECIMAL_NUMERAL or 0 on error
+/// Returns TOK_DECIMAL_NUMERAL or 0 on error
 /// DecimalNumeral:
 ///   0 | NonZeroDigit [Digits] | NonZeroDigit Underscores Digits
 int Parser::getNumberToken(char c) {
   std::stringstream ss; ss << c;
 
   // We look ahead to decide if we have 0 (zero)
-  if (c == '0' && isspace(buffer[cursor])) {
+  if (c == '0' && (!isdigit(buffer[cursor]) && c != '_')) {
     curTokenStr = ss.str();
     return TOK_DECIMAL_NUMERAL;
   }
 
   if (c < '1' || c > '9') { return 0; }
 
+  // While we have digits or underscore chars we append it to ss.
   while ((c = getChar()) && (isdigit(c) || c == '_')) {
     ss << c;
   }
   ungetChar(1);
+
+  // TODO: We have to deal with the invalid case of decimals
+  // ending with an underscore.
+
   curTokenStr = ss.str();
   return TOK_DECIMAL_NUMERAL;
 }
