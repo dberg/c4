@@ -18,15 +18,25 @@ typedef boost::shared_ptr<struct Annotation> spAnnotation;
 typedef boost::shared_ptr<struct QualifiedIdentifier> spQualifiedIdentifier;
 typedef boost::shared_ptr<struct AnnotationElement> spAnnotationElement;
 typedef boost::shared_ptr<struct ElementValue> spElementValue;
+typedef boost::shared_ptr<struct ElementValueArrayInitializer>
+  spElementValueArrayInitializer;
 typedef boost::shared_ptr<struct ElementValuePair> spElementValuePair;
 typedef boost::shared_ptr<struct Identifier> spIdentifier;
+typedef boost::shared_ptr<struct Expression> spExpression;
 typedef boost::shared_ptr<struct Expression1> spExpression1;
+typedef boost::shared_ptr<struct Expression1Rest> spExpression1Rest;
 typedef boost::shared_ptr<struct Expression2> spExpression2;
+typedef boost::shared_ptr<struct Expression2Rest> spExpression2Rest;
 typedef boost::shared_ptr<struct Expression3> spExpression3;
 typedef boost::shared_ptr<struct Primary> spPrimary;
 typedef boost::shared_ptr<struct Literal> spLiteral;
 typedef boost::shared_ptr<struct IntegerLiteral> spIntegerLiteral;
+typedef boost::shared_ptr<struct FloatingPointLiteral> spFloatingPointLiteral;
 typedef boost::shared_ptr<struct DecimalIntegerLiteral> spDecimalIntegerLiteral;
+typedef boost::shared_ptr<struct CharacterLiteral> spCharacterLiteral;
+typedef boost::shared_ptr<struct StringLiteral> spStringLiteral;
+typedef boost::shared_ptr<struct BooleanLiteral> spBooleanLiteral;
+typedef boost::shared_ptr<struct NullLiteral> spNullLiteral;
 typedef boost::shared_ptr<struct DecimalNumeral> spDecimalNumeral;
 typedef boost::shared_ptr<struct TypeDeclaration> spTypeDeclaration;
 typedef boost::shared_ptr<struct ClassOrInterfaceDeclaration>
@@ -50,6 +60,7 @@ typedef boost::shared_ptr<struct EnumDeclaration>
 typedef boost::shared_ptr<struct InterfaceDeclaration> spInterfaceDeclaration;
 typedef boost::shared_ptr<struct MemberDecl> spMemberDecl;
 typedef boost::shared_ptr<struct Modifier> spModifier;
+typedef boost::shared_ptr<struct PrefixOp> spPrefixOp;
 typedef boost::shared_ptr<struct TokenExp> spTokenExp;
 typedef boost::shared_ptr<struct VariableDeclaratorId> spVariableDeclaratorId;
 typedef boost::shared_ptr<struct Type> spType;
@@ -114,6 +125,14 @@ struct TokenExp {
 struct Modifier {
   std::vector<spAnnotation> annotations;
   std::vector<spTokenExp> tokens;
+};
+
+/// PrefixOp: ++ -- ! ~ + -
+struct PrefixOp {
+  int pos;
+  int token;
+
+  PrefixOp(unsigned int pos, int token) : pos(pos), token(token) {}
 };
 
 /// ClassDeclaration: NormalClassDeclaration | EnumDeclaration
@@ -430,15 +449,23 @@ struct ImportDeclaration {
   }
 };
 
-/// ElementValuePair: ElementValuePairs | ElementValue
-/// TODO: they should be a union
+/// AnnotationElement: ElementValuePairs | ElementValue
 struct AnnotationElement {
+  enum AnnotationElementOpt {
+    OPT_UNDEFINED,
+    OPT_ELEMENT_VALUE_PAIRS,
+    OPT_ELEMENT_VALUE,
+  };
+
+  AnnotationElementOpt opt;
   bool err;
   std::vector<spElementValuePair> pairs;
   spElementValue value;
-  AnnotationElement() : err(false) {}
+
+  AnnotationElement() : opt(OPT_UNDEFINED), err(false) {}
 };
 
+/// ElementValuePairs: ElementValuePair {, ElementValuePair }
 /// ElementValuePair: Identifier = ElementValue
 struct ElementValuePair {
   spIdentifier id;
@@ -446,38 +473,99 @@ struct ElementValuePair {
   ElementValuePair() {}
 };
 
-/// TODO: Enable the commented structures as union
+/// ElementValue: Annotation | Expression1 | ElementValueArrayInitializer
 struct ElementValue {
-  //Annotation annotation;
+  enum ElementValueOpt {
+    OPT_UNDEFINED,
+    OPT_ANNOTATION,
+    OPT_EXPRESSION1,
+    OPT_ELEMENT_VALUE_ARRAY_INITIALIZER,
+  };
+
+  ElementValueOpt opt;
+  spAnnotation annotation;
   spExpression1 expr1;
-  //ElementValueArrayInitializer elemValArrayInit;
-  ElementValue() {}
+  spElementValueArrayInitializer elemValArrayInit;
+
+  ElementValue() : opt(OPT_UNDEFINED) {}
+};
+
+/// ElementValueArrayInitializer: { [ElementValues] [,] }
+struct ElementValueArrayInitializer {
+  std::vector<spElementValue> elemValues;
+};
+
+/// Expression: Expression1 [ AssignmentOperator Expression1 ]
+struct Expression {
+  spExpression1 expr1;
+  // TODO: [ AssignmentOperator Expression1 ]
+
+  bool isEmpty() {
+    return (expr1) ? false : true;
+  }
 };
 
 /// Expression1: Expression2 [Expression1Rest]
-/// TODO: Expression1Rest
 struct Expression1 {
   spExpression2 expr2;
-  // [ Expression1Rest ]
-  Expression1() {}
+  spExpression1Rest expr1Rest;
+
+  bool isEmpty() {
+    return (expr2) ? false : true;
+  }
+};
+
+/// Expression1Rest: ? Expression : Expression1
+struct Expression1Rest {
+
 };
 
 /// Expression2: Expression3 [ Expression2Rest ]
-/// TODO: Expression2Rest
 struct Expression2 {
   spExpression3 expr3;
-  // [ Expression2Rest ]
-  Expression2() {}
+  spExpression2Rest expr2Rest;
+
+  bool isEmpty() {
+    return (expr3) ? false : true;
+  }
+};
+
+/// Expression2Rest:
+///   { InfixOp Expression3 }
+///   instanceof Type
+struct Expression2Rest {
+
 };
 
 /// Expression3:
 ///   PrefixOp Expression3
 ///   ( Expression | Type ) Expression3
 ///   Primary { Selector } { PostfixOp }
-/// TODO: deal with 1st and 3rd case using union
 struct Expression3 {
-  spPrimary primary; // TODO: { Selector } { PostfixOp }
-  Expression3() {}
+  enum Expression3Opt {
+    OPT_UNDEFINED,
+    OPT_PREFIXOP_EXPRESSION3,
+    OPT_EXPRESSION_TYPE_EXPRESSION3,
+    OPT_PRIMARY_SELECTOR_POSTFIXOP,
+  };
+
+  Expression3Opt opt;
+
+  // PrefixOp Expression3
+  spPrefixOp prefixOp;
+  spExpression3 expr3;
+
+  // ( Expression | Type ) Expression3
+  spExpression expr;
+  spType type;
+
+  // Primary { Selector } { PostfixOp }
+  spPrimary primary;
+  // TODO: { Selector }
+  // TODO: { PostfixOp }
+
+  Expression3() : opt(OPT_UNDEFINED) {}
+  bool isEmpty() { return opt == OPT_UNDEFINED; }
 };
 
 /// Primary: 
@@ -491,10 +579,24 @@ struct Expression3 {
 ///   Identifier { . Identifier } [IdentifierSuffix]
 ///   BasicType {[]} . class
 ///   void . class
-/// TODO: We're only dealing with Literal now
 struct Primary {
+  enum PrimaryEnum {
+    OPT_UNDEFINED,
+    OPT_LITERAL,
+    OPT_PAR_EXPRESSION,
+    OPT_THIS_ARGUMENTS,
+    OPT_SUPER_SUPER_SUFFIX,
+    OPT_NEW_CREATOR,
+    OPT_NON_WILDCARD_TYPE_ARGUMENTS,
+    OPT_IDENTIFIER,
+    OPT_BASIC_TYPE,
+    OPT_VOID_CLASS,
+  };
+
+  PrimaryEnum opt;
   spLiteral literal;
-  Primary() {}
+  Primary() : opt(OPT_UNDEFINED) {}
+  bool isEmpty() { return opt == OPT_UNDEFINED; }
 };
 
 /// Literal:
@@ -504,10 +606,28 @@ struct Primary {
 ///   StringLiteral
 ///   BooleanLiteral
 ///   NullLiteral
-/// TODO: We're only dealing with IntegerLiteral now
 struct Literal {
+  enum LiteralEnum {
+    OPT_UNDEFINED,
+    OPT_INTEGER,
+    OPT_FLOATING_POINT,
+    OPT_CHAR,
+    OPT_STRING,
+    OPT_BOOLEAN,
+    OPT_NULL,
+  };
+
+  LiteralEnum opt;
   spIntegerLiteral intLiteral;
-  Literal() {}
+  spFloatingPointLiteral fpLiteral;
+  spCharacterLiteral charLiteral;
+  spStringLiteral strLiteral;
+  spBooleanLiteral boolLiteral;
+  spNullLiteral nullLiteral;
+
+  Literal() : opt(OPT_UNDEFINED) {}
+
+  bool isEmpty() { return opt == OPT_UNDEFINED; }
 };
 
 /// IntegerLiteral:
@@ -515,30 +635,37 @@ struct Literal {
 ///   HexIntegerLiteral
 ///   OctalIntegerLiteral
 ///   BinaryIntegerLiteral
-/// TODO: We're only dealing with DecimalIntegerLiteral now
 struct IntegerLiteral {
+  enum IntegerLiteralEnum {
+    OPT_UNDEFINED,
+    OPT_DECIMAL,
+    OPT_HEX,
+    OPT_OCTAL,
+    OPT_BINARY,
+  };
+
+  IntegerLiteralEnum opt;
   spDecimalIntegerLiteral decIntLiteral;
-  IntegerLiteral() {}
+  // TODO:
+  IntegerLiteral() : opt(OPT_UNDEFINED) {}
 };
 
 /// DecimalIntegerLiteral: DecimalNumeral [IntegerTypeSuffix]
-/// TODO: We're ignoring the suffix
 struct DecimalIntegerLiteral {
   spDecimalNumeral decNumeral;
+  // TODO:
   //IntegerTypeSuffix suffix;
-  DecimalIntegerLiteral() {}
 };
 
 /// DecimalNumeral:
-///   0 | NonZeroDigit [Digits] | [1-9] Underscores Digits
+///   0 | NonZeroDigit [Digits] | NonZeroDigit Underscores Digits
 /// Where
 ///   NonZeroDigit: One of 1..9
 ///   Digits: Digit | Digit [DigitsAndUnderscores] Digit
 ///   Underscores: _ {_}
-/// TODO: We're not dealing with underscores
 struct DecimalNumeral {
-  int pos, len;
-  long decimal;
+  int pos;
+  std::string value;
 };
 
 struct Error {
