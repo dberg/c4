@@ -326,14 +326,22 @@ int Parser::getTokenIdentifier(char c) {
   }
 
   // 1234L or 1234l
+  // TODO: This is the wrong approach as it allows the invalid forms as
+  // 1234   L
   if (curToken == TOK_DECIMAL_NUMERAL
-    && (curTokenStr.compare("l") || curTokenStr.compare("L"))) {
+    && (curTokenStr.compare("l") == 0 || curTokenStr.compare("L") == 0)) {
     return TOK_INTEGER_TYPE_SUFFIX;
   }
 
-  // TODO:
-  // If BooleanLiteral return matching token
-  // If NullLiteral return matching token
+  // BooleanLiteral
+  if (curTokenStr.compare("true") == 0 || curTokenStr.compare("false") == 0) {
+    return TOK_BOOLEAN_LITERAL;
+  }
+
+  // NullLiteral
+  if (curTokenStr.compare("null") == 0) {
+    return TOK_NULL_LITERAL;
+  }
 
   return TOK_IDENTIFIER;
 }

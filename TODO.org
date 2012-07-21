@@ -5,12 +5,12 @@
 - [ ] Parser::parseExpression3 Primary { Selector } { PostfixOp }
 - [ ] Parser::parseExpression1 Expression1Rest
 - [ ] Export Symbol table and helper mapper to elisp (pos -> symbol table)
-- [ ] Parse TokenIdentifier BooleanLiteral and NullLiteral
 - [ ] Parse ClassBodyDeclaration
 - [ ] Parse MemberDecl
 - [ ] Parse EnumDeclaration
 - [ ] Parse InterfaceDeclaration
 - [ ] Improve AST structures with Unions
+- [X] Parse TokenIdentifier BooleanLiteral and NullLiteral
 - [X] Errors are not flushed from buffer
       If we type:
         "@ class A {}"
