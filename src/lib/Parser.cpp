@@ -576,8 +576,10 @@ void Parser::parseElementValuePairs(std::vector<spElementValuePair> &pairs) {
   // indicating this is an ElementValuePair node.
   pairs.push_back(pair);
 
-  // We can have multiple ElementValuePair nodes.
-  parseElementValuePairs(pairs);
+  if (TOK_COMMA == curToken) {
+    getNextToken(); // consume ','
+    parseElementValuePairs(pairs);
+  }
 }
 
 /// PackageDeclaration: [ [Annotations]  package QualifiedIdentifier ; ]

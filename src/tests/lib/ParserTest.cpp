@@ -8,27 +8,45 @@ using namespace djp;
 TEST(Parser, AnnotationElementValuePairs) {
   std::string filename = "Test.java";
   std::string buffer =
-    "@myinterface(age=25)\n"
+    "@myinterface(id=10, group=20)\n"
     "package com.test;";
   Parser parser(filename, buffer);
   parser.parse();
 
   std::vector<spElementValuePair> pairs = parser.compilationUnit->pkgDecl
     ->annotations[0]->elem->pairs;
-  spElementValuePair pair = pairs[0];
-  spExpression3 expr3 = pair->value->expr1->expr2->expr3;
-  spIntegerLiteral intLiteral = expr3->primary->literal->intLiteral;
 
-  ASSERT_EQ(1, pairs.size());
-  ASSERT_EQ(13, pair->id->pos);
-  ASSERT_EQ("age", pair->id->value);
-  ASSERT_EQ(ElementValue::OPT_EXPRESSION1, pair->value->opt);
-  ASSERT_EQ(Expression3::OPT_PRIMARY_SELECTOR_POSTFIXOP, expr3->opt);
-  ASSERT_EQ(Primary::OPT_LITERAL, expr3->primary->opt);
-  ASSERT_EQ(Literal::OPT_INTEGER, expr3->primary->literal->opt);
-  ASSERT_EQ(IntegerLiteral::OPT_DECIMAL, intLiteral->opt);
-  ASSERT_EQ(17, intLiteral->decIntLiteral->decNumeral->pos);
-  ASSERT_EQ("25", intLiteral->decIntLiteral->decNumeral->value);
+  ASSERT_EQ(2, pairs.size());
+
+  // Pair 1
+  spElementValuePair pair1 = pairs[0];
+  spExpression3 expr3Pair1 = pair1->value->expr1->expr2->expr3;
+  spIntegerLiteral intLiteralPair1 = expr3Pair1->primary->literal->intLiteral;
+
+  ASSERT_EQ(13, pair1->id->pos);
+  ASSERT_EQ("id", pair1->id->value);
+  ASSERT_EQ(ElementValue::OPT_EXPRESSION1, pair1->value->opt);
+  ASSERT_EQ(Expression3::OPT_PRIMARY_SELECTOR_POSTFIXOP, expr3Pair1->opt);
+  ASSERT_EQ(Primary::OPT_LITERAL, expr3Pair1->primary->opt);
+  ASSERT_EQ(Literal::OPT_INTEGER, expr3Pair1->primary->literal->opt);
+  ASSERT_EQ(IntegerLiteral::OPT_DECIMAL, intLiteralPair1->opt);
+  ASSERT_EQ(16, intLiteralPair1->decIntLiteral->decNumeral->pos);
+  ASSERT_EQ("10", intLiteralPair1->decIntLiteral->decNumeral->value);
+
+  // Pair 2
+  spElementValuePair pair2 = pairs[1];
+  spExpression3 expr3Pair2 = pair2->value->expr1->expr2->expr3;
+  spIntegerLiteral intLiteralPair2 = expr3Pair2->primary->literal->intLiteral;
+
+  ASSERT_EQ(20, pair2->id->pos);
+  ASSERT_EQ("group", pair2->id->value);
+  ASSERT_EQ(ElementValue::OPT_EXPRESSION1, pair2->value->opt);
+  ASSERT_EQ(Expression3::OPT_PRIMARY_SELECTOR_POSTFIXOP, expr3Pair2->opt);
+  ASSERT_EQ(Primary::OPT_LITERAL, expr3Pair2->primary->opt);
+  ASSERT_EQ(Literal::OPT_INTEGER, expr3Pair2->primary->literal->opt);
+  ASSERT_EQ(IntegerLiteral::OPT_DECIMAL, intLiteralPair2->opt);
+  ASSERT_EQ(26, intLiteralPair2->decIntLiteral->decNumeral->pos);
+  ASSERT_EQ("20", intLiteralPair2->decIntLiteral->decNumeral->value);
 }
 
 TEST(Parser, PackageDeclaration) {
