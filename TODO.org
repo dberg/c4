@@ -1,15 +1,20 @@
+- [ ] Fix bogus responses from "1234 L". We currently get two tokens
+      TOK_DECIMAL_NUMERAL TOK_INTEGER_TYPE_SUFFIX
+      We can remove and TOK_INTEGER_TYPE_SUFFIX and add
+      TOK_DECIMAL_NUMERL_WITH_INT_TYPE_SUFFIX as an optional response from
+      getNumberToken method.
 - [ ] Parse Annotation value pairs
 - [ ] Parser::parseElementValue Expression1
 - [ ] Parser::parseElementValue ElementValueArrayInitializer
 - [ ] Parser::parseExpression2 Expression2Rest
 - [ ] Parser::parseExpression3 Primary { Selector } { PostfixOp }
 - [ ] Parser::parseExpression1 Expression1Rest
-- [ ] Export Symbol table and helper mapper to elisp (pos -> symbol table)
 - [ ] Parse ClassBodyDeclaration
 - [ ] Parse MemberDecl
 - [ ] Parse EnumDeclaration
 - [ ] Parse InterfaceDeclaration
 - [ ] Improve AST structures with Unions
+- [ ] Export Symbol table and helper mapper to elisp (pos -> symbol table)
 - [X] Parse TokenIdentifier BooleanLiteral and NullLiteral
 - [X] Errors are not flushed from buffer
       If we type:
