@@ -32,7 +32,7 @@ TEST(Parser, AnnotationElementValuePairs) {
   ASSERT_EQ(IntegerLiteral::OPT_DECIMAL, intLiteralPair1->opt);
   ASSERT_EQ(16, intLiteralPair1->decIntLiteral->decNumeral->pos);
   ASSERT_EQ("10", intLiteralPair1->decIntLiteral->decNumeral->value);
-  ASSERT_EQ(false, intLiteralPair1->decIntLiteral->intTypeSuffix);
+  ASSERT_FALSE(intLiteralPair1->decIntLiteral->intTypeSuffix);
 
   // Pair 2
   spElementValuePair pair2 = pairs[1];
@@ -91,7 +91,7 @@ TEST(Parser, ImportDeclarations) {
   ASSERT_EQ(-1, parser.compilationUnit->impDecls->imports[0]->endOnDemand);
   ASSERT_EQ("com.test1.Test1",
     parser.compilationUnit->impDecls->imports[0]->getImport());
-  ASSERT_EQ(false, parser.compilationUnit->impDecls->imports[0]->err);
+  ASSERT_FALSE(parser.compilationUnit->impDecls->imports[0]->err);
   ASSERT_EQ(SINGLE_TYPE_IMPORT_DECLARATION,
     parser.compilationUnit->impDecls->imports[0]->type);
 
@@ -102,7 +102,7 @@ TEST(Parser, ImportDeclarations) {
   ASSERT_EQ(41, parser.compilationUnit->impDecls->imports[1]->endOnDemand);
   ASSERT_EQ("com.test2.*",
     parser.compilationUnit->impDecls->imports[1]->getImport());
-  ASSERT_EQ(false, parser.compilationUnit->impDecls->imports[0]->err);
+  ASSERT_FALSE(parser.compilationUnit->impDecls->imports[0]->err);
   ASSERT_EQ(TYPE_IMPORT_ON_DEMAND_DECLARATION,
     parser.compilationUnit->impDecls->imports[1]->type);
 
@@ -113,7 +113,7 @@ TEST(Parser, ImportDeclarations) {
   ASSERT_EQ(-1, parser.compilationUnit->impDecls->imports[2]->endOnDemand);
   ASSERT_EQ("com.test3.Test3",
     parser.compilationUnit->impDecls->imports[2]->getImport());
-  ASSERT_EQ(false, parser.compilationUnit->impDecls->imports[2]->err);
+  ASSERT_FALSE(parser.compilationUnit->impDecls->imports[2]->err);
   ASSERT_EQ(SINGLE_STATIC_IMPORT_DECLARATION,
     parser.compilationUnit->impDecls->imports[2]->type);
 
@@ -124,7 +124,7 @@ TEST(Parser, ImportDeclarations) {
   ASSERT_EQ(99, parser.compilationUnit->impDecls->imports[3]->endOnDemand);
   ASSERT_EQ("com.test4.*",
     parser.compilationUnit->impDecls->imports[3]->getImport());
-  ASSERT_EQ(false, parser.compilationUnit->impDecls->imports[3]->err);
+  ASSERT_FALSE(parser.compilationUnit->impDecls->imports[3]->err);
   ASSERT_EQ(STATIC_IMPORT_ON_DEMAND_DECLARATION,
     parser.compilationUnit->impDecls->imports[3]->type);
 }
