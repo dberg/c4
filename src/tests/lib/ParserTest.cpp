@@ -47,7 +47,7 @@ TEST(Parser, AnnotationElementValuePairs) {
   ASSERT_EQ(Literal::OPT_INTEGER, expr3Pair2->primary->literal->opt);
   ASSERT_EQ(IntegerLiteral::OPT_DECIMAL, intLiteralPair2->opt);
   ASSERT_EQ(26, intLiteralPair2->decIntLiteral->decNumeral->pos);
-  ASSERT_EQ("20", intLiteralPair2->decIntLiteral->decNumeral->value);
+  ASSERT_EQ("20L", intLiteralPair2->decIntLiteral->decNumeral->value);
   ASSERT_EQ(true, intLiteralPair2->decIntLiteral->intTypeSuffix);
 }
 
@@ -201,7 +201,8 @@ TEST(Parser, ClassConstructorParameterArray) {
   spFormalParameterDecls formParamDecls = parser.compilationUnit->typeDecls[0]
     ->decl->classDecl->nClassDecl->classBody->decls[0]->memberDecl
     ->constDeclRest->formParams->formParamDecls;
-  ASSERT_EQ(1, formParamDecls->formParamDeclsRest->varDeclId->arrayDepth);
+  ASSERT_EQ(1, formParamDecls->type->arrayDepth);
+  ASSERT_EQ(0, formParamDecls->formParamDeclsRest->varDeclId->arrayDepth);
 }
 
 TEST(Parser, ClassConstructorParameters) {
@@ -223,11 +224,13 @@ TEST(Parser, ClassConstructorParameters) {
     formParamDecls->formParamDeclsRest->varDeclId->identifier->value);
 
   // param 2
-  spFormalParameterDecls formParamDecls2 = formParamDecls->formParamDeclsRest->formParamDecls;
+  spFormalParameterDecls formParamDecls2
+    = formParamDecls->formParamDeclsRest->formParamDecls;
   ASSERT_EQ(Type::OPT_BASIC_TYPE, formParamDecls2->type->opt);
   ASSERT_EQ(23, formParamDecls2->type->basicType->token->pos);
   ASSERT_EQ(TOK_KEY_DOUBLE, formParamDecls2->type->basicType->token->type);
-  ASSERT_EQ(30, formParamDecls2->formParamDeclsRest->varDeclId->identifier->pos);
+  ASSERT_EQ(30,
+    formParamDecls2->formParamDeclsRest->varDeclId->identifier->pos);
   ASSERT_EQ("b",
     formParamDecls2->formParamDeclsRest->varDeclId->identifier->value);
 }

@@ -31,6 +31,7 @@ class Parser {
 
   // Helper methods
   bool isBasicType(int token);
+  bool isDecimalInteger(int token);
   bool isJavaLetter(char c);
   bool isJavaLetterOrDigit(char c);
   bool isModifierToken(int token);

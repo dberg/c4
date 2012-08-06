@@ -17,6 +17,15 @@ bool Parser::isBasicType(int token) {
   return false;
 }
 
+bool Parser::isDecimalInteger(int token) {
+  if (token == TOK_DECIMAL_NUMERAL
+      || token == TOK_DECIMAL_NUMERAL_WITH_INT_TYPE_SUFFIX) {
+    return true;
+  }
+
+  return false;
+}
+
 /// ClassModifier: one of
 ///   Annotation public protected private
 ///   abstract static final strictfp
@@ -241,29 +250,64 @@ int Parser::getEqualsOrEqualsEqualsToken() {
   return TOK_EQUALS;
 }
 
-/// Returns TOK_DECIMAL_NUMERAL or 0 on error
+/// Returns one of:
+///   TOK_DECIMAL_NUMERAL
+///   TOK_DECIMAL_NUMERAL_WITH_INT_TYPE_SUFFIX
+/// DecimalIntegerLiteral: DecimalNumeral [IntegerTypeSuffix]
 /// DecimalNumeral:
 ///   0 | NonZeroDigit [Digits] | NonZeroDigit Underscores Digits
+/// IntegerTypeSuffix: l | L
 int Parser::getNumberToken(char c) {
   std::stringstream ss; ss << c;
 
   // We look ahead to decide if we have 0 (zero)
-  if (c == '0' && (!isdigit(buffer[cursor]) && c != '_')) {
+  if (c == '0') {
+    // Check if it's zero followed by an integer type suffix
+    char lookahead = getChar();
+    if (lookahead == 'l' || lookahead == 'L') {
+      ss << c;
+      return TOK_DECIMAL_NUMERAL_WITH_INT_TYPE_SUFFIX;
+    }
+
+    ungetChar(1);
+    return TOK_DECIMAL_NUMERAL;
+  }
+
+  // While we have a digit or an underscore char we append it to ss.
+  std::stringstream ss_;
+  while ((c = getChar()) && (isdigit(c) || c == '_')) {
+    if (c == '_') {
+      ss_ << c;
+    } else {
+      // pop underscore stream into decimal numeral stream and reset it
+      ss << ss_.str();
+      ss_.str("");
+      ss_.clear();
+      // insert digit into stream
+      ss << c;
+    }
+  }
+
+  // Unget underscore chars if any.
+  std::string underscores = ss_.str();
+  if (underscores.length()) {
+    ungetChar(underscores.length());
+    // The syntax at this point is invalid but we return the valid number
+    // we have so far and let the consumer validate the next token.
     curTokenStr = ss.str();
     return TOK_DECIMAL_NUMERAL;
   }
 
-  if (c < '1' || c > '9') { return 0; }
-
-  // While we have digits or underscore chars we append it to ss.
-  while ((c = getChar()) && (isdigit(c) || c == '_')) {
+  // Check int type suffix
+  if (c == 'l' || c == 'L') {
     ss << c;
+    curTokenStr = ss.str();
+    return TOK_DECIMAL_NUMERAL_WITH_INT_TYPE_SUFFIX;
   }
+
+  // We have a decimal number but we have to unget the last call to getChar
+  // before exiting.
   ungetChar(1);
-
-  // TODO: We have to deal with the invalid case of decimals
-  // ending with an underscore.
-
   curTokenStr = ss.str();
   return TOK_DECIMAL_NUMERAL;
 }
@@ -435,17 +479,16 @@ int Parser::parseArrayDepth() {
 /// DecimalIntegerLiteral: DecimalNumeral [IntegerTypeSuffix]
 void Parser::parseDecimalIntegerLiteral(
   spDecimalIntegerLiteral &decIntLiteral) {
-  if (curToken != TOK_DECIMAL_NUMERAL) { return; }
+  if (!isDecimalInteger(curToken)) { return; }
 
   decIntLiteral->decNumeral = spDecimalNumeral(new DecimalNumeral());
   decIntLiteral->decNumeral->pos = cursor - curTokenStr.length();
   decIntLiteral->decNumeral->value = curTokenStr;
-  getNextToken(); // consume decimal
-
-  if (curToken == TOK_INTEGER_TYPE_SUFFIX) {
+  if (curToken == TOK_DECIMAL_NUMERAL_WITH_INT_TYPE_SUFFIX) {
     decIntLiteral->intTypeSuffix = true;
-    getNextToken(); // consume type suffix
   }
+
+  getNextToken(); // consume decimal
 }
 
 /// ElementValue: Annotation | Expression1 | ElementValueArrayInitializer
@@ -703,7 +746,7 @@ spImportDeclaration Parser::parseImportDeclaration() {
 ///   OctalIntegerLiteral
 ///   BinaryIntegerLiteral
 void Parser::parseIntegerLiteral(spIntegerLiteral &intLiteral) {
-  if (TOK_DECIMAL_NUMERAL == curToken) {
+  if (isDecimalInteger(curToken)) {
     intLiteral->opt = IntegerLiteral::OPT_DECIMAL;
     intLiteral->decIntLiteral = spDecimalIntegerLiteral(
       new DecimalIntegerLiteral());
@@ -719,7 +762,7 @@ void Parser::parseIntegerLiteral(spIntegerLiteral &intLiteral) {
 ///   BooleanLiteral
 ///   NullLiteral
 void Parser::parseLiteral(spLiteral &literal) {
-  if (TOK_DECIMAL_NUMERAL == curToken) {
+  if (isDecimalInteger(curToken)) {
     literal->opt = Literal::OPT_INTEGER;
     literal->intLiteral = spIntegerLiteral(new IntegerLiteral());
     parseIntegerLiteral(literal->intLiteral);

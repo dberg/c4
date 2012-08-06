@@ -1,11 +1,3 @@
-- [ ] Fix tests/lib/ParserTest.cpp:204: Failure
-      Value of: formParamDecls->formParamDeclsRest->varDeclId->arrayDepth
-      Actual: 0; Expected: 1
-- [ ] Fix bogus responses from "1234 L". We currently get two tokens
-      TOK_DECIMAL_NUMERAL TOK_INTEGER_TYPE_SUFFIX
-      We can remove and TOK_INTEGER_TYPE_SUFFIX and add
-      TOK_DECIMAL_NUMERL_WITH_INT_TYPE_SUFFIX as an optional response from
-      getNumberToken method.
 - [ ] Parse Annotation value pairs
 - [ ] Parser::parseElementValue Expression1
 - [ ] Parser::parseElementValue ElementValueArrayInitializer
@@ -18,6 +10,18 @@
 - [ ] Parse InterfaceDeclaration
 - [ ] Improve AST structures with Unions
 - [ ] Export Symbol table and helper mapper to elisp (pos -> symbol table)
+- [X] Fix bogus responses from "1234 L". We currently get two tokens
+      TOK_DECIMAL_NUMERAL TOK_INTEGER_TYPE_SUFFIX
+      We can remove and TOK_INTEGER_TYPE_SUFFIX and add
+      TOK_DECIMAL_NUMERL_WITH_INT_TYPE_SUFFIX as an optional response from
+      getNumberToken method.
+- [X] Fix tests/lib/ParserTest.cpp:204: Failure
+      Value of: formParamDecls->formParamDeclsRest->varDeclId->arrayDepth
+      Actual: 0; Expected: 1
+
+      The test is incorrect. Parsing "int[] a" produces:
+      FormalParameterDecls->Type->arrayDept == 1
+      FormalParameterDecls->VariableDeclaratorId->arrayDepth = 0
 - [X] Parse TokenIdentifier BooleanLiteral and NullLiteral
 - [X] Errors are not flushed from buffer
       If we type:
