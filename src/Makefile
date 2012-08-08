@@ -59,12 +59,14 @@ directories:
 # main djp
 $(bin)/djp: $(obj)/CmdInput.o \
             $(obj)/File.o \
+            $(obj)/Lexer.o \
             $(obj)/Parser.o \
             $(obj)/Output.o \
             $(obj)/SymbolTable.o \
             $(obj)/djp.o
 	$(CXX) $(obj)/CmdInput.o \
                $(obj)/File.o \
+               $(obj)/Lexer.o \
                $(obj)/Parser.o \
                $(obj)/Output.o \
                $(obj)/SymbolTable.o \
@@ -75,6 +77,11 @@ $(obj)/CmdInput.o: $(libdir)/CmdInput.cpp $(incdir)/CmdInput.h
 	$(CXX) $(CFLAGS) $(INC) -c $< -o $@
 
 $(obj)/File.o: $(libdir)/File.cpp $(incdir)/File.h
+	$(CXX) $(CFLAGS) $(INC) -c $< -o $@
+
+$(obj)/Lexer.o: $(libdir)/Lexer.cpp \
+                $(incdir)/Lexer.h \
+                $(incdir)/Token.h
 	$(CXX) $(CFLAGS) $(INC) -c $< -o $@
 
 $(obj)/Parser.o: $(libdir)/Parser.cpp \
@@ -101,12 +108,14 @@ $(obj)/djp.o: $(libdir)/djp.cpp
 # tests
 $(bin)/tests: $(test_libdir)/ParserTest.cpp \
               $(test_libdir)/EmacsOutputTest.cpp \
+              $(obj)/Lexer.o \
               $(obj)/Parser.o \
               $(obj)/Output.o \
               $(obj)/SymbolTable.o \
               $(gtest_obj)/libgtest.a
 
-	$(CXX) $(INC) -I$(gtest_inc) $(obj)/Parser.o \
+	$(CXX) $(INC) -I$(gtest_inc) $(obj)/Lexer.o \
+                                     $(obj)/Parser.o \
                                      $(obj)/Output.o \
                                      $(obj)/SymbolTable.o \
                                      $(test_libdir)/ParserTest.cpp \

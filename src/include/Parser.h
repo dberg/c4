@@ -6,59 +6,27 @@
 #include <vector>
 #include "AST.h"
 #include "ErrorCodes.h"
+#include "Lexer.h"
 #include "SymbolTable.h"
 #include "Token.h"
 
 namespace djp {
 class Parser {
   const std::string filename;
-  const std::string buffer;
-
-  unsigned int cursor;
-  unsigned int line;
-
-  int curToken;
-  std::string curTokenStr;
-
+  boost::shared_ptr<Lexer> lexer;
   std::vector<std::string> scopes;
-
-  struct State {
-    int cursor, line, token;
-    std::string tokenStr;
-  };
-
   TokenUtil tokenUtil;
 
   // Helper methods
   bool isBasicType(int token);
   bool isDecimalInteger(int token);
-  bool isJavaLetter(char c);
-  bool isJavaLetterOrDigit(char c);
   bool isModifierToken(int token);
   bool isPrefixOp(int token);
   bool isPostfixOp(int token);
   bool isValidInitTokenOfClassBodyDeclaration(int token);
   bool isValidInitTokenOfTypeDeclaration(int token);
-  void saveState(State &state);
-  void restoreState(State &state);
   void addError(int err);
   void addError(int ini, int end, int err);
-
-  // Lexer
-  const char getChar();
-  const char ungetChar(int count);
-  bool lookaheadAssignment();
-  bool lookaheadInterface(int point);
-
-  void getNextToken();
-  int getToken();
-  int getAnnotationToken();
-  int getEqualsOrEqualsEqualsToken();
-  int getMinusOrMinusMinusToken();
-  int getNumberToken(char c);
-  int getPeriodOrEllipsisToken();
-  int getPlusOrPlusPlusToken();
-  int getTokenIdentifier(char c);
 
   // Parsing
   spAnnotation parseAnnotation();
@@ -102,7 +70,8 @@ class Parser {
 
 public:
   Parser(const std::string _filename, const std::string &_buffer)
-    : filename(_filename), buffer(_buffer), cursor(0), line(1), curToken(0),
+    : filename(_filename),
+      lexer(boost::shared_ptr<Lexer>(new Lexer(_buffer))),
       compilationUnit(spCompilationUnit(new CompilationUnit())),
       error(0), error_msg("") {}
 
