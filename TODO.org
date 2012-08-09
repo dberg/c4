@@ -1,4 +1,9 @@
-- [ ] Parse Annotation value pairs
+- [-] Parse IntegerLiteral
+  - [X] DecimalIntegerLiteral
+  - [ ] HexIntegerLiteral
+  - [ ] OctalIntegerLiteral
+  - [ ] BinaryIntegerLiteral
+- [ ] Parse AnnotationElement : ElementValuePairs
 - [ ] Parser::parseElementValue Expression1
 - [ ] Parser::parseElementValue ElementValueArrayInitializer
 - [ ] Parser::parseExpression2 Expression2Rest

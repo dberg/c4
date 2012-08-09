@@ -19,7 +19,9 @@ class Parser {
 
   // Helper methods
   bool isBasicType(int token);
-  bool isDecimalInteger(int token);
+  bool isDecimalIntegerLiteral(int token);
+  bool isHexIntegerLiteral(int token);
+  bool isIntegerLiteral(int token);
   bool isModifierToken(int token);
   bool isPrefixOp(int token);
   bool isPostfixOp(int token);
@@ -40,7 +42,6 @@ class Parser {
   void parseCompilationUnit();
   void parseConstructorDeclaratorRest(
     spConstructorDeclaratorRest &constDeclRest);
-  void parseDecimalIntegerLiteral(spDecimalIntegerLiteral &decIntLiteral);
   void parseElementValue(spElementValue &value);
   void parseElementValuePairs(std::vector<spElementValuePair> &pairs);
   void parseExpression(spExpression &expr);

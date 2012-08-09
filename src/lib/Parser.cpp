@@ -17,12 +17,18 @@ bool Parser::isBasicType(int token) {
   return false;
 }
 
-bool Parser::isDecimalInteger(int token) {
+bool Parser::isDecimalIntegerLiteral(int token) {
   if (token == TOK_DECIMAL_NUMERAL
       || token == TOK_DECIMAL_NUMERAL_WITH_INT_TYPE_SUFFIX) {
     return true;
   }
 
+  return false;
+}
+
+bool Parser::isIntegerLiteral(int token) {
+  if (isDecimalIntegerLiteral(token)) { return true; }
+  // TODO: Hex, Oct and Bin
   return false;
 }
 
@@ -206,21 +212,6 @@ int Parser::parseArrayDepth() {
   }
 
   return depth;
-}
-
-/// DecimalIntegerLiteral: DecimalNumeral [IntegerTypeSuffix]
-void Parser::parseDecimalIntegerLiteral(
-  spDecimalIntegerLiteral &decIntLiteral) {
-  if (!isDecimalInteger(lexer->getCurToken())) { return; }
-
-  decIntLiteral->decNumeral = spDecimalNumeral(new DecimalNumeral());
-  decIntLiteral->decNumeral->pos = lexer->getCurTokenIni();
-  decIntLiteral->decNumeral->value = lexer->getCurTokenStr();
-  if (lexer->getCurToken() == TOK_DECIMAL_NUMERAL_WITH_INT_TYPE_SUFFIX) {
-    decIntLiteral->intTypeSuffix = true;
-  }
-
-  lexer->getNextToken(); // consume decimal
 }
 
 /// ElementValue: Annotation | Expression1 | ElementValueArrayInitializer
@@ -481,11 +472,15 @@ spImportDeclaration Parser::parseImportDeclaration() {
 ///   OctalIntegerLiteral
 ///   BinaryIntegerLiteral
 void Parser::parseIntegerLiteral(spIntegerLiteral &intLiteral) {
-  if (isDecimalInteger(lexer->getCurToken())) {
+  if (isDecimalIntegerLiteral(lexer->getCurToken())) {
     intLiteral->opt = IntegerLiteral::OPT_DECIMAL;
-    intLiteral->decIntLiteral = spDecimalIntegerLiteral(
-      new DecimalIntegerLiteral());
-    parseDecimalIntegerLiteral(intLiteral->decIntLiteral);
+    intLiteral->pos = lexer->getCurTokenIni();
+    intLiteral->value = lexer->getCurTokenStr();
+    if (lexer->getCurToken() == TOK_DECIMAL_NUMERAL_WITH_INT_TYPE_SUFFIX) {
+      intLiteral->intSuffix = true;
+    }
+
+    lexer->getNextToken(); // consume decimal
   }
 }
 
@@ -497,7 +492,7 @@ void Parser::parseIntegerLiteral(spIntegerLiteral &intLiteral) {
 ///   BooleanLiteral
 ///   NullLiteral
 void Parser::parseLiteral(spLiteral &literal) {
-  if (isDecimalInteger(lexer->getCurToken())) {
+  if (isIntegerLiteral(lexer->getCurToken())) {
     literal->opt = Literal::OPT_INTEGER;
     literal->intLiteral = spIntegerLiteral(new IntegerLiteral());
     parseIntegerLiteral(literal->intLiteral);

@@ -32,12 +32,10 @@ typedef boost::shared_ptr<struct Primary> spPrimary;
 typedef boost::shared_ptr<struct Literal> spLiteral;
 typedef boost::shared_ptr<struct IntegerLiteral> spIntegerLiteral;
 typedef boost::shared_ptr<struct FloatingPointLiteral> spFloatingPointLiteral;
-typedef boost::shared_ptr<struct DecimalIntegerLiteral> spDecimalIntegerLiteral;
 typedef boost::shared_ptr<struct CharacterLiteral> spCharacterLiteral;
 typedef boost::shared_ptr<struct StringLiteral> spStringLiteral;
 typedef boost::shared_ptr<struct BooleanLiteral> spBooleanLiteral;
 typedef boost::shared_ptr<struct NullLiteral> spNullLiteral;
-typedef boost::shared_ptr<struct DecimalNumeral> spDecimalNumeral;
 typedef boost::shared_ptr<struct TypeDeclaration> spTypeDeclaration;
 typedef boost::shared_ptr<struct ClassOrInterfaceDeclaration>
   spClassOrInterfaceDeclaration;
@@ -644,28 +642,13 @@ struct IntegerLiteral {
     OPT_BINARY,
   };
 
+
   IntegerLiteralEnum opt;
-  spDecimalIntegerLiteral decIntLiteral;
-  // TODO:
-  IntegerLiteral() : opt(OPT_UNDEFINED) {}
-};
-
-/// DecimalIntegerLiteral: DecimalNumeral [IntegerTypeSuffix]
-struct DecimalIntegerLiteral {
-  spDecimalNumeral decNumeral;
-  bool intTypeSuffix;
-  DecimalIntegerLiteral() : intTypeSuffix(false) {}
-};
-
-/// DecimalNumeral:
-///   0 | NonZeroDigit [Digits] | NonZeroDigit Underscores Digits
-/// Where
-///   NonZeroDigit: One of 1..9
-///   Digits: Digit | Digit [DigitsAndUnderscores] Digit
-///   Underscores: _ {_}
-struct DecimalNumeral {
+  bool intSuffix;
   int pos;
   std::string value;
+
+  IntegerLiteral() : opt(OPT_UNDEFINED), intSuffix(false), pos(-1) {}
 };
 
 struct Error {

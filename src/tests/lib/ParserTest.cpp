@@ -30,9 +30,9 @@ TEST(Parser, AnnotationElementValuePairs) {
   ASSERT_EQ(Primary::OPT_LITERAL, expr3Pair1->primary->opt);
   ASSERT_EQ(Literal::OPT_INTEGER, expr3Pair1->primary->literal->opt);
   ASSERT_EQ(IntegerLiteral::OPT_DECIMAL, intLiteralPair1->opt);
-  ASSERT_EQ(16, intLiteralPair1->decIntLiteral->decNumeral->pos);
-  ASSERT_EQ("10", intLiteralPair1->decIntLiteral->decNumeral->value);
-  ASSERT_FALSE(intLiteralPair1->decIntLiteral->intTypeSuffix);
+  ASSERT_EQ(16, intLiteralPair1->pos);
+  ASSERT_EQ("10", intLiteralPair1->value);
+  ASSERT_FALSE(intLiteralPair1->intSuffix);
 
   // Pair 2
   spElementValuePair pair2 = pairs[1];
@@ -46,9 +46,9 @@ TEST(Parser, AnnotationElementValuePairs) {
   ASSERT_EQ(Primary::OPT_LITERAL, expr3Pair2->primary->opt);
   ASSERT_EQ(Literal::OPT_INTEGER, expr3Pair2->primary->literal->opt);
   ASSERT_EQ(IntegerLiteral::OPT_DECIMAL, intLiteralPair2->opt);
-  ASSERT_EQ(26, intLiteralPair2->decIntLiteral->decNumeral->pos);
-  ASSERT_EQ("20L", intLiteralPair2->decIntLiteral->decNumeral->value);
-  ASSERT_EQ(true, intLiteralPair2->decIntLiteral->intTypeSuffix);
+  ASSERT_EQ(26, intLiteralPair2->pos);
+  ASSERT_EQ("20L", intLiteralPair2->value);
+  ASSERT_TRUE(intLiteralPair2->intSuffix);
 }
 
 TEST(Parser, PackageDeclaration) {
