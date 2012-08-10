@@ -344,7 +344,7 @@ void Parser::parseElementValuePairs(std::vector<spElementValuePair> &pairs) {
   State identifierState;
   lexer->saveState(identifierState);
   lexer->getNextToken(); // consume Identifier
-  if (lexer->getCurToken() != TOK_EQUALS) {
+  if (lexer->getCurToken() != TOK_OP_EQUALS) {
     lexer->restoreState(identifierState);
     return;
   }
@@ -443,7 +443,7 @@ spImportDeclaration Parser::parseImportDeclaration() {
   if (lexer->getCurToken() == TOK_PERIOD) {
     import->iniOnDemand = lexer->getCursor() - 1;
     lexer->getNextToken(); // consume '.'
-    if (lexer->getCurToken() != TOK_ASTERISK) {
+    if (lexer->getCurToken() != TOK_MUL) {
       import->err = true;
       return import;
     }
