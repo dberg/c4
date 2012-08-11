@@ -26,9 +26,38 @@ bool Parser::isDecimalIntegerLiteral(int token) {
   return false;
 }
 
+bool Parser::isHexIntegerLiteral(int token) {
+  if (token == TOK_HEX_NUMERAL
+      || token == TOK_HEX_NUMERAL_WITH_INT_TYPE_SUFFIX) {
+    return true;
+  }
+
+  return false;
+}
+
+bool Parser::isOctalIntegerLiteral(int token) {
+  if (token == TOK_OCTAL_NUMERAL
+      || token == TOK_OCTAL_NUMERAL_WITH_INT_TYPE_SUFFIX) {
+    return true;
+  }
+
+  return false;
+}
+
+bool Parser::isBinaryIntegerLiteral(int token) {
+  if (token == TOK_BINARY_NUMERAL
+      || token == TOK_BINARY_NUMERAL_WITH_INT_TYPE_SUFFIX) {
+    return true;
+  }
+
+  return false;
+}
+
 bool Parser::isIntegerLiteral(int token) {
   if (isDecimalIntegerLiteral(token)) { return true; }
-  // TODO: Hex, Oct and Bin
+  if (isHexIntegerLiteral(token)) { return true; }
+  if (isOctalIntegerLiteral(token)) { return true; }
+  if (isBinaryIntegerLiteral(token)) { return true; }
   return false;
 }
 
@@ -481,6 +510,43 @@ void Parser::parseIntegerLiteral(spIntegerLiteral &intLiteral) {
     }
 
     lexer->getNextToken(); // consume decimal
+    return;
+  }
+
+  if (isHexIntegerLiteral(lexer->getCurToken())) {
+    intLiteral->opt = IntegerLiteral::OPT_HEX;
+    intLiteral->pos = lexer->getCurTokenIni();
+    intLiteral->value = lexer->getCurTokenStr();
+    if (lexer->getCurToken() == TOK_HEX_NUMERAL_WITH_INT_TYPE_SUFFIX) {
+      intLiteral->intSuffix = true;
+    }
+
+    lexer->getNextToken(); // consume hex
+    return;
+  }
+
+  if (isOctalIntegerLiteral(lexer->getCurToken())) {
+    intLiteral->opt = IntegerLiteral::OPT_OCTAL;
+    intLiteral->pos = lexer->getCurTokenIni();
+    intLiteral->value = lexer->getCurTokenStr();
+    if (lexer->getCurToken() == TOK_OCTAL_NUMERAL_WITH_INT_TYPE_SUFFIX) {
+      intLiteral->intSuffix = true;
+    }
+
+    lexer->getNextToken(); // consume octal
+    return;
+  }
+
+  if (isBinaryIntegerLiteral(lexer->getCurToken())) {
+    intLiteral->opt = IntegerLiteral::OPT_BINARY;
+    intLiteral->pos = lexer->getCurTokenIni();
+    intLiteral->value = lexer->getCurTokenStr();
+    if (lexer->getCurToken() == TOK_BINARY_NUMERAL_WITH_INT_TYPE_SUFFIX) {
+      intLiteral->intSuffix = true;
+    }
+
+    lexer->getNextToken(); // consume bin
+    return;
   }
 }
 

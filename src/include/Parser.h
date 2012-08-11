@@ -21,6 +21,8 @@ class Parser {
   bool isBasicType(int token);
   bool isDecimalIntegerLiteral(int token);
   bool isHexIntegerLiteral(int token);
+  bool isOctalIntegerLiteral(int token);
+  bool isBinaryIntegerLiteral(int token);
   bool isIntegerLiteral(int token);
   bool isModifierToken(int token);
   bool isPrefixOp(int token);
