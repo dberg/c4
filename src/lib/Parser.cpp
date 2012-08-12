@@ -227,7 +227,7 @@ void Parser::parseAnnotations(std::vector<spAnnotation> &annotations) {
 
 /// {[]}
 int Parser::parseArrayDepth() {
-  int depth;
+  int depth = 0;
   while (lexer->getCurToken() == TOK_LBRACKET) {
     depth += 1;
     lexer->getNextToken(); // consume '['
