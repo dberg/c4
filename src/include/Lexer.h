@@ -15,6 +15,14 @@ struct State {
   std::string tokenStr;
 };
 
+// Helpers
+bool isBinaryDigit(char c);
+bool isDecimalDigit(char c);
+bool isHexDigit(char c);
+bool isOctalDigit(char c);
+bool isJavaLetter(char c);
+bool isJavaLetterOrDigit(char c);
+
 class Lexer {
 
   const std::string buffer;
@@ -40,8 +48,13 @@ class Lexer {
   int getPlusOrPlusPlusToken();
   int getTokenIdentifier(char c);
 
-  bool isJavaLetter(char c);
-  bool isJavaLetterOrDigit(char c);
+  // Integer Literals
+  int consumeIntegerLiteral(std::stringstream &ss, bool (*fnDigitP) (char),
+    int tok, int tokWithSuffix);
+  int getBinaryNumeral(std::stringstream &ss);
+  int getDecimalNumeral(std::stringstream &ss);
+  int getHexNumeral(std::stringstream &ss);
+  int getOctalNumeral(std::stringstream &ss);
 
 public:
   Lexer(const std::string &_buffer)

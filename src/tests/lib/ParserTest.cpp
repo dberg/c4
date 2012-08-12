@@ -51,6 +51,107 @@ TEST(Parser, AnnotationElementValuePairs) {
   ASSERT_TRUE(intLiteralPair2->intSuffix);
 }
 
+TEST(Parser, AnnotationElementValuePairsIntegerLiterals) {
+  std::string filename = "Test.java";
+  std::string buffer =
+    "@myinterface("
+    "v1=0b01,v2=0B1_1L,v3=10,v4=2_0L,v5=0xA0,v6=0XF_0L,v7=001,v8=0_76L)\n"
+    "package com.test;";
+  Parser parser(filename, buffer);
+  parser.parse();
+
+  std::vector<spElementValuePair> pairs = parser.compilationUnit->pkgDecl
+    ->annotations[0]->elem->pairs;
+
+  // Pair 1
+  spElementValuePair pair1 = pairs[0];
+  spExpression3 expr3Pair1 = pair1->value->expr1->expr2->expr3;
+  spIntegerLiteral intLiteralPair1 = expr3Pair1->primary->literal->intLiteral;
+  ASSERT_EQ(Primary::OPT_LITERAL, expr3Pair1->primary->opt);
+  ASSERT_EQ(Literal::OPT_INTEGER, expr3Pair1->primary->literal->opt);
+  ASSERT_EQ(IntegerLiteral::OPT_BINARY, intLiteralPair1->opt);
+  ASSERT_EQ(16, intLiteralPair1->pos);
+  ASSERT_EQ("0b01", intLiteralPair1->value);
+  ASSERT_FALSE(intLiteralPair1->intSuffix);
+
+  // Pair 2
+  spElementValuePair pair2 = pairs[1];
+  spExpression3 expr3Pair2 = pair2->value->expr1->expr2->expr3;
+  spIntegerLiteral intLiteralPair2 = expr3Pair2->primary->literal->intLiteral;
+  ASSERT_EQ(Primary::OPT_LITERAL, expr3Pair2->primary->opt);
+  ASSERT_EQ(Literal::OPT_INTEGER, expr3Pair2->primary->literal->opt);
+  ASSERT_EQ(IntegerLiteral::OPT_BINARY, intLiteralPair2->opt);
+  ASSERT_EQ(24, intLiteralPair2->pos);
+  ASSERT_EQ("0B1_1L", intLiteralPair2->value);
+  ASSERT_TRUE(intLiteralPair2->intSuffix);
+
+  // Pair 3
+  spElementValuePair pair3 = pairs[2];
+  spExpression3 expr3Pair3 = pair3->value->expr1->expr2->expr3;
+  spIntegerLiteral intLiteralPair3 = expr3Pair3->primary->literal->intLiteral;
+  ASSERT_EQ(Primary::OPT_LITERAL, expr3Pair3->primary->opt);
+  ASSERT_EQ(Literal::OPT_INTEGER, expr3Pair3->primary->literal->opt);
+  ASSERT_EQ(IntegerLiteral::OPT_DECIMAL, intLiteralPair3->opt);
+  ASSERT_EQ(34, intLiteralPair3->pos);
+  ASSERT_EQ("10", intLiteralPair3->value);
+  ASSERT_FALSE(intLiteralPair3->intSuffix);
+
+  // Pair 4
+  spElementValuePair pair4 = pairs[3];
+  spExpression3 expr3Pair4 = pair4->value->expr1->expr2->expr3;
+  spIntegerLiteral intLiteralPair4 = expr3Pair4->primary->literal->intLiteral;
+  ASSERT_EQ(Primary::OPT_LITERAL, expr3Pair4->primary->opt);
+  ASSERT_EQ(Literal::OPT_INTEGER, expr3Pair4->primary->literal->opt);
+  ASSERT_EQ(IntegerLiteral::OPT_DECIMAL, intLiteralPair4->opt);
+  ASSERT_EQ(40, intLiteralPair4->pos);
+  ASSERT_EQ("2_0L", intLiteralPair4->value);
+  ASSERT_TRUE(intLiteralPair4->intSuffix);
+
+  // Pair 5
+  spElementValuePair pair5 = pairs[4];
+  spExpression3 expr3Pair5 = pair5->value->expr1->expr2->expr3;
+  spIntegerLiteral intLiteralPair5 = expr3Pair5->primary->literal->intLiteral;
+  ASSERT_EQ(Primary::OPT_LITERAL, expr3Pair5->primary->opt);
+  ASSERT_EQ(Literal::OPT_INTEGER, expr3Pair5->primary->literal->opt);
+  ASSERT_EQ(IntegerLiteral::OPT_HEX, intLiteralPair5->opt);
+  ASSERT_EQ(48, intLiteralPair5->pos);
+  ASSERT_EQ("0xA0", intLiteralPair5->value);
+  ASSERT_FALSE(intLiteralPair5->intSuffix);
+
+  // Pair 6
+  spElementValuePair pair6 = pairs[5];
+  spExpression3 expr3Pair6 = pair6->value->expr1->expr2->expr3;
+  spIntegerLiteral intLiteralPair6 = expr3Pair6->primary->literal->intLiteral;
+  ASSERT_EQ(Primary::OPT_LITERAL, expr3Pair6->primary->opt);
+  ASSERT_EQ(Literal::OPT_INTEGER, expr3Pair6->primary->literal->opt);
+  ASSERT_EQ(IntegerLiteral::OPT_HEX, intLiteralPair6->opt);
+  ASSERT_EQ(56, intLiteralPair6->pos);
+  ASSERT_EQ("0XF_0L", intLiteralPair6->value);
+  ASSERT_TRUE(intLiteralPair6->intSuffix);
+
+  // Pair 7
+  spElementValuePair pair7 = pairs[6];
+  spExpression3 expr3Pair7 = pair7->value->expr1->expr2->expr3;
+  spIntegerLiteral intLiteralPair7 = expr3Pair7->primary->literal->intLiteral;
+  ASSERT_EQ(Primary::OPT_LITERAL, expr3Pair7->primary->opt);
+  ASSERT_EQ(Literal::OPT_INTEGER, expr3Pair7->primary->literal->opt);
+  ASSERT_EQ(IntegerLiteral::OPT_OCTAL, intLiteralPair7->opt);
+  ASSERT_EQ(66, intLiteralPair7->pos);
+  ASSERT_EQ("001", intLiteralPair7->value);
+  ASSERT_FALSE(intLiteralPair7->intSuffix);
+
+  // Pair 8
+  spElementValuePair pair8 = pairs[7];
+  spExpression3 expr3Pair8 = pair8->value->expr1->expr2->expr3;
+  spIntegerLiteral intLiteralPair8 = expr3Pair8->primary->literal->intLiteral;
+  ASSERT_EQ(Primary::OPT_LITERAL, expr3Pair8->primary->opt);
+  ASSERT_EQ(Literal::OPT_INTEGER, expr3Pair8->primary->literal->opt);
+  ASSERT_EQ(IntegerLiteral::OPT_OCTAL, intLiteralPair8->opt);
+  ASSERT_EQ(73, intLiteralPair8->pos);
+  ASSERT_EQ("0_76L", intLiteralPair8->value);
+  ASSERT_TRUE(intLiteralPair8->intSuffix);
+}
+
 TEST(Parser, PackageDeclaration) {
   std::string filename = "Test.java";
   std::string buffer = "@myinterface\npackage com.test;";

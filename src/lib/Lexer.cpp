@@ -2,6 +2,40 @@
 
 namespace djp {
 
+///-----------------------------------------------------------------------------
+/// Helpers
+///-----------------------------------------------------------------------------
+bool isBinaryDigit(char c) {
+  return (c == '0' || c == '1');
+}
+
+bool isDecimalDigit(char c) {
+  return isdigit(c);
+}
+
+bool isHexDigit(char c) {
+  if (isdigit(c) || (c >= 'a' && c <= 'f') || (c >= 'A' && c <= 'F')) {
+    return true;
+  }
+
+  return false;
+}
+
+bool isOctalDigit(char c) {
+  return (c >= '0' && c <= '7');
+}
+
+bool isJavaLetter(char c) {
+  return (isalpha(c) || c == '$' || c == '_');
+}
+
+bool isJavaLetterOrDigit(char c) {
+  return (isJavaLetter(c) || isdigit(c));
+}
+
+///-----------------------------------------------------------------------------
+/// Lexer Class
+///-----------------------------------------------------------------------------
 /// Return the next char in the buffer or '\0' if we hit the end of the buffer.
 const char Lexer::getChar() {
   if (cursor > buffer.length()) {
@@ -126,63 +160,57 @@ int Lexer::getEqualsOrEqualsEqualsToken() {
 /// Returns one of:
 ///   TOK_DECIMAL_NUMERAL
 ///   TOK_DECIMAL_NUMERAL_WITH_INT_TYPE_SUFFIX
-/// DecimalIntegerLiteral: DecimalNumeral [IntegerTypeSuffix]
-/// DecimalNumeral:
-///   0 | NonZeroDigit [Digits] | NonZeroDigit Underscores Digits
-/// IntegerTypeSuffix: l | L
+///   TOK_HEX_NUMERAL
+///   TOK_HEX_NUMERAL_WITH_INT_TYPE_SUFFIX
+///   TOK_OCTAL_NUMERAL
+///   TOK_OCTAL_NUMERAL_WITH_INT_TYPE_SUFFIX
+///   TOK_BINARY_NUMERAL
+///   TOK_BINARY_NUMERAL_WITH_INT_TYPE_SUFFIX
+///   TOK_ERROR
+/// TODO: floating point
 int Lexer::getNumberToken(char c) {
   std::stringstream ss; ss << c;
 
-  // We look ahead to decide if we have 0 (zero)
+  // If char c is zero we expect one of:
+  // 1. Decimal numeral represented by zero only;
+  // 2. HexNumeral;
+  // 3. BinaryNumeral;
+  // 4. OctalNumeral;
+  // Followed by an optional integer suffix.
   if (c == '0') {
-    // Check if it's zero followed by an integer type suffix
+    // Decimal numeral
     char lookahead = getChar();
     if (lookahead == 'l' || lookahead == 'L') {
-      ss << c;
+      ss << lookahead;
+      curTokenStr = ss.str();
       return TOK_DECIMAL_NUMERAL_WITH_INT_TYPE_SUFFIX;
     }
 
-    ungetChar(1);
-    return TOK_DECIMAL_NUMERAL;
-  }
-
-  // While we have a digit or an underscore char we append it to ss.
-  std::stringstream ss_;
-  while ((c = getChar()) && (isdigit(c) || c == '_')) {
-    if (c == '_') {
-      ss_ << c;
-    } else {
-      // pop underscore stream into decimal numeral stream and reset it
-      ss << ss_.str();
-      ss_.str("");
-      ss_.clear();
-      // insert digit into stream
-      ss << c;
+    // Hex numeral
+    if (lookahead == 'x' || lookahead == 'X') {
+      ss << lookahead;
+      return getHexNumeral(ss);
     }
-  }
 
-  // Unget underscore chars if any.
-  std::string underscores = ss_.str();
-  if (underscores.length()) {
-    ungetChar(underscores.length());
-    // The syntax at this point is invalid but we return the valid number
-    // we have so far and let the consumer validate the next token.
-    curTokenStr = ss.str();
+    // Binary numeral
+    if (lookahead == 'b' || lookahead == 'B') {
+      ss << lookahead;
+      return getBinaryNumeral(ss);
+    }
+
+    // Octal
+    if (isdigit(lookahead) || lookahead == '_') {
+      ss << lookahead;
+      return getOctalNumeral(ss);
+    }
+
+    // Decimal numeral, stand alone zero
+    ungetChar(1);
+    curTokenStr = "0";
     return TOK_DECIMAL_NUMERAL;
   }
 
-  // Check int type suffix
-  if (c == 'l' || c == 'L') {
-    ss << c;
-    curTokenStr = ss.str();
-    return TOK_DECIMAL_NUMERAL_WITH_INT_TYPE_SUFFIX;
-  }
-
-  // We have a decimal number but we have to unget the last call to getChar
-  // before exiting.
-  ungetChar(1);
-  curTokenStr = ss.str();
-  return TOK_DECIMAL_NUMERAL;
+  return getDecimalNumeral(ss);
 }
 
 /// Return TOK_PERIOD | TOK_ELLIPSIS
@@ -264,13 +292,101 @@ int Lexer::getTokenIdentifier(char c) {
   return TOK_IDENTIFIER;
 }
 
-// Helpers
-bool Lexer::isJavaLetter(char c) {
-  return (isalpha(c) || c == '$' || c == '_');
+/// Integer Literal
+/// ----------------------------------------------------------------------------
+
+/// The string stream contains the value '0b' or '0B'.
+/// Returns TOK_BINARY_NUMERAL | TOK_BINARY_NUMERAL_WITH_INT_TYPE_SUFFIX |
+/// TOK_ERROR.
+int Lexer::getBinaryNumeral(std::stringstream &ss) {
+  // Lookahead and confirm that we have valid binary digit.
+  char c = getChar();
+  if (!isBinaryDigit(c)) {
+    ungetChar(3);
+    return TOK_ERROR;
+  }
+
+  ss << c; // append bin digit
+
+  return consumeIntegerLiteral(ss, isBinaryDigit,
+    TOK_BINARY_NUMERAL, TOK_BINARY_NUMERAL_WITH_INT_TYPE_SUFFIX);
 }
 
-bool Lexer::isJavaLetterOrDigit(char c) {
-  return (isJavaLetter(c) || isdigit(c));
+/// Returns TOK_DECIMAL_NUMERAL | TOK_DECIMAL_NUMERAL_WITH_INT_TYPE_SUFFIX
+int Lexer::getDecimalNumeral(std::stringstream &ss) {
+  return consumeIntegerLiteral(ss, isDecimalDigit,
+    TOK_DECIMAL_NUMERAL, TOK_DECIMAL_NUMERAL_WITH_INT_TYPE_SUFFIX);
 }
+
+/// The string stream contains the value '0x' or '0X'.
+/// Returns TOK_HEX_NUMERAL | TOK_HEX_NUMERAL_WITH_INT_TYPE_SUFFIX |
+/// TOK_ERROR
+int Lexer::getHexNumeral(std::stringstream &ss) {
+  // Lookahead and confirm that we have valid hex digit.
+  char c = getChar();
+  if (!isHexDigit(c)) {
+    ungetChar(3);
+    return TOK_ERROR;
+  }
+
+  ss << c; // append bin digit
+
+  return consumeIntegerLiteral(ss, isHexDigit,
+    TOK_HEX_NUMERAL, TOK_HEX_NUMERAL_WITH_INT_TYPE_SUFFIX);
+}
+
+/// Returns TOK_OCTAL_NUMERAL | TOK_OCTAL_NUMERAL_WITH_INT_TYPE_SUFFIX
+int Lexer::getOctalNumeral(std::stringstream &ss) {
+  return consumeIntegerLiteral(ss, isOctalDigit,
+    TOK_OCTAL_NUMERAL, TOK_OCTAL_NUMERAL_WITH_INT_TYPE_SUFFIX);
+}
+
+// Helpers
+/// We consume an IntegerLiteral into the string stream ss. Each character
+/// is valid if it's equal too '_' or if the predicate function fnDigitP
+/// returns true. For each IntegerLiteral class there are two possible tokens.
+int Lexer::consumeIntegerLiteral(std::stringstream &ss,
+  bool (*fnDigitP) (char), int tok, int tokWithSuffix) {
+
+  char c;
+  std::stringstream stack;
+
+  while ((c = getChar()) && ((fnDigitP)(c) || c == '_')) {
+    if (c == '_') {
+      stack << c;
+    } else {
+      // pop underscore stream into integer stream
+      ss << stack.str();
+      stack.str("");
+      stack.clear();
+      // insert digit into stream
+      ss << c;
+    }
+  }
+
+  // Unget underscore chars if any.
+  std::string underscores = stack.str();
+  if (underscores.length()) {
+    ungetChar(underscores.length());
+    // The syntax at this point is invalid but we return the valid number
+    // we have so far and let the consumer validate the next token.
+    curTokenStr = ss.str();
+    return tok;
+  }
+
+  // Check int type suffix
+  if (c == 'l' || c == 'L') {
+    ss << c;
+    curTokenStr = ss.str();
+    return tokWithSuffix;
+  }
+
+  // We have a decimal number but we have to unget the last call to getChar
+  // before exiting.
+  ungetChar(1);
+  curTokenStr = ss.str();
+  return tok;
+}
+
 
 }; // namespace
