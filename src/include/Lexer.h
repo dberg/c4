@@ -4,6 +4,7 @@
 #include <cctype>
 #include <string>
 #include <sstream>
+#include "SourceCodeStream.h"
 #include "Token.h"
 
 namespace djp {
@@ -23,21 +24,15 @@ bool isOctalDigit(char c);
 bool isJavaLetter(char c);
 bool isJavaLetterOrDigit(char c);
 
-class Lexer {
+class Lexer;
+typedef boost::shared_ptr<Lexer> spLexer;
 
-  const std::string buffer;
-  unsigned int cursor;
-  unsigned int line;
+class Lexer {
 
   int curToken;
   std::string curTokenStr;
-
-  const char getChar();
-  const char ungetChar(int count);
-
+  spSourceCodeStream src;
   TokenUtil tokenUtil;
-
-  bool lookaheadInterface(int point);
 
   int getToken();
   int getAnnotationToken();
@@ -57,16 +52,16 @@ class Lexer {
   int getOctalNumeral(std::stringstream &ss);
 
 public:
-  Lexer(const std::string &_buffer)
-    : buffer(_buffer), cursor(0), line(0), curToken(0) {}
+  Lexer(spSourceCodeStream &src)
+    : curToken(0), curTokenStr(""), src(src) {}
 
   void getNextToken();
-
   int getCurToken() { return curToken; }
-  unsigned int getCursor() { return cursor; }
-  unsigned int getLine() { return line; }
+  unsigned int getCursor() { return src->getCursor(); }
   const std::string getCurTokenStr() { return curTokenStr; }
-  unsigned int getCurTokenIni() { return cursor - curTokenStr.length(); }
+  unsigned int getCurTokenIni() {
+    return src->getCursor() - curTokenStr.length();
+  }
 
   void saveState(State &state);
   void restoreState(State &state);

@@ -62,6 +62,7 @@ $(bin)/djp: $(obj)/CmdInput.o \
             $(obj)/Lexer.o \
             $(obj)/Parser.o \
             $(obj)/Output.o \
+            $(obj)/SourceCodeStream.o \
             $(obj)/SymbolTable.o \
             $(obj)/djp.o
 	$(CXX) $(obj)/CmdInput.o \
@@ -69,6 +70,7 @@ $(bin)/djp: $(obj)/CmdInput.o \
                $(obj)/Lexer.o \
                $(obj)/Parser.o \
                $(obj)/Output.o \
+               $(obj)/SourceCodeStream.o \
                $(obj)/SymbolTable.o \
                $(CFLAGS) $(INC) $(obj)/djp.o -o $@
 
@@ -98,6 +100,10 @@ $(obj)/Output.o: $(libdir)/Output.cpp \
                  $(incdir)/Token.h
 	$(CXX) $(CFLAGS) $(INC) -c $< -o $@
 
+$(obj)/SourceCodeStream.o: $(libdir)/SourceCodeStream.cpp \
+	                   $(incdir)/SourceCodeStream.h
+	$(CXX) $(CFLAGS) $(INC) -c $< -o $@
+
 $(obj)/SymbolTable.o: $(libdir)/SymbolTable.cpp \
                  $(incdir)/SymbolTable.h
 	$(CXX) $(CFLAGS) $(INC) -c $< -o $@
@@ -111,12 +117,14 @@ $(bin)/tests: $(test_libdir)/ParserTest.cpp \
               $(obj)/Lexer.o \
               $(obj)/Parser.o \
               $(obj)/Output.o \
+              $(obj)/SourceCodeStream.o \
               $(obj)/SymbolTable.o \
               $(gtest_obj)/libgtest.a
 
 	$(CXX) $(INC) -I$(gtest_inc) $(obj)/Lexer.o \
                                      $(obj)/Parser.o \
                                      $(obj)/Output.o \
+                                     $(obj)/SourceCodeStream.o \
                                      $(obj)/SymbolTable.o \
                                      $(test_libdir)/ParserTest.cpp \
                                      $(test_libdir)/EmacsOutputTest.cpp \

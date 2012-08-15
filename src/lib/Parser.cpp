@@ -745,7 +745,7 @@ void Parser::parseNormalClassDeclaration(spNormalClassDeclaration &nClassDecl) {
   int pos = lexer->getCurTokenIni();
   nClassDecl->identifier = spIdentifier(new Identifier(
     pos, lexer->getCurTokenStr()));
-  st.addSym(ST_CLASS, lexer->getCurToken(), pos, lexer->getLine(),
+  st.addSym(ST_CLASS, lexer->getCurToken(), pos, src->getLine(),
     lexer->getCurTokenStr());
   lexer->getNextToken(); // consume Identifier
 
@@ -831,7 +831,7 @@ void Parser::parseMemberDecl(spMemberDecl &memberDecl) {
       int pos = lexer->getCurTokenIni();
       memberDecl->identifier
 	= spIdentifier(new Identifier(pos, lexer->getCurTokenStr()));
-      st.addSym(ST_CLASS, lexer->getCurToken(), pos, lexer->getLine(),
+      st.addSym(ST_CLASS, lexer->getCurToken(), pos, src->getLine(),
         lexer->getCurTokenStr());
       lexer->getNextToken(); // consume Identifier
 

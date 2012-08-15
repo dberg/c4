@@ -7,13 +7,15 @@
 #include "AST.h"
 #include "ErrorCodes.h"
 #include "Lexer.h"
+#include "SourceCodeStream.h"
 #include "SymbolTable.h"
 #include "Token.h"
 
 namespace djp {
 class Parser {
   const std::string filename;
-  boost::shared_ptr<Lexer> lexer;
+  spSourceCodeStream src;
+  spLexer lexer;
   std::vector<std::string> scopes;
   TokenUtil tokenUtil;
 
@@ -74,7 +76,8 @@ class Parser {
 public:
   Parser(const std::string _filename, const std::string &_buffer)
     : filename(_filename),
-      lexer(boost::shared_ptr<Lexer>(new Lexer(_buffer))),
+      src(spSourceCodeStream(new SourceCodeStream(_buffer))),
+      lexer(spLexer (new Lexer(src))),
       compilationUnit(spCompilationUnit(new CompilationUnit())),
       error(0), error_msg("") {}
 
