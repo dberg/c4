@@ -60,6 +60,7 @@ directories:
 $(bin)/djp: $(obj)/CmdInput.o \
             $(obj)/File.o \
             $(obj)/Lexer.o \
+            $(obj)/LiteralSupport.o \
             $(obj)/Parser.o \
             $(obj)/Output.o \
             $(obj)/SourceCodeStream.o \
@@ -68,6 +69,7 @@ $(bin)/djp: $(obj)/CmdInput.o \
 	$(CXX) $(obj)/CmdInput.o \
                $(obj)/File.o \
                $(obj)/Lexer.o \
+               $(obj)/LiteralSupport.o \
                $(obj)/Parser.o \
                $(obj)/Output.o \
                $(obj)/SourceCodeStream.o \
@@ -84,6 +86,10 @@ $(obj)/File.o: $(libdir)/File.cpp $(incdir)/File.h
 $(obj)/Lexer.o: $(libdir)/Lexer.cpp \
                 $(incdir)/Lexer.h \
                 $(incdir)/Token.h
+	$(CXX) $(CFLAGS) $(INC) -c $< -o $@
+
+$(obj)/LiteralSupport.o: $(libdir)/LiteralSupport.cpp \
+                         $(incdir)/LiteralSupport.h
 	$(CXX) $(CFLAGS) $(INC) -c $< -o $@
 
 $(obj)/Parser.o: $(libdir)/Parser.cpp \
@@ -115,6 +121,7 @@ $(obj)/djp.o: $(libdir)/djp.cpp
 $(bin)/tests: $(test_libdir)/ParserTest.cpp \
               $(test_libdir)/EmacsOutputTest.cpp \
               $(obj)/Lexer.o \
+              $(obj)/LiteralSupport.o \
               $(obj)/Parser.o \
               $(obj)/Output.o \
               $(obj)/SourceCodeStream.o \
@@ -122,6 +129,7 @@ $(bin)/tests: $(test_libdir)/ParserTest.cpp \
               $(gtest_obj)/libgtest.a
 
 	$(CXX) $(INC) -I$(gtest_inc) $(obj)/Lexer.o \
+                                     $(obj)/LiteralSupport.o \
                                      $(obj)/Parser.o \
                                      $(obj)/Output.o \
                                      $(obj)/SourceCodeStream.o \

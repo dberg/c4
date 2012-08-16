@@ -4,6 +4,8 @@
 #include <cctype>
 #include <string>
 #include <sstream>
+#include <boost/shared_ptr.hpp>
+#include "LiteralSupport.h"
 #include "SourceCodeStream.h"
 #include "Token.h"
 
@@ -32,6 +34,7 @@ class Lexer {
   int curToken;
   std::string curTokenStr;
   spSourceCodeStream src;
+  spLiteralSupport litSupport;
   TokenUtil tokenUtil;
 
   int getToken();
@@ -43,17 +46,10 @@ class Lexer {
   int getPlusOrPlusPlusToken();
   int getTokenIdentifier(char c);
 
-  // Integer Literals
-  int consumeIntegerLiteral(std::stringstream &ss, bool (*fnDigitP) (char),
-    int tok, int tokWithSuffix);
-  int getBinaryNumeral(std::stringstream &ss);
-  int getDecimalNumeral(std::stringstream &ss);
-  int getHexNumeral(std::stringstream &ss);
-  int getOctalNumeral(std::stringstream &ss);
-
 public:
   Lexer(spSourceCodeStream &src)
-    : curToken(0), curTokenStr(""), src(src) {}
+    : curToken(0), curTokenStr(""), src(src),
+      litSupport(spLiteralSupport(new LiteralSupport(src))) {}
 
   void getNextToken();
   int getCurToken() { return curToken; }
