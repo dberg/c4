@@ -642,13 +642,29 @@ struct IntegerLiteral {
     OPT_BINARY,
   };
 
-
   IntegerLiteralEnum opt;
   bool intSuffix;
   int pos;
   std::string value;
 
   IntegerLiteral() : opt(OPT_UNDEFINED), intSuffix(false), pos(-1) {}
+};
+
+/// FloatingPointLiteral
+///   DecimalFloatingPointLiteral
+///   HexadecimalFloatingPointLiteral
+struct FloatingPointLiteral {
+  enum FloatingPointLiteralEnum {
+    OPT_UNDEFINED,
+    OPT_DECIMAL,
+    OPT_HEX,
+  };
+
+  FloatingPointLiteralEnum opt;
+  int pos;
+  std::string value;
+
+  FloatingPointLiteral() : opt(OPT_UNDEFINED), pos(-1) {}
 };
 
 struct Error {
