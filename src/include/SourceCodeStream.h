@@ -14,17 +14,23 @@ class SourceCodeStream {
   const std::string buffer;
   unsigned int cursor;
   unsigned int line;
+  unsigned int cursorMark;
 
 public:
   const char getChar();
+  const char getChar(int offset);
   const char ungetChar(int count);
-  const char peekChar(int offset = 0) { return buffer[cursor + offset]; }
+  const char peekChar(int offset = 0);
 
-  unsigned int getCursor() { return cursor; }
-  void setCursor(unsigned int _cursor) { cursor = _cursor; }
+  unsigned int getCursor();
+  void setCursor(unsigned int _cursor);
 
-  unsigned int getLine() { return line; }
-  void setLine(unsigned int _line) { line = _line; }
+  unsigned int getLine();
+  void setLine(unsigned int _line);
+
+  unsigned int mark();
+  unsigned int restore();
+  unsigned int getMarkOffset();
 
   bool lookaheadInterface(int point);
 

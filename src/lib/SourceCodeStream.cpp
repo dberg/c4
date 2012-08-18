@@ -15,9 +15,52 @@ const char SourceCodeStream::getChar() {
   return buffer[cursor++];
 }
 
-const char SourceCodeStream::ungetChar(int count) {
-  cursor -= count;
+const char SourceCodeStream::getChar(int offset) {
+  for (int i = 0; i < offset; i++) getChar();
   return buffer[cursor];
+}
+
+const char SourceCodeStream::ungetChar(int count) {
+  for (int i = count; i > 0; i--) {
+    if (buffer[--cursor] == '\n') {
+      line--;
+    }
+  }
+
+  return buffer[cursor];
+}
+
+const char SourceCodeStream::peekChar(int offset) {
+  return buffer[cursor + offset];
+}
+
+unsigned int SourceCodeStream::getCursor() {
+  return cursor;
+}
+
+void SourceCodeStream::setCursor(unsigned int _cursor) {
+  cursor = _cursor;
+}
+
+unsigned int SourceCodeStream::SourceCodeStream::getLine() {
+  return line;
+}
+
+void SourceCodeStream::setLine(unsigned int _line) {
+  line = _line;
+}
+
+unsigned int SourceCodeStream::mark() {
+  return cursorMark = getCursor();
+}
+
+unsigned int SourceCodeStream::restore() {
+  ungetChar(getCursor() - cursorMark);
+  return getCursor();
+}
+
+unsigned int SourceCodeStream::getMarkOffset() {
+  return getCursor() - cursorMark;
 }
 
 /// We check if the next token is the keyword 'interface'.
