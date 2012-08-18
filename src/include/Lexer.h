@@ -42,7 +42,8 @@ class Lexer {
   int getEqualsOrEqualsEqualsToken();
   int getMinusOrMinusMinusToken();
   int getNumberToken(char c);
-  int getPeriodOrEllipsisToken();
+  int getPeriodOrEllipsisToken(std::stringstream &ss);
+  int getPeriodStartingToken();
   int getPlusOrPlusPlusToken();
   int getTokenIdentifier(char c);
 

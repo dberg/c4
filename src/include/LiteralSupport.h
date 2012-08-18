@@ -15,9 +15,10 @@ class LiteralSupport {
 
   spSourceCodeStream src;
 
-  // Integer Literals
-  int consumeIntegerLiteral(std::stringstream &ss, bool (*fnDigitP) (char),
-    int tok, int tokWithSuffix);
+  int consumeDigitsPOrUnderscores(
+    std::stringstream &ss, bool (*fnDigitP) (char));
+  int consumeExponentPart(std::stringstream &ss);
+
   int getBinaryNumeral(std::stringstream &ss);
   int getDecimalNumeral(std::stringstream &ss);
   int getHexNumeral(std::stringstream &ss);
@@ -27,6 +28,9 @@ class LiteralSupport {
 public:
   LiteralSupport(spSourceCodeStream &src) : src(src) {}
   int getLiteralNumber(char c, std::stringstream &ss);
+  int getDecimalNumeralOrDecimalFloatingPoint(
+    char previous_c, std::stringstream &ss);
+  int getDecimalFloatingPointStartingWithAPeriod(std::stringstream &ss);
 };
 
 } // namespace

@@ -44,7 +44,7 @@ int Lexer::getToken() {
 
   // Annotation and Annotation Type Declarations
   if ('@' == c) return getAnnotationToken();
-  if ('.' == c) return getPeriodOrEllipsisToken();
+  if ('.' == c) return getPeriodStartingToken();
   if ('+' == c) return getPlusOrPlusPlusToken();
   if ('-' == c) return getMinusOrMinusMinusToken();
   if ('=' == c) return getEqualsOrEqualsEqualsToken();
@@ -128,8 +128,25 @@ int Lexer::getNumberToken(char c) {
   return tok;
 }
 
+/// Return TOK_PERIOD | TOK_ELLIPS | TOK_DECIMAL_FLOATING_POINT_LITERAL
+int Lexer::getPeriodStartingToken() {
+  std::stringstream ss;
+  ss << '.';
+
+  // If we have a digit following '.' this is a decimal floating point literal.
+  if (isdigit(src->peekChar())) {
+    int tok = litSupport->getDecimalFloatingPointStartingWithAPeriod(ss);
+    curTokenStr = ss.str();
+    return tok;
+  }
+
+  int tok = getPeriodOrEllipsisToken(ss);
+  curTokenStr = ss.str();
+  return tok;
+}
+
 /// Return TOK_PERIOD | TOK_ELLIPSIS
-int Lexer::getPeriodOrEllipsisToken() {
+int Lexer::getPeriodOrEllipsisToken(std::stringstream &ss) {
   // We look 2 chars ahead to decide if we have an ellipsis.
   // At this point we have already found one dot char and the
   // cursor is pointing to the next char.
@@ -139,8 +156,8 @@ int Lexer::getPeriodOrEllipsisToken() {
   if (src->getCursor() + 1 <= src->getStreamLength()
       && src->peekChar() == '.'
       && src->peekChar(1) == '.') {
-    src->getChar(); // consume 2nd '.'
-    src->getChar(); // consume 3rd '.'
+    ss << src->getChar(); // consume 2nd '.'
+    ss << src->getChar(); // consume 3rd '.'
     return TOK_ELLIPSIS;
   }
 
