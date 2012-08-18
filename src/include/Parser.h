@@ -19,22 +19,11 @@ class Parser {
   std::vector<std::string> scopes;
   TokenUtil tokenUtil;
 
-  // Helper methods
-  bool isBasicType(int token);
-  bool isDecimalIntegerLiteral(int token);
-  bool isHexIntegerLiteral(int token);
-  bool isOctalIntegerLiteral(int token);
-  bool isBinaryIntegerLiteral(int token);
-  bool isIntegerLiteral(int token);
-  bool isModifierToken(int token);
-  bool isPrefixOp(int token);
-  bool isPostfixOp(int token);
-  bool isValidInitTokenOfClassBodyDeclaration(int token);
-  bool isValidInitTokenOfTypeDeclaration(int token);
+  // Helper method
   void addError(int err);
   void addError(int ini, int end, int err);
 
-  // Parsing
+  // Parser
   spAnnotation parseAnnotation();
   void parseAnnotationElement(spAnnotationElement &elem);
   void parseAnnotations(std::vector<spAnnotation> &annotations);
@@ -59,6 +48,7 @@ class Parser {
   void parseFormalParameterDeclsRest(
     spFormalParameterDeclsRest &formParamDeclsRest);
   void parseIntegerLiteral(spIntegerLiteral &intLiteral);
+  void parseFloatingPointLiteral(spFloatingPointLiteral &fpLiteral);
   void parseLiteral(spLiteral &literal);
   void parseModifier(spModifier &modifier);
   void parseMemberDecl(spMemberDecl &memberDecl);

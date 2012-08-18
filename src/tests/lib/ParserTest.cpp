@@ -152,6 +152,108 @@ TEST(Parser, AnnotationElementValuePairsIntegerLiterals) {
   ASSERT_TRUE(intLiteralPair8->intSuffix);
 }
 
+TEST(Parser, AnnotationElementValuePairsDecimalFloatingPointLiterals) {
+  std::string filename = "Test.java";
+  std::string buffer =
+    "@myinterface("
+    "v1=12., v2=12.34, v3=12.e34, v4=12.e-34f, v5=12.F,"
+    "v6=.1, v7=.1E-23, v8=12e+34d)\n"
+    "package com.test;";
+  Parser parser(filename, buffer);
+  parser.parse();
+
+  std::vector<spElementValuePair> pairs = parser.compilationUnit->pkgDecl
+    ->annotations[0]->elem->pairs;
+
+  // Pair 1 v1=12.
+  spElementValuePair pair1 = pairs[0];
+  spExpression3 expr3Pair1 = pair1->value->expr1->expr2->expr3;
+  spFloatingPointLiteral fpLiteralPair1
+    = expr3Pair1->primary->literal->fpLiteral;
+  ASSERT_EQ(Primary::OPT_LITERAL, expr3Pair1->primary->opt);
+  ASSERT_EQ(Literal::OPT_FLOATING_POINT, expr3Pair1->primary->literal->opt);
+  ASSERT_EQ(FloatingPointLiteral::OPT_DECIMAL, fpLiteralPair1->opt);
+  ASSERT_EQ(16, fpLiteralPair1->pos);
+  ASSERT_EQ("12.", fpLiteralPair1->value);
+
+  // Pair 2 v2=12.34
+  spElementValuePair pair2 = pairs[1];
+  spExpression3 expr3Pair2 = pair2->value->expr1->expr2->expr3;
+  spFloatingPointLiteral fpLiteralPair2
+    = expr3Pair2->primary->literal->fpLiteral;
+  ASSERT_EQ(Primary::OPT_LITERAL, expr3Pair2->primary->opt);
+  ASSERT_EQ(Literal::OPT_FLOATING_POINT, expr3Pair2->primary->literal->opt);
+  ASSERT_EQ(FloatingPointLiteral::OPT_DECIMAL, fpLiteralPair2->opt);
+  ASSERT_EQ(24, fpLiteralPair2->pos);
+  ASSERT_EQ("12.34", fpLiteralPair2->value);
+
+  // Pair 3 v3=12.e34
+  spElementValuePair pair3 = pairs[2];
+  spExpression3 expr3Pair3 = pair3->value->expr1->expr2->expr3;
+  spFloatingPointLiteral fpLiteralPair3
+    = expr3Pair3->primary->literal->fpLiteral;
+  ASSERT_EQ(Primary::OPT_LITERAL, expr3Pair3->primary->opt);
+  ASSERT_EQ(Literal::OPT_FLOATING_POINT, expr3Pair3->primary->literal->opt);
+  ASSERT_EQ(FloatingPointLiteral::OPT_DECIMAL, fpLiteralPair3->opt);
+  ASSERT_EQ(34, fpLiteralPair3->pos);
+  ASSERT_EQ("12.e34", fpLiteralPair3->value);
+
+  // Pair 4 v4=12.e-34f
+  spElementValuePair pair4 = pairs[3];
+  spExpression3 expr3Pair4 = pair4->value->expr1->expr2->expr3;
+  spFloatingPointLiteral fpLiteralPair4
+    = expr3Pair4->primary->literal->fpLiteral;
+  ASSERT_EQ(Primary::OPT_LITERAL, expr3Pair4->primary->opt);
+  ASSERT_EQ(Literal::OPT_FLOATING_POINT, expr3Pair4->primary->literal->opt);
+  ASSERT_EQ(FloatingPointLiteral::OPT_DECIMAL, fpLiteralPair4->opt);
+  ASSERT_EQ(45, fpLiteralPair4->pos);
+  ASSERT_EQ("12.e-34f", fpLiteralPair4->value);
+
+  // Pair 5 v5=12.F
+  spElementValuePair pair5 = pairs[4];
+  spExpression3 expr3Pair5 = pair5->value->expr1->expr2->expr3;
+  spFloatingPointLiteral fpLiteralPair5
+    = expr3Pair5->primary->literal->fpLiteral;
+  ASSERT_EQ(Primary::OPT_LITERAL, expr3Pair5->primary->opt);
+  ASSERT_EQ(Literal::OPT_FLOATING_POINT, expr3Pair5->primary->literal->opt);
+  ASSERT_EQ(FloatingPointLiteral::OPT_DECIMAL, fpLiteralPair5->opt);
+  ASSERT_EQ(58, fpLiteralPair5->pos);
+  ASSERT_EQ("12.F", fpLiteralPair5->value);
+
+  // Pair 6 v6=.1
+  spElementValuePair pair6 = pairs[5];
+  spExpression3 expr3Pair6 = pair6->value->expr1->expr2->expr3;
+  spFloatingPointLiteral fpLiteralPair6
+    = expr3Pair6->primary->literal->fpLiteral;
+  ASSERT_EQ(Primary::OPT_LITERAL, expr3Pair6->primary->opt);
+  ASSERT_EQ(Literal::OPT_FLOATING_POINT, expr3Pair6->primary->literal->opt);
+  ASSERT_EQ(FloatingPointLiteral::OPT_DECIMAL, fpLiteralPair6->opt);
+  ASSERT_EQ(66, fpLiteralPair6->pos);
+  ASSERT_EQ(".1", fpLiteralPair6->value);
+
+  // Pair 7 v7=.1E-23
+  spElementValuePair pair7 = pairs[6];
+  spExpression3 expr3Pair7 = pair7->value->expr1->expr2->expr3;
+  spFloatingPointLiteral fpLiteralPair7
+    = expr3Pair7->primary->literal->fpLiteral;
+  ASSERT_EQ(Primary::OPT_LITERAL, expr3Pair7->primary->opt);
+  ASSERT_EQ(Literal::OPT_FLOATING_POINT, expr3Pair7->primary->literal->opt);
+  ASSERT_EQ(FloatingPointLiteral::OPT_DECIMAL, fpLiteralPair7->opt);
+  ASSERT_EQ(73, fpLiteralPair7->pos);
+  ASSERT_EQ(".1E-23", fpLiteralPair7->value);
+
+  // Pair 8 v8=12e+34d
+  spElementValuePair pair8 = pairs[7];
+  spExpression3 expr3Pair8 = pair8->value->expr1->expr2->expr3;
+  spFloatingPointLiteral fpLiteralPair8
+    = expr3Pair8->primary->literal->fpLiteral;
+  ASSERT_EQ(Primary::OPT_LITERAL, expr3Pair8->primary->opt);
+  ASSERT_EQ(Literal::OPT_FLOATING_POINT, expr3Pair8->primary->literal->opt);
+  ASSERT_EQ(FloatingPointLiteral::OPT_DECIMAL, fpLiteralPair8->opt);
+  ASSERT_EQ(84, fpLiteralPair8->pos);
+  ASSERT_EQ("12e+34d", fpLiteralPair8->value);
+}
+
 TEST(Parser, PackageDeclaration) {
   std::string filename = "Test.java";
   std::string buffer = "@myinterface\npackage com.test;";

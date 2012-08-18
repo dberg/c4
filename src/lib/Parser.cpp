@@ -2,7 +2,8 @@
 
 namespace djp {
 
-bool Parser::isBasicType(int token) {
+// Helper functions
+bool isBasicType(int token) {
   if (TOK_KEY_BYTE == token ||
       TOK_KEY_SHORT == token ||
       TOK_KEY_CHAR == token ||
@@ -17,7 +18,7 @@ bool Parser::isBasicType(int token) {
   return false;
 }
 
-bool Parser::isDecimalIntegerLiteral(int token) {
+bool isDecimalIntegerLiteral(int token) {
   if (token == TOK_DECIMAL_NUMERAL
       || token == TOK_DECIMAL_NUMERAL_WITH_INT_TYPE_SUFFIX) {
     return true;
@@ -26,7 +27,7 @@ bool Parser::isDecimalIntegerLiteral(int token) {
   return false;
 }
 
-bool Parser::isHexIntegerLiteral(int token) {
+bool isHexIntegerLiteral(int token) {
   if (token == TOK_HEX_NUMERAL
       || token == TOK_HEX_NUMERAL_WITH_INT_TYPE_SUFFIX) {
     return true;
@@ -35,7 +36,7 @@ bool Parser::isHexIntegerLiteral(int token) {
   return false;
 }
 
-bool Parser::isOctalIntegerLiteral(int token) {
+bool isOctalIntegerLiteral(int token) {
   if (token == TOK_OCTAL_NUMERAL
       || token == TOK_OCTAL_NUMERAL_WITH_INT_TYPE_SUFFIX) {
     return true;
@@ -44,7 +45,7 @@ bool Parser::isOctalIntegerLiteral(int token) {
   return false;
 }
 
-bool Parser::isBinaryIntegerLiteral(int token) {
+bool isBinaryIntegerLiteral(int token) {
   if (token == TOK_BINARY_NUMERAL
       || token == TOK_BINARY_NUMERAL_WITH_INT_TYPE_SUFFIX) {
     return true;
@@ -53,7 +54,7 @@ bool Parser::isBinaryIntegerLiteral(int token) {
   return false;
 }
 
-bool Parser::isIntegerLiteral(int token) {
+bool isIntegerLiteral(int token) {
   if (isDecimalIntegerLiteral(token)) { return true; }
   if (isHexIntegerLiteral(token)) { return true; }
   if (isOctalIntegerLiteral(token)) { return true; }
@@ -61,12 +62,17 @@ bool Parser::isIntegerLiteral(int token) {
   return false;
 }
 
+bool isFloatingPointLiteral(int token) {
+  return (token == TOK_DECIMAL_FLOATING_POINT_LITERAL
+    || token == TOK_HEXADECIMAL_FLOATING_POINT_LITERAL);
+}
+
 /// ClassModifier: one of
 ///   Annotation public protected private
 ///   abstract static final strictfp
 /// ConstructorModifier: one of
 ///   Annotation public protected private
-bool Parser::isModifierToken(int token) {
+bool isModifierToken(int token) {
   if (TOK_KEY_PUBLIC == token ||
       TOK_KEY_PROTECTED == token ||
       TOK_KEY_PRIVATE == token ||
@@ -84,7 +90,7 @@ bool Parser::isModifierToken(int token) {
   return false;
 }
 
-bool Parser::isPrefixOp(int token) {
+bool isPrefixOp(int token) {
   if (TOK_OP_PLUS_PLUS == token ||
       TOK_OP_MINUS_MINUS == token ||
       TOK_OP_EXCLAMATION == token ||
@@ -97,7 +103,7 @@ bool Parser::isPrefixOp(int token) {
   return false;
 }
 
-bool Parser::isPostfixOp(int token) {
+bool isPostfixOp(int token) {
   if (TOK_OP_PLUS_PLUS == token ||
       TOK_OP_MINUS_MINUS == token) {
     return true;
@@ -106,7 +112,7 @@ bool Parser::isPostfixOp(int token) {
   return false;
 }
 
-bool Parser::isValidInitTokenOfClassBodyDeclaration(int token) {
+bool isValidInitTokenOfClassBodyDeclaration(int token) {
   // Prior to a MemberDecl
   if (isModifierToken(token)) {
     return true;
@@ -133,21 +139,21 @@ bool Parser::isValidInitTokenOfClassBodyDeclaration(int token) {
   return false;
 }
 
-bool Parser::isValidInitTokenOfTypeDeclaration(int token) {
+bool isValidInitTokenOfTypeDeclaration(int token) {
   if (isModifierToken(token)) {
     return true;
   }
 
-  if (TOK_ANNOTATION == lexer->getCurToken()
-    || TOK_KEY_CLASS == lexer->getCurToken()
-    || TOK_KEY_INTERFACE == lexer->getCurToken()) {
-
+  if (TOK_ANNOTATION == token
+    || TOK_KEY_CLASS == token
+    || TOK_KEY_INTERFACE == token) {
     return true;
   }
 
   return false;
 }
 
+// Parser Helper methods
 void Parser::addError(int err) {
   addError(lexer->getCurTokenIni(), lexer->getCursor(), err);
 }
@@ -550,6 +556,27 @@ void Parser::parseIntegerLiteral(spIntegerLiteral &intLiteral) {
   }
 }
 
+/// FloatingPointLiteral:
+///   DecimalFloatingPointLiteral
+///   HexFloatingPointLiteral
+void Parser::parseFloatingPointLiteral(spFloatingPointLiteral &fpLiteral) {
+  if (lexer->getCurToken() == TOK_DECIMAL_FLOATING_POINT_LITERAL) {
+    fpLiteral->opt = FloatingPointLiteral::OPT_DECIMAL;
+    fpLiteral->pos = lexer->getCurTokenIni();
+    fpLiteral->value = lexer->getCurTokenStr();
+    lexer->getNextToken(); // consume decimal floating point
+    return;
+  }
+
+  if (lexer->getCurToken() == TOK_HEXADECIMAL_FLOATING_POINT_LITERAL) {
+    fpLiteral->opt = FloatingPointLiteral::OPT_HEX;
+    fpLiteral->pos = lexer->getCurTokenIni();
+    fpLiteral->value = lexer->getCurTokenStr();
+    lexer->getNextToken(); // consume hex floating point
+    return;
+  }
+}
+
 /// Literal:
 ///   IntegerLiteral
 ///   FloatingPointLiteral
@@ -562,6 +589,13 @@ void Parser::parseLiteral(spLiteral &literal) {
     literal->opt = Literal::OPT_INTEGER;
     literal->intLiteral = spIntegerLiteral(new IntegerLiteral());
     parseIntegerLiteral(literal->intLiteral);
+    return;
+  }
+
+  if (isFloatingPointLiteral(lexer->getCurToken())) {
+    literal->opt = Literal::OPT_FLOATING_POINT;
+    literal->fpLiteral = spFloatingPointLiteral(new FloatingPointLiteral());
+    parseFloatingPointLiteral(literal->fpLiteral);
     return;
   }
 
