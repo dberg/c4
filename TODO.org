@@ -1,3 +1,7 @@
+- [ ] SourceStream state should not be manipulated from the Lexer.
+- [ ] Parse FloatingPointLiteral
+  - [ ] DecimalFloatingPointLiteral
+  - [ ] HexadecimalFloatingPointLiteral
 - [ ] Parse AnnotationElement : ElementValuePairs
 - [ ] Parser::parseElementValue Expression1
 - [ ] Parser::parseElementValue ElementValueArrayInitializer
