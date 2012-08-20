@@ -95,7 +95,7 @@ int LiteralSupport::getDecimalNumeralOrDecimalFloatingPoint(
   bool isFloatIndicator
     = (peek == '.' || isFPExponentIndicator(peek) || isFloatTypeSuffix(peek));
 
-  if  (!isFloatIndicator) {
+  if (!isFloatIndicator) {
     // We have a TOK_DECIMAL_NUMERAL
     return tok;
   }

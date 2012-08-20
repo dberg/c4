@@ -9,7 +9,6 @@ int CmdInput::processCmdArgs(int argc, const char **argv) {
   }
 
   filename = argv[1];
-
   return 0;
 }
 }

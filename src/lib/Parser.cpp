@@ -4,14 +4,14 @@ namespace djp {
 
 // Helper functions
 bool isBasicType(int token) {
-  if (TOK_KEY_BYTE == token ||
-      TOK_KEY_SHORT == token ||
-      TOK_KEY_CHAR == token ||
-      TOK_KEY_INT == token ||
-      TOK_KEY_LONG == token ||
-      TOK_KEY_FLOAT == token ||
-      TOK_KEY_DOUBLE == token ||
-      TOK_KEY_BOOLEAN == token) {
+  if (TOK_KEY_BYTE == token
+    || TOK_KEY_SHORT == token
+    || TOK_KEY_CHAR == token
+    || TOK_KEY_INT == token
+    || TOK_KEY_LONG == token
+    || TOK_KEY_FLOAT == token
+    || TOK_KEY_DOUBLE == token
+    || TOK_KEY_BOOLEAN == token) {
     return true;
   }
 
@@ -20,7 +20,7 @@ bool isBasicType(int token) {
 
 bool isDecimalIntegerLiteral(int token) {
   if (token == TOK_DECIMAL_NUMERAL
-      || token == TOK_DECIMAL_NUMERAL_WITH_INT_TYPE_SUFFIX) {
+    || token == TOK_DECIMAL_NUMERAL_WITH_INT_TYPE_SUFFIX) {
     return true;
   }
 
@@ -29,7 +29,7 @@ bool isDecimalIntegerLiteral(int token) {
 
 bool isHexIntegerLiteral(int token) {
   if (token == TOK_HEX_NUMERAL
-      || token == TOK_HEX_NUMERAL_WITH_INT_TYPE_SUFFIX) {
+    || token == TOK_HEX_NUMERAL_WITH_INT_TYPE_SUFFIX) {
     return true;
   }
 
@@ -38,7 +38,7 @@ bool isHexIntegerLiteral(int token) {
 
 bool isOctalIntegerLiteral(int token) {
   if (token == TOK_OCTAL_NUMERAL
-      || token == TOK_OCTAL_NUMERAL_WITH_INT_TYPE_SUFFIX) {
+    || token == TOK_OCTAL_NUMERAL_WITH_INT_TYPE_SUFFIX) {
     return true;
   }
 
@@ -47,7 +47,7 @@ bool isOctalIntegerLiteral(int token) {
 
 bool isBinaryIntegerLiteral(int token) {
   if (token == TOK_BINARY_NUMERAL
-      || token == TOK_BINARY_NUMERAL_WITH_INT_TYPE_SUFFIX) {
+    || token == TOK_BINARY_NUMERAL_WITH_INT_TYPE_SUFFIX) {
     return true;
   }
 
@@ -73,13 +73,13 @@ bool isFloatingPointLiteral(int token) {
 /// ConstructorModifier: one of
 ///   Annotation public protected private
 bool isModifierToken(int token) {
-  if (TOK_KEY_PUBLIC == token ||
-      TOK_KEY_PROTECTED == token ||
-      TOK_KEY_PRIVATE == token ||
-      TOK_KEY_ABSTRACT == token ||
-      TOK_KEY_STATIC == token ||
-      TOK_KEY_FINAL == token ||
-      TOK_KEY_STRICTFP == token) {
+  if (TOK_KEY_PUBLIC == token
+    || TOK_KEY_PROTECTED == token
+    || TOK_KEY_PRIVATE == token
+    || TOK_KEY_ABSTRACT == token
+    || TOK_KEY_STATIC == token
+    || TOK_KEY_FINAL == token
+    || TOK_KEY_STRICTFP == token) {
     return true;
   }
 
@@ -91,12 +91,12 @@ bool isModifierToken(int token) {
 }
 
 bool isPrefixOp(int token) {
-  if (TOK_OP_PLUS_PLUS == token ||
-      TOK_OP_MINUS_MINUS == token ||
-      TOK_OP_EXCLAMATION == token ||
-      TOK_OP_TILDE == token ||
-      TOK_OP_PLUS == token ||
-      TOK_OP_MINUS == token) {
+  if (TOK_OP_PLUS_PLUS == token
+    || TOK_OP_MINUS_MINUS == token
+    || TOK_OP_EXCLAMATION == token
+    || TOK_OP_TILDE == token
+    || TOK_OP_PLUS == token
+    || TOK_OP_MINUS == token) {
     return true;
   }
 
@@ -104,8 +104,8 @@ bool isPrefixOp(int token) {
 }
 
 bool isPostfixOp(int token) {
-  if (TOK_OP_PLUS_PLUS == token ||
-      TOK_OP_MINUS_MINUS == token) {
+  if (TOK_OP_PLUS_PLUS == token
+    || TOK_OP_MINUS_MINUS == token) {
     return true;
   }
 
@@ -705,7 +705,8 @@ void Parser::parseClassOrInterfaceDeclaration(
   parseModifier(decl->modifier);
 
   if (lexer->getCurToken() == TOK_KEY_CLASS
-      || lexer->getCurToken() == TOK_KEY_ENUM) {
+    || lexer->getCurToken() == TOK_KEY_ENUM) {
+
     decl->classDecl = spClassDeclaration(new ClassDeclaration());
     parseClassDeclaration(decl->classDecl);
     return;
@@ -973,7 +974,7 @@ void Parser::parseFormalParameterDecls(spFormalParameterDecls &formParamDecls) {
   // inconsistent state. For example:
   // Constructor(final var) or Constructor(@Annot var).
   if (formParamDecls->varModifier->isEmpty() == false
-      && formParamDecls->type->isEmpty()) {
+    && formParamDecls->type->isEmpty()) {
     addError(ERR_EXP_TYPE);
   }
 
@@ -992,7 +993,8 @@ void Parser::parseFormalParameterDecls(spFormalParameterDecls &formParamDecls) {
 void Parser::parseVariableModifier(spVariableModifier &varModifier) {
 
   while (lexer->getCurToken() == TOK_KEY_FINAL
-	 || lexer->getCurToken() == TOK_ANNOTATION) {
+    || lexer->getCurToken() == TOK_ANNOTATION) {
+
     if (lexer->getCurToken() == TOK_KEY_FINAL) {
       if (varModifier->tokFinal) {
         // TODO: Handle error. We already have a 'final' token.

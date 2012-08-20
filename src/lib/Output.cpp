@@ -286,7 +286,7 @@ void Output::setPackageDeclaration(const spPackageDeclaration &pkgDecl) {
   // package qualified identifier
   if (pkgDecl->qualifiedId) {
     setQualifiedId(pkgDecl->qualifiedId->ini + 1,
-     pkgDecl->qualifiedId->end + 2);
+      pkgDecl->qualifiedId->end + 2);
   }
 
   output += ")";

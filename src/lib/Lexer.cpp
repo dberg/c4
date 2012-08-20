@@ -154,8 +154,9 @@ int Lexer::getPeriodOrEllipsisToken(std::stringstream &ss) {
   //  ^
   //  cursor
   if (src->getCursor() + 1 <= src->getStreamLength()
-      && src->peekChar() == '.'
-      && src->peekChar(1) == '.') {
+    && src->peekChar() == '.'
+    && src->peekChar(1) == '.') {
+
     ss << src->getChar(); // consume 2nd '.'
     ss << src->getChar(); // consume 3rd '.'
     return TOK_ELLIPSIS;
