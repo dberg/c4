@@ -254,6 +254,52 @@ TEST(Parser, AnnotationElementValuePairsDecimalFloatingPointLiterals) {
   ASSERT_EQ("12e+34d", fpLiteralPair8->value);
 }
 
+TEST(Parser, AnnotationElementValuePairsHexadecimalFloatingPointLiterals) {
+  std::string filename = "Test.java";
+  std::string buffer =
+    "@myinterface("
+    "v1=0x12p10, v2=0X34.P56, v3=0x.12p+12F"
+    "package com.test;";
+  Parser parser(filename, buffer);
+  parser.parse();
+
+  std::vector<spElementValuePair> pairs = parser.compilationUnit->pkgDecl
+    ->annotations[0]->elem->pairs;
+
+  // Pair 1 v1=0x12p10
+  spElementValuePair pair1 = pairs[0];
+  spExpression3 expr3Pair1 = pair1->value->expr1->expr2->expr3;
+  spFloatingPointLiteral fpLiteralPair1
+    = expr3Pair1->primary->literal->fpLiteral;
+  ASSERT_EQ(Primary::OPT_LITERAL, expr3Pair1->primary->opt);
+  ASSERT_EQ(Literal::OPT_FLOATING_POINT, expr3Pair1->primary->literal->opt);
+  ASSERT_EQ(FloatingPointLiteral::OPT_HEX, fpLiteralPair1->opt);
+  ASSERT_EQ(16, fpLiteralPair1->pos);
+  ASSERT_EQ("0x12p10", fpLiteralPair1->value);
+
+  // Pair 2 v2=0X34.P56
+  spElementValuePair pair2 = pairs[1];
+  spExpression3 expr3Pair2 = pair2->value->expr1->expr2->expr3;
+  spFloatingPointLiteral fpLiteralPair2
+    = expr3Pair2->primary->literal->fpLiteral;
+  ASSERT_EQ(Primary::OPT_LITERAL, expr3Pair2->primary->opt);
+  ASSERT_EQ(Literal::OPT_FLOATING_POINT, expr3Pair2->primary->literal->opt);
+  ASSERT_EQ(FloatingPointLiteral::OPT_HEX, fpLiteralPair2->opt);
+  ASSERT_EQ(28, fpLiteralPair2->pos);
+  ASSERT_EQ("0X34.P56", fpLiteralPair2->value);
+
+  // Pair 3 v3=0x.12p+12F
+  spElementValuePair pair3 = pairs[2];
+  spExpression3 expr3Pair3 = pair3->value->expr1->expr2->expr3;
+  spFloatingPointLiteral fpLiteralPair3
+    = expr3Pair3->primary->literal->fpLiteral;
+  ASSERT_EQ(Primary::OPT_LITERAL, expr3Pair3->primary->opt);
+  ASSERT_EQ(Literal::OPT_FLOATING_POINT, expr3Pair3->primary->literal->opt);
+  ASSERT_EQ(FloatingPointLiteral::OPT_HEX, fpLiteralPair3->opt);
+  ASSERT_EQ(41, fpLiteralPair3->pos);
+  ASSERT_EQ("0x.12p+12F", fpLiteralPair3->value);
+}
+
 TEST(Parser, PackageDeclaration) {
   std::string filename = "Test.java";
   std::string buffer = "@myinterface\npackage com.test;";

@@ -1,7 +1,6 @@
+- [ ] We should be able to add errors from the Lexer and not only
+      from the Parser.
 - [ ] SourceStream state should not be manipulated from the Lexer.
-- [-] Parse FloatingPointLiteral
-  - [X] DecimalFloatingPointLiteral
-  - [ ] HexadecimalFloatingPointLiteral
 - [ ] Parse AnnotationElement : ElementValuePairs
 - [ ] Parser::parseElementValue Expression1
 - [ ] Parser::parseElementValue ElementValueArrayInitializer
@@ -14,6 +13,9 @@
 - [ ] Parse InterfaceDeclaration
 - [ ] Improve AST structures with Unions
 - [ ] Export Symbol table and helper mapper to elisp (pos -> symbol table)
+- [X] Parse FloatingPointLiteral
+  - [X] DecimalFloatingPointLiteral
+  - [X] HexadecimalFloatingPointLiteral
 - [X] Parse IntegerLiteral
   - [X] DecimalIntegerLiteral
   - [X] HexIntegerLiteral

@@ -9,6 +9,10 @@ bool isBinaryDigit(char c) {
   return (c == '0' || c == '1');
 }
 
+bool isBinaryExponentIndicator(char c) {
+  return (c == 'p' || c == 'P');
+}
+
 bool isDecimalDigit(char c) {
   return isdigit(c);
 }
@@ -183,30 +187,82 @@ int LiteralSupport::getDecimalNumeral(std::stringstream &ss) {
 }
 
 /// The string stream contains the value '0x' or '0X'.
-/// Returns TOK_HEX_NUMERAL | TOK_HEX_NUMERAL_WITH_INT_TYPE_SUFFIX |
+/// Returns
+/// TOK_HEX_NUMERAL
+/// TOK_HEX_NUMERAL_WITH_INT_TYPE_SUFFIX
+/// TOK_HEXADECIMAL_FLOATING_POINT_LITERAL
 /// TOK_ERROR
 int LiteralSupport::getHexNumeral(std::stringstream &ss) {
   // Lookahead and confirm that we have valid hex digit.
-  char c = src->getChar();
-  if (!isHexDigit(c)) {
-    src->ungetChar(3);
+  if (!(isHexDigit(src->peekChar()) || src->peekChar() == '.')) {
     return TOK_ERROR;
   }
 
-  // Append hex digit we've just consumed
-  ss << c;
+  bool seenPeriod = false;
 
-  // Consume remaining digits
-  consumeDigitsPOrUnderscores(ss, isHexDigit);
+  if (src->peekChar() == '.') {
+    if (!isHexDigit(src->peekChar(1))) {
+      src->ungetChar(2);
+      return TOK_ERROR;
+    }
 
-  // Check int type suffix
-  char peek = src->peekChar();
-  if (isIntegerTypeSuffix(peek)) {
-    ss << src->getChar(); // append and consume suffix
-    return TOK_HEX_NUMERAL_WITH_INT_TYPE_SUFFIX;
+    ss << src->getChar(); // consume '.'
+    seenPeriod = true;
   }
 
-  return TOK_HEX_NUMERAL;
+  // Consume whole or fractional digits
+  consumeDigitsPOrUnderscores(ss, isHexDigit);
+
+  if (!seenPeriod) {
+    if (src->peekChar() == '.') {
+      ss << src->getChar(); // consume '.'
+      seenPeriod = true;
+    }
+
+    // Consume fractional digits
+    consumeDigitsPOrUnderscores(ss, isHexDigit);
+  }
+
+  // If we didn't see '.' and the next char is not a binary exponent indicator
+  // we know that this is an integer.
+  if (!seenPeriod && !isBinaryExponentIndicator(src->peekChar())) {
+    // Check int type suffix
+    char peek = src->peekChar();
+    if (isIntegerTypeSuffix(peek)) {
+      ss << src->getChar(); // append and consume suffix
+      return TOK_HEX_NUMERAL_WITH_INT_TYPE_SUFFIX;
+    }
+
+    return TOK_HEX_NUMERAL;
+  }
+
+  // We have a floating point.
+  // The binary exponent indicator is mandatory.
+  if (!isBinaryExponentIndicator(src->peekChar())) {
+    return TOK_ERROR;
+  }
+
+  // Consume the binary exponent indicator: 'p' or 'P'
+  ss << src->getChar();
+
+  // Sign(opt)
+  if (isSign(src->peekChar())) {
+    ss << src->getChar(); // consume '+' or '-'
+  }
+
+  // Digits
+  int digitCount = consumeDigitsPOrUnderscores(ss, isDecimalDigit);
+  if (digitCount <= 0) {
+    // Invalid or missing Signed integer
+    return TOK_ERROR;
+  }
+
+  // FloatTypeSuffix(opt)
+  if (isFloatTypeSuffix(src->peekChar())) {
+    ss << src->getChar(); // consume one of: 'f', 'F', 'd' or 'D'
+  }
+
+  return TOK_HEXADECIMAL_FLOATING_POINT_LITERAL;
 }
 
 /// Returns TOK_OCTAL_NUMERAL | TOK_OCTAL_NUMERAL_WITH_INT_TYPE_SUFFIX
@@ -273,7 +329,7 @@ int LiteralSupport::consumeExponentPart(std::stringstream &ss) {
   ss << src->getChar(); // consume ExponentIndicator
 
   if (isSign(src->peekChar())) {
-    ss << src->getChar(); // consume Sign
+    ss << src->getChar(); // consume Sign: '+' or '-'
   }
 
   int digitCount = consumeDigitsPOrUnderscores(ss, isDecimalDigit);

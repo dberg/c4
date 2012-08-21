@@ -119,8 +119,9 @@ int Lexer::getEqualsOrEqualsEqualsToken() {
 ///   TOK_OCTAL_NUMERAL_WITH_INT_TYPE_SUFFIX
 ///   TOK_BINARY_NUMERAL
 ///   TOK_BINARY_NUMERAL_WITH_INT_TYPE_SUFFIX
+///   TOK_DECIMAL_FLOATING_POINT_LITERAL
+///   TOK_HEXADECIMAL_FLOATING_POINT_LITERAL
 ///   TOK_ERROR
-/// TODO: floating point
 int Lexer::getNumberToken(char c) {
   std::stringstream ss;
   int tok = litSupport->getLiteralNumber(c, ss);
