@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include "CmdInput.h"
+#include "Diagnosis.h"
 #include "File.h"
 #include "Parser.h"
 #include "Output.h"
@@ -21,7 +22,9 @@ int main(int argc, const char **argv) {
     return 1;
   }
 
-  Parser parser(ci.filename, buffer);
+  spDiagnosis diag = spDiagnosis(new Diagnosis());
+
+  Parser parser(ci.filename, buffer, diag);
   parser.parse();
   if (parser.error) {
     std::cerr << "Error( " << parser.error << "): "
@@ -29,7 +32,7 @@ int main(int argc, const char **argv) {
     return 1;
   }
 
-  Output output(parser.compilationUnit);
+  Output output(parser.compilationUnit, diag);
   output.build();
   std::cout << output.output;
 

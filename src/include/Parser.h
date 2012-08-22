@@ -5,6 +5,7 @@
 #include <sstream>
 #include <vector>
 #include "AST.h"
+#include "Diagnosis.h"
 #include "ErrorCodes.h"
 #include "Lexer.h"
 #include "SourceCodeStream.h"
@@ -15,13 +16,10 @@ namespace djp {
 class Parser {
   const std::string filename;
   spSourceCodeStream src;
+  spDiagnosis diag;
   spLexer lexer;
   std::vector<std::string> scopes;
   TokenUtil tokenUtil;
-
-  // Helper method
-  void addError(int err);
-  void addError(int ini, int end, int err);
 
   // Parser
   spAnnotation parseAnnotation();
@@ -64,10 +62,11 @@ class Parser {
   void parseVariableModifier(spVariableModifier &varModifier);
 
 public:
-  Parser(const std::string _filename, const std::string &_buffer)
+  Parser(
+    const std::string _filename, const std::string &_buffer, spDiagnosis &_diag)
     : filename(_filename),
       src(spSourceCodeStream(new SourceCodeStream(_buffer))),
-      lexer(spLexer (new Lexer(src))),
+      diag(_diag), lexer(spLexer(new Lexer(src, _diag))),
       compilationUnit(spCompilationUnit(new CompilationUnit())),
       error(0), error_msg("") {}
 

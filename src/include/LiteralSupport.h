@@ -3,6 +3,7 @@
 #define __LITERAL_SUPPORT_H__
 #include <sstream>
 #include <boost/shared_ptr.hpp>
+#include "Diagnosis.h"
 #include "SourceCodeStream.h"
 #include "Token.h"
 
@@ -13,6 +14,7 @@ typedef boost::shared_ptr<LiteralSupport> spLiteralSupport;
 
 class LiteralSupport {
 
+  spDiagnosis diag;
   spSourceCodeStream src;
 
   int consumeDigitsPOrUnderscores(
@@ -26,7 +28,8 @@ class LiteralSupport {
   int getTokWithLeadingZero(std::stringstream &ss);
 
 public:
-  LiteralSupport(spSourceCodeStream &src) : src(src) {}
+  LiteralSupport(spSourceCodeStream &src, spDiagnosis &diag)
+    : diag(diag), src(src) {}
   int getLiteralNumber(char c, std::stringstream &ss);
   int getDecimalNumeralOrDecimalFloatingPoint(
     char previous_c, std::stringstream &ss);

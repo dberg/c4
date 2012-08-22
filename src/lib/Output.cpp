@@ -15,8 +15,8 @@ void Output::build() {
     setTypeDeclarations(compilationUnit->typeDecls);
   }
 
-  if (compilationUnit->errors.size()) {
-    setErrors(compilationUnit->errors);
+  if (diag->errors.size()) {
+    setErrors(diag->errors);
   }
 
   output += ")";

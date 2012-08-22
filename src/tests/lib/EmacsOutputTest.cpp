@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#include "Diagnosis.h"
 #include "Output.h"
 #include "Parser.h"
 #include "gtest/gtest.h"
@@ -8,9 +9,11 @@ using namespace djp;
 TEST(EmacsOutput, PackageDeclaration) {
   std::string filename = "Test.java";
   std::string buffer = "@myinterface\npackage com.test;";
-  Parser parser(filename, buffer);
+
+  spDiagnosis diag = spDiagnosis(new Diagnosis());
+  Parser parser(filename, buffer, diag);
   parser.parse();
-  Output output(parser.compilationUnit);
+  Output output(parser.compilationUnit, diag);
   output.build();
   std::string expected =
     "((djp-package-declaration "
@@ -28,9 +31,10 @@ TEST(EmacsOutput, ImportDeclaration) {
     "import com.test2.*;\n"
     "import static com.test3.Test3;\n"
     "import static com.test4.*;\n";
-  Parser parser(filename, buffer);
+  spDiagnosis diag = spDiagnosis(new Diagnosis());
+  Parser parser(filename, buffer, diag);
   parser.parse();
-  Output output(parser.compilationUnit);
+  Output output(parser.compilationUnit, diag);
   output.build();
   std::string expected = "((djp-import-declarations "
     "(djp-import-declaration "
@@ -54,9 +58,10 @@ TEST(EmacsOutput, NormalClassDeclaration) {
   std::string filename = "Test.java";
   std::string buffer =
     "public class Test {}\n";
-  Parser parser(filename, buffer);
+  spDiagnosis diag = spDiagnosis(new Diagnosis());
+  Parser parser(filename, buffer, diag);
   parser.parse();
-  Output output(parser.compilationUnit);
+  Output output(parser.compilationUnit, diag);
   output.build();
   std::string expected =
     "((djp-class-or-interface-declaration "
@@ -70,9 +75,10 @@ TEST(EmacsOutput, NormalClassDeclaration) {
 TEST(EmacsOutput, ClassConstructor) {
   std::string filename = "Test.java";
   std::string buffer = "class Abc { Abc() {} }";
-  Parser parser(filename, buffer);
+  spDiagnosis diag = spDiagnosis(new Diagnosis());
+  Parser parser(filename, buffer, diag);
   parser.parse();
-  Output output(parser.compilationUnit);
+  Output output(parser.compilationUnit, diag);
   output.build();
   std::string expected =
     "((djp-class-or-interface-declaration "
@@ -88,9 +94,10 @@ TEST(EmacsOutput, ClassConstructor) {
 TEST(EmacsOutput, ClassConstructorParameters) {
   std::string filename = "Test.java";
   std::string buffer = "class Abc { Abc(int a, double b) {} }";
-  Parser parser(filename, buffer);
+  spDiagnosis diag = spDiagnosis(new Diagnosis());
+  Parser parser(filename, buffer, diag);
   parser.parse();
-  Output output(parser.compilationUnit);
+  Output output(parser.compilationUnit, diag);
   output.build();
   std::string expected =
     "((djp-class-or-interface-declaration "

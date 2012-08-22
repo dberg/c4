@@ -5,6 +5,7 @@
 #include <string>
 #include <sstream>
 #include <boost/shared_ptr.hpp>
+#include "Diagnosis.h"
 #include "LiteralSupport.h"
 #include "SourceCodeStream.h"
 #include "Token.h"
@@ -33,6 +34,7 @@ class Lexer {
 
   int curToken;
   std::string curTokenStr;
+  spDiagnosis diag;
   spSourceCodeStream src;
   spLiteralSupport litSupport;
   TokenUtil tokenUtil;
@@ -48,9 +50,9 @@ class Lexer {
   int getTokenIdentifier(char c);
 
 public:
-  Lexer(spSourceCodeStream &src)
-    : curToken(0), curTokenStr(""), src(src),
-      litSupport(spLiteralSupport(new LiteralSupport(src))) {}
+  Lexer(spSourceCodeStream &src, spDiagnosis &diag)
+    : curToken(0), curTokenStr(""), diag(diag), src(src),
+      litSupport(spLiteralSupport(new LiteralSupport(src, diag))) {}
 
   void getNextToken();
   int getCurToken() { return curToken; }

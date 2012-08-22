@@ -58,6 +58,7 @@ directories:
 
 # main djp
 $(bin)/djp: $(obj)/CmdInput.o \
+            $(obj)/Diagnosis.o \
             $(obj)/File.o \
             $(obj)/Lexer.o \
             $(obj)/LiteralSupport.o \
@@ -67,6 +68,7 @@ $(bin)/djp: $(obj)/CmdInput.o \
             $(obj)/SymbolTable.o \
             $(obj)/djp.o
 	$(CXX) $(obj)/CmdInput.o \
+               $(obj)/Diagnosis.o \
                $(obj)/File.o \
                $(obj)/Lexer.o \
                $(obj)/LiteralSupport.o \
@@ -78,6 +80,9 @@ $(bin)/djp: $(obj)/CmdInput.o \
 
 # modules
 $(obj)/CmdInput.o: $(libdir)/CmdInput.cpp $(incdir)/CmdInput.h
+	$(CXX) $(CFLAGS) $(INC) -c $< -o $@
+
+$(obj)/Diagnosis.o: $(libdir)/Diagnosis.cpp $(incdir)/Diagnosis.h
 	$(CXX) $(CFLAGS) $(INC) -c $< -o $@
 
 $(obj)/File.o: $(libdir)/File.cpp $(incdir)/File.h
@@ -124,6 +129,7 @@ $(bin)/tests: $(test_libdir)/ParserTest.cpp \
               $(obj)/LiteralSupport.o \
               $(obj)/Parser.o \
               $(obj)/Output.o \
+              $(obj)/Diagnosis.o \
               $(obj)/SourceCodeStream.o \
               $(obj)/SymbolTable.o \
               $(gtest_obj)/libgtest.a
@@ -132,6 +138,7 @@ $(bin)/tests: $(test_libdir)/ParserTest.cpp \
                                      $(obj)/LiteralSupport.o \
                                      $(obj)/Parser.o \
                                      $(obj)/Output.o \
+                                     $(obj)/Diagnosis.o \
                                      $(obj)/SourceCodeStream.o \
                                      $(obj)/SymbolTable.o \
                                      $(test_libdir)/ParserTest.cpp \

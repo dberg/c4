@@ -153,16 +153,6 @@ bool isValidInitTokenOfTypeDeclaration(int token) {
   return false;
 }
 
-// Parser Helper methods
-void Parser::addError(int err) {
-  addError(lexer->getCurTokenIni(), lexer->getCursor(), err);
-}
-
-void Parser::addError(int ini, int end, int err) {
-  spError error = spError(new Error(ini, end, err));
-  compilationUnit->errors.push_back(error);
-}
-
 /// Annotation: @ QualifiedIdentifier [ ( [AnnotationElement] ) ]
 spAnnotation Parser::parseAnnotation() {
   spAnnotation annotation = spAnnotation(new Annotation());
@@ -172,7 +162,7 @@ spAnnotation Parser::parseAnnotation() {
   // QualifiedIdentifier
   if (lexer->getCurToken() != TOK_IDENTIFIER) {
     annotation->err = true;
-    addError(annotation->posTokAt, annotation->posTokAt + 1, ERR_EXP_QID);
+    diag->addError(annotation->posTokAt, annotation->posTokAt + 1, ERR_EXP_QID);
     return annotation;
   }
 
@@ -190,14 +180,14 @@ spAnnotation Parser::parseAnnotation() {
       parseAnnotationElement(annotation->elem);
       if (annotation->elem->err) {
         annotation->err = true;
-        addError(annotation->posTokAt, openParenPos, ERR_NVAL_ANNOT_ELEM);
+        diag->addError(annotation->posTokAt, openParenPos, ERR_NVAL_ANNOT_ELEM);
         return annotation;
       }
     }
 
     if (lexer->getCurToken() != TOK_RPAREN) {
       annotation->err = true;
-      addError(annotation->posTokAt, openParenPos, ERR_EXP_LPAREN);
+      diag->addError(annotation->posTokAt, openParenPos, ERR_EXP_LPAREN);
       return annotation;
     }
 
@@ -239,7 +229,8 @@ int Parser::parseArrayDepth() {
     lexer->getNextToken(); // consume '['
 
     if (lexer->getCurToken() != TOK_RBRACKET) {
-      addError(ERR_EXP_RBRACKET);
+      diag->addError(
+        lexer->getCurTokenIni(), lexer->getCursor(), ERR_EXP_RBRACKET);
       return depth;
     }
 
@@ -394,7 +385,8 @@ void Parser::parseElementValuePairs(std::vector<spElementValuePair> &pairs) {
   pair->value = spElementValue(new ElementValue());
   parseElementValue(pair->value);
   if (pair->value->opt == ElementValue::OPT_UNDEFINED) {
-    addError(ERR_EXP_ELEMENT_VALUE);
+    diag->addError(
+      lexer->getCurTokenIni(), lexer->getCursor(), ERR_EXP_ELEMENT_VALUE);
   }
 
   // Even if we have an error while parsing the element value we add the pair
@@ -935,7 +927,7 @@ void Parser::parseConstructorDeclaratorRest(
 /// FormalParameters: ( [FormalParameterDecls] )
 void Parser::parseFormalParameters(spFormalParameters &formParams) {
   if (lexer->getCurToken() != TOK_LPAREN) {
-    addError(ERR_EXP_LPAREN);
+    diag->addError(lexer->getCurTokenIni(), lexer->getCursor(), ERR_EXP_LPAREN);
     formParams->error = 1;
     return;
   }
@@ -953,7 +945,7 @@ void Parser::parseFormalParameters(spFormalParameters &formParams) {
   parseFormalParameterDecls(formParams->formParamDecls);
 
   if (lexer->getCurToken() != TOK_RPAREN) {
-    addError(ERR_EXP_RPAREN);
+    diag->addError(lexer->getCurTokenIni(), lexer->getCursor(), ERR_EXP_RPAREN);
     formParams->error = 1;
     return;
   }
@@ -975,7 +967,7 @@ void Parser::parseFormalParameterDecls(spFormalParameterDecls &formParamDecls) {
   // Constructor(final var) or Constructor(@Annot var).
   if (formParamDecls->varModifier->isEmpty() == false
     && formParamDecls->type->isEmpty()) {
-    addError(ERR_EXP_TYPE);
+    diag->addError(lexer->getCurTokenIni(), lexer->getCursor(), ERR_EXP_TYPE);
   }
 
   // If we have a Type we expect a FormalParameterDeclRest
@@ -1046,7 +1038,8 @@ void Parser::parseFormalParameterDeclsRest(
 
     // We expect a VariableDeclaratorId
     if (lexer->getCurToken() != TOK_IDENTIFIER) {
-      addError(ERR_EXP_IDENTIFIER);
+      diag->addError(
+        lexer->getCurTokenIni(), lexer->getCursor(), ERR_EXP_IDENTIFIER);
       return;
     }
 
@@ -1055,7 +1048,8 @@ void Parser::parseFormalParameterDeclsRest(
     // Corner case in the grammar. The array form is invalid in the form:
     // (int ... a[])
     if (formParamDeclsRest->varDeclId->arrayDepth > 0) {
-      addError(ERR_NVAL_ARRAY);
+      diag->addError(
+        lexer->getCurTokenIni(), lexer->getCursor(), ERR_NVAL_ARRAY);
     }
 
     return;
@@ -1068,7 +1062,8 @@ void Parser::parseFormalParameterDeclsRest(
 
   // Handle error
   if (formParamDeclsRest->varDeclId->identifier->value.length() == 0) {
-    addError(ERR_EXP_IDENTIFIER);
+    diag->addError(
+      lexer->getCurTokenIni(), lexer->getCursor(), ERR_EXP_IDENTIFIER);
   }
 
   // [ , FormalParameterDecls ]

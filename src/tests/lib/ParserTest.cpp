@@ -1,4 +1,5 @@
 #include <iostream>
+#include "Diagnosis.h"
 #include "Output.h"
 #include "Parser.h"
 #include "SymbolTable.h"
@@ -10,7 +11,8 @@ TEST(Parser, AnnotationElementValuePairs) {
   std::string buffer =
     "@myinterface(id=10, group=20L)\n"
     "package com.test;";
-  Parser parser(filename, buffer);
+  spDiagnosis diag = spDiagnosis(new Diagnosis());
+  Parser parser(filename, buffer, diag);
   parser.parse();
 
   std::vector<spElementValuePair> pairs = parser.compilationUnit->pkgDecl
@@ -57,7 +59,8 @@ TEST(Parser, AnnotationElementValuePairsIntegerLiterals) {
     "@myinterface("
     "v1=0b01,v2=0B1_1L,v3=10,v4=2_0L,v5=0xA0,v6=0XF_0L,v7=001,v8=0_76L)\n"
     "package com.test;";
-  Parser parser(filename, buffer);
+  spDiagnosis diag = spDiagnosis(new Diagnosis());
+  Parser parser(filename, buffer, diag);
   parser.parse();
 
   std::vector<spElementValuePair> pairs = parser.compilationUnit->pkgDecl
@@ -159,7 +162,8 @@ TEST(Parser, AnnotationElementValuePairsDecimalFloatingPointLiterals) {
     "v1=12., v2=12.34, v3=12.e34, v4=12.e-34f, v5=12.F,"
     "v6=.1, v7=.1E-23, v8=12e+34d)\n"
     "package com.test;";
-  Parser parser(filename, buffer);
+  spDiagnosis diag = spDiagnosis(new Diagnosis());
+  Parser parser(filename, buffer, diag);
   parser.parse();
 
   std::vector<spElementValuePair> pairs = parser.compilationUnit->pkgDecl
@@ -260,7 +264,8 @@ TEST(Parser, AnnotationElementValuePairsHexadecimalFloatingPointLiterals) {
     "@myinterface("
     "v1=0x12p10, v2=0X34.P56, v3=0x.12p+12F"
     "package com.test;";
-  Parser parser(filename, buffer);
+  spDiagnosis diag = spDiagnosis(new Diagnosis());
+  Parser parser(filename, buffer, diag);
   parser.parse();
 
   std::vector<spElementValuePair> pairs = parser.compilationUnit->pkgDecl
@@ -304,7 +309,8 @@ TEST(Parser, PackageDeclaration) {
   std::string filename = "Test.java";
   std::string buffer = "@myinterface\npackage com.test;";
 
-  Parser parser(filename, buffer);
+  spDiagnosis diag = spDiagnosis(new Diagnosis());
+  Parser parser(filename, buffer, diag);
   parser.parse();
   ASSERT_EQ(1, parser.compilationUnit->pkgDecl->annotations.size());
   ASSERT_EQ(0, parser.compilationUnit->pkgDecl->annotations[0]->posTokAt);
@@ -329,7 +335,8 @@ TEST(Parser, ImportDeclarations) {
     "import static com.test3.Test3;\n"
     "import static com.test4.*;\n";
 
-  Parser parser(filename, buffer);
+  spDiagnosis diag = spDiagnosis(new Diagnosis());
+  Parser parser(filename, buffer, diag);
   parser.parse();
   ASSERT_EQ(4, parser.compilationUnit->impDecls->imports.size());
 
@@ -381,7 +388,8 @@ TEST(Parser, ImportDeclarations) {
 TEST(Parser, ClassDeclaration) {
   std::string filename = "Test.java";
   std::string buffer = "@myinterface\npublic class Abc { }";
-  Parser parser(filename, buffer);
+  spDiagnosis diag = spDiagnosis(new Diagnosis());
+  Parser parser(filename, buffer, diag);
   parser.parse();
 
   ASSERT_EQ(1, parser.compilationUnit->typeDecls.size());
@@ -411,7 +419,8 @@ TEST(Parser, ClassDeclaration) {
 TEST(Parser, ClassConstructor) {
   std::string filename = "Test.java";
   std::string buffer = "class Abc { Abc() {} }";
-  Parser parser(filename, buffer);
+  spDiagnosis diag = spDiagnosis(new Diagnosis());
+  Parser parser(filename, buffer, diag);
   parser.parse();
 
   spClassBodyDeclaration classBodyDecl = parser.compilationUnit->typeDecls[0]
@@ -427,7 +436,8 @@ TEST(Parser, ClassConstructor) {
 TEST(Parser, ClassConstructorParameter) {
   std::string filename = "Test.java";
   std::string buffer = "class Abc { Abc(int a) {} }";
-  Parser parser(filename, buffer);
+  spDiagnosis diag = spDiagnosis(new Diagnosis());
+  Parser parser(filename, buffer, diag);
   parser.parse();
 
   spFormalParameterDecls formParamDecls = parser.compilationUnit->typeDecls[0]
@@ -444,7 +454,8 @@ TEST(Parser, ClassConstructorParameter) {
 TEST(Parser, ClassConstructorParameterArray) {
   std::string filename = "Test.java";
   std::string buffer = "class Abc { Abc(int[] a) {} }";
-  Parser parser(filename, buffer);
+  spDiagnosis diag = spDiagnosis(new Diagnosis());
+  Parser parser(filename, buffer, diag);
   parser.parse();
 
   spFormalParameterDecls formParamDecls = parser.compilationUnit->typeDecls[0]
@@ -457,7 +468,8 @@ TEST(Parser, ClassConstructorParameterArray) {
 TEST(Parser, ClassConstructorParameters) {
   std::string filename = "Test.java";
   std::string buffer = "class Abc { Abc(int a, double b) {} }";
-  Parser parser(filename, buffer);
+  spDiagnosis diag = spDiagnosis(new Diagnosis());
+  Parser parser(filename, buffer, diag);
   parser.parse();
 
   spFormalParameterDecls formParamDecls = parser.compilationUnit->typeDecls[0]
@@ -487,7 +499,8 @@ TEST(Parser, ClassConstructorParameters) {
 TEST(Parser, ClassConstructorParameterEllipsis) {
   std::string filename = "Test.java";
   std::string buffer = "class Abc { Abc(int ... a) {} }";
-  Parser parser(filename, buffer);
+  spDiagnosis diag = spDiagnosis(new Diagnosis());
+  Parser parser(filename, buffer, diag);
   parser.parse();
 
   spFormalParameterDeclsRest formParamDeclsRest = parser.compilationUnit
@@ -501,7 +514,8 @@ TEST(Parser, ClassConstructorParameterEllipsis) {
 TEST(Parser, ClassConstructorAnnotationParameter) {
   std::string filename = "Test.java";
   std::string buffer = "class Abc { Abc(@myannotation int a) {} }";
-  Parser parser(filename, buffer);
+  spDiagnosis diag = spDiagnosis(new Diagnosis());
+  Parser parser(filename, buffer, diag);
   parser.parse();
 
   spFormalParameterDecls formParamDecls = parser.compilationUnit->typeDecls[0]
@@ -514,9 +528,10 @@ TEST(Parser, ClassConstructorAnnotationParameter) {
 TEST(Parser, Errors) {
   std::string filename = "Test.java";
   std::string buffer = "@";
-  Parser parser(filename, buffer);
+  spDiagnosis diag = spDiagnosis(new Diagnosis());
+  Parser parser(filename, buffer, diag);
   parser.parse();
-  ASSERT_EQ(1, parser.compilationUnit->errors.size());
+  ASSERT_EQ(1, diag->errors.size());
 }
 
 int main(int argc, char **argv) {

@@ -1,8 +1,18 @@
 //-*- C++ -*-
 #ifndef __ERROR_CODES__
 #define __ERROR_CODES__
+#include <map>
+#include <boost/shared_ptr.hpp>
+
 
 namespace djp {
+
+struct Error {
+  int ini, end, type;
+  Error(int ini, int end, int type) : ini(ini), end(end), type(type) {}
+};
+
+typedef boost::shared_ptr<struct Error> spError;
 
 enum ErrorCode {
   ERR_EXP_QID,

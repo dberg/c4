@@ -62,8 +62,6 @@ typedef boost::shared_ptr<struct PrefixOp> spPrefixOp;
 typedef boost::shared_ptr<struct TokenExp> spTokenExp;
 typedef boost::shared_ptr<struct VariableDeclaratorId> spVariableDeclaratorId;
 typedef boost::shared_ptr<struct Type> spType;
-typedef boost::shared_ptr<struct Error> spError;
-typedef boost::shared_ptr<struct Warning> spWarning;
 
 /// CompilationUnit:
 ///   [PackageDeclaration]
@@ -73,9 +71,6 @@ struct CompilationUnit {
   spPackageDeclaration pkgDecl;
   spImportDeclarations impDecls;
   std::vector<spTypeDeclaration> typeDecls;
-  std::vector<spError> errors;
-  std::vector<spWarning> warnings;
-  CompilationUnit() {}
 };
 
 /// PackageDeclaration: [ [Annotations]  package QualifiedIdentifier ; ]
@@ -666,11 +661,5 @@ struct FloatingPointLiteral {
 
   FloatingPointLiteral() : opt(OPT_UNDEFINED), pos(-1) {}
 };
-
-struct Error {
-  int ini, end, type;
-  Error(int ini, int end, int type) : ini(ini), end(end), type(type) {}
-};
-
 }
 #endif
