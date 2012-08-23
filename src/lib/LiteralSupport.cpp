@@ -193,8 +193,12 @@ int LiteralSupport::getDecimalNumeral(std::stringstream &ss) {
 /// TOK_HEXADECIMAL_FLOATING_POINT_LITERAL
 /// TOK_ERROR
 int LiteralSupport::getHexNumeral(std::stringstream &ss) {
+  // We save the start position of the numeral for error diagnosis.
+  int start = src->getCursor() - 2;
+
   // Lookahead and confirm that we have valid hex digit.
   if (!(isHexDigit(src->peekChar()) || src->peekChar() == '.')) {
+    diag->addError(start, src->getCursor(), ERR_NVAL_HEX);
     return TOK_ERROR;
   }
 
@@ -203,6 +207,7 @@ int LiteralSupport::getHexNumeral(std::stringstream &ss) {
   if (src->peekChar() == '.') {
     if (!isHexDigit(src->peekChar(1))) {
       src->ungetChar(2);
+      diag->addError(start, src->getCursor(), ERR_NVAL_HEX);
       return TOK_ERROR;
     }
 
@@ -239,6 +244,7 @@ int LiteralSupport::getHexNumeral(std::stringstream &ss) {
   // We have a floating point.
   // The binary exponent indicator is mandatory.
   if (!isBinaryExponentIndicator(src->peekChar())) {
+    diag->addError(start, src->getCursor(), ERR_NVAL_HEX);
     return TOK_ERROR;
   }
 
@@ -254,6 +260,7 @@ int LiteralSupport::getHexNumeral(std::stringstream &ss) {
   int digitCount = consumeDigitsPOrUnderscores(ss, isDecimalDigit);
   if (digitCount <= 0) {
     // Invalid or missing Signed integer
+    diag->addError(start, src->getCursor(), ERR_NVAL_HEX);
     return TOK_ERROR;
   }
 
