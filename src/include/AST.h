@@ -35,7 +35,8 @@ typedef boost::shared_ptr<struct FloatingPointLiteral> spFloatingPointLiteral;
 typedef boost::shared_ptr<struct CharacterLiteral> spCharacterLiteral;
 typedef boost::shared_ptr<struct StringLiteral> spStringLiteral;
 typedef boost::shared_ptr<struct BooleanLiteral> spBooleanLiteral;
-typedef boost::shared_ptr<struct NullLiteral> spNullLiteral;
+typedef struct TokenExp NullLiteral;
+typedef boost::shared_ptr<struct TokenExp> spNullLiteral;
 typedef boost::shared_ptr<struct TypeDeclaration> spTypeDeclaration;
 typedef boost::shared_ptr<struct ClassOrInterfaceDeclaration>
   spClassOrInterfaceDeclaration;
@@ -660,6 +661,11 @@ struct FloatingPointLiteral {
   std::string value;
 
   FloatingPointLiteral() : opt(OPT_UNDEFINED), pos(-1) {}
+};
+
+struct BooleanLiteral {
+  int pos;
+  bool val;
 };
 }
 #endif

@@ -260,6 +260,16 @@ void Parser::parseElementValue(spElementValue &value) {
   // TODO: ElementValueArrayInitializer
 }
 
+void Parser::parseBooleanLiteral(spBooleanLiteral &boolLit) {
+  boolLit->pos = lexer->getCurTokenIni();
+  if (lexer->getCurTokenStr().compare("true") == 0) {
+    boolLit->val = true;
+  } else {
+    boolLit->val = false;
+  }
+  lexer->getNextToken(); // consume 'true' or 'false'
+}
+
 /// Expression: Expression1 [ AssignmentOperator Expression1 ]
 void Parser::parseExpression(spExpression &expr) {
   spExpression1 expr1 = spExpression1(new Expression1());
@@ -592,6 +602,21 @@ void Parser::parseLiteral(spLiteral &literal) {
   }
 
   // TODO:
+  // CharacterLiteral
+  // StringLiteral
+
+  if (lexer->getCurToken() == TOK_BOOLEAN_LITERAL) {
+    literal->opt = Literal::OPT_BOOLEAN;
+    literal->boolLiteral = spBooleanLiteral(new BooleanLiteral());
+    parseBooleanLiteral(literal->boolLiteral);
+    return;
+  }
+
+  if (lexer->getCurToken() == TOK_NULL_LITERAL) {
+    literal->opt = Literal::OPT_NULL;
+    literal->nullLiteral = spNullLiteral(new NullLiteral());
+    parseNullLiteral(literal->nullLiteral);
+  }
 }
 
 /// Primary:
@@ -782,6 +807,12 @@ void Parser::parseNormalClassDeclaration(spNormalClassDeclaration &nClassDecl) {
 
   nClassDecl->classBody = spClassBody(new ClassBody());
   parseClassBody(nClassDecl->classBody);
+}
+
+void Parser::parseNullLiteral(spTokenExp &nullLiteral) {
+  nullLiteral->pos = lexer->getCurTokenIni();
+  nullLiteral->type = TOK_NULL_LITERAL;
+  lexer->getNextToken(); // consume 'null'
 }
 
 /// ClassBody: '{' { ClassBodyDeclaration } '}'

@@ -1,4 +1,3 @@
-- [ ] SourceStream state should not be manipulated from the Lexer.
 - [ ] Parse AnnotationElement : ElementValuePairs
 - [ ] Parser::parseElementValue Expression1
 - [ ] Parser::parseElementValue ElementValueArrayInitializer

@@ -26,6 +26,7 @@ class Parser {
   void parseAnnotationElement(spAnnotationElement &elem);
   void parseAnnotations(std::vector<spAnnotation> &annotations);
   int parseArrayDepth();
+  void parseBooleanLiteral(spBooleanLiteral &boolLit);
   void parseClassBody(spClassBody &classBody);
   void parseClassBodyDeclaration(spClassBodyDeclaration &decl);
   void parseClassDeclaration(spClassDeclaration &classDecl);
@@ -51,6 +52,7 @@ class Parser {
   void parseModifier(spModifier &modifier);
   void parseMemberDecl(spMemberDecl &memberDecl);
   void parseNormalClassDeclaration(spNormalClassDeclaration &nClassDecl);
+  void parseNullLiteral(spNullLiteral &nullLiteral);
   spPackageDeclaration parsePackageDeclaration(
     std::vector<spAnnotation> &annotations);
   void parsePrimary(spPrimary &primary);

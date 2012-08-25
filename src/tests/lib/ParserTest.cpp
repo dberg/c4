@@ -305,6 +305,59 @@ TEST(Parser, AnnotationElementValuePairsHexadecimalFloatingPointLiterals) {
   ASSERT_EQ("0x.12p+12F", fpLiteralPair3->value);
 }
 
+TEST(Parser, AnnotationElementValuePairsBoolean) {
+  std::string filename = "Test.java";
+  std::string buffer =
+    "@myinterface(v1=true, v2=false)"
+    "package com.test;";
+  spDiagnosis diag = spDiagnosis(new Diagnosis());
+  Parser parser(filename, buffer, diag);
+  parser.parse();
+
+  std::vector<spElementValuePair> pairs = parser.compilationUnit->pkgDecl
+    ->annotations[0]->elem->pairs;
+
+  // Pair 1
+  spElementValuePair pair1 = pairs[0];
+  spExpression3 expr3Pair1 = pair1->value->expr1->expr2->expr3;
+  spBooleanLiteral boolLiteralPair1 = expr3Pair1->primary->literal->boolLiteral;
+  ASSERT_EQ(Primary::OPT_LITERAL, expr3Pair1->primary->opt);
+  ASSERT_EQ(Literal::OPT_BOOLEAN, expr3Pair1->primary->literal->opt);
+  ASSERT_EQ(16, boolLiteralPair1->pos);
+  ASSERT_TRUE(boolLiteralPair1->val);
+
+  // Pair 2
+  spElementValuePair pair2 = pairs[1];
+  spExpression3 expr3Pair2 = pair2->value->expr1->expr2->expr3;
+  spBooleanLiteral boolLiteralPair2 = expr3Pair2->primary->literal->boolLiteral;
+  ASSERT_EQ(Primary::OPT_LITERAL, expr3Pair2->primary->opt);
+  ASSERT_EQ(Literal::OPT_BOOLEAN, expr3Pair2->primary->literal->opt);
+  ASSERT_EQ(25, boolLiteralPair2->pos);
+  ASSERT_FALSE(boolLiteralPair2->val);
+}
+
+TEST(Parser, AnnotationElementValuePairsNull) {
+  std::string filename = "Test.java";
+  std::string buffer =
+    "@myinterface(v1=null)"
+    "package com.test;";
+  spDiagnosis diag = spDiagnosis(new Diagnosis());
+  Parser parser(filename, buffer, diag);
+  parser.parse();
+
+  std::vector<spElementValuePair> pairs = parser.compilationUnit->pkgDecl
+    ->annotations[0]->elem->pairs;
+
+  // Pair
+  spElementValuePair pair = pairs[0];
+  spExpression3 expr3Pair = pair->value->expr1->expr2->expr3;
+  spNullLiteral nullLiteralPair = expr3Pair->primary->literal->nullLiteral;
+  ASSERT_EQ(Primary::OPT_LITERAL, expr3Pair->primary->opt);
+  ASSERT_EQ(Literal::OPT_NULL, expr3Pair->primary->literal->opt);
+  ASSERT_EQ(16, nullLiteralPair->pos);
+  ASSERT_EQ(TOK_NULL_LITERAL, nullLiteralPair->type);
+}
+
 TEST(Parser, PackageDeclaration) {
   std::string filename = "Test.java";
   std::string buffer = "@myinterface\npackage com.test;";
