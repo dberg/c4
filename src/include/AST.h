@@ -667,5 +667,10 @@ struct BooleanLiteral {
   int pos;
   bool val;
 };
+
+struct CharacterLiteral {
+  int pos;
+  std::string val;
+};
 }
 #endif

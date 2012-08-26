@@ -270,6 +270,12 @@ void Parser::parseBooleanLiteral(spBooleanLiteral &boolLit) {
   lexer->getNextToken(); // consume 'true' or 'false'
 }
 
+void Parser::parseCharacterLiteral(spCharacterLiteral &charLit) {
+  charLit->pos = lexer->getCurTokenIni();
+  charLit->val = lexer->getCurTokenStr();
+  lexer->getNextToken(); // consume character literal
+}
+
 /// Expression: Expression1 [ AssignmentOperator Expression1 ]
 void Parser::parseExpression(spExpression &expr) {
   spExpression1 expr1 = spExpression1(new Expression1());
@@ -601,8 +607,15 @@ void Parser::parseLiteral(spLiteral &literal) {
     return;
   }
 
-  // TODO:
   // CharacterLiteral
+  if (lexer->getCurToken() == TOK_CHARACTER_LITERAL) {
+    literal->opt = Literal::OPT_CHAR;
+    literal->charLiteral = spCharacterLiteral(new CharacterLiteral());
+    parseCharacterLiteral(literal->charLiteral);
+    return;
+  }
+
+  // TODO:
   // StringLiteral
 
   if (lexer->getCurToken() == TOK_BOOLEAN_LITERAL) {

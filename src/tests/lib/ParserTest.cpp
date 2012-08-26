@@ -358,6 +358,62 @@ TEST(Parser, AnnotationElementValuePairsNull) {
   ASSERT_EQ(TOK_NULL_LITERAL, nullLiteralPair->type);
 }
 
+TEST(Parser, AnnotationElementValuePairsCharacterLiteral) {
+  std::string filename = "Test.java";
+  // INFO: We escape the universal character name \uAa89
+  // so it's not pre-processed by the c++ compiler.
+  std::string buffer =
+    "@myinterface(v1='A', v2='\n', v3='\034', v4='\\uAa89')"
+    //               16      24       33         44
+    "package com.test;";
+  spDiagnosis diag = spDiagnosis(new Diagnosis());
+  Parser parser(filename, buffer, diag);
+  parser.parse();
+
+  std::vector<spElementValuePair> pairs = parser.compilationUnit->pkgDecl
+    ->annotations[0]->elem->pairs;
+
+  // Pair 1
+  spElementValuePair pair1 = pairs[0];
+  spExpression3 expr3Pair1 = pair1->value->expr1->expr2->expr3;
+  spCharacterLiteral charLiteralPair1
+    = expr3Pair1->primary->literal->charLiteral;
+  ASSERT_EQ(Primary::OPT_LITERAL, expr3Pair1->primary->opt);
+  ASSERT_EQ(Literal::OPT_CHAR, expr3Pair1->primary->literal->opt);
+  ASSERT_EQ(16, charLiteralPair1->pos);
+  ASSERT_EQ("'A'", charLiteralPair1->val);
+
+  // Pair 2
+  spElementValuePair pair2 = pairs[1];
+  spExpression3 expr3Pair2 = pair2->value->expr1->expr2->expr3;
+  spCharacterLiteral charLiteralPair2
+    = expr3Pair2->primary->literal->charLiteral;
+  ASSERT_EQ(Primary::OPT_LITERAL, expr3Pair2->primary->opt);
+  ASSERT_EQ(Literal::OPT_CHAR, expr3Pair2->primary->literal->opt);
+  ASSERT_EQ(24, charLiteralPair2->pos);
+  ASSERT_EQ("'\n'", charLiteralPair2->val);
+
+  // Pair 3
+  spElementValuePair pair3 = pairs[2];
+  spExpression3 expr3Pair3 = pair3->value->expr1->expr2->expr3;
+  spCharacterLiteral charLiteralPair3
+    = expr3Pair3->primary->literal->charLiteral;
+  ASSERT_EQ(Primary::OPT_LITERAL, expr3Pair3->primary->opt);
+  ASSERT_EQ(Literal::OPT_CHAR, expr3Pair3->primary->literal->opt);
+  ASSERT_EQ(32, charLiteralPair3->pos);
+  ASSERT_EQ("'\034'", charLiteralPair3->val);
+
+  // Pair 4
+  spElementValuePair pair4 = pairs[3];
+  spExpression3 expr3Pair4 = pair4->value->expr1->expr2->expr3;
+  spCharacterLiteral charLiteralPair4
+    = expr3Pair4->primary->literal->charLiteral;
+  ASSERT_EQ(Primary::OPT_LITERAL, expr3Pair4->primary->opt);
+  ASSERT_EQ(Literal::OPT_CHAR, expr3Pair4->primary->literal->opt);
+  ASSERT_EQ(40, charLiteralPair4->pos);
+  ASSERT_EQ("'\\uAa89'", charLiteralPair4->val);
+}
+
 TEST(Parser, PackageDeclaration) {
   std::string filename = "Test.java";
   std::string buffer = "@myinterface\npackage com.test;";

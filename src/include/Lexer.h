@@ -41,7 +41,9 @@ class Lexer {
 
   int getToken();
   int getAnnotationToken();
+  int getCharacterLiteral();
   int getEqualsOrEqualsEqualsToken();
+  int getEscapeSequence(std::stringstream &ss);
   int getMinusOrMinusMinusToken();
   int getNumberToken(char c);
   int getPeriodOrEllipsisToken(std::stringstream &ss);

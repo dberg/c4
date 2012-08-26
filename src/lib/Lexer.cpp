@@ -44,6 +44,7 @@ int Lexer::getToken() {
 
   // Annotation and Annotation Type Declarations
   if ('@' == c) return getAnnotationToken();
+  if ('\'' == c) return getCharacterLiteral();
   if ('.' == c) return getPeriodStartingToken();
   if ('+' == c) return getPlusOrPlusPlusToken();
   if ('-' == c) return getMinusOrMinusMinusToken();
@@ -59,6 +60,7 @@ int Lexer::getToken() {
   if (')' == c) return TOK_RPAREN;
   if ('[' == c) return TOK_LBRACKET;
   if (']' == c) return TOK_RBRACKET;
+
 
   if (isdigit(c)) return getNumberToken(c);
 
@@ -100,6 +102,40 @@ int Lexer::getAnnotationToken() {
   return TOK_ANNOTATION;
 }
 
+int Lexer::getCharacterLiteral() {
+  std::stringstream ss;
+  ss << '\''; // opening single quote
+
+  // Check for SingleCharacter:
+  // InputCharacter but not ' or \.
+  char c = src->peekChar();
+  if (c != '\'' && c != '\\') {
+    ss << src->getChar(); // consume SingleCharacter
+    if (src->peekChar() == '\'') {
+      ss << src->getChar(); // consume single quote char
+      curTokenStr = ss.str();
+      return TOK_CHARACTER_LITERAL;
+    } else {
+      curTokenStr = ss.str();
+      return TOK_ERROR;
+    }
+  }
+
+  // Escape Sequence
+  if (c == '\\') {
+    int tok = getEscapeSequence(ss);
+    if (tok == TOK_ESCAPE_SEQUENCE) {
+      curTokenStr = ss.str();
+      return TOK_CHARACTER_LITERAL;
+    }
+
+    return tok;
+  }
+
+  curTokenStr = ss.str();
+  return TOK_ERROR;
+}
+
 int Lexer::getEqualsOrEqualsEqualsToken() {
   // We look 1 char ahead to decided if we have '=='.
   if (src->peekChar() == '=') {
@@ -108,6 +144,85 @@ int Lexer::getEqualsOrEqualsEqualsToken() {
   }
 
   return TOK_OP_EQUALS;
+}
+
+/// Returns TOK_ESCAPE_SEQUENCE | TOK_ERROR
+int Lexer::getEscapeSequence(std::stringstream &ss) {
+  ss << src->getChar(); // consume '\'
+  switch(src->peekChar()) {
+    case 'b': // backspace BS
+    case 't': // horizontal tab HT
+    case 'n': // linefeed LF
+    case 'f': // form feed FF
+    case 'r': // carriage return CR
+    case '"': // double quote
+    case '\'': // single quote
+    case '\\': // backslash
+      ss << src->getChar(); // consume special char
+      if (src->peekChar() == '\'') {
+        ss << src->getChar(); // consume ending single quote
+        return TOK_ESCAPE_SEQUENCE;
+      }
+      return TOK_ERROR;
+  }
+
+  // Octal Escape:
+  //   \ OctalDigit
+  //   \ OctalDigit OctalDigit
+  //   \ ZeroToThree OctalDigit OctalDigit
+  if (isOctalDigit(src->peekChar())) {
+    char c = src->getChar(); // consume first octal digit
+    ss << c;
+    if (isOctalDigit(src->peekChar())) {
+      ss << src->getChar(); // consume second octal digit
+      if (isOctalDigit(src->peekChar())) {
+        ss << src->getChar(); // consume third octal digit
+        // at this point the first octal digit must be a number
+        // from zero to three
+        if (!(c >= '0' && c <= '3')) {
+	  return TOK_ERROR;
+        }
+      }
+      if (src->peekChar() == '\'') {
+	ss << src->getChar(); // consume closing single quote
+	return TOK_ESCAPE_SEQUENCE;
+      }
+      return TOK_ERROR;
+    }
+  }
+
+  // Special case.
+  // The unicode escape \u is processed earlier by the java compiler but
+  // we build the AST in one pass.
+  // UnicodeEscape:
+  //  \ UnicodeMarker HexDigit HexDigit HexDigit HexDigit
+  if (src->peekChar() == 'u') {
+    // Finish consuming UnicodeMarker:
+    //   UnicodeMarker:
+    //     u
+    //     UnicodeMarker u
+    while (src->peekChar() == 'u') {
+      ss << src->getChar();
+    }
+
+    // HexDigit{4}
+    for (int i = 0; i < 4; i++) {
+      if (isHexDigit(src->peekChar())) {
+	ss << src->getChar(); // consume hex digit
+      } else {
+	return TOK_ERROR;
+      }
+    }
+
+    if (src->peekChar() != '\'') {
+      return TOK_ERROR;
+    }
+
+    ss << src->getChar(); // consume closing single quote
+    return TOK_ESCAPE_SEQUENCE;
+  }
+
+  return TOK_ERROR;
 }
 
 /// Returns one of:
