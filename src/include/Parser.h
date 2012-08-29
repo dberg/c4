@@ -59,6 +59,7 @@ class Parser {
   void parsePrimary(spPrimary &primary);
   spQualifiedIdentifier parseQualifiedIdentifier();
   void parseType(spType &type);
+  void parseStringLiteral(spStringLiteral &strLit);
   std::vector<spTypeDeclaration> parseTypeDeclarations(
     std::vector<spAnnotation> &annotations);
   void parseVariableDeclaratorId(spVariableDeclaratorId &varDeclId);

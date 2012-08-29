@@ -414,6 +414,31 @@ TEST(Parser, AnnotationElementValuePairsCharacterLiteral) {
   ASSERT_EQ("'\\uAa89'", charLiteralPair4->val);
 }
 
+TEST(Parser, AnnotationElementValuePairsStringLiteral) {
+  std::string filename = "Test.java";
+  // INFO: We escape the universal character name \uAa89
+  // so it's not pre-processed by the c++ compiler.
+  std::string buffer =
+    "@myinterface(v1=\"Hello, I'm a String!\")"
+    "package com.test;";
+  spDiagnosis diag = spDiagnosis(new Diagnosis());
+  Parser parser(filename, buffer, diag);
+  parser.parse();
+
+  std::vector<spElementValuePair> pairs = parser.compilationUnit->pkgDecl
+    ->annotations[0]->elem->pairs;
+
+  // Pair
+  spElementValuePair pair1 = pairs[0];
+  spExpression3 expr3Pair1 = pair1->value->expr1->expr2->expr3;
+  spStringLiteral strLiteralPair1
+    = expr3Pair1->primary->literal->strLiteral;
+  ASSERT_EQ(Primary::OPT_LITERAL, expr3Pair1->primary->opt);
+  ASSERT_EQ(Literal::OPT_STRING, expr3Pair1->primary->literal->opt);
+  ASSERT_EQ(16, strLiteralPair1->pos);
+  ASSERT_EQ("\"Hello, I'm a String!\"", strLiteralPair1->val);
+}
+
 TEST(Parser, PackageDeclaration) {
   std::string filename = "Test.java";
   std::string buffer = "@myinterface\npackage com.test;";

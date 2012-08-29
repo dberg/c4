@@ -615,8 +615,13 @@ void Parser::parseLiteral(spLiteral &literal) {
     return;
   }
 
-  // TODO:
   // StringLiteral
+  if (lexer->getCurToken() == TOK_STRING_LITERAL) {
+    literal->opt = Literal::OPT_STRING;
+    literal->strLiteral = spStringLiteral(new StringLiteral());
+    parseStringLiteral(literal->strLiteral);
+    return;
+  }
 
   if (lexer->getCurToken() == TOK_BOOLEAN_LITERAL) {
     literal->opt = Literal::OPT_BOOLEAN;
@@ -1065,6 +1070,12 @@ void Parser::parseType(spType &type) {
   }
 
   // TODO: ReferenceType
+}
+
+void Parser::parseStringLiteral(spStringLiteral &strLit) {
+  strLit->pos = lexer->getCurTokenIni();
+  strLit->val = lexer->getCurTokenStr();
+  lexer->getNextToken(); // consume string literal
 }
 
 /// FormalParameterDeclsRest:
