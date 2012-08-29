@@ -672,5 +672,10 @@ struct CharacterLiteral {
   int pos;
   std::string val;
 };
+
+struct StringLiteral {
+  int pos;
+  std::string val;
+};
 }
 #endif
