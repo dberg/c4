@@ -45,6 +45,7 @@ int Lexer::getToken() {
   // Annotation and Annotation Type Declarations
   if ('@' == c) return getAnnotationToken();
   if ('\'' == c) return getCharacterLiteral();
+  if ('"' == c) return getStringLiteral();
   if ('.' == c) return getPeriodStartingToken();
   if ('+' == c) return getPlusOrPlusPlusToken();
   if ('-' == c) return getMinusOrMinusMinusToken();
@@ -289,6 +290,36 @@ int Lexer::getPlusOrPlusPlusToken() {
   }
 
   return TOK_OP_PLUS;
+}
+
+int Lexer::getStringLiteral() {
+  std::stringstream ss;
+  ss << '"'; // opening double quotes
+
+  // StringCharacter:
+  // InputCharacter but not " or \.
+  // EscapeSequence
+  char c;
+  int tok;
+  while ((c = src->peekChar())) {
+    switch (c) {
+      case '\\':
+        tok = getEscapeSequence(ss);
+        if (tok != TOK_ESCAPE_SEQUENCE) {
+          curTokenStr = ss.str();
+          return tok; // error
+        }
+        break;
+      case '"':
+        ss << src->getChar(); // consume closing double quotes
+        curTokenStr = ss.str();
+        return TOK_STRING_LITERAL;
+      default:
+        ss << src->getChar(); // consume StringCharacter
+    }
+  }
+
+  return TOK_ERROR;
 }
 
 int Lexer::getMinusOrMinusMinusToken() {

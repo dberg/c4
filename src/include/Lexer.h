@@ -49,6 +49,7 @@ class Lexer {
   int getPeriodOrEllipsisToken(std::stringstream &ss);
   int getPeriodStartingToken();
   int getPlusOrPlusPlusToken();
+  int getStringLiteral();
   int getTokenIdentifier(char c);
 
 public:
