@@ -649,6 +649,13 @@ void Parser::parseLiteral(spLiteral &literal) {
 ///   BasicType {[]} . class
 ///   void . class
 void Parser::parsePrimary(spPrimary &primary) {
+  // ParExpression
+  if (lexer->getCurToken() == TOK_LCURLY_BRACKET) {
+    spPairExpression pairExpr = spPairExpression(new PairExpression());
+    parsePairExpression(pairExpr);
+  }
+
+  // Literal
   spLiteral literal = spLiteral(new Literal());
   parseLiteral(literal);
   if (literal->isEmpty() == false) {
@@ -831,6 +838,23 @@ void Parser::parseNullLiteral(spTokenExp &nullLiteral) {
   nullLiteral->pos = lexer->getCurTokenIni();
   nullLiteral->type = TOK_NULL_LITERAL;
   lexer->getNextToken(); // consume 'null'
+}
+
+/// PairExpression: ( Expression )
+void Parser::parsePairExpression(spPairExpression &pairExpr) {
+  int pos = src->getCursor();
+  lexer->getNextToken(); // consume '('
+
+  pairExpr->expr = spExpression(new Expression());
+  parseExpression(pairExpr->expr);
+
+  if (lexer->getCurToken() == TOK_RCURLY_BRACKET) {
+    lexer->getNextToken(); // consume ')'
+    return;
+  }
+
+  // Error
+  diag->addError(pos, lexer->getCursor(), ERR_EXP_LPAREN);
 }
 
 /// ClassBody: '{' { ClassBodyDeclaration } '}'

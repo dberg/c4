@@ -56,6 +56,7 @@ class Parser {
   void parseNullLiteral(spNullLiteral &nullLiteral);
   spPackageDeclaration parsePackageDeclaration(
     std::vector<spAnnotation> &annotations);
+  void parsePairExpression(spPairExpression &pairExpr);
   void parsePrimary(spPrimary &primary);
   spQualifiedIdentifier parseQualifiedIdentifier();
   void parseType(spType &type);

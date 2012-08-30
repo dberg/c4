@@ -21,6 +21,8 @@ enum ErrorCode {
   ERR_EXP_RBRACKET,
   ERR_EXP_LPAREN,
   ERR_EXP_RPAREN,
+  ERR_EXP_LCURLY_BRACKET,
+  ERR_EXP_RCURLY_BRACKET,
   ERR_EXP_TYPE,
   ERR_NVAL_ANNOT_ELEM,
   ERR_NVAL_ARRAY,
@@ -39,6 +41,8 @@ public:
     msgs[ERR_EXP_RBRACKET] = "Expected ']'";
     msgs[ERR_EXP_LPAREN] = "Expected opening parenthesis";
     msgs[ERR_EXP_RPAREN] = "Expected closing parenthesis";
+    msgs[ERR_EXP_LCURLY_BRACKET] = "Expected opening curly brackets";
+    msgs[ERR_EXP_RCURLY_BRACKET] = "Expected closing curly brackets";
     msgs[ERR_EXP_TYPE] = "Expected Type";
     msgs[ERR_NVAL_ANNOT_ELEM] = "Invalid annotation element";
     msgs[ERR_NVAL_ARRAY] = "Invalid array notation";

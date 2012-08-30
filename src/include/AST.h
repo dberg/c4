@@ -36,6 +36,7 @@ typedef boost::shared_ptr<struct CharacterLiteral> spCharacterLiteral;
 typedef boost::shared_ptr<struct StringLiteral> spStringLiteral;
 typedef boost::shared_ptr<struct BooleanLiteral> spBooleanLiteral;
 typedef struct TokenExp NullLiteral;
+typedef boost::shared_ptr<struct PairExpression> spPairExpression;
 typedef boost::shared_ptr<struct TokenExp> spNullLiteral;
 typedef boost::shared_ptr<struct TypeDeclaration> spTypeDeclaration;
 typedef boost::shared_ptr<struct ClassOrInterfaceDeclaration>
@@ -589,6 +590,7 @@ struct Primary {
 
   PrimaryEnum opt;
   spLiteral literal;
+  spPairExpression pairExpr;
   Primary() : opt(OPT_UNDEFINED) {}
   bool isEmpty() { return opt == OPT_UNDEFINED; }
 };
@@ -676,6 +678,10 @@ struct CharacterLiteral {
 struct StringLiteral {
   int pos;
   std::string val;
+};
+
+struct PairExpression {
+  spExpression expr;
 };
 }
 #endif
