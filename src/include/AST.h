@@ -8,6 +8,7 @@
 
 namespace djp {
 
+typedef boost::shared_ptr<struct Arguments> spArguments;
 typedef boost::shared_ptr<struct BasicType> spBasicType;
 typedef boost::shared_ptr<struct ReferenceType> spReferenceType;
 typedef boost::shared_ptr<struct CompilationUnit> spCompilationUnit;
@@ -29,6 +30,7 @@ typedef boost::shared_ptr<struct Expression2> spExpression2;
 typedef boost::shared_ptr<struct Expression2Rest> spExpression2Rest;
 typedef boost::shared_ptr<struct Expression3> spExpression3;
 typedef boost::shared_ptr<struct Primary> spPrimary;
+typedef boost::shared_ptr<struct PrimaryThisArguments> spPrimaryThisArguments;
 typedef boost::shared_ptr<struct Literal> spLiteral;
 typedef boost::shared_ptr<struct IntegerLiteral> spIntegerLiteral;
 typedef boost::shared_ptr<struct FloatingPointLiteral> spFloatingPointLiteral;
@@ -532,6 +534,13 @@ struct Expression2Rest {
 
 };
 
+/// Arguments: ( [ Expression { , Expression }] )
+struct Arguments {
+  int err;
+  std::vector<spExpression> exprs;
+  Arguments() : err(0) {}
+};
+
 /// Expression3:
 ///   PrefixOp Expression3
 ///   ( Expression | Type ) Expression3
@@ -591,8 +600,15 @@ struct Primary {
   PrimaryEnum opt;
   spLiteral literal;
   spPairExpression pairExpr;
+  spPrimaryThisArguments thisArgs;
   Primary() : opt(OPT_UNDEFINED) {}
   bool isEmpty() { return opt == OPT_UNDEFINED; }
+};
+
+/// Primary: this [Arguments]
+struct PrimaryThisArguments {
+  spTokenExp tokThis;
+  spArguments args;
 };
 
 /// Literal:

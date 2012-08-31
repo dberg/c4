@@ -221,6 +221,36 @@ void Parser::parseAnnotations(std::vector<spAnnotation> &annotations) {
   }
 }
 
+/// Arguments: ( [ Expression { , Expression }] )
+void Parser::parseArguments(spArguments &args) {
+  lexer->getNextToken(); // consume '('
+
+  if (lexer->getCurToken() == TOK_RPAREN) {
+    lexer->getNextToken(); // consume ')'
+    return;
+  }
+
+  while (true) {
+    spExpression expr = spExpression(new Expression());
+    parseExpression(expr);
+    if (expr->isEmpty()) {
+      break;
+    }
+    args->exprs.push_back(expr);
+  }
+
+  if (lexer->getCurToken() == TOK_RPAREN) {
+    lexer->getNextToken(); // consume ')'
+    return;
+  }
+
+  // Error
+  args->err = diag->addError(
+    lexer->getCurTokenIni(),
+    lexer->getCursor(),
+    ERR_EXP_RCURLY_BRACKET);
+}
+
 /// {[]}
 int Parser::parseArrayDepth() {
   int depth = 0;
@@ -653,6 +683,13 @@ void Parser::parsePrimary(spPrimary &primary) {
   if (lexer->getCurToken() == TOK_LCURLY_BRACKET) {
     spPairExpression pairExpr = spPairExpression(new PairExpression());
     parsePairExpression(pairExpr);
+    return;
+  }
+
+  // this [Arguments]
+  if (lexer->getCurToken() == TOK_KEY_THIS) {
+    primary->thisArgs = spPrimaryThisArguments(new PrimaryThisArguments());
+    parsePrimaryThisArguments(primary->thisArgs);
   }
 
   // Literal
@@ -665,6 +702,22 @@ void Parser::parsePrimary(spPrimary &primary) {
   }
 
   // TODO:
+}
+
+/// Primary: this [Arguments]
+void Parser::parsePrimaryThisArguments(
+  spPrimaryThisArguments &primaryThisArgs) {
+
+  // Token 'this'
+  primaryThisArgs->tokThis = spTokenExp(new TokenExp(
+    lexer->getCursor() - tokenUtil.getTokenLength(
+      lexer->getCurToken()), lexer->getCurToken()));
+
+  lexer->getNextToken(); // consume 'this'
+
+  // [Arguments]
+  if (lexer->getCurToken() == TOK_LPAREN)
+    parseArguments(primaryThisArgs->args);
 }
 
 /// QualifiedIdentifier: Identifer { . Identifier }
