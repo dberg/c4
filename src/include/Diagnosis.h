@@ -15,8 +15,7 @@ public:
   std::vector<spError> errors;
   //TODO: std::vector<spWarning> warnings;
 
-  void addError(int err);
-  void addError(int ini, int end, int err);
+  int addError(int ini, int end, int err);
 };
 } // namespace
 
