@@ -31,6 +31,8 @@ typedef boost::shared_ptr<struct Expression2Rest> spExpression2Rest;
 typedef boost::shared_ptr<struct Expression3> spExpression3;
 typedef boost::shared_ptr<struct Primary> spPrimary;
 typedef boost::shared_ptr<struct PrimaryThisArguments> spPrimaryThisArguments;
+typedef boost::shared_ptr<struct PrimarySuperSuperSuffix>
+  spPrimarySuperSuperSuffix;
 typedef boost::shared_ptr<struct Literal> spLiteral;
 typedef boost::shared_ptr<struct IntegerLiteral> spIntegerLiteral;
 typedef boost::shared_ptr<struct FloatingPointLiteral> spFloatingPointLiteral;
@@ -66,6 +68,7 @@ typedef boost::shared_ptr<struct PrefixOp> spPrefixOp;
 typedef boost::shared_ptr<struct TokenExp> spTokenExp;
 typedef boost::shared_ptr<struct VariableDeclaratorId> spVariableDeclaratorId;
 typedef boost::shared_ptr<struct Type> spType;
+typedef boost::shared_ptr<struct SuperSuffix> spSuperSuffix;
 
 /// CompilationUnit:
 ///   [PackageDeclaration]
@@ -601,6 +604,7 @@ struct Primary {
   spLiteral literal;
   spPairExpression pairExpr;
   spPrimaryThisArguments thisArgs;
+  spPrimarySuperSuperSuffix superSuperSuffix;
   Primary() : opt(OPT_UNDEFINED) {}
   bool isEmpty() { return opt == OPT_UNDEFINED; }
 };
@@ -609,6 +613,12 @@ struct Primary {
 struct PrimaryThisArguments {
   spTokenExp tokThis;
   spArguments args;
+};
+
+/// Primary: super SuperSuffix
+struct PrimarySuperSuperSuffix {
+  spTokenExp tokSuper;
+  spSuperSuffix superSuffix;
 };
 
 /// Literal:
@@ -698,6 +708,24 @@ struct StringLiteral {
 
 struct PairExpression {
   spExpression expr;
+};
+
+/// SuperSuffix:
+///   Arguments
+///   . Identifier [Arguments]
+struct SuperSuffix {
+  enum SuperSuffixEnum {
+    OPT_UNDEFINED,
+    OPT_ARGUMENTS,
+    OPT_IDENTIFIER_ARGUMENTS,
+  };
+
+  SuperSuffixEnum opt;
+  int err;
+  spIdentifier id;
+  spArguments args;
+
+  SuperSuffix() : opt(OPT_UNDEFINED), err(0) {}
 };
 }
 #endif

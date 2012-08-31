@@ -60,9 +60,12 @@ class Parser {
   void parsePairExpression(spPairExpression &pairExpr);
   void parsePrimary(spPrimary &primary);
   void parsePrimaryThisArguments(spPrimaryThisArguments &primaryThisArgs);
+  void parsePrimarySuperSuperSuffix(
+    spPrimarySuperSuperSuffix &primarySuperSuperSuffix);
   spQualifiedIdentifier parseQualifiedIdentifier();
-  void parseType(spType &type);
   void parseStringLiteral(spStringLiteral &strLit);
+  void parseSuperSuffix(spSuperSuffix &superSuffix);
+  void parseType(spType &type);
   std::vector<spTypeDeclaration> parseTypeDeclarations(
     std::vector<spAnnotation> &annotations);
   void parseVariableDeclaratorId(spVariableDeclaratorId &varDeclId);

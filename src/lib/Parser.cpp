@@ -690,6 +690,15 @@ void Parser::parsePrimary(spPrimary &primary) {
   if (lexer->getCurToken() == TOK_KEY_THIS) {
     primary->thisArgs = spPrimaryThisArguments(new PrimaryThisArguments());
     parsePrimaryThisArguments(primary->thisArgs);
+    return;
+  }
+
+  // super SuperSuffix
+  if (lexer->getCurToken() == TOK_KEY_SUPER) {
+    primary->superSuperSuffix = spPrimarySuperSuperSuffix(
+      new PrimarySuperSuperSuffix());
+    parsePrimarySuperSuperSuffix(primary->superSuperSuffix);
+    return;
   }
 
   // Literal
@@ -718,6 +727,25 @@ void Parser::parsePrimaryThisArguments(
   // [Arguments]
   if (lexer->getCurToken() == TOK_LPAREN)
     parseArguments(primaryThisArgs->args);
+}
+
+/// Primary: super SuperSuffix
+void Parser::parsePrimarySuperSuperSuffix(
+  spPrimarySuperSuperSuffix &primarySuperSuperSuffix) {
+
+  // Token 'super'
+  primarySuperSuperSuffix->tokSuper = spTokenExp(new TokenExp(
+    lexer->getCursor() - tokenUtil.getTokenLength(
+      lexer->getCurToken()), lexer->getCurToken()));
+
+  lexer->getNextToken(); // consume 'super'
+
+  // SuperSuffix
+  if (lexer->getCurToken() == TOK_LPAREN
+    || lexer->getCurToken() == TOK_PERIOD) {
+    primarySuperSuperSuffix->superSuffix = spSuperSuffix(new SuperSuffix());
+    parseSuperSuffix(primarySuperSuperSuffix->superSuffix);
+  }
 }
 
 /// QualifiedIdentifier: Identifer { . Identifier }
@@ -1128,6 +1156,42 @@ void Parser::parseVariableModifier(spVariableModifier &varModifier) {
     // Add annotations to varModifier->annotations
     if (lexer->getCurToken() == TOK_ANNOTATION) {
       parseAnnotations(varModifier->annotations);
+    }
+  }
+}
+
+/// SuperSuffix:
+///   Arguments
+///   . Identifier [Arguments]
+void Parser::parseSuperSuffix(spSuperSuffix &superSuffix) {
+  // 1st option - Arguments
+  if (lexer->getCurToken() == TOK_LPAREN) {
+    superSuffix->opt = SuperSuffix::OPT_ARGUMENTS;
+    superSuffix->args = spArguments(new Arguments());
+    parseArguments(superSuffix->args);
+    return;
+  }
+
+  // 2nd - . Identifier [Arguments]
+  if (lexer->getCurToken() == TOK_PERIOD) {
+    superSuffix->opt = SuperSuffix::OPT_IDENTIFIER_ARGUMENTS;
+    lexer->getNextToken(); // consume '.'
+
+    // Error
+    if (lexer->getCurToken() != TOK_IDENTIFIER) {
+      superSuffix->err = diag->addError(lexer->getCurTokenIni(),
+        lexer->getCursor(), ERR_EXP_IDENTIFIER);
+      return;
+    }
+
+    // Identifier
+    superSuffix->id = spIdentifier(new Identifier(
+      lexer->getCurTokenIni(), lexer->getCurTokenStr()));
+    lexer->getNextToken(); // consume Identifier
+
+    if (lexer->getCurToken() == TOK_RPAREN) {
+      superSuffix->args = spArguments(new Arguments());
+      parseArguments(superSuffix->args);
     }
   }
 }
