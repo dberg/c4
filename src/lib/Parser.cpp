@@ -397,7 +397,6 @@ void Parser::parseExpression3(spExpression3 &expr3) {
   spPrimary primary = spPrimary(new Primary());
   parsePrimary(primary);
   if (primary->isEmpty() == false) {
-    primary->opt = Primary::OPT_LITERAL;
     expr3->opt = Expression3::OPT_PRIMARY_SELECTOR_POSTFIXOP;
     expr3->primary = primary;
 
@@ -681,13 +680,15 @@ void Parser::parseLiteral(spLiteral &literal) {
 void Parser::parsePrimary(spPrimary &primary) {
   // ParExpression
   if (lexer->getCurToken() == TOK_LCURLY_BRACKET) {
-    spPairExpression pairExpr = spPairExpression(new PairExpression());
-    parsePairExpression(pairExpr);
+    primary->opt = Primary::OPT_PAR_EXPRESSION;
+    primary->pairExpr = spPairExpression(new PairExpression());
+    parsePairExpression(primary->pairExpr);
     return;
   }
 
   // this [Arguments]
   if (lexer->getCurToken() == TOK_KEY_THIS) {
+    primary->opt = Primary::OPT_THIS_ARGUMENTS;
     primary->thisArgs = spPrimaryThisArguments(new PrimaryThisArguments());
     parsePrimaryThisArguments(primary->thisArgs);
     return;
@@ -695,6 +696,7 @@ void Parser::parsePrimary(spPrimary &primary) {
 
   // super SuperSuffix
   if (lexer->getCurToken() == TOK_KEY_SUPER) {
+    primary->opt = Primary::OPT_SUPER_SUPER_SUFFIX;
     primary->superSuperSuffix = spPrimarySuperSuperSuffix(
       new PrimarySuperSuperSuffix());
     parsePrimarySuperSuperSuffix(primary->superSuperSuffix);
