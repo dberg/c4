@@ -8,8 +8,13 @@
 
 namespace djp {
 
+typedef boost::shared_ptr<struct ArrayCreatorRest> spArrayCreatorRest;
 typedef boost::shared_ptr<struct Arguments> spArguments;
 typedef boost::shared_ptr<struct BasicType> spBasicType;
+typedef boost::shared_ptr<struct CreatedName> spCreatedName;
+typedef boost::shared_ptr<struct Creator> spCreator;
+typedef boost::shared_ptr<struct CreatorOpt1> spCreatorOpt1;
+typedef boost::shared_ptr<struct CreatorOpt2> spCreatorOpt2;
 typedef boost::shared_ptr<struct ReferenceType> spReferenceType;
 typedef boost::shared_ptr<struct CompilationUnit> spCompilationUnit;
 typedef boost::shared_ptr<struct PackageDeclaration> spPackageDeclaration;
@@ -33,6 +38,7 @@ typedef boost::shared_ptr<struct Primary> spPrimary;
 typedef boost::shared_ptr<struct PrimaryThisArguments> spPrimaryThisArguments;
 typedef boost::shared_ptr<struct PrimarySuperSuperSuffix>
   spPrimarySuperSuperSuffix;
+typedef boost::shared_ptr<struct PrimaryNewCreator> spPrimaryNewCreator;
 typedef boost::shared_ptr<struct Literal> spLiteral;
 typedef boost::shared_ptr<struct IntegerLiteral> spIntegerLiteral;
 typedef boost::shared_ptr<struct FloatingPointLiteral> spFloatingPointLiteral;
@@ -43,11 +49,15 @@ typedef struct TokenExp NullLiteral;
 typedef boost::shared_ptr<struct PairExpression> spPairExpression;
 typedef boost::shared_ptr<struct TokenExp> spNullLiteral;
 typedef boost::shared_ptr<struct TypeDeclaration> spTypeDeclaration;
+typedef boost::shared_ptr<struct TypeList> spTypeList;
+typedef boost::shared_ptr<struct ClassCreatorRest> spClassCreatorRest;
 typedef boost::shared_ptr<struct ClassOrInterfaceDeclaration>
   spClassOrInterfaceDeclaration;
 typedef boost::shared_ptr<struct ClassDeclaration> spClassDeclaration;
 typedef boost::shared_ptr<struct NormalClassDeclaration>
   spNormalClassDeclaration;
+typedef boost::shared_ptr<struct NonWildcardTypeArguments>
+  spNonWildcardTypeArguments;
 typedef boost::shared_ptr<struct ClassBody> spClassBody;
 typedef boost::shared_ptr<struct ClassBodyDeclaration> spClassBodyDeclaration;
 typedef boost::shared_ptr<struct ConstructorDeclaratorRest>
@@ -68,6 +78,10 @@ typedef boost::shared_ptr<struct PrefixOp> spPrefixOp;
 typedef boost::shared_ptr<struct TokenExp> spTokenExp;
 typedef boost::shared_ptr<struct VariableDeclaratorId> spVariableDeclaratorId;
 typedef boost::shared_ptr<struct Type> spType;
+typedef boost::shared_ptr<struct TypeArgument> spTypeArgument;
+typedef boost::shared_ptr<struct TypeArguments> spTypeArguments;
+typedef boost::shared_ptr<struct TypeArgumentsOrDiamond>
+  spTypeArgumentsOrDiamond;
 typedef boost::shared_ptr<struct SuperSuffix> spSuperSuffix;
 
 /// CompilationUnit:
@@ -335,7 +349,37 @@ struct BasicType {
 /// ReferenceType:
 ///   Identifier [TypeArguments] { . Identifier [TypeArguments] }
 struct ReferenceType {
+  spIdentifier id;
+  spTypeArguments typeArgs;
+  std::vector<ReferenceType> refTypes;
+};
 
+/// TypeArguments:
+///   < TypeArgument { , TypeArgument } >
+struct TypeArguments {
+  int err;
+  unsigned int posLt;
+  unsigned int posGt;
+  spTypeArgument typeArg;
+  std::vector<spTypeArgument> typeArgs;
+
+  TypeArguments() : err(0), posLt(0), posGt(0) {}
+};
+
+/// TypeArgument:
+///   ReferenceType
+///   ? [(extends|super) ReferenceType]
+struct TypeArgument {
+  enum TypeArgumentOpt {
+    OPT_UNDEFINED,
+    OPT_REFERENCE_TYPE,
+    OPT_QUESTION_MARK,
+  };
+
+  TypeArgumentOpt opt;
+  int err;
+
+  TypeArgument() : opt(OPT_UNDEFINED), err(0) {}
 };
 
 /// Block: { BlockStatements }
@@ -605,6 +649,7 @@ struct Primary {
   spPairExpression pairExpr;
   spPrimaryThisArguments thisArgs;
   spPrimarySuperSuperSuffix superSuperSuffix;
+  spPrimaryNewCreator newCreator;
   Primary() : opt(OPT_UNDEFINED) {}
   bool isEmpty() { return opt == OPT_UNDEFINED; }
 };
@@ -619,6 +664,12 @@ struct PrimaryThisArguments {
 struct PrimarySuperSuperSuffix {
   spTokenExp tokSuper;
   spSuperSuffix superSuffix;
+};
+
+/// Primary: new Creator
+struct PrimaryNewCreator {
+  spTokenExp tokNew;
+  spCreator creator;
 };
 
 /// Literal:
@@ -726,6 +777,102 @@ struct SuperSuffix {
   spArguments args;
 
   SuperSuffix() : opt(OPT_UNDEFINED), err(0) {}
+};
+
+/// Creator:
+///   NonWildcardTypeArguments CreatedName ClassCreatorRest
+///   CreatedName ( ClassCreatorRest | ArrayCreatorRest )
+struct Creator {
+  enum CreatorEnum {
+    OPT_UNDEFINED,
+    OPT_NON_WILDCARD_TYPE_ARGUMENTS,
+    OPT_CREATED_NAME,
+  };
+
+  CreatorEnum opt;
+  int err;
+  spCreatorOpt1 opt1;
+  spCreatorOpt2 opt2;
+
+  Creator() : opt(OPT_UNDEFINED), err(0) {}
+};
+
+/// CreatorOpt1: NonWildcardTypeArguments CreatedName ClassCreatorRest
+struct CreatorOpt1 {
+  spNonWildcardTypeArguments NonWildcardTypeArguments;
+  spCreatedName createdName;
+  spClassCreatorRest classCreatorRest;
+};
+
+/// CreatorOpt2: CreatedName ( ClassCreatorRest | ArrayCreatorRest )
+struct CreatorOpt2 {
+  spCreatedName createdName;
+  spClassCreatorRest classCreatorRest;
+  spArrayCreatorRest arrayCreatorRest;
+};
+
+/// NonWildcardTypeArguments: < TypeList >
+struct NonWildcardTypeArguments {
+  int err;
+  unsigned int posLt;
+  unsigned int posGt;
+  spTypeList typeList;
+  NonWildcardTypeArguments() : err(0), posLt(0), posGt(0) {}
+};
+
+/// TypeList: ReferenceType {, ReferenceType }
+struct TypeList {
+  spReferenceType refType;
+  std::vector<ReferenceType> refTypes;
+};
+
+/// CreatedName:
+///   Identifier [TypeArgumentsOrDiamond]
+///     { . Identifier [TypeArgumentsOrDiamond] }
+struct CreatedName {
+  spIdentifier id;
+  spTypeArgumentsOrDiamond typeArgOrDiam;
+  std::vector<spCreatedName> createdNames;
+};
+
+/// TypeArgumentsOrDiamond:
+///   < >
+///   TypeArguments
+struct TypeArgumentsOrDiamond {
+  enum TypeArgumentsOrDiamondOpt {
+    OPT_UNDEFINED,
+    OPT_DIAMOND,
+    OPT_TYPE_ARGUMENTS,
+  };
+
+  TypeArgumentsOrDiamondOpt opt;
+  int err;
+
+  // opt 1
+  unsigned int posLt;
+  unsigned int posGt;
+
+  // opt 2
+  spTypeArguments typeArgs;
+
+  TypeArgumentsOrDiamond() : opt(OPT_UNDEFINED), err(0), posLt(0), posGt(0) {}
+};
+
+/// ClassCreatorRest: Arguments [ClassBody]
+struct ClassCreatorRest {
+  spArguments args;
+  spClassBody classBody;
+};
+
+/// ArrayCreatorRest:
+///   '['
+///     ( ']' { '[]' } ArrayInitializer |
+///       Expression ']' { '[' Expression ']' } { '[]' } )
+///   ']'
+///
+/// Non-terminals are enclosed in square brackets.
+struct ArrayCreatorRest {
+  // TODO:
 };
 }
 #endif
