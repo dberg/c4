@@ -84,6 +84,13 @@ typedef boost::shared_ptr<struct TypeArgumentsOrDiamond>
   spTypeArgumentsOrDiamond;
 typedef boost::shared_ptr<struct SuperSuffix> spSuperSuffix;
 
+struct ASTError {
+  bool err;
+  int errIdx;
+  ASTError() : err(false), errIdx(0) {}
+  void addErr(int _errIdx) { err = true; errIdx = _errIdx; }
+};
+
 /// CompilationUnit:
 ///   [PackageDeclaration]
 ///   {ImportDeclarations}
@@ -348,7 +355,7 @@ struct BasicType {
 
 /// ReferenceType:
 ///   Identifier [TypeArguments] { . Identifier [TypeArguments] }
-struct ReferenceType {
+struct ReferenceType : ASTError {
   spIdentifier id;
   spTypeArguments typeArgs;
   std::vector<ReferenceType> refTypes;
@@ -798,32 +805,31 @@ struct Creator {
 };
 
 /// CreatorOpt1: NonWildcardTypeArguments CreatedName ClassCreatorRest
-struct CreatorOpt1 {
-  spNonWildcardTypeArguments NonWildcardTypeArguments;
+struct CreatorOpt1 : ASTError {
+  spNonWildcardTypeArguments nonWildcardTypeArguments;
   spCreatedName createdName;
   spClassCreatorRest classCreatorRest;
 };
 
 /// CreatorOpt2: CreatedName ( ClassCreatorRest | ArrayCreatorRest )
-struct CreatorOpt2 {
+struct CreatorOpt2 : ASTError {
   spCreatedName createdName;
   spClassCreatorRest classCreatorRest;
   spArrayCreatorRest arrayCreatorRest;
 };
 
 /// NonWildcardTypeArguments: < TypeList >
-struct NonWildcardTypeArguments {
-  int err;
+struct NonWildcardTypeArguments : ASTError {
   unsigned int posLt;
   unsigned int posGt;
   spTypeList typeList;
-  NonWildcardTypeArguments() : err(0), posLt(0), posGt(0) {}
+  NonWildcardTypeArguments() : ASTError(), posLt(0), posGt(0) {}
 };
 
 /// TypeList: ReferenceType {, ReferenceType }
-struct TypeList {
+struct TypeList : ASTError {
   spReferenceType refType;
-  std::vector<ReferenceType> refTypes;
+  std::vector<spReferenceType> refTypes;
 };
 
 /// CreatedName:
