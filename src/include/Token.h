@@ -39,7 +39,7 @@ enum Token {
   TOK_OP_MINUS_MINUS = -26,
   TOK_OP_PLUS = -27,
   TOK_OP_MINUS = -28,
-  TOK_MUL = -29,
+  TOK_OP_MUL = -29,
   TOK_OP_DIV = -30,
   TOK_OP_AMPERSAND = -31,
   TOK_OP_PIPE = -32,
