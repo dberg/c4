@@ -515,7 +515,7 @@ spImportDeclaration Parser::parseImportDeclaration() {
   if (lexer->getCurToken() == TOK_PERIOD) {
     import->iniOnDemand = lexer->getCursor() - 1;
     lexer->getNextToken(); // consume '.'
-    if (lexer->getCurToken() != TOK_MUL) {
+    if (lexer->getCurToken() != TOK_OP_MUL) {
       import->err = true;
       return import;
     }
