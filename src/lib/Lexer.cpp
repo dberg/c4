@@ -52,7 +52,7 @@ int Lexer::getToken() {
   if ('=' == c) return getEqualsOrEqualsEqualsToken();
   if (',' == c) return TOK_COMMA;
   if (';' == c) return TOK_SEMICOLON;
-  if ('*' == c) return TOK_MUL;
+  if ('*' == c) return TOK_OP_MUL;
   if ('~' == c) return TOK_OP_TILDE;
   if ('!' == c) return TOK_OP_EXCLAMATION;
   if ('{' == c) return TOK_LCURLY_BRACKET;
