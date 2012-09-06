@@ -79,6 +79,7 @@ typedef boost::shared_ptr<struct TokenExp> spTokenExp;
 typedef boost::shared_ptr<struct VariableDeclaratorId> spVariableDeclaratorId;
 typedef boost::shared_ptr<struct Type> spType;
 typedef boost::shared_ptr<struct TypeArgument> spTypeArgument;
+typedef boost::shared_ptr<struct TypeArgumentOpt2> spTypeArgumentOpt2;
 typedef boost::shared_ptr<struct TypeArguments> spTypeArguments;
 typedef boost::shared_ptr<struct TypeArgumentsOrDiamond>
   spTypeArgumentsOrDiamond;
@@ -361,16 +362,14 @@ struct ReferenceType : ASTError {
   std::vector<ReferenceType> refTypes;
 };
 
-/// TypeArguments:
-///   < TypeArgument { , TypeArgument } >
-struct TypeArguments {
-  int err;
+/// TypeArguments: < TypeArgument { , TypeArgument } >
+struct TypeArguments : ASTError {
   unsigned int posLt;
   unsigned int posGt;
   spTypeArgument typeArg;
   std::vector<spTypeArgument> typeArgs;
 
-  TypeArguments() : err(0), posLt(0), posGt(0) {}
+  TypeArguments() : ASTError(), posLt(0), posGt(0) {}
 };
 
 /// TypeArgument:
@@ -384,9 +383,17 @@ struct TypeArgument {
   };
 
   TypeArgumentOpt opt;
-  int err;
+  spReferenceType refType; // opt1
+  spTypeArgumentOpt2 opt2;
 
-  TypeArgument() : opt(OPT_UNDEFINED), err(0) {}
+  TypeArgument() : opt(OPT_UNDEFINED) {}
+};
+
+/// TypeArgument: ? [(extends|super) ReferenceType]
+struct TypeArgumentOpt2 : ASTError {
+  unsigned int posQuestionMark;
+  spTokenExp tokExtendsOrSuper;
+  spReferenceType refType;
 };
 
 /// Block: { BlockStatements }
