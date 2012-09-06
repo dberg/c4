@@ -26,6 +26,7 @@ enum ErrorCode {
   ERR_EXP_TYPE,
   ERR_EXP_OP_LT,
   ERR_EXP_OP_GT,
+  ERR_EXP_REFTYPE,
   ERR_NVAL_ANNOT_ELEM,
   ERR_NVAL_ARRAY,
   ERR_NVAL_HEX,
@@ -48,6 +49,7 @@ public:
     msgs[ERR_EXP_TYPE] = "Expected Type";
     msgs[ERR_EXP_OP_LT] = "Expected operator <";
     msgs[ERR_EXP_OP_GT] = "Expected operator >";
+    msgs[ERR_EXP_REFTYPE] = "Expected reference type";
     msgs[ERR_NVAL_ANNOT_ELEM] = "Invalid annotation element";
     msgs[ERR_NVAL_ARRAY] = "Invalid array notation";
     msgs[ERR_NVAL_HEX] = "Invalid Hexadecimal";
