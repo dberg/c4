@@ -596,10 +596,8 @@ struct Expression2Rest {
 };
 
 /// Arguments: ( [ Expression { , Expression }] )
-struct Arguments {
-  int err;
+struct Arguments : ASTError {
   std::vector<spExpression> exprs;
-  Arguments() : err(0) {}
 };
 
 /// Expression3:
@@ -871,7 +869,7 @@ struct TypeArgumentsOrDiamond : ASTError {
 };
 
 /// ClassCreatorRest: Arguments [ClassBody]
-struct ClassCreatorRest {
+struct ClassCreatorRest : ASTError {
   spArguments args;
   spClassBody classBody;
 };
