@@ -245,10 +245,10 @@ void Parser::parseArguments(spArguments &args) {
   }
 
   // Error
-  args->err = diag->addError(
+  args->addErr(diag->addError(
     lexer->getCurTokenIni(),
     lexer->getCursor(),
-    ERR_EXP_RCURLY_BRACKET);
+    ERR_EXP_RCURLY_BRACKET));
 }
 
 /// {[]}
@@ -304,6 +304,58 @@ void Parser::parseCharacterLiteral(spCharacterLiteral &charLit) {
   charLit->pos = lexer->getCurTokenIni();
   charLit->val = lexer->getCurTokenStr();
   lexer->getNextToken(); // consume character literal
+}
+
+/// Creator:
+///   NonWildcardTypeArguments CreatedName ClassCreatorRest
+///   CreatedName ( ClassCreatorRest | ArrayCreatorRest )
+void Parser::parseCreator(spCreator &creator) {
+  // Option 1
+  if (lexer->getCurToken() == TOK_OP_LT) {
+    creator->opt = Creator::OPT_NON_WILDCARD_TYPE_ARGUMENTS;
+    creator->opt1 = spCreatorOpt1(new CreatorOpt1());
+    parseCreatorOpt1(creator->opt1);
+    return;
+  }
+
+  // Option 2
+  creator->opt = Creator::OPT_CREATED_NAME;
+  creator->opt2 = spCreatorOpt2(new CreatorOpt2());
+  parseCreatorOpt2(creator->opt2);
+}
+
+/// CreatorOpt1: NonWildcardTypeArguments CreatedName ClassCreatorRest
+void Parser::parseCreatorOpt1(spCreatorOpt1 &opt1) {
+  // NonWildcardTypeArguments
+  opt1->nonWildcardTypeArguments = spNonWildcardTypeArguments(
+    new NonWildcardTypeArguments());
+  parseNonWildcardTypeArguments(opt1->nonWildcardTypeArguments);
+
+  if (opt1->nonWildcardTypeArguments->err) {
+    opt1->addErr(-1);
+    return;
+  }
+
+  // CreatedName
+  opt1->createdName = spCreatedName(new CreatedName());
+  parseCreatedName(opt1->createdName);
+
+  if (opt1->createdName->err) {
+    opt1->addErr(-1);
+    return;
+  }
+
+  // ClassCreatorRest
+  opt1->classCreatorRest = spClassCreatorRest(new ClassCreatorRest());
+  parseClassCreatorRest(opt1->classCreatorRest);
+  if (opt1->classCreatorRest->err) {
+    opt1->addErr(-1);
+  }
+}
+
+/// CreatorOpt2: CreatedName ( ClassCreatorRest | ArrayCreatorRest )
+void Parser::parseCreatorOpt2(spCreatorOpt2 &opt2) {
+  // TODO:
 }
 
 /// Expression: Expression1 [ AssignmentOperator Expression1 ]
@@ -703,6 +755,14 @@ void Parser::parsePrimary(spPrimary &primary) {
     return;
   }
 
+  // new Creator
+  if (lexer->getCurToken() == TOK_KEY_NEW) {
+    primary->opt = Primary::OPT_NEW_CREATOR;
+    primary->newCreator = spPrimaryNewCreator(new PrimaryNewCreator());
+    parsePrimaryNewCreator(primary->newCreator);
+    return;
+  }
+
   // Literal
   spLiteral literal = spLiteral(new Literal());
   parseLiteral(literal);
@@ -750,6 +810,20 @@ void Parser::parsePrimarySuperSuperSuffix(
   }
 }
 
+/// Primary: new Creator
+void Parser::parsePrimaryNewCreator(spPrimaryNewCreator &primaryNewCreator) {
+  // Token 'new'
+  primaryNewCreator->tokNew = spTokenExp(new TokenExp(
+    lexer->getCursor() - tokenUtil.getTokenLength(
+      lexer->getCurToken()), lexer->getCurToken()));
+
+  lexer->getNextToken(); // consume 'new'
+
+  // Creator
+  primaryNewCreator->creator = spCreator(new Creator());
+  parseCreator(primaryNewCreator->creator);
+}
+
 /// QualifiedIdentifier: Identifer { . Identifier }
 spQualifiedIdentifier Parser::parseQualifiedIdentifier() {
   std::vector<spIdentifier> identifiers;
@@ -784,6 +858,120 @@ spQualifiedIdentifier Parser::parseQualifiedIdentifier() {
   spQualifiedIdentifier qualifiedId = spQualifiedIdentifier(
     new QualifiedIdentifier(identifiers));
   return qualifiedId;
+}
+
+/// ReferenceType:
+///    Identifier [TypeArguments] { . Identifier [TypeArguments] }
+void Parser::parseReferenceType(spReferenceType &refType) {
+  // indentifier
+  refType->id = spIdentifier(new Identifier(
+    lexer->getCurTokenIni(), lexer->getCurTokenStr()));
+  lexer->getNextToken(); // consume identifier
+
+  // [TypeArguments]
+  if (lexer->getCurToken() == TOK_OP_LT) {
+    refType->typeArgs = spTypeArguments(new TypeArguments());
+    parseTypeArguments(refType->typeArgs);
+  }
+
+  // { . Identifier [TypeArguments] }
+  // TODO:
+}
+
+/// TypeArgument:
+///   ReferenceType
+///   ? [(extends|super) ReferenceType]
+void Parser::parseTypeArgument(spTypeArgument &typeArg) {
+  // option 1
+  if (lexer->getCurToken() == TOK_IDENTIFIER) {
+    typeArg->opt = TypeArgument::OPT_REFERENCE_TYPE;
+    typeArg->refType = spReferenceType(new ReferenceType());
+    parseReferenceType(typeArg->refType);
+    return;
+  }
+
+  // option 2
+  if (lexer->getCurToken() == TOK_OP_QUESTION_MARK) {
+    typeArg->opt = TypeArgument::OPT_QUESTION_MARK;
+    typeArg->opt2 = spTypeArgumentOpt2(new TypeArgumentOpt2());
+    parseTypeArgumentOpt2(typeArg->opt2);
+    return;
+  }
+
+  // TODO: error
+}
+
+/// TypeArgument: ? [(extends|super) ReferenceType]
+void Parser::parseTypeArgumentOpt2(spTypeArgumentOpt2 &opt2) {
+  opt2->posQuestionMark = lexer->getCursor() - 1;
+  lexer->getNextToken(); // consume '?'
+
+  // [(extends|super) Reference]
+  if (lexer->getCurToken() != TOK_KEY_EXTENDS &&
+    lexer->getCurToken() != TOK_KEY_SUPER) {
+    return;
+  }
+
+  // Token 'extends' or 'super'
+  opt2->tokExtendsOrSuper = spTokenExp(new TokenExp(
+    lexer->getCursor() - tokenUtil.getTokenLength(
+      lexer->getCurToken()), lexer->getCurToken()));
+  lexer->getNextToken(); // consume token
+
+  if (lexer->getCurToken() != TOK_IDENTIFIER) {
+    opt2->addErr(diag->addError(
+      lexer->getCursor() - 1, lexer->getCursor(), ERR_EXP_REFTYPE));
+    return;
+  }
+
+  // ReferenceType
+  opt2->refType = spReferenceType(new ReferenceType());
+  parseReferenceType(opt2->refType);
+}
+
+/// TypeArguments: < TypeArgument { , TypeArgument } >
+void Parser::parseTypeArguments(spTypeArguments &typeArgs) {
+  typeArgs->posLt = lexer->getCursor() - 1;
+  lexer->getNextToken(); // consume '<'
+  // TODO:
+}
+
+/// TypeArgumentsOrDiamond:
+///   < >
+///   TypeArguments
+void Parser::parseTypeArgumentsOrDiamond(
+  spTypeArgumentsOrDiamond &typeArgsOrDiam) {
+
+  int posLt = lexer->getCursor() - 1;
+  if (lexer->getCurToken() != TOK_OP_LT) {
+    typeArgsOrDiam->addErr(diag->addError(posLt,
+      lexer->getCursor(), ERR_EXP_OP_LT));
+    return;
+  }
+
+  // We need to look ahead for the next token.
+  State ltState;
+  lexer->saveState(ltState);
+  lexer->getNextToken(); // consume '<'
+
+  // Diamond
+  if (lexer->getCurToken() == TOK_OP_GT) {
+    typeArgsOrDiam->opt = TypeArgumentsOrDiamond::OPT_DIAMOND;
+    typeArgsOrDiam->posLt = posLt;
+    typeArgsOrDiam->posGt = lexer->getCursor() - 1;
+    return;
+  }
+
+  // At this point we know that we don't have a diamond, and we parse
+  // TypeArguments.
+  lexer->restoreState(ltState);
+  typeArgsOrDiam->opt = TypeArgumentsOrDiamond::OPT_TYPE_ARGUMENTS;
+  typeArgsOrDiam->typeArgs = spTypeArguments(new TypeArguments());
+  parseTypeArguments(typeArgsOrDiam->typeArgs);
+
+  if (typeArgsOrDiam->typeArgs->err) {
+    typeArgsOrDiam->addErr(-1);
+  }
 }
 
 /// TypeDeclarations: { TypeDeclaration }
@@ -988,6 +1176,22 @@ void Parser::parseClassBodyDeclaration(spClassBodyDeclaration &decl) {
   lexer->getNextToken();
 }
 
+/// ClassCreatorRest: Arguments [ClassBody]
+void Parser::parseClassCreatorRest(spClassCreatorRest &classCreatorRest) {
+  // ClassCreatorRest
+  classCreatorRest->args = spArguments(new Arguments());
+  parseArguments(classCreatorRest->args);
+  if (classCreatorRest->args->err) {
+    classCreatorRest->addErr(-1);
+  }
+
+  // ClassBody
+  if (lexer->getCurToken() == TOK_LCURLY_BRACKET) {
+    classCreatorRest->classBody = spClassBody(new ClassBody());
+    parseClassBody(classCreatorRest->classBody);
+  }
+}
+
 /// MemberDecl:
 ///   MethodOrFieldDecl
 ///   void Identifier VoidMethodDeclaratorRest
@@ -1039,6 +1243,39 @@ void Parser::parseMemberDecl(spMemberDecl &memberDecl) {
   lexer->getNextToken();
 }
 
+/// NonWildcardTypeArguments: < TypeList >
+void Parser::parseNonWildcardTypeArguments(
+  spNonWildcardTypeArguments &nonWildcardTypeArguments) {
+
+  // TOK_OP_LT
+  if (lexer->getCurToken() != TOK_OP_LT) {
+    nonWildcardTypeArguments->addErr(diag->addError(
+      lexer->getCursor() - 1, lexer->getCursor(), ERR_EXP_OP_LT));
+    return;
+  }
+
+  nonWildcardTypeArguments->posLt = lexer->getCursor() - 1;
+  lexer->getNextToken(); // consume '<'
+
+  nonWildcardTypeArguments->typeList = spTypeList(new TypeList());
+  parseTypeList(nonWildcardTypeArguments->typeList);
+  if (nonWildcardTypeArguments->typeList->err) {
+    nonWildcardTypeArguments->addErr(-1);
+    return;
+  }
+
+  // TOK_OP_GT
+  if (lexer->getCurToken() != TOK_OP_GT) {
+    nonWildcardTypeArguments->addErr(diag->addError(
+      lexer->getCursor() - 1, lexer->getCursor(), ERR_EXP_OP_GT));
+    return;
+  }
+
+  nonWildcardTypeArguments->posGt = lexer->getCursor() - 1;
+  lexer->getNextToken(); // consume '>'
+}
+
+
 /// CompilationUnit: Top level parsing.
 ///   [PackageDeclaration] [ImportDeclaration] [TypeDeclarations]
 void Parser::parseCompilationUnit() {
@@ -1078,6 +1315,59 @@ void Parser::parseConstructorDeclaratorRest(
   // TODO:
   // [throws QualifiedIdentifierList] Block
   lexer->getNextToken();
+}
+
+/// CreatedName:
+///   Identifier [TypeArgumentsOrDiamond]
+///     { . Identifier [TypeArgumentsOrDiamond] }
+void Parser::parseCreatedName(spCreatedName &createdName) {
+  // Identifier [TypeArgumentsOrDiamond]
+  parseCreatedNameHelper(createdName);
+  if (createdName->err) {
+    return;
+  }
+
+  // { . Identifier [TypeArgumentsOrDiamond] }
+  while (true) {
+    // Comma
+    if (lexer->getCurToken() != TOK_COMMA) { return; }
+    lexer->getNextToken(); // consume '.'
+
+    spCreatedName createdNameTmp = spCreatedName(new CreatedName());
+    parseCreatedNameHelper(createdNameTmp);
+    createdName->createdNames.push_back(createdNameTmp);
+
+    if (createdNameTmp->err) {
+      createdName->addErr(-1);
+      return;
+    }
+  }
+}
+
+void Parser::parseCreatedNameHelper(spCreatedName &createdName) {
+  // Identifier
+  if (lexer->getCurToken() != TOK_IDENTIFIER) {
+    createdName->addErr(diag->addError(lexer->getCursor() - 1,
+      lexer->getCursor(), ERR_EXP_IDENTIFIER));
+    return;
+  }
+
+  createdName->id = spIdentifier(new Identifier(
+    lexer->getCurTokenIni(), lexer->getCurTokenStr()));
+  lexer->getNextToken(); // consume identifier
+
+  // TypeArgumentsOrDiamond
+  if (lexer->getCurToken() != TOK_OP_LT) {
+    return;
+  }
+
+  createdName->typeArgOrDiam = spTypeArgumentsOrDiamond(
+    new TypeArgumentsOrDiamond());
+  parseTypeArgumentsOrDiamond(createdName->typeArgOrDiam);
+
+  if (createdName->typeArgOrDiam->err) {
+    createdName->addErr(-1);
+  }
 }
 
 /// FormalParameters: ( [FormalParameterDecls] )
@@ -1213,6 +1503,41 @@ void Parser::parseType(spType &type) {
   }
 
   // TODO: ReferenceType
+}
+
+/// TypeList: ReferenceType {, ReferenceType }
+void Parser::parseTypeList(spTypeList &typeList) {
+  if (lexer->getCurToken() != TOK_IDENTIFIER) {
+    unsigned int cursor = lexer->getCursor();
+    typeList->addErr(diag->addError(cursor - 1, cursor, ERR_EXP_IDENTIFIER));
+    return;
+  }
+
+  typeList->refType = spReferenceType(new ReferenceType());
+  parseReferenceType(typeList->refType);
+
+  while (true) {
+    if (lexer->getCurToken() != TOK_COMMA) {
+      return;
+    }
+
+    lexer->getNextToken(); // consume ','
+
+    if (lexer->getCurToken() != TOK_IDENTIFIER) {
+      unsigned int cursor = lexer->getCursor();
+      typeList->addErr(diag->addError(cursor - 1, cursor, ERR_EXP_IDENTIFIER));
+      return;
+    }
+
+    spReferenceType refType = spReferenceType(new ReferenceType());
+    parseReferenceType(refType);
+
+    if (refType->err) {
+      return;
+    }
+
+    typeList->refTypes.push_back(refType);
+  }
 }
 
 void Parser::parseStringLiteral(spStringLiteral &strLit) {
