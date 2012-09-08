@@ -842,7 +842,7 @@ struct TypeList : ASTError {
 /// CreatedName:
 ///   Identifier [TypeArgumentsOrDiamond]
 ///     { . Identifier [TypeArgumentsOrDiamond] }
-struct CreatedName {
+struct CreatedName : ASTError {
   spIdentifier id;
   spTypeArgumentsOrDiamond typeArgOrDiam;
   std::vector<spCreatedName> createdNames;
@@ -851,7 +851,7 @@ struct CreatedName {
 /// TypeArgumentsOrDiamond:
 ///   < >
 ///   TypeArguments
-struct TypeArgumentsOrDiamond {
+struct TypeArgumentsOrDiamond : ASTError {
   enum TypeArgumentsOrDiamondOpt {
     OPT_UNDEFINED,
     OPT_DIAMOND,
@@ -859,7 +859,6 @@ struct TypeArgumentsOrDiamond {
   };
 
   TypeArgumentsOrDiamondOpt opt;
-  int err;
 
   // opt 1
   unsigned int posLt;
@@ -868,7 +867,7 @@ struct TypeArgumentsOrDiamond {
   // opt 2
   spTypeArguments typeArgs;
 
-  TypeArgumentsOrDiamond() : opt(OPT_UNDEFINED), err(0), posLt(0), posGt(0) {}
+  TypeArgumentsOrDiamond() : opt(OPT_UNDEFINED), posLt(0), posGt(0) {}
 };
 
 /// ClassCreatorRest: Arguments [ClassBody]
