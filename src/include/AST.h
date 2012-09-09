@@ -9,6 +9,7 @@
 namespace djp {
 
 typedef boost::shared_ptr<struct ArrayCreatorRest> spArrayCreatorRest;
+typedef boost::shared_ptr<struct ArrayInitializer> spArrayInitializer;
 typedef boost::shared_ptr<struct Arguments> spArguments;
 typedef boost::shared_ptr<struct BasicType> spBasicType;
 typedef boost::shared_ptr<struct CreatedName> spCreatedName;
@@ -77,6 +78,7 @@ typedef boost::shared_ptr<struct Modifier> spModifier;
 typedef boost::shared_ptr<struct PrefixOp> spPrefixOp;
 typedef boost::shared_ptr<struct TokenExp> spTokenExp;
 typedef boost::shared_ptr<struct VariableDeclaratorId> spVariableDeclaratorId;
+typedef boost::shared_ptr<struct VariableInitializer> spVariableInitializer;
 typedef boost::shared_ptr<struct Type> spType;
 typedef boost::shared_ptr<struct TypeArgument> spTypeArgument;
 typedef boost::shared_ptr<struct TypeArgumentOpt2> spTypeArgumentOpt2;
@@ -884,5 +886,19 @@ struct ClassCreatorRest : ASTError {
 struct ArrayCreatorRest {
   // TODO:
 };
-}
+
+/// ArrayInitializer:
+///   '{' [ VariableInitializer { , VariableInitializer } [,] ] '}'
+struct ArrayInitializer {
+  // TODO:
+};
+
+/// VariableInitializer:
+///   ArrayInitializer
+///   Expression
+struct VariableInitializer {
+  // TODO:
+};
+
+} // namespace
 #endif
