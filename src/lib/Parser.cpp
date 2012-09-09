@@ -251,6 +251,17 @@ void Parser::parseArguments(spArguments &args) {
     ERR_EXP_RCURLY_BRACKET));
 }
 
+/// ArrayCreatorRest:
+///   '['
+///     ( ']' { '[]' } ArrayInitializer |
+///       Expression ']' { '[' Expression ']' } { '[]' } )
+///   ']'
+///
+/// Non-terminals are enclosed in square brackets.
+void Parser::parseArrayCreatorRest(spArrayCreatorRest &arrayCreatorRest) {
+  // TODO:
+}
+
 /// {[]}
 int Parser::parseArrayDepth() {
   int depth = 0;
@@ -268,6 +279,13 @@ int Parser::parseArrayDepth() {
   }
 
   return depth;
+}
+
+/// VariableInitializer:
+///   ArrayInitializer
+///   Expression
+void Parser::parseArrayInitializer(spArrayInitializer &arrayInit) {
+  // TODO:
 }
 
 /// ElementValue: Annotation | Expression1 | ElementValueArrayInitializer
@@ -355,7 +373,33 @@ void Parser::parseCreatorOpt1(spCreatorOpt1 &opt1) {
 
 /// CreatorOpt2: CreatedName ( ClassCreatorRest | ArrayCreatorRest )
 void Parser::parseCreatorOpt2(spCreatorOpt2 &opt2) {
-  // TODO:
+  // CreatedName
+  opt2->createdName = spCreatedName(new CreatedName());
+  parseCreatedName(opt2->createdName);
+
+  if (opt2->createdName->err) {
+    opt2->addErr(-1);
+    return;
+  }
+
+  // ( ClassCreatorRest | ArrayCreatorRest )
+  // ClassCreatorRest
+  if (lexer->getCurToken() == TOK_LPAREN) {
+    opt2->classCreatorRest = spClassCreatorRest(new ClassCreatorRest());
+    parseClassCreatorRest(opt2->classCreatorRest);
+    return;
+  }
+
+  // ArrayCreatorRest
+  if (lexer->getCurToken() == TOK_LBRACKET) {
+    opt2->arrayCreatorRest = spArrayCreatorRest(new ArrayCreatorRest());
+    parseArrayCreatorRest(opt2->arrayCreatorRest);
+    return;
+  }
+
+  // Error
+  opt2->addErr(diag->addError(lexer->getCursor() - 1, lexer->getCursor(),
+    ERR_EXP_CLASS_OR_ARRAY_CREATOR_REST));
 }
 
 /// Expression: Expression1 [ AssignmentOperator Expression1 ]
@@ -1607,6 +1651,13 @@ void Parser::parseVariableDeclaratorId(spVariableDeclaratorId &varDeclId) {
     lexer->getNextToken(); // consume Identifier
     varDeclId->arrayDepth = parseArrayDepth();
   }
+}
+
+/// VariableInitializer:
+///   ArrayInitializer
+///   Expression
+void Parser::parseVariableInitializer(spVariableInitializer &varInit) {
+  // TODO:
 }
 
 void Parser::parse() {
