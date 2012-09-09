@@ -796,7 +796,7 @@ struct SuperSuffix {
 /// Creator:
 ///   NonWildcardTypeArguments CreatedName ClassCreatorRest
 ///   CreatedName ( ClassCreatorRest | ArrayCreatorRest )
-struct Creator {
+struct Creator : ASTError {
   enum CreatorEnum {
     OPT_UNDEFINED,
     OPT_NON_WILDCARD_TYPE_ARGUMENTS,
@@ -804,11 +804,10 @@ struct Creator {
   };
 
   CreatorEnum opt;
-  int err;
   spCreatorOpt1 opt1;
   spCreatorOpt2 opt2;
 
-  Creator() : opt(OPT_UNDEFINED), err(0) {}
+  Creator() : opt(OPT_UNDEFINED) {}
 };
 
 /// CreatorOpt1: NonWildcardTypeArguments CreatedName ClassCreatorRest
@@ -830,7 +829,7 @@ struct NonWildcardTypeArguments : ASTError {
   unsigned int posLt;
   unsigned int posGt;
   spTypeList typeList;
-  NonWildcardTypeArguments() : ASTError(), posLt(0), posGt(0) {}
+  NonWildcardTypeArguments() : posLt(0), posGt(0) {}
 };
 
 /// TypeList: ReferenceType {, ReferenceType }
@@ -844,7 +843,7 @@ struct TypeList : ASTError {
 ///     { . Identifier [TypeArgumentsOrDiamond] }
 struct CreatedName : ASTError {
   spIdentifier id;
-  spTypeArgumentsOrDiamond typeArgOrDiam;
+  spTypeArgumentsOrDiamond typeArgsOrDiam;
   std::vector<spCreatedName> createdNames;
 };
 
@@ -867,7 +866,7 @@ struct TypeArgumentsOrDiamond : ASTError {
   // opt 2
   spTypeArguments typeArgs;
 
-  TypeArgumentsOrDiamond() : opt(OPT_UNDEFINED), posLt(0), posGt(0) {}
+  TypeArgumentsOrDiamond() : ASTError(), opt(OPT_UNDEFINED), posLt(0), posGt(0) {}
 };
 
 /// ClassCreatorRest: Arguments [ClassBody]

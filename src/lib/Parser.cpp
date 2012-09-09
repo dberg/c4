@@ -207,10 +207,10 @@ void Parser::parseAnnotationElement(spAnnotationElement &elem) {
   }
 
   // ElementValue
+  // TODO: handle errors
+  elem->opt = AnnotationElement::OPT_ELEMENT_VALUE;
+  elem->value = spElementValue(new ElementValue());
   parseElementValue(elem->value);
-  if (elem->value) {
-    elem->opt = AnnotationElement::OPT_ELEMENT_VALUE;
-  }
 }
 
 /// Annotations.
@@ -364,7 +364,10 @@ void Parser::parseCreatorOpt1(spCreatorOpt1 &opt1) {
   }
 
   // ClassCreatorRest
-  opt1->classCreatorRest = spClassCreatorRest(new ClassCreatorRest());
+  // GCC(4.6.3). Assign it in two steps.
+  spClassCreatorRest classCreatorRest = spClassCreatorRest(
+    new ClassCreatorRest());
+  opt1->classCreatorRest = classCreatorRest;
   parseClassCreatorRest(opt1->classCreatorRest);
   if (opt1->classCreatorRest->err) {
     opt1->addErr(-1);
@@ -1003,6 +1006,7 @@ void Parser::parseTypeArgumentsOrDiamond(
     typeArgsOrDiam->opt = TypeArgumentsOrDiamond::OPT_DIAMOND;
     typeArgsOrDiam->posLt = posLt;
     typeArgsOrDiam->posGt = lexer->getCursor() - 1;
+    lexer->getNextToken(); // consume '>'
     return;
   }
 
@@ -1010,7 +1014,11 @@ void Parser::parseTypeArgumentsOrDiamond(
   // TypeArguments.
   lexer->restoreState(ltState);
   typeArgsOrDiam->opt = TypeArgumentsOrDiamond::OPT_TYPE_ARGUMENTS;
-  typeArgsOrDiam->typeArgs = spTypeArguments(new TypeArguments());
+  // GCC(4.6.3). If we don't create typeArgs separately and then assign
+  // it to typeArgsOrDiam things get weird with the last 'if' condition.
+  // Clang is fine either way.
+  spTypeArguments typeArgs = spTypeArguments(new TypeArguments());
+  typeArgsOrDiam->typeArgs = typeArgs;
   parseTypeArguments(typeArgsOrDiam->typeArgs);
 
   if (typeArgsOrDiam->typeArgs->err) {
@@ -1405,11 +1413,18 @@ void Parser::parseCreatedNameHelper(spCreatedName &createdName) {
     return;
   }
 
-  createdName->typeArgOrDiam = spTypeArgumentsOrDiamond(
+  // GCC(4.6.3) has an odd behavior here. If we assign
+  // createdName->typeArgsOrDiam =
+  //   spTypeArgumentsOrDiamond(new TypeArgumentsOrDiamond());
+  // The conditional 'if (createdName->typeArgsOrDiam->err)'
+  // is always true, even when the value of err is false
+  // (as seen in the debugger). The same problem does not occur in clang.
+  spTypeArgumentsOrDiamond typeArgsOrDiam = spTypeArgumentsOrDiamond(
     new TypeArgumentsOrDiamond());
-  parseTypeArgumentsOrDiamond(createdName->typeArgOrDiam);
+  createdName->typeArgsOrDiam = typeArgsOrDiam;
+  parseTypeArgumentsOrDiamond(createdName->typeArgsOrDiam);
 
-  if (createdName->typeArgOrDiam->err) {
+  if (createdName->typeArgsOrDiam->err) {
     createdName->addErr(-1);
   }
 }
