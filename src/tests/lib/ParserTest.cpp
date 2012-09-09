@@ -461,6 +461,40 @@ TEST(Parser, PackageDeclaration) {
     parser.compilationUnit->pkgDecl->qualifiedId->end);
 }
 
+/// Primary: new Creator
+/// Creator:
+///   NonWildcardTypeArguments CreatedName ClassCreatorRest
+///   CreatedName ( ClassCreatorRest | ArrayCreatorRest )
+/// NonWildcardTypeArguments: < TypeList >
+/// TypeList: ReferenceType {, ReferenceType }
+/// CreatedName:
+///   Identifier [TypeArgumentsOrDiamond]
+///     { . Identifier [TypeArgumentsOrDiamond] }
+/// ClassCreatorRest: Arguments [ClassBody]
+/// Arguments: ( [ Expression { , Expression }] )
+/// ArrayCreatorRest:
+///   '['
+///     ( ']' { '[]' } ArrayInitializer |
+///       Expression ']' { '[' Expression ']' } { '[]' } )
+///   ']'
+///
+/// Non-terminals are enclosed in square brackets.
+TEST(Parser, PrimaryNewCreator) {
+  std::string filename = "Test.java";
+  std::string buffer =
+    "@myinterface("
+    "new <Integer> MyClass<>(),"
+    "new <String> MyClass<Long>(),"
+    "new <Integer, String> MyClass<>().OtherClass,"
+    "new MyClass(),"
+    "new MyClass[]"
+    ")";
+
+  spDiagnosis diag = spDiagnosis(new Diagnosis());
+  Parser parser(filename, buffer, diag);
+  parser.parse();
+}
+
 TEST(Parser, ImportDeclarations) {
   std::string filename = "Test.java";
   std::string buffer =
