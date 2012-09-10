@@ -483,16 +483,48 @@ TEST(Parser, PrimaryNewCreator) {
   std::string filename = "Test.java";
   std::string buffer =
     "@myinterface("
-    "new <Integer> MyClass<>(),"
-    "new <String> MyClass<Long>(),"
-    "new <Integer, String> MyClass<>().OtherClass,"
-    "new MyClass(),"
-    "new MyClass[]"
-    ")";
+    "k1 = new <Integer> MyClass<>()" // ,
+    //"k2 = new <String> MyClass<Long>(),"
+    //"k3 = new <Integer, String> MyClass<>().OtherClass,"
+    //"k4 = new MyClass(),"
+    //"k5 = new MyClass[]"
+    ")"
+    "package com.test;";
 
   spDiagnosis diag = spDiagnosis(new Diagnosis());
   Parser parser(filename, buffer, diag);
   parser.parse();
+
+  std::vector<spElementValuePair> pairs = parser.compilationUnit->pkgDecl
+    ->annotations[0]->elem->pairs;
+
+  // Pair 1
+  spCreator creator1 = pairs[0]->value->expr1->expr2->expr3->primary
+    ->newCreator->creator;
+  ASSERT_EQ(Creator::OPT_NON_WILDCARD_TYPE_ARGUMENTS, creator1->opt);
+  ASSERT_EQ(22, creator1->opt1->nonWildcardTypeArguments->posLt);
+  ASSERT_EQ(30, creator1->opt1->nonWildcardTypeArguments->posGt);
+  ASSERT_EQ(23,
+    creator1->opt1->nonWildcardTypeArguments->typeList->refType->id->pos);
+  ASSERT_EQ("Integer",
+    creator1->opt1->nonWildcardTypeArguments->typeList->refType->id->value);
+  ASSERT_EQ(32, creator1->opt1->createdName->id->pos);
+  ASSERT_EQ("MyClass", creator1->opt1->createdName->id->value);
+  ASSERT_EQ(TypeArgumentsOrDiamond::OPT_DIAMOND,
+    creator1->opt1->createdName->typeArgsOrDiam->opt);
+  ASSERT_EQ(39,
+    creator1->opt1->createdName->typeArgsOrDiam->posLt);
+  ASSERT_EQ(40,
+    creator1->opt1->createdName->typeArgsOrDiam->posGt);
+
+  // TODO:
+  // Pair 2
+  // TODO:
+  // Pair 3
+  // TODO:
+  // Pair 4
+  // TODO:
+  // Pair 5
 }
 
 TEST(Parser, ImportDeclarations) {
