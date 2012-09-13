@@ -207,7 +207,8 @@ void Parser::parseAnnotationElement(spAnnotationElement &elem) {
   }
 
   // ElementValue
-  // TODO: handle errors
+  // TODO: handle errors.
+  // TODO: assure that there's only one element value
   elem->opt = AnnotationElement::OPT_ELEMENT_VALUE;
   elem->value = spElementValue(new ElementValue());
   parseElementValue(elem->value);
@@ -221,11 +222,13 @@ void Parser::parseAnnotations(std::vector<spAnnotation> &annotations) {
   }
 }
 
-/// Arguments: ( [ Expression { , Expression }] )
+/// Arguments: '(' [ Expression { , Expression }] ')'
 void Parser::parseArguments(spArguments &args) {
+  args->posLParen = lexer->getCursor() - 1;
   lexer->getNextToken(); // consume '('
 
   if (lexer->getCurToken() == TOK_RPAREN) {
+    args->posRParen = lexer->getCursor() - 1;
     lexer->getNextToken(); // consume ')'
     return;
   }
@@ -240,6 +243,7 @@ void Parser::parseArguments(spArguments &args) {
   }
 
   if (lexer->getCurToken() == TOK_RPAREN) {
+    args->posRParen = lexer->getCursor() - 1;
     lexer->getNextToken(); // consume ')'
     return;
   }
@@ -945,7 +949,9 @@ void Parser::parseTypeArgument(spTypeArgument &typeArg) {
     return;
   }
 
-  // TODO: error
+  // error
+  typeArg->addErr(diag->addError(
+    lexer->getCursor() - 1, lexer->getCursor(), ERR_NVAL_TYPE_ARGUMENT));
 }
 
 /// TypeArgument: ? [(extends|super) ReferenceType]
@@ -980,7 +986,42 @@ void Parser::parseTypeArgumentOpt2(spTypeArgumentOpt2 &opt2) {
 void Parser::parseTypeArguments(spTypeArguments &typeArgs) {
   typeArgs->posLt = lexer->getCursor() - 1;
   lexer->getNextToken(); // consume '<'
-  // TODO:
+
+  spTypeArgument typeArg = spTypeArgument(new TypeArgument());
+  typeArgs->typeArg = typeArg;
+  parseTypeArgument(typeArgs->typeArg);
+  if (typeArg->err) {
+    typeArgs->addErr(-1);
+    return;
+  }
+
+  // Additional TypeArgument list
+  while (true) {
+    if (lexer->getCurToken() != TOK_COMMA) {
+      break;
+    }
+
+    lexer->getNextToken(); // consume ','
+
+    spTypeArgument typeArgTmp = spTypeArgument(new TypeArgument());
+    parseTypeArgument(typeArgTmp);
+    typeArgs->typeArgs.push_back(typeArgTmp);
+
+    if (typeArgTmp->err) {
+      typeArgs->addErr(-1);
+      return;
+    }
+  }
+
+  if (lexer->getCurToken() == TOK_OP_GT) {
+    typeArgs->posGt = lexer->getCursor() - 1;
+    lexer->getNextToken();
+    return;
+  }
+
+  // error
+  typeArgs->addErr(diag->addError(
+    lexer->getCursor() - 1, lexer->getCursor(), ERR_EXP_OP_GT));
 }
 
 /// TypeArgumentsOrDiamond:
@@ -1230,8 +1271,9 @@ void Parser::parseClassBodyDeclaration(spClassBodyDeclaration &decl) {
 
 /// ClassCreatorRest: Arguments [ClassBody]
 void Parser::parseClassCreatorRest(spClassCreatorRest &classCreatorRest) {
-  // ClassCreatorRest
-  classCreatorRest->args = spArguments(new Arguments());
+  // Arguments
+  spArguments args = spArguments(new Arguments());
+  classCreatorRest->args = args;
   parseArguments(classCreatorRest->args);
   if (classCreatorRest->args->err) {
     classCreatorRest->addErr(-1);
@@ -1239,7 +1281,8 @@ void Parser::parseClassCreatorRest(spClassCreatorRest &classCreatorRest) {
 
   // ClassBody
   if (lexer->getCurToken() == TOK_LCURLY_BRACKET) {
-    classCreatorRest->classBody = spClassBody(new ClassBody());
+    spClassBody classBody = spClassBody(new ClassBody());
+    classCreatorRest->classBody = classBody;
     parseClassBody(classCreatorRest->classBody);
   }
 }
@@ -1326,7 +1369,6 @@ void Parser::parseNonWildcardTypeArguments(
   nonWildcardTypeArguments->posGt = lexer->getCursor() - 1;
   lexer->getNextToken(); // consume '>'
 }
-
 
 /// CompilationUnit: Top level parsing.
 ///   [PackageDeclaration] [ImportDeclaration] [TypeDeclarations]

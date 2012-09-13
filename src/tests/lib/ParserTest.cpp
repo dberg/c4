@@ -483,10 +483,9 @@ TEST(Parser, PrimaryNewCreator) {
   std::string filename = "Test.java";
   std::string buffer =
     "@myinterface("
-    "k1 = new <Integer> MyClass<>()" // ,
-    //"k2 = new <String> MyClass<Long>(),"
-    //"k3 = new <Integer, String> MyClass<>().OtherClass,"
-    //"k4 = new MyClass(),"
+    "k1 = new <Integer> MyClass<>(),"
+    "k2 = new <String, Integer> MyClass<Long>(),"
+    "k4 = new MyClass()"
     //"k5 = new MyClass[]"
     ")"
     "package com.test;";
@@ -499,6 +498,7 @@ TEST(Parser, PrimaryNewCreator) {
     ->annotations[0]->elem->pairs;
 
   // Pair 1
+  // "k1 = new <Integer> MyClass<>(),"
   spCreator creator1 = pairs[0]->value->expr1->expr2->expr3->primary
     ->newCreator->creator;
   ASSERT_EQ(Creator::OPT_NON_WILDCARD_TYPE_ARGUMENTS, creator1->opt);
@@ -517,14 +517,52 @@ TEST(Parser, PrimaryNewCreator) {
   ASSERT_EQ(40,
     creator1->opt1->createdName->typeArgsOrDiam->posGt);
 
-  // TODO:
   // Pair 2
-  // TODO:
+  // "k2 = new <String, Integer> MyClass<Long>(),"
+  spCreator creator2 = pairs[1]->value->expr1->expr2->expr3->primary
+    ->newCreator->creator;
+  ASSERT_EQ(Creator::OPT_NON_WILDCARD_TYPE_ARGUMENTS, creator2->opt);
+  ASSERT_EQ(53, creator2->opt1->nonWildcardTypeArguments->posLt);
+  ASSERT_EQ(69, creator2->opt1->nonWildcardTypeArguments->posGt);
+  ASSERT_EQ(54,
+    creator2->opt1->nonWildcardTypeArguments->typeList->refType->id->pos);
+  ASSERT_EQ("String",
+    creator2->opt1->nonWildcardTypeArguments->typeList->refType->id->value);
+  ASSERT_EQ(62,
+    creator2->opt1->nonWildcardTypeArguments->typeList->refTypes[0]->id->pos);
+  ASSERT_EQ("Integer",
+    creator2->opt1->nonWildcardTypeArguments->typeList->refTypes[0]->id->value);
+  ASSERT_EQ(71, creator2->opt1->createdName->id->pos);
+  ASSERT_EQ("MyClass", creator2->opt1->createdName->id->value);
+  ASSERT_EQ(TypeArgumentsOrDiamond::OPT_TYPE_ARGUMENTS,
+    creator2->opt1->createdName->typeArgsOrDiam->opt);
+  ASSERT_EQ(78,
+    creator2->opt1->createdName->typeArgsOrDiam->typeArgs->posLt);
+  ASSERT_EQ(83,
+    creator2->opt1->createdName->typeArgsOrDiam->typeArgs->posGt);
+  ASSERT_EQ(TypeArgument::OPT_REFERENCE_TYPE,
+    creator2->opt1->createdName->typeArgsOrDiam->typeArgs->typeArg->opt);
+  ASSERT_EQ(79,
+    creator2->opt1->createdName->typeArgsOrDiam->typeArgs->typeArg
+    ->refType->id->pos);
+  ASSERT_EQ("Long",
+    creator2->opt1->createdName->typeArgsOrDiam->typeArgs->typeArg
+    ->refType->id->value);
+
   // Pair 3
+  // "k4 = new MyClass()"
+  spCreator creator3 = pairs[2]->value->expr1->expr2->expr3->primary
+    ->newCreator->creator;
+  ASSERT_EQ(Creator::OPT_CREATED_NAME, creator3->opt);
+  ASSERT_EQ(96, creator3->opt2->createdName->id->pos);
+  ASSERT_EQ("MyClass", creator3->opt2->createdName->id->value);
+  ASSERT_EQ(103, creator3->opt2->classCreatorRest->args->posLParen);
+  ASSERT_EQ(104, creator3->opt2->classCreatorRest->args->posRParen);
+
   // TODO:
   // Pair 4
-  // TODO:
-  // Pair 5
+  // We need to implement
+  // void Parser::parseArrayCreatorRest(spArrayCreatorRest &arrayCreatorRest) {
 }
 
 TEST(Parser, ImportDeclarations) {
