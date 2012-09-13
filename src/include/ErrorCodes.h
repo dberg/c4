@@ -31,6 +31,7 @@ enum ErrorCode {
   ERR_NVAL_ANNOT_ELEM,
   ERR_NVAL_ARRAY,
   ERR_NVAL_HEX,
+  ERR_NVAL_TYPE_ARGUMENT,
 };
 
 class ErrorUtil {
@@ -56,6 +57,7 @@ public:
     msgs[ERR_NVAL_ANNOT_ELEM] = "Invalid annotation element";
     msgs[ERR_NVAL_ARRAY] = "Invalid array notation";
     msgs[ERR_NVAL_HEX] = "Invalid Hexadecimal";
+    msgs[ERR_NVAL_TYPE_ARGUMENT] = "Invalid Type Argument";
   }
 
   const std::string getMessage(int error) {
