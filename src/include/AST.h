@@ -377,7 +377,7 @@ struct TypeArguments : ASTError {
 /// TypeArgument:
 ///   ReferenceType
 ///   ? [(extends|super) ReferenceType]
-struct TypeArgument {
+struct TypeArgument : ASTError {
   enum TypeArgumentOpt {
     OPT_UNDEFINED,
     OPT_REFERENCE_TYPE,
@@ -597,9 +597,13 @@ struct Expression2Rest {
 
 };
 
-/// Arguments: ( [ Expression { , Expression }] )
+/// Arguments: '(' [ Expression { , Expression }] ')'
 struct Arguments : ASTError {
+  unsigned int posLParen;
+  unsigned int posRParen;
   std::vector<spExpression> exprs;
+
+  Arguments() : posLParen(0), posRParen(0) {}
 };
 
 /// Expression3:
