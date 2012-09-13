@@ -883,7 +883,7 @@ struct ClassCreatorRest : ASTError {
 ///   '['
 ///     ( ']' { '[]' } ArrayInitializer |
 ///       Expression ']' { '[' Expression ']' } { '[]' } )
-///   ']'
+///   ']'  <--- probably a typo.
 ///
 /// Non-terminals are enclosed in square brackets.
 struct ArrayCreatorRest {

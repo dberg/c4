@@ -259,7 +259,6 @@ void Parser::parseArguments(spArguments &args) {
 ///   '['
 ///     ( ']' { '[]' } ArrayInitializer |
 ///       Expression ']' { '[' Expression ']' } { '[]' } )
-///   ']'
 ///
 /// Non-terminals are enclosed in square brackets.
 void Parser::parseArrayCreatorRest(spArrayCreatorRest &arrayCreatorRest) {
@@ -285,9 +284,8 @@ int Parser::parseArrayDepth() {
   return depth;
 }
 
-/// VariableInitializer:
-///   ArrayInitializer
-///   Expression
+/// ArrayInitializer:
+///   '{' [ VariableInitializer { , VariableInitializer } [,] ] '}'
 void Parser::parseArrayInitializer(spArrayInitializer &arrayInit) {
   // TODO:
 }
