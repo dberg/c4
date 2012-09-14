@@ -9,6 +9,8 @@
 namespace djp {
 
 typedef boost::shared_ptr<struct ArrayCreatorRest> spArrayCreatorRest;
+typedef boost::shared_ptr<struct ArrayCreatorRestOpt1> spArrayCreatorRestOpt1;
+typedef boost::shared_ptr<struct ArrayCreatorRestOpt2> spArrayCreatorRestOpt2;
 typedef boost::shared_ptr<struct ArrayInitializer> spArrayInitializer;
 typedef boost::shared_ptr<struct Arguments> spArguments;
 typedef boost::shared_ptr<struct BasicType> spBasicType;
@@ -35,6 +37,7 @@ typedef boost::shared_ptr<struct Expression1Rest> spExpression1Rest;
 typedef boost::shared_ptr<struct Expression2> spExpression2;
 typedef boost::shared_ptr<struct Expression2Rest> spExpression2Rest;
 typedef boost::shared_ptr<struct Expression3> spExpression3;
+typedef boost::shared_ptr<struct ExpressionInBrackets> spExpressionInBrackets;
 typedef boost::shared_ptr<struct Primary> spPrimary;
 typedef boost::shared_ptr<struct PrimaryThisArguments> spPrimaryThisArguments;
 typedef boost::shared_ptr<struct PrimarySuperSuperSuffix>
@@ -887,20 +890,69 @@ struct ClassCreatorRest : ASTError {
 ///
 /// Non-terminals are enclosed in square brackets.
 struct ArrayCreatorRest {
-  // TODO:
+  enum ArrayCreatorRestOpt {
+    OPT_UNDEFINED,
+    OPT_ARRAY_INITIALIZER,
+    OPT_EXPRESSION,
+  };
+
+  ArrayCreatorRestOpt opt;
+  spArrayCreatorRestOpt1 opt1;
+  spArrayCreatorRestOpt2 opt2;
+
+  ArrayCreatorRest() : opt(OPT_UNDEFINED) {}
+};
+
+/// ArrayCreatorRestOpt1:
+///   '[' ']' { '[]' } ArrayInitializer
+struct ArrayCreatorRestOpt1 {
+  int arrayDepth;
+  spArrayInitializer arrayInitializer;
+
+  ArrayCreatorRestOpt1() : arrayDepth(0) {}
+};
+
+/// ArrayCreatorRestOpt2:
+///   '[' Expression ']' { '[' Expression ']' } { '[]' }
+struct ArrayCreatorRestOpt2 {
+  spExpressionInBrackets exprInBrackets;
+  std::vector<spExpressionInBrackets> exprInBracketsList;
+  int arrayDepth;
+  ArrayCreatorRestOpt2() : arrayDepth(0) {}
+};
+
+/// Helper structure
+/// ExpressionInBrackets: '[' Expression ']'
+struct ExpressionInBrackets {
+  unsigned int posOpenBracket;
+  unsigned int posCloseBracket;
+  spExpression expr;
+  ExpressionInBrackets() : posOpenBracket(0), posCloseBracket(0) {}
 };
 
 /// ArrayInitializer:
 ///   '{' [ VariableInitializer { , VariableInitializer } [,] ] '}'
 struct ArrayInitializer {
-  // TODO:
+  unsigned int posOpenCBrace;
+  unsigned int posCloseCBrace;
+  std::vector<spVariableInitializer> varInitList;
+
+  ArrayInitializer() : posOpenCBrace(0), posCloseCBrace(0) {}
 };
 
 /// VariableInitializer:
 ///   ArrayInitializer
 ///   Expression
 struct VariableInitializer {
-  // TODO:
+  enum VariableInitializerOpt {
+    OPT_UNDEFINED,
+    OPT_ARRAY_INITIALIZER,
+    OPT_EXPRESSION,
+  };
+
+  VariableInitializerOpt opt;
+  spArrayInitializer arrayInit;
+  spExpression expr;
 };
 
 } // namespace
