@@ -476,7 +476,6 @@ TEST(Parser, PackageDeclaration) {
 ///   '['
 ///     ( ']' { '[]' } ArrayInitializer |
 ///       Expression ']' { '[' Expression ']' } { '[]' } )
-///   ']'
 ///
 /// Non-terminals are enclosed in square brackets.
 TEST(Parser, PrimaryNewCreator) {
@@ -699,8 +698,8 @@ TEST(Parser, ClassConstructorParameterArray) {
   spFormalParameterDecls formParamDecls = parser.compilationUnit->typeDecls[0]
     ->decl->classDecl->nClassDecl->classBody->decls[0]->memberDecl
     ->constDeclRest->formParams->formParamDecls;
-  ASSERT_EQ(1, formParamDecls->type->arrayDepth);
-  ASSERT_EQ(0, formParamDecls->formParamDeclsRest->varDeclId->arrayDepth);
+  ASSERT_EQ(1, formParamDecls->type->arrayDepth.size());
+  ASSERT_EQ(0, formParamDecls->formParamDeclsRest->varDeclId->arrayDepth.size());
 }
 
 TEST(Parser, ClassConstructorParameters) {

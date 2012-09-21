@@ -266,22 +266,24 @@ void Parser::parseArrayCreatorRest(spArrayCreatorRest &arrayCreatorRest) {
 }
 
 /// {[]}
-int Parser::parseArrayDepth() {
-  int depth = 0;
+void Parser::parseArrayDepth(ArrayDepth &arrayDepth) {
   while (lexer->getCurToken() == TOK_LBRACKET) {
-    depth += 1;
+    ArrayDepthPair pair;
+    pair.first = lexer->getCursor() - 1;
+
     lexer->getNextToken(); // consume '['
 
     if (lexer->getCurToken() != TOK_RBRACKET) {
       diag->addError(
         lexer->getCurTokenIni(), lexer->getCursor(), ERR_EXP_RBRACKET);
-      return depth;
+      return;
     }
+
+    pair.second = lexer->getCursor() - 1;
+    arrayDepth.push_back(pair);
 
     lexer->getNextToken(); // consume ']'
   }
-
-  return depth;
 }
 
 /// ArrayInitializer:
@@ -1597,7 +1599,7 @@ void Parser::parseType(spType &type) {
     type->opt = Type::OPT_BASIC_TYPE;
     type->basicType = spBasicType(new BasicType(token));
     lexer->getNextToken(); // consume basic type
-    type->arrayDepth = parseArrayDepth();
+    parseArrayDepth(type->arrayDepth);
     return;
   }
 
@@ -1669,7 +1671,7 @@ void Parser::parseFormalParameterDeclsRest(
 
     // Corner case in the grammar. The array form is invalid in the form:
     // (int ... a[])
-    if (formParamDeclsRest->varDeclId->arrayDepth > 0) {
+    if (formParamDeclsRest->varDeclId->arrayDepth.size() > 0) {
       diag->addError(
         lexer->getCurTokenIni(), lexer->getCursor(), ERR_NVAL_ARRAY);
     }
@@ -1704,7 +1706,7 @@ void Parser::parseVariableDeclaratorId(spVariableDeclaratorId &varDeclId) {
     varDeclId->identifier = spIdentifier(new Identifier(
       lexer->getCurTokenIni(), lexer->getCurTokenStr()));
     lexer->getNextToken(); // consume Identifier
-    varDeclId->arrayDepth = parseArrayDepth();
+    parseArrayDepth(varDeclId->arrayDepth);
   }
 }
 

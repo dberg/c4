@@ -1,6 +1,7 @@
 //-*- C++ -*-
 #ifndef __ANNOTATIONS_H__
 #define __ANNOTATIONS_H__
+#include <utility>
 #include <vector>
 #include <boost/shared_ptr.hpp>
 #include "Token.h"
@@ -8,6 +9,8 @@
 
 namespace djp {
 
+typedef std::pair<unsigned int, unsigned int> ArrayDepthPair;
+typedef std::vector<ArrayDepthPair > ArrayDepth;
 typedef boost::shared_ptr<struct ArrayCreatorRest> spArrayCreatorRest;
 typedef boost::shared_ptr<struct ArrayCreatorRestOpt1> spArrayCreatorRestOpt1;
 typedef boost::shared_ptr<struct ArrayCreatorRestOpt2> spArrayCreatorRestOpt2;
@@ -321,9 +324,9 @@ struct Type {
   TypeOpt opt;
   spBasicType basicType;
   spReferenceType refType;
-  int arrayDepth;
+  ArrayDepth arrayDepth;
 
-  Type() : opt(OPT_UNDEFINED), arrayDepth(0) {}
+  Type() : opt(OPT_UNDEFINED) {}
   bool isEmpty() { return opt == OPT_UNDEFINED; }
 };
 
@@ -348,9 +351,7 @@ struct FormalParameterDeclsRest {
 /// VariableDeclaratorId: Identifier {[]}
 struct VariableDeclaratorId {
   spIdentifier identifier;
-  int arrayDepth;
-
-  VariableDeclaratorId() : arrayDepth(0) {}
+  ArrayDepth arrayDepth;
 };
 
 /// BasicType: byte | short | char | int | long | float | double | boolean
@@ -906,10 +907,8 @@ struct ArrayCreatorRest {
 /// ArrayCreatorRestOpt1:
 ///   '[' ']' { '[]' } ArrayInitializer
 struct ArrayCreatorRestOpt1 {
-  int arrayDepth;
+  ArrayDepth arrayDepth;
   spArrayInitializer arrayInitializer;
-
-  ArrayCreatorRestOpt1() : arrayDepth(0) {}
 };
 
 /// ArrayCreatorRestOpt2:
@@ -917,8 +916,7 @@ struct ArrayCreatorRestOpt1 {
 struct ArrayCreatorRestOpt2 {
   spExpressionInBrackets exprInBrackets;
   std::vector<spExpressionInBrackets> exprInBracketsList;
-  int arrayDepth;
-  ArrayCreatorRestOpt2() : arrayDepth(0) {}
+  ArrayDepth arrayDepth;
 };
 
 /// Helper structure
