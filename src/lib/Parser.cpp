@@ -262,7 +262,51 @@ void Parser::parseArguments(spArguments &args) {
 ///
 /// Non-terminals are enclosed in square brackets.
 void Parser::parseArrayCreatorRest(spArrayCreatorRest &arrayCreatorRest) {
+  // We look ahead to decide if we have option 1 or option 2
+  State openBracketState;
+  lexer->saveState(openBracketState);
+
+  lexer->getNextToken(); // consume '['
+
+  // Option 1
+  if (lexer->getCurToken() == ']') {
+    lexer->restoreState(openBracketState);
+    arrayCreatorRest->opt = ArrayCreatorRest::OPT_ARRAY_INITIALIZER;
+    arrayCreatorRest->opt1 = spArrayCreatorRestOpt1(new ArrayCreatorRestOpt1());
+    parseArrayCreatorRestOpt1(arrayCreatorRest->opt1);
+    if (arrayCreatorRest->opt1->err) {
+      arrayCreatorRest->addErr(-1);
+    }
+    return;
+  }
+
   // TODO:
+  // Option 2
+}
+
+/// ArrayCreatorRest:
+///   '['
+///     ( ']' { '[]' } ArrayInitializer |
+///       Expression ']' { '[' Expression ']' } { '[]' } )
+///
+/// Non-terminals are enclosed in square brackets.
+void Parser::parseArrayCreatorRestOpt1(
+  spArrayCreatorRestOpt1 &arrayCreatorRestOpt1) {
+
+  parseArrayDepth(arrayCreatorRestOpt1->arrayDepth);
+  if (lexer->getCurToken() != TOK_RCURLY_BRACKET) {
+    arrayCreatorRestOpt1->addErr(diag->addError(
+      lexer->getCursor() - 1, lexer->getCursor(), ERR_EXP_LCURLY_BRACKET));
+    return;
+  }
+
+  arrayCreatorRestOpt1->arrayInitializer
+      = spArrayInitializer(new ArrayInitializer());
+  parseArrayInitializer(arrayCreatorRestOpt1->arrayInitializer);
+
+  if (arrayCreatorRestOpt1->arrayInitializer->err) {
+    arrayCreatorRestOpt1->addErr(-1);
+  }
 }
 
 /// {[]}

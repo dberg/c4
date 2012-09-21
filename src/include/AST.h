@@ -890,7 +890,7 @@ struct ClassCreatorRest : ASTError {
 ///   ']'  <--- probably a typo.
 ///
 /// Non-terminals are enclosed in square brackets.
-struct ArrayCreatorRest {
+struct ArrayCreatorRest : ASTError {
   enum ArrayCreatorRestOpt {
     OPT_UNDEFINED,
     OPT_ARRAY_INITIALIZER,
@@ -906,14 +906,14 @@ struct ArrayCreatorRest {
 
 /// ArrayCreatorRestOpt1:
 ///   '[' ']' { '[]' } ArrayInitializer
-struct ArrayCreatorRestOpt1 {
+struct ArrayCreatorRestOpt1 : ASTError {
   ArrayDepth arrayDepth;
   spArrayInitializer arrayInitializer;
 };
 
 /// ArrayCreatorRestOpt2:
 ///   '[' Expression ']' { '[' Expression ']' } { '[]' }
-struct ArrayCreatorRestOpt2 {
+struct ArrayCreatorRestOpt2 : ASTError {
   spExpressionInBrackets exprInBrackets;
   std::vector<spExpressionInBrackets> exprInBracketsList;
   ArrayDepth arrayDepth;
@@ -930,7 +930,7 @@ struct ExpressionInBrackets {
 
 /// ArrayInitializer:
 ///   '{' [ VariableInitializer { , VariableInitializer } [,] ] '}'
-struct ArrayInitializer {
+struct ArrayInitializer : ASTError {
   unsigned int posOpenCBrace;
   unsigned int posCloseCBrace;
   std::vector<spVariableInitializer> varInitList;
