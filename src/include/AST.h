@@ -914,7 +914,6 @@ struct ArrayCreatorRestOpt1 : ASTError {
 /// ArrayCreatorRestOpt2:
 ///   '[' Expression ']' { '[' Expression ']' } { '[]' }
 struct ArrayCreatorRestOpt2 : ASTError {
-  spExpressionInBrackets exprInBrackets;
   std::vector<spExpressionInBrackets> exprInBracketsList;
   ArrayDepth arrayDepth;
 };

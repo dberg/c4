@@ -27,7 +27,8 @@ class Parser {
   void parseAnnotations(std::vector<spAnnotation> &annotations);
   void parseArguments(spArguments &args);
   void parseArrayCreatorRest(spArrayCreatorRest &arrayCreatorRest);
-  void parseArrayCreatorRestOpt1(spArrayCreatorRestOpt1 &arrayCreatorRestOpt1);
+  void parseArrayCreatorRestOpt1(spArrayCreatorRestOpt1 &opt1);
+  void parseArrayCreatorRestOpt2(spArrayCreatorRestOpt2 &opt2);
   void parseArrayDepth(ArrayDepth &arrayDepth);
   void parseArrayInitializer(spArrayInitializer &arrayInit);
   void parseBooleanLiteral(spBooleanLiteral &boolLit);

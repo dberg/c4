@@ -265,12 +265,12 @@ void Parser::parseArrayCreatorRest(spArrayCreatorRest &arrayCreatorRest) {
   // We look ahead to decide if we have option 1 or option 2
   State openBracketState;
   lexer->saveState(openBracketState);
-
   lexer->getNextToken(); // consume '['
+  int lookahead = lexer->getCurToken();
+  lexer->restoreState(openBracketState);
 
   // Option 1
-  if (lexer->getCurToken() == ']') {
-    lexer->restoreState(openBracketState);
+  if (lookahead == ']') {
     arrayCreatorRest->opt = ArrayCreatorRest::OPT_ARRAY_INITIALIZER;
     arrayCreatorRest->opt1 = spArrayCreatorRestOpt1(new ArrayCreatorRestOpt1());
     parseArrayCreatorRestOpt1(arrayCreatorRest->opt1);
@@ -280,33 +280,44 @@ void Parser::parseArrayCreatorRest(spArrayCreatorRest &arrayCreatorRest) {
     return;
   }
 
-  // TODO:
   // Option 2
+  arrayCreatorRest->opt = ArrayCreatorRest::OPT_EXPRESSION;
+  arrayCreatorRest->opt2 = spArrayCreatorRestOpt2(new ArrayCreatorRestOpt2());
+  parseArrayCreatorRestOpt2(arrayCreatorRest->opt2);
+  if (arrayCreatorRest->opt2->err) {
+    arrayCreatorRest->addErr(-1);
+  }
 }
 
-/// ArrayCreatorRest:
-///   '['
-///     ( ']' { '[]' } ArrayInitializer |
-///       Expression ']' { '[' Expression ']' } { '[]' } )
-///
-/// Non-terminals are enclosed in square brackets.
-void Parser::parseArrayCreatorRestOpt1(
-  spArrayCreatorRestOpt1 &arrayCreatorRestOpt1) {
+/// ArrayCreatorRestOpt1:
+///   '[' ']' { '[]' } ArrayInitializer
+void Parser::parseArrayCreatorRestOpt1(spArrayCreatorRestOpt1 &opt1) {
+  // Array Depth
+  parseArrayDepth(opt1->arrayDepth);
 
-  parseArrayDepth(arrayCreatorRestOpt1->arrayDepth);
+  if (opt1->arrayDepth.size() < 1) {
+    opt1->addErr(diag->addError(
+      lexer->getCursor() - 1, lexer->getCursor(), ERR_EXP_ARRAY));
+    return;
+  }
+
   if (lexer->getCurToken() != TOK_RCURLY_BRACKET) {
-    arrayCreatorRestOpt1->addErr(diag->addError(
+    opt1->addErr(diag->addError(
       lexer->getCursor() - 1, lexer->getCursor(), ERR_EXP_LCURLY_BRACKET));
     return;
   }
 
-  arrayCreatorRestOpt1->arrayInitializer
-      = spArrayInitializer(new ArrayInitializer());
-  parseArrayInitializer(arrayCreatorRestOpt1->arrayInitializer);
+  // ArrayInitializer
+  opt1->arrayInitializer = spArrayInitializer(new ArrayInitializer());
+  parseArrayInitializer(opt1->arrayInitializer);
 
-  if (arrayCreatorRestOpt1->arrayInitializer->err) {
-    arrayCreatorRestOpt1->addErr(-1);
-  }
+  if (opt1->arrayInitializer->err) { opt1->addErr(-1); }
+}
+
+/// ArrayCreatorRestOpt2:
+///   '[' Expression ']' { '[' Expression ']' } { '[]' }
+void Parser::parseArrayCreatorRestOpt2(spArrayCreatorRestOpt2 &opt2) {
+  // TODO:
 }
 
 /// {[]}

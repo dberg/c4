@@ -4,7 +4,6 @@
 #include <map>
 #include <boost/shared_ptr.hpp>
 
-
 namespace djp {
 
 struct Error {
@@ -15,6 +14,7 @@ struct Error {
 typedef boost::shared_ptr<struct Error> spError;
 
 enum ErrorCode {
+  ERR_EXP_ARRAY,
   ERR_EXP_QID,
   ERR_EXP_IDENTIFIER,
   ERR_EXP_ELEMENT_VALUE,
@@ -40,6 +40,7 @@ class ErrorUtil {
 
 public:
   ErrorUtil() {
+    msgs[ERR_EXP_ARRAY] = "Expected Array";
     msgs[ERR_EXP_QID] = "Expected qualified id";
     msgs[ERR_EXP_ELEMENT_VALUE] = "Expected element value";
     msgs[ERR_EXP_IDENTIFIER] = "Expected identifier";
