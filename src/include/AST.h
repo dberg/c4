@@ -920,7 +920,7 @@ struct ArrayCreatorRestOpt2 : ASTError {
 
 /// Helper structure
 /// ExpressionInBrackets: '[' Expression ']'
-struct ExpressionInBrackets {
+struct ExpressionInBrackets : ASTError {
   unsigned int posOpenBracket;
   unsigned int posCloseBracket;
   spExpression expr;

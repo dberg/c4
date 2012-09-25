@@ -18,6 +18,7 @@ enum ErrorCode {
   ERR_EXP_QID,
   ERR_EXP_IDENTIFIER,
   ERR_EXP_ELEMENT_VALUE,
+  ERR_EXP_EXPRESSION_IN_BRACKETS,
   ERR_EXP_RBRACKET,
   ERR_EXP_LPAREN,
   ERR_EXP_RPAREN,
@@ -43,6 +44,7 @@ public:
     msgs[ERR_EXP_ARRAY] = "Expected Array";
     msgs[ERR_EXP_QID] = "Expected qualified id";
     msgs[ERR_EXP_ELEMENT_VALUE] = "Expected element value";
+    msgs[ERR_EXP_EXPRESSION_IN_BRACKETS] = "Expected [Expression]";
     msgs[ERR_EXP_IDENTIFIER] = "Expected identifier";
     msgs[ERR_EXP_RBRACKET] = "Expected ']'";
     msgs[ERR_EXP_LPAREN] = "Expected opening parenthesis";
