@@ -484,8 +484,8 @@ TEST(Parser, PrimaryNewCreator) {
     "@myinterface("
     "k1 = new <Integer> MyClass<>(),"
     "k2 = new <String, Integer> MyClass<Long>(),"
-    "k4 = new MyClass()"
-    //"k5 = new MyClass[]"
+    "k4 = new MyClass(),"
+    "k5 = new MyClass[]"
     ")"
     "package com.test;";
 
@@ -558,10 +558,16 @@ TEST(Parser, PrimaryNewCreator) {
   ASSERT_EQ(103, creator3->opt2->classCreatorRest->args->posLParen);
   ASSERT_EQ(104, creator3->opt2->classCreatorRest->args->posRParen);
 
-  // TODO:
   // Pair 4
-  // We need to implement
-  // void Parser::parseArrayCreatorRest(spArrayCreatorRest &arrayCreatorRest) {
+  // k5 = new MyClass[]
+  spCreator creator4 = pairs[3]->value->expr1->expr2->expr3->primary
+    ->newCreator->creator;
+  ASSERT_EQ(Creator::OPT_CREATED_NAME, creator4->opt);
+  ASSERT_EQ(115, creator4->opt2->createdName->id->pos);
+  ASSERT_EQ("MyClass", creator4->opt2->createdName->id->value);
+  ASSERT_EQ(ArrayCreatorRest::OPT_ARRAY_INITIALIZER,
+    creator4->opt2->arrayCreatorRest->opt);
+  ASSERT_EQ(1, creator4->opt2->arrayCreatorRest->opt1->arrayDepth.size());
 }
 
 TEST(Parser, ImportDeclarations) {

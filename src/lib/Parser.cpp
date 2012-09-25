@@ -270,7 +270,7 @@ void Parser::parseArrayCreatorRest(spArrayCreatorRest &arrayCreatorRest) {
   lexer->restoreState(openBracketState);
 
   // Option 1
-  if (lookahead == ']') {
+  if (lookahead == TOK_RBRACKET) {
     arrayCreatorRest->opt = ArrayCreatorRest::OPT_ARRAY_INITIALIZER;
     arrayCreatorRest->opt1 = spArrayCreatorRestOpt1(new ArrayCreatorRestOpt1());
     parseArrayCreatorRestOpt1(arrayCreatorRest->opt1);
@@ -301,7 +301,7 @@ void Parser::parseArrayCreatorRestOpt1(spArrayCreatorRestOpt1 &opt1) {
     return;
   }
 
-  if (lexer->getCurToken() != TOK_RCURLY_BRACKET) {
+  if (lexer->getCurToken() == TOK_RCURLY_BRACKET) {
     opt1->addErr(diag->addError(
       lexer->getCursor() - 1, lexer->getCursor(), ERR_EXP_LCURLY_BRACKET));
     return;
