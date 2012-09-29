@@ -14,6 +14,7 @@ struct Error {
 typedef boost::shared_ptr<struct Error> spError;
 
 enum ErrorCode {
+  ERR_EXP_ARGUMENTS,
   ERR_EXP_ARRAY,
   ERR_EXP_QID,
   ERR_EXP_IDENTIFIER,
@@ -31,6 +32,7 @@ enum ErrorCode {
   ERR_EXP_CLASS_OR_ARRAY_CREATOR_REST,
   ERR_NVAL_ANNOT_ELEM,
   ERR_NVAL_ARRAY,
+  ERR_NVAL_EXPLICIT_GENERIC_INVOCATION_SUFFIX,
   ERR_NVAL_HEX,
   ERR_NVAL_TYPE_ARGUMENT,
 };
@@ -41,6 +43,7 @@ class ErrorUtil {
 
 public:
   ErrorUtil() {
+    msgs[ERR_EXP_ARGUMENTS] = "Expected Arguments";
     msgs[ERR_EXP_ARRAY] = "Expected Array";
     msgs[ERR_EXP_QID] = "Expected qualified id";
     msgs[ERR_EXP_ELEMENT_VALUE] = "Expected element value";
@@ -59,6 +62,8 @@ public:
       "Expected ClassCreatorRest or ArrayCreatorRest";
     msgs[ERR_NVAL_ANNOT_ELEM] = "Invalid annotation element";
     msgs[ERR_NVAL_ARRAY] = "Invalid array notation";
+    msgs[ERR_NVAL_EXPLICIT_GENERIC_INVOCATION_SUFFIX] =
+      "Invalid ExplicitGenericInvocationSuffix";
     msgs[ERR_NVAL_HEX] = "Invalid Hexadecimal";
     msgs[ERR_NVAL_TYPE_ARGUMENT] = "Invalid Type Argument";
   }

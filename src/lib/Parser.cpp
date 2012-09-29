@@ -224,6 +224,13 @@ void Parser::parseAnnotations(std::vector<spAnnotation> &annotations) {
 
 /// Arguments: '(' [ Expression { , Expression }] ')'
 void Parser::parseArguments(spArguments &args) {
+
+  if (lexer->getCurToken() != TOK_LPAREN) {
+    args->addErr(diag->addError(
+      lexer->getCursor() - 1, lexer->getCursor(), ERR_EXP_ARGUMENTS));
+    return;
+  }
+
   args->posLParen = lexer->getCursor() - 1;
   lexer->getNextToken(); // consume '('
 
@@ -646,6 +653,62 @@ void Parser::parseElementValuePairs(std::vector<spElementValuePair> &pairs) {
   }
 }
 
+/// ExplicitGenericInvocationSuffix:
+///   super SuperSuffix
+///   Identifier Arguments
+void Parser::parseExplicitGenericInvocationSuffix(
+  spExplicitGenericInvocationSuffix &explGen) {
+
+  // opt1
+  if (lexer->getCurToken() == TOK_KEY_SUPER) {
+    explGen->opt = ExplicitGenericInvocationSuffix::OPT_SUPER;
+
+    // Token 'super'
+    explGen->tokSuper = spTokenExp(new TokenExp(
+      lexer->getCursor() - tokenUtil.getTokenLength(
+        lexer->getCurToken()), lexer->getCurToken()));
+
+    lexer->getNextToken(); // consume 'super';
+
+    explGen->superSuffix = spSuperSuffix(new SuperSuffix());
+    parseSuperSuffix(explGen->superSuffix);
+
+    if (explGen->superSuffix->err) {
+      explGen->addErr(-1);
+    }
+
+    return;
+  }
+
+  // opt2
+  if (lexer->getCurToken() == TOK_IDENTIFIER) {
+    explGen->opt = ExplicitGenericInvocationSuffix::OPT_IDENTIFIER;
+
+    // Identifier
+    explGen->id = spIdentifier(
+      new Identifier(lexer->getCurTokenIni(), lexer->getCurTokenStr()));
+
+    lexer->getNextToken(); // consume Identifier
+
+    // Arguments
+    explGen->args = spArguments(new Arguments);
+    parseArguments(explGen->args);
+
+    if (explGen->args->err) {
+      explGen->addErr(-1);
+    }
+
+    return;
+  }
+
+  // Error
+  explGen->addErr(diag->addError(
+        lexer->getCursor() - 1,
+        lexer->getCursor(),
+        ERR_NVAL_EXPLICIT_GENERIC_INVOCATION_SUFFIX));
+}
+
+
 /// PackageDeclaration: [ [Annotations]  package QualifiedIdentifier ; ]
 spPackageDeclaration Parser::parsePackageDeclaration(
   std::vector<spAnnotation> &annotations) {
@@ -880,6 +943,15 @@ void Parser::parseLiteral(spLiteral &literal) {
 ///   BasicType {[]} . class
 ///   void . class
 void Parser::parsePrimary(spPrimary &primary) {
+  // NonWildcardTypeArguments
+  if (lexer->getCurToken() == TOK_OP_LT) {
+    primary->opt = Primary::OPT_NON_WILDCARD_TYPE_ARGUMENTS;
+    primary->nonWildcardTypeArguments = spPrimaryNonWildcardTypeArguments(
+      new PrimaryNonWildcardTypeArguments());
+    parsePrimaryNonWildcardTypeArguments(primary->nonWildcardTypeArguments);
+    return;
+  }
+
   // ParExpression
   if (lexer->getCurToken() == TOK_LCURLY_BRACKET) {
     primary->opt = Primary::OPT_PAR_EXPRESSION;
@@ -913,6 +985,11 @@ void Parser::parsePrimary(spPrimary &primary) {
     return;
   }
 
+  // TODO:
+  //   Identifier { . Identifier } [IdentifierSuffix]
+  //   BasicType {[]} . class
+  //   void . class
+
   // Literal
   spLiteral literal = spLiteral(new Literal());
   parseLiteral(literal);
@@ -921,8 +998,6 @@ void Parser::parsePrimary(spPrimary &primary) {
     primary->literal = literal;
     return;
   }
-
-  // TODO:
 }
 
 /// Primary: this [Arguments]
@@ -973,6 +1048,67 @@ void Parser::parsePrimaryNewCreator(spPrimaryNewCreator &primaryNewCreator) {
   primaryNewCreator->creator = spCreator(new Creator());
   parseCreator(primaryNewCreator->creator);
 }
+
+/// Primary:
+///   NonWildcardTypeArguments
+///     ( ExplicitGenericInvocationSuffix | this Arguments )
+void Parser::parsePrimaryNonWildcardTypeArguments(
+  spPrimaryNonWildcardTypeArguments &primaryNonWildcard) {
+
+  // NonWildcardTypeArguments
+  primaryNonWildcard->nonWildcardTypeArguments = spNonWildcardTypeArguments(
+    new NonWildcardTypeArguments());
+  parseNonWildcardTypeArguments(primaryNonWildcard->nonWildcardTypeArguments);
+
+  if (primaryNonWildcard->err) {
+    primaryNonWildcard->addErr(-1);
+    return;
+  }
+
+  // opt1: ExplicitGenericInvocationSuffix
+  if (lexer->getCurToken() == TOK_KEY_SUPER
+    || lexer->getCurToken() == TOK_IDENTIFIER) {
+
+    primaryNonWildcard->opt =
+      PrimaryNonWildcardTypeArguments::OPT_EXPLICIT_GENERIC_INVOCATION_SUFFIX;
+    primaryNonWildcard->explGen = spExplicitGenericInvocationSuffix(
+      new ExplicitGenericInvocationSuffix());
+    parseExplicitGenericInvocationSuffix(primaryNonWildcard->explGen);
+    return;
+  }
+
+  // opt2: this Arguments
+  if (lexer->getCurToken() == TOK_KEY_THIS) {
+    primaryNonWildcard->opt =
+      PrimaryNonWildcardTypeArguments::OPT_THIS_ARGUMENTS;
+
+    // Token 'this'
+    primaryNonWildcard->tokThis = spTokenExp(new TokenExp(
+      lexer->getCursor() - tokenUtil.getTokenLength(
+        lexer->getCurToken()), lexer->getCurToken()));
+
+    lexer->getNextToken(); // consume 'this'
+
+    // Arguments
+    if (lexer->getCurToken() == TOK_LPAREN) {
+      primaryNonWildcard->addErr(diag->addError(
+        lexer->getCursor() - 1, lexer->getCursor(), ERR_EXP_ARGUMENTS));
+      return;
+    }
+
+    primaryNonWildcard->args = spArguments(new Arguments());
+    parseArguments(primaryNonWildcard->args);
+
+    if (primaryNonWildcard->err) {
+      primaryNonWildcard->addErr(-1);
+    }
+
+    return;
+  }
+
+  primaryNonWildcard->addErr(-1);
+}
+
 
 /// QualifiedIdentifier: Identifer { . Identifier }
 spQualifiedIdentifier Parser::parseQualifiedIdentifier() {

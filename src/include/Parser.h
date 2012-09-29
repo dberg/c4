@@ -48,6 +48,8 @@ class Parser {
   void parseCreatorOpt2(spCreatorOpt2 &opt2);
   void parseElementValue(spElementValue &value);
   void parseElementValuePairs(std::vector<spElementValuePair> &pairs);
+  void parseExplicitGenericInvocationSuffix(
+    spExplicitGenericInvocationSuffix &explGen);
   void parseExpression(spExpression &expr);
   void parseExpression1(spExpression1 &expr1);
   void parseExpression2(spExpression2 &expr2);
@@ -72,6 +74,8 @@ class Parser {
   void parsePairExpression(spPairExpression &pairExpr);
   void parsePrimary(spPrimary &primary);
   void parsePrimaryNewCreator(spPrimaryNewCreator &primaryNewCreator);
+  void parsePrimaryNonWildcardTypeArguments(
+    spPrimaryNonWildcardTypeArguments &primaryNonWildcard);
   void parsePrimarySuperSuperSuffix(
     spPrimarySuperSuperSuffix &primarySuperSuperSuffix);
   void parsePrimaryThisArguments(spPrimaryThisArguments &primaryThisArgs);

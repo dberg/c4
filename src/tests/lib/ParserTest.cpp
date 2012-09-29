@@ -570,6 +570,22 @@ TEST(Parser, PrimaryNewCreator) {
   ASSERT_EQ(1, creator4->opt2->arrayCreatorRest->opt1->arrayDepth.size());
 }
 
+/// Primary:
+///   NonWildcardTypeArguments
+///     ( ExplicitGenericInvocationSuffix | this Arguments )
+/// NonWildcardTypeArguments: < TypeList >
+/// ExplicitGenericInvocationSuffix:
+///   super SuperSuffix
+///   Identifier Arguments
+/// Arguments: '(' [ Expression { , Expression }] ')'w
+/// SuperSuffix:
+///   Arguments
+///   . Identifier [Arguments]
+///
+/// TODO: It seems that this production rule does not apply when inside of
+///       annotations.
+//TEST(Parser, PrimaryNonWildcardTypeArguments) {}
+
 TEST(Parser, ImportDeclarations) {
   std::string filename = "Test.java";
   std::string buffer =

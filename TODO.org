@@ -1,8 +1,9 @@
-- [ ] UnitTest
+- [-] UnitTest
   - [ ] Primary: ParExpression
   - [ ] Primary: this [Arguments]
   - [ ] Primary: super SuperSuffix
-  - [ ] Primary: new Creator
+  - [X] Primary: new Creator
+  - [ ] Primary: onWildcardTypeArguments
 - [ ] Parse AnnotationElement : ElementValuePairs
 - [ ] Parser::parseElementValue Expression1
 - [ ] Parser::parseElementValue ElementValueArrayInitializer
@@ -15,6 +16,11 @@
 - [ ] Parse InterfaceDeclaration
 - [ ] Improve AST structures with Unions
 - [ ] Export Symbol table and helper mapper to elisp (pos -> symbol table)
+- [ ] Semantically invalid.
+  - [ ] @ann(k = <MyRefType> super())
+    Check Primary option 6. The same expression is valid in a different context:
+    class X { public <T> X() {} }
+    class Y extends X { public Y() { <Integer> super(); } }
 - [X] We should be able to add errors from the Lexer and not only
       from the Parser.
 - [X] Parse FloatingPointLiteral

@@ -34,6 +34,8 @@ typedef boost::shared_ptr<struct ElementValueArrayInitializer>
   spElementValueArrayInitializer;
 typedef boost::shared_ptr<struct ElementValuePair> spElementValuePair;
 typedef boost::shared_ptr<struct Identifier> spIdentifier;
+typedef boost::shared_ptr<struct ExplicitGenericInvocationSuffix>
+  spExplicitGenericInvocationSuffix;
 typedef boost::shared_ptr<struct Expression> spExpression;
 typedef boost::shared_ptr<struct Expression1> spExpression1;
 typedef boost::shared_ptr<struct Expression1Rest> spExpression1Rest;
@@ -46,6 +48,8 @@ typedef boost::shared_ptr<struct PrimaryThisArguments> spPrimaryThisArguments;
 typedef boost::shared_ptr<struct PrimarySuperSuperSuffix>
   spPrimarySuperSuperSuffix;
 typedef boost::shared_ptr<struct PrimaryNewCreator> spPrimaryNewCreator;
+typedef boost::shared_ptr<struct PrimaryNonWildcardTypeArguments>
+  spPrimaryNonWildcardTypeArguments;
 typedef boost::shared_ptr<struct Literal> spLiteral;
 typedef boost::shared_ptr<struct IntegerLiteral> spIntegerLiteral;
 typedef boost::shared_ptr<struct FloatingPointLiteral> spFloatingPointLiteral;
@@ -559,6 +563,29 @@ struct ElementValueArrayInitializer {
   std::vector<spElementValue> elemValues;
 };
 
+/// ExplicitGenericInvocationSuffix:
+///   super SuperSuffix
+///   Identifier Arguments
+struct ExplicitGenericInvocationSuffix : ASTError {
+  enum ExplicitGenericInvocationSuffixOpt {
+    OPT_UNDEFINED,
+    OPT_SUPER,
+    OPT_IDENTIFIER,
+  };
+
+  ExplicitGenericInvocationSuffixOpt opt;
+
+  // opt1
+  spTokenExp tokSuper;
+  spSuperSuffix superSuffix;
+
+  // opt2
+  spIdentifier id;
+  spArguments args;
+
+  ExplicitGenericInvocationSuffix() : opt(OPT_UNDEFINED) {}
+};
+
 /// Expression: Expression1 [ AssignmentOperator Expression1 ]
 struct Expression {
   spExpression1 expr1;
@@ -672,6 +699,7 @@ struct Primary {
   spPrimaryThisArguments thisArgs;
   spPrimarySuperSuperSuffix superSuperSuffix;
   spPrimaryNewCreator newCreator;
+  spPrimaryNonWildcardTypeArguments nonWildcardTypeArguments;
   Primary() : opt(OPT_UNDEFINED) {}
   bool isEmpty() { return opt == OPT_UNDEFINED; }
 };
@@ -692,6 +720,29 @@ struct PrimarySuperSuperSuffix {
 struct PrimaryNewCreator {
   spTokenExp tokNew;
   spCreator creator;
+};
+
+/// Primary:
+///   NonWildcardTypeArguments
+///     ( ExplicitGenericInvocationSuffix | this Arguments )
+struct PrimaryNonWildcardTypeArguments : ASTError {
+  enum PrimaryNonWildcardTypeArgumentsOpt {
+    OPT_UNDEFINED,
+    OPT_EXPLICIT_GENERIC_INVOCATION_SUFFIX,
+    OPT_THIS_ARGUMENTS,
+  };
+
+  PrimaryNonWildcardTypeArgumentsOpt opt;
+  spNonWildcardTypeArguments nonWildcardTypeArguments;
+
+  // opt1
+  spExplicitGenericInvocationSuffix explGen;
+
+  // opt2
+  spTokenExp tokThis;
+  spArguments args;
+
+  PrimaryNonWildcardTypeArguments() : opt(OPT_UNDEFINED) {};
 };
 
 /// Literal:
