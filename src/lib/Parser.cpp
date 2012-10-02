@@ -613,6 +613,15 @@ void Parser::parseExpression3(spExpression3 &expr3) {
   }
 }
 
+/// IdentifierSuffix:
+///   '[' ( {'[' ']'} . class | Expression ) ']'
+///   Arguments
+///   . ( class | ExplicitGenericInvocation | this | super Arguments |
+///       new [NonWildcardTypeArguments] InnerCreator )
+void Parser::parseIdentifierSuffix(spIdentifierSuffix &idSuffix) {
+  // TODO:
+}
+
 /// ElementValuePairs: ElementValuePair {, ElementValuePair }
 /// ElementValuePair: Identifier = ElementValue
 void Parser::parseElementValuePairs(std::vector<spElementValuePair> &pairs) {
@@ -985,8 +994,16 @@ void Parser::parsePrimary(spPrimary &primary) {
     return;
   }
 
+
+  // Identifier { . Identifier } [IdentifierSuffix]
+  if (lexer->getCurToken() == TOK_IDENTIFIER) {
+    primary->opt = Primary::OPT_IDENTIFIER;
+    primary->primaryId = spPrimaryIdentifier(new PrimaryIdentifier());
+    parsePrimaryIdentifier(primary->primaryId);
+    return;
+  }
+
   // TODO:
-  //   Identifier { . Identifier } [IdentifierSuffix]
   //   BasicType {[]} . class
   //   void . class
 
@@ -997,6 +1014,38 @@ void Parser::parsePrimary(spPrimary &primary) {
     primary->opt = Primary::OPT_LITERAL;
     primary->literal = literal;
     return;
+  }
+}
+
+/// Primary: Identifier { . Identifier } [IdentifierSuffix]
+void Parser::parsePrimaryIdentifier(spPrimaryIdentifier &primaryId) {
+  while (lexer->getCurToken() == TOK_IDENTIFIER) {
+    spIdentifier id = spIdentifier(new Identifier(
+      lexer->getCurTokenIni(), lexer->getCurTokenStr()));
+    lexer->getNextToken(); // consume Identifier
+
+    primaryId->ids.push_back(id);
+
+    if (lexer->getCurToken() != TOK_COMMA) {
+      break;
+    }
+
+    lexer->getNextToken(); // consume '.'
+
+    if (lexer->getCurToken() != TOK_IDENTIFIER) {
+      primaryId->addErr(diag->addError(lexer->getCursor() - 1,
+        lexer->getCursor(), ERR_EXP_IDENTIFIER));
+      return;
+    }
+  }
+
+  // [IdentifierSuffix]
+  if (lexer->getCurToken() == TOK_LBRACKET
+    || lexer->getCurToken() == TOK_LPAREN
+    || lexer->getCurToken() == TOK_PERIOD) {
+
+    primaryId->idSuffix = spIdentifierSuffix(new IdentifierSuffix());
+    parseIdentifierSuffix(primaryId->idSuffix);
   }
 }
 

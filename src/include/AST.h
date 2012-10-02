@@ -34,6 +34,7 @@ typedef boost::shared_ptr<struct ElementValueArrayInitializer>
   spElementValueArrayInitializer;
 typedef boost::shared_ptr<struct ElementValuePair> spElementValuePair;
 typedef boost::shared_ptr<struct Identifier> spIdentifier;
+typedef boost::shared_ptr<struct IdentifierSuffix> spIdentifierSuffix;
 typedef boost::shared_ptr<struct ExplicitGenericInvocationSuffix>
   spExplicitGenericInvocationSuffix;
 typedef boost::shared_ptr<struct Expression> spExpression;
@@ -44,6 +45,7 @@ typedef boost::shared_ptr<struct Expression2Rest> spExpression2Rest;
 typedef boost::shared_ptr<struct Expression3> spExpression3;
 typedef boost::shared_ptr<struct ExpressionInBrackets> spExpressionInBrackets;
 typedef boost::shared_ptr<struct Primary> spPrimary;
+typedef boost::shared_ptr<struct PrimaryIdentifier> spPrimaryIdentifier;
 typedef boost::shared_ptr<struct PrimaryThisArguments> spPrimaryThisArguments;
 typedef boost::shared_ptr<struct PrimarySuperSuperSuffix>
   spPrimarySuperSuperSuffix;
@@ -457,6 +459,53 @@ struct Identifier {
   Identifier(int pos, const std::string &value) : pos(pos), value(value) {}
 };
 
+/// IdentifierSuffix:
+///   '[' ( {'[' ']'} . class | Expression ) ']'
+///   Arguments
+///   . ( class | ExplicitGenericInvocation | this | super Arguments |
+///       new [NonWildcardTypeArguments] InnerCreator )
+struct IdentifierSuffix {
+  enum IdentifierSuffixOpt {
+    OPT_UNDEFINED,
+    OPT_ARRAY_ARRAY_DEPTH_CLASS,
+    OPT_ARRAY_EXPRESSION,
+    OPT_ARGUMENTS,
+    OPT_PERIOD_CLASS,
+    OPT_PERIOD_EXPLICIT_GENERIC_INVOCATION,
+    OPT_PERIOD_THIS,
+    OPT_PERIOD_SUPER_ARGUMENTS,
+    OPT_NEW,
+  };
+
+  // opt1 and opt2
+  ArrayDepthPair arrayPair;
+
+  // opt1: '[' {'[' ']'} . class ']'
+  ArrayDepth arrayDepth;
+  spTokenExp tokClass;
+
+  // opt2: '[' Expression ']'
+  spExpression expr;
+
+  // opt3: Arguments
+  spArguments args;
+
+  // TODO:
+  // opt4: . class
+
+  // TODO:
+  // opt5: . ExplicitGenericInvocation
+
+  // TODO:
+  // opt6: . this
+
+  // TODO:
+  // opt7: . super Arguments
+
+  // TODO:
+  // opt8: . new [NonWildcardTypeArguments InnerCreator
+};
+
 /// QualifiedIdentifier: Identifier { . Identifier }
 struct QualifiedIdentifier {
   std::vector<spIdentifier> identifiers;
@@ -700,8 +749,16 @@ struct Primary {
   spPrimarySuperSuperSuffix superSuperSuffix;
   spPrimaryNewCreator newCreator;
   spPrimaryNonWildcardTypeArguments nonWildcardTypeArguments;
+  spPrimaryIdentifier primaryId;
+
   Primary() : opt(OPT_UNDEFINED) {}
   bool isEmpty() { return opt == OPT_UNDEFINED; }
+};
+
+/// Primary: Identifier { . Identifier } [IdentifierSuffix]
+struct PrimaryIdentifier : ASTError {
+  std::vector<spIdentifier> ids;
+  spIdentifierSuffix idSuffix;
 };
 
 /// Primary: this [Arguments]

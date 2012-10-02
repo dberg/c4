@@ -54,6 +54,7 @@ class Parser {
   void parseExpression1(spExpression1 &expr1);
   void parseExpression2(spExpression2 &expr2);
   void parseExpression3(spExpression3 &expr3);
+  void parseIdentifierSuffix(spIdentifierSuffix &idSuffix);
   spImportDeclaration parseImportDeclaration();
   spImportDeclarations parseImportDeclarations();
   void parseFormalParameters(spFormalParameters &formParams);
@@ -73,6 +74,7 @@ class Parser {
     std::vector<spAnnotation> &annotations);
   void parsePairExpression(spPairExpression &pairExpr);
   void parsePrimary(spPrimary &primary);
+  void parsePrimaryIdentifier(spPrimaryIdentifier &primaryId);
   void parsePrimaryNewCreator(spPrimaryNewCreator &primaryNewCreator);
   void parsePrimaryNonWildcardTypeArguments(
     spPrimaryNonWildcardTypeArguments &primaryNonWildcard);
