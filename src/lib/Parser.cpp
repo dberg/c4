@@ -824,7 +824,23 @@ void Parser::parseElementValuePairs(std::vector<spElementValuePair> &pairs) {
 ///   NonWildcardTypeArguments ExplicitGenericInvocationSuffix
 void Parser::parseExplicitGenericInvocation(
   spExplicitGenericInvocation &explGenInvocation) {
-  // TODO:
+
+  // NonWildcardTypeArguments
+  explGenInvocation->nonWildcardTypeArguments = spNonWildcardTypeArguments(
+    new NonWildcardTypeArguments());
+  parseNonWildcardTypeArguments(explGenInvocation->nonWildcardTypeArguments);
+  if (explGenInvocation->nonWildcardTypeArguments->err) {
+    explGenInvocation->addErr(-1);
+    return;
+  }
+
+  // ExplicitGenericInvocationSuffix
+  explGenInvocation->explGen = spExplicitGenericInvocationSuffix(
+    new ExplicitGenericInvocationSuffix());
+  parseExplicitGenericInvocationSuffix(explGenInvocation->explGen);
+  if (explGenInvocation->explGen->err) {
+    explGenInvocation->addErr(-1);
+  }
 }
 
 /// ExplicitGenericInvocationSuffix:
