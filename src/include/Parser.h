@@ -87,6 +87,7 @@ class Parser {
   void parsePrimarySuperSuperSuffix(
     spPrimarySuperSuperSuffix &primarySuperSuperSuffix);
   void parsePrimaryThisArguments(spPrimaryThisArguments &primaryThisArgs);
+  void parsePrimaryVoidClass(spPrimaryVoidClass &primaryVoidClass);
   spQualifiedIdentifier parseQualifiedIdentifier();
   void parseReferenceType(spReferenceType &refType);
   void parseStringLiteral(spStringLiteral &strLit);

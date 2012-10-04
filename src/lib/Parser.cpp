@@ -1209,7 +1209,6 @@ void Parser::parsePrimary(spPrimary &primary) {
     return;
   }
 
-
   // Identifier { . Identifier } [IdentifierSuffix]
   if (lexer->getCurToken() == TOK_IDENTIFIER) {
     primary->opt = Primary::OPT_IDENTIFIER;
@@ -1220,7 +1219,14 @@ void Parser::parsePrimary(spPrimary &primary) {
 
   // TODO:
   //   BasicType {[]} . class
-  //   void . class
+
+  // void . class
+  if (lexer->getCurToken() == TOK_KEY_VOID) {
+    primary->opt = Primary::OPT_VOID_CLASS;
+    primary->primaryVoidClass = spPrimaryVoidClass(new PrimaryVoidClass());
+    parsePrimaryVoidClass(primary->primaryVoidClass);
+    return;
+  }
 
   // Literal
   spLiteral literal = spLiteral(new Literal());
@@ -1373,6 +1379,42 @@ void Parser::parsePrimaryNonWildcardTypeArguments(
   primaryNonWildcard->addErr(-1);
 }
 
+/// Primary: void . class
+void Parser::parsePrimaryVoidClass(spPrimaryVoidClass &primaryVoidClass) {
+  if (lexer->getCurToken() != TOK_KEY_VOID) {
+    primaryVoidClass->addErr(diag->addError(lexer->getCursor() - 1,
+      lexer->getCursor(), ERR_EXP_VOID));
+    return;
+  }
+
+  // 'void'
+  primaryVoidClass->tokVoid = spTokenExp(new TokenExp(
+    lexer->getCursor() - tokenUtil.getTokenLength(
+      lexer->getCurToken()), lexer->getCurToken()));
+  lexer->getNextToken(); // consume 'void'
+
+  // '.'
+  if (lexer->getCurToken() != TOK_COMMA) {
+    primaryVoidClass->addErr(diag->addError(lexer->getCursor() - 1,
+      lexer->getCursor(), ERR_EXP_COMMA));
+    return;
+  }
+
+  primaryVoidClass->posComma = lexer->getCursor() - 1;
+  lexer->getNextToken(); // consume '.'
+
+  // 'class'
+  if (lexer->getCurToken() != TOK_KEY_CLASS) {
+    primaryVoidClass->addErr(diag->addError(lexer->getCursor() - 1,
+      lexer->getCursor(), ERR_EXP_CLASS));
+    return;
+  }
+
+  primaryVoidClass->tokClass = spTokenExp(new TokenExp(
+    lexer->getCursor() - tokenUtil.getTokenLength(
+      lexer->getCurToken()), lexer->getCurToken()));
+  lexer->getNextToken(); // consume 'class'
+}
 
 /// QualifiedIdentifier: Identifer { . Identifier }
 spQualifiedIdentifier Parser::parseQualifiedIdentifier() {

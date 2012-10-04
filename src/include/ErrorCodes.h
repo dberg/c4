@@ -16,6 +16,7 @@ typedef boost::shared_ptr<struct Error> spError;
 enum ErrorCode {
   ERR_EXP_ARGUMENTS,
   ERR_EXP_ARRAY,
+  ERR_EXP_CLASS,
   ERR_EXP_CLASS_OR_ARRAY_CREATOR_REST,
   ERR_EXP_COMMA,
   ERR_EXP_ELEMENT_VALUE,
@@ -32,6 +33,7 @@ enum ErrorCode {
   ERR_EXP_RPAREN,
   ERR_EXP_SUPER,
   ERR_EXP_TYPE,
+  ERR_EXP_VOID,
   ERR_NVAL_ANNOT_ELEM,
   ERR_NVAL_ARRAY,
   ERR_NVAL_EXPLICIT_GENERIC_INVOCATION_SUFFIX,
@@ -48,6 +50,7 @@ public:
   ErrorUtil() {
     msgs[ERR_EXP_ARGUMENTS] = "Expected Arguments";
     msgs[ERR_EXP_ARRAY] = "Expected Array";
+    msgs[ERR_EXP_CLASS] = "Expected keyword class";
     msgs[ERR_EXP_CLASS_OR_ARRAY_CREATOR_REST] =
       "Expected ClassCreatorRest or ArrayCreatorRest";
     msgs[ERR_EXP_COMMA] = "Expected comma";
@@ -65,6 +68,7 @@ public:
     msgs[ERR_EXP_RPAREN] = "Expected closing parenthesis";
     msgs[ERR_EXP_SUPER] = "Expected keyword super";
     msgs[ERR_EXP_TYPE] = "Expected Type";
+    msgs[ERR_EXP_VOID] = "Expected keyword void";
     msgs[ERR_NVAL_ANNOT_ELEM] = "Invalid annotation element";
     msgs[ERR_NVAL_ARRAY] = "Invalid array notation";
     msgs[ERR_NVAL_EXPLICIT_GENERIC_INVOCATION_SUFFIX] =

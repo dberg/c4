@@ -56,6 +56,7 @@ typedef boost::shared_ptr<struct PrimarySuperSuperSuffix>
 typedef boost::shared_ptr<struct PrimaryNewCreator> spPrimaryNewCreator;
 typedef boost::shared_ptr<struct PrimaryNonWildcardTypeArguments>
   spPrimaryNonWildcardTypeArguments;
+typedef boost::shared_ptr<struct PrimaryVoidClass> spPrimaryVoidClass;
 typedef boost::shared_ptr<struct Literal> spLiteral;
 typedef boost::shared_ptr<struct IntegerLiteral> spIntegerLiteral;
 typedef boost::shared_ptr<struct FloatingPointLiteral> spFloatingPointLiteral;
@@ -783,6 +784,7 @@ struct Primary {
   spPrimaryNewCreator newCreator;
   spPrimaryNonWildcardTypeArguments nonWildcardTypeArguments;
   spPrimaryIdentifier primaryId;
+  spPrimaryVoidClass primaryVoidClass;
 
   Primary() : opt(OPT_UNDEFINED) {}
   bool isEmpty() { return opt == OPT_UNDEFINED; }
@@ -833,6 +835,15 @@ struct PrimaryNonWildcardTypeArguments : ASTError {
   spArguments args;
 
   PrimaryNonWildcardTypeArguments() : opt(OPT_UNDEFINED) {};
+};
+
+/// Primary: void . class
+struct PrimaryVoidClass : ASTError {
+  spTokenExp tokVoid;
+  unsigned int posComma;
+  spTokenExp tokClass;
+
+  PrimaryVoidClass() : posComma(0) {}
 };
 
 /// Literal:
