@@ -9,8 +9,9 @@
 
 namespace djp {
 
-typedef std::pair<unsigned int, unsigned int> ArrayDepthPair;
-typedef std::vector<ArrayDepthPair > ArrayDepth;
+typedef std::pair<unsigned int, unsigned int> ArrayPair;
+typedef ArrayPair Diamond;
+typedef std::vector<ArrayPair> ArrayDepth;
 typedef boost::shared_ptr<struct ArrayCreatorRest> spArrayCreatorRest;
 typedef boost::shared_ptr<struct ArrayCreatorRestOpt1> spArrayCreatorRestOpt1;
 typedef boost::shared_ptr<struct ArrayCreatorRestOpt2> spArrayCreatorRestOpt2;
@@ -26,6 +27,7 @@ typedef boost::shared_ptr<struct CompilationUnit> spCompilationUnit;
 typedef boost::shared_ptr<struct PackageDeclaration> spPackageDeclaration;
 typedef boost::shared_ptr<struct ImportDeclarations> spImportDeclarations;
 typedef boost::shared_ptr<struct ImportDeclaration> spImportDeclaration;
+typedef boost::shared_ptr<struct InnerCreator> spInnerCreator;
 typedef boost::shared_ptr<struct Annotation> spAnnotation;
 typedef boost::shared_ptr<struct QualifiedIdentifier> spQualifiedIdentifier;
 typedef boost::shared_ptr<struct AnnotationElement> spAnnotationElement;
@@ -35,6 +37,8 @@ typedef boost::shared_ptr<struct ElementValueArrayInitializer>
 typedef boost::shared_ptr<struct ElementValuePair> spElementValuePair;
 typedef boost::shared_ptr<struct Identifier> spIdentifier;
 typedef boost::shared_ptr<struct IdentifierSuffix> spIdentifierSuffix;
+typedef boost::shared_ptr<struct ExplicitGenericInvocation>
+  spExplicitGenericInvocation;
 typedef boost::shared_ptr<struct ExplicitGenericInvocationSuffix>
   spExplicitGenericInvocationSuffix;
 typedef boost::shared_ptr<struct Expression> spExpression;
@@ -71,6 +75,8 @@ typedef boost::shared_ptr<struct NormalClassDeclaration>
   spNormalClassDeclaration;
 typedef boost::shared_ptr<struct NonWildcardTypeArguments>
   spNonWildcardTypeArguments;
+typedef boost::shared_ptr<struct NonWildcardTypeArgumentsOrDiamond>
+  spNonWildcardTypeArgumentsOrDiamond;
 typedef boost::shared_ptr<struct ClassBody> spClassBody;
 typedef boost::shared_ptr<struct ClassBodyDeclaration> spClassBodyDeclaration;
 typedef boost::shared_ptr<struct ConstructorDeclaratorRest>
@@ -440,6 +446,14 @@ struct ImportDeclarations {
     : imports(imports) {}
 };
 
+/// InnerCreator:
+///   Identifier [NonWildcardTypeArgumentsOrDiamond] ClassCreatorRest
+struct InnerCreator : ASTError {
+  spIdentifier id;
+  spNonWildcardTypeArgumentsOrDiamond nonWildcardOrDiam;
+  spClassCreatorRest classCreatorRest;
+};
+
 /// Annotation: @ QualifiedIdentifier [ ( [AnnotationElement] ) ]
 struct Annotation {
   int posTokAt;
@@ -464,7 +478,7 @@ struct Identifier {
 ///   Arguments
 ///   . ( class | ExplicitGenericInvocation | this | super Arguments |
 ///       new [NonWildcardTypeArguments] InnerCreator )
-struct IdentifierSuffix {
+struct IdentifierSuffix : ASTError {
   enum IdentifierSuffixOpt {
     OPT_UNDEFINED,
     OPT_ARRAY_ARRAY_DEPTH_CLASS,
@@ -477,33 +491,45 @@ struct IdentifierSuffix {
     OPT_NEW,
   };
 
-  // opt1 and opt2
-  ArrayDepthPair arrayPair;
+  IdentifierSuffixOpt opt;
+
+  // shared 1,2
+  ArrayPair arrayPair;
+
+  // shared 2,4-8
+  int posComma;
+
+  // shared 2,4
+  spTokenExp tokClass;
+
+  // shared 3,7
+  spArguments args;
 
   // opt1: '[' {'[' ']'} . class ']'
   ArrayDepth arrayDepth;
-  spTokenExp tokClass;
 
   // opt2: '[' Expression ']'
   spExpression expr;
 
   // opt3: Arguments
-  spArguments args;
 
-  // TODO:
   // opt4: . class
 
-  // TODO:
   // opt5: . ExplicitGenericInvocation
+  spExplicitGenericInvocation explGenInvocation;
 
-  // TODO:
   // opt6: . this
+  spTokenExp tokThis;
 
-  // TODO:
   // opt7: . super Arguments
+  spTokenExp tokSuper;
 
-  // TODO:
-  // opt8: . new [NonWildcardTypeArguments InnerCreator
+  // opt8: . new [NonWildcardTypeArguments] InnerCreator
+  spTokenExp tokNew;
+  spNonWildcardTypeArguments nonWildcardTypeArguments;
+  spInnerCreator innerCreator;
+
+  IdentifierSuffix() : opt(OPT_UNDEFINED), posComma(0) {}
 };
 
 /// QualifiedIdentifier: Identifier { . Identifier }
@@ -610,6 +636,13 @@ struct ElementValue {
 /// ElementValueArrayInitializer: { [ElementValues] [,] }
 struct ElementValueArrayInitializer {
   std::vector<spElementValue> elemValues;
+};
+
+/// ExplicitGenericInvocation:
+///   NonWildcardTypeArguments ExplicitGenericInvocationSuffix
+struct ExplicitGenericInvocation : ASTError {
+  spNonWildcardTypeArguments nonWildcardTypeArguments;
+  spExplicitGenericInvocationSuffix explGen;
 };
 
 /// ExplicitGenericInvocationSuffix:
@@ -946,6 +979,23 @@ struct NonWildcardTypeArguments : ASTError {
   unsigned int posGt;
   spTypeList typeList;
   NonWildcardTypeArguments() : posLt(0), posGt(0) {}
+};
+
+/// NonWildcardTypeArgumentsOrDiamond:
+///   < >
+///   NonWildcardTypeArguments
+struct NonWildcardTypeArgumentsOrDiamond : ASTError {
+  enum NonWildcardTypeArgumentsOrDiamondOpt {
+    OPT_UNDEFINED,
+    OPT_DIAMOND,
+    OPT_NON_WILDCARD_TYPE_ARGUMENTS,
+  };
+
+  NonWildcardTypeArgumentsOrDiamondOpt opt;
+  Diamond diamond; // opt1
+  spNonWildcardTypeArguments nonWildcardTypeArguments; // opt2
+
+  NonWildcardTypeArgumentsOrDiamond() : opt(OPT_UNDEFINED) {}
 };
 
 /// TypeList: ReferenceType {, ReferenceType }

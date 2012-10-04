@@ -48,6 +48,8 @@ class Parser {
   void parseCreatorOpt2(spCreatorOpt2 &opt2);
   void parseElementValue(spElementValue &value);
   void parseElementValuePairs(std::vector<spElementValuePair> &pairs);
+  void parseExplicitGenericInvocation(
+    spExplicitGenericInvocation &explGenInvocation);
   void parseExplicitGenericInvocationSuffix(
     spExplicitGenericInvocationSuffix &explGen);
   void parseExpression(spExpression &expr);
@@ -55,8 +57,10 @@ class Parser {
   void parseExpression2(spExpression2 &expr2);
   void parseExpression3(spExpression3 &expr3);
   void parseIdentifierSuffix(spIdentifierSuffix &idSuffix);
+  void parseIdentifierSuffixOpt1Helper(spIdentifierSuffix &idSuffix);
   spImportDeclaration parseImportDeclaration();
   spImportDeclarations parseImportDeclarations();
+  void parseInnerCreator(spInnerCreator &innerCreator);
   void parseFormalParameters(spFormalParameters &formParams);
   void parseFormalParameterDecls(spFormalParameterDecls &formParamDecls);
   void parseFormalParameterDeclsRest(
@@ -68,6 +72,8 @@ class Parser {
   void parseMemberDecl(spMemberDecl &memberDecl);
   void parseNonWildcardTypeArguments(
     spNonWildcardTypeArguments &nonWildcardTypeArguments);
+  void parseNonWildcardTypeArgumentsOrDiamond(
+    spNonWildcardTypeArgumentsOrDiamond &nonWildcardOrDiam);
   void parseNormalClassDeclaration(spNormalClassDeclaration &nClassDecl);
   void parseNullLiteral(spNullLiteral &nullLiteral);
   spPackageDeclaration parsePackageDeclaration(
