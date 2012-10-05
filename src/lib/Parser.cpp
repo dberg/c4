@@ -1217,8 +1217,13 @@ void Parser::parsePrimary(spPrimary &primary) {
     return;
   }
 
-  // TODO:
-  //   BasicType {[]} . class
+  // BasicType {[]} . class
+  if (isBasicType(lexer->getCurToken())) {
+    primary->opt = Primary::OPT_BASIC_TYPE;
+    primary->primaryBasicType = spPrimaryBasicType(new PrimaryBasicType());
+    parsePrimaryBasicType(primary->primaryBasicType);
+    return;
+  }
 
   // void . class
   if (lexer->getCurToken() == TOK_KEY_VOID) {
@@ -1236,6 +1241,39 @@ void Parser::parsePrimary(spPrimary &primary) {
     primary->literal = literal;
     return;
   }
+}
+
+/// Primary: BasicType {[]} . class
+void Parser::parsePrimaryBasicType(spPrimaryBasicType &primaryBasicType) {
+  // Basic Type
+  spTokenExp token = spTokenExp(new TokenExp(lexer->getCursor()
+    - tokenUtil.getTokenLength(lexer->getCurToken()), lexer->getCurToken()));
+  primaryBasicType->basicType = spBasicType(new BasicType(token));
+
+  // {[]}
+  parseArrayDepth(primaryBasicType->arrayDepth);
+
+  // '.'
+  if (lexer->getCurToken() != TOK_COMMA) {
+    primaryBasicType->addErr(diag->addError(lexer->getCursor() - 1,
+      lexer->getCursor(), ERR_EXP_COMMA));
+    return;
+  }
+
+  primaryBasicType->posComma = lexer->getCursor() - 1;
+  lexer->getNextToken(); // consume '.'
+
+  // 'class'
+  if (lexer->getCurToken() != TOK_KEY_CLASS) {
+    primaryBasicType->addErr(diag->addError(lexer->getCursor() - 1,
+      lexer->getCursor(), ERR_EXP_CLASS));
+    return;
+  }
+
+  primaryBasicType->tokClass = spTokenExp(new TokenExp(
+    lexer->getCursor() - tokenUtil.getTokenLength(
+      lexer->getCurToken()), lexer->getCurToken()));
+  lexer->getNextToken(); // consume 'class'
 }
 
 /// Primary: Identifier { . Identifier } [IdentifierSuffix]

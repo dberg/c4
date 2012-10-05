@@ -80,6 +80,7 @@ class Parser {
     std::vector<spAnnotation> &annotations);
   void parsePairExpression(spPairExpression &pairExpr);
   void parsePrimary(spPrimary &primary);
+  void parsePrimaryBasicType(spPrimaryBasicType &primaryBasicType);
   void parsePrimaryIdentifier(spPrimaryIdentifier &primaryId);
   void parsePrimaryNewCreator(spPrimaryNewCreator &primaryNewCreator);
   void parsePrimaryNonWildcardTypeArguments(

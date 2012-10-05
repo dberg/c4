@@ -49,6 +49,7 @@ typedef boost::shared_ptr<struct Expression2Rest> spExpression2Rest;
 typedef boost::shared_ptr<struct Expression3> spExpression3;
 typedef boost::shared_ptr<struct ExpressionInBrackets> spExpressionInBrackets;
 typedef boost::shared_ptr<struct Primary> spPrimary;
+typedef boost::shared_ptr<struct PrimaryBasicType> spPrimaryBasicType;
 typedef boost::shared_ptr<struct PrimaryIdentifier> spPrimaryIdentifier;
 typedef boost::shared_ptr<struct PrimaryThisArguments> spPrimaryThisArguments;
 typedef boost::shared_ptr<struct PrimarySuperSuperSuffix>
@@ -785,9 +786,18 @@ struct Primary {
   spPrimaryNonWildcardTypeArguments nonWildcardTypeArguments;
   spPrimaryIdentifier primaryId;
   spPrimaryVoidClass primaryVoidClass;
+  spPrimaryBasicType primaryBasicType;
 
   Primary() : opt(OPT_UNDEFINED) {}
   bool isEmpty() { return opt == OPT_UNDEFINED; }
+};
+
+/// Primary: BasicType {[]} . class
+struct PrimaryBasicType : ASTError {
+  spBasicType basicType;
+  ArrayDepth arrayDepth;
+  unsigned int posComma;
+  spTokenExp tokClass;
 };
 
 /// Primary: Identifier { . Identifier } [IdentifierSuffix]
