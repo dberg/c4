@@ -609,7 +609,18 @@ void Parser::parseExpression3(spExpression3 &expr3) {
     expr3->opt = Expression3::OPT_PRIMARY_SELECTOR_POSTFIXOP;
     expr3->primary = primary;
 
-    // TODO: { Selector } { PostfixOp }
+    // { Selector }
+    if (lexer->getCurToken() == TOK_COMMA
+      || lexer->getCurToken() == TOK_LBRACKET) {
+      expr3->selector = spSelector(new Selector());
+      parseSelector(expr3->selector);
+      if (expr3->selector->err) {
+	expr3->addErr(-1);
+	return;
+      }
+    }
+
+    // TODO: { PostfixOp }
   }
 }
 
@@ -1505,6 +1516,17 @@ void Parser::parseReferenceType(spReferenceType &refType) {
   }
 
   // { . Identifier [TypeArguments] }
+  // TODO:
+}
+
+/// Selector:
+///   . Identifier [Arguments]
+///   . ExplicitGenericInvocation
+///   . this
+///   . super SuperSuffix
+///   . new [NonWildcardTypeArguments] InnerCreator
+///   '[' Expression ']'
+void Parser::parseSelector(spSelector &selector) {
   // TODO:
 }
 

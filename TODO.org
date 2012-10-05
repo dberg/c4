@@ -1,8 +1,10 @@
-- [ ] Parse AnnotationElement : ElementValuePairs
+- [ ] Parser::parseExpression3
+  - [ ] PrefixOp Expression3
+  - [ ] ( Expression | Type ) Expression3
+  - [ ] Primary { Selector } { PostfixOp }
 - [ ] Parser::parseElementValue Expression1
 - [ ] Parser::parseElementValue ElementValueArrayInitializer
 - [ ] Parser::parseExpression2 Expression2Rest
-- [ ] Parser::parseExpression3 Primary { Selector } { PostfixOp }
 - [ ] Parser::parseExpression1 Expression1Rest
 - [ ] Parse ClassBodyDeclaration
 - [ ] Parse MemberDecl
@@ -15,3 +17,4 @@
     Check Primary option 6. The same expression is valid in a different context:
     class X { public <T> X() {} }
     class Y extends X { public Y() { <Integer> super(); } }
+- [X] Parse AnnotationElement : ElementValuePairs

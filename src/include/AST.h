@@ -87,6 +87,7 @@ typedef boost::shared_ptr<struct PrimaryNonWildcardTypeArguments>
 typedef boost::shared_ptr<struct PrimaryVoidClass> spPrimaryVoidClass;
 typedef boost::shared_ptr<struct QualifiedIdentifier> spQualifiedIdentifier;
 typedef boost::shared_ptr<struct ReferenceType> spReferenceType;
+typedef boost::shared_ptr<struct Selector> spSelector;
 typedef boost::shared_ptr<struct StringLiteral> spStringLiteral;
 typedef boost::shared_ptr<struct SuperSuffix> spSuperSuffix;
 typedef boost::shared_ptr<struct TokenExp> spTokenExp;
@@ -381,6 +382,53 @@ struct ReferenceType : ASTError {
   spIdentifier id;
   spTypeArguments typeArgs;
   std::vector<ReferenceType> refTypes;
+};
+
+/// Selector:
+///   . Identifier [Arguments]
+///   . ExplicitGenericInvocation
+///   . this
+///   . super SuperSuffix
+///   . new [NonWildcardTypeArguments] InnerCreator
+///   '[' Expression ']'
+struct Selector : ASTError {
+  enum SelectorOpt {
+    OPT_UNDEFINED,
+    OPT_EXPLICIT_GENERIC_INVOCATION,
+    OPT_THIS,
+    OPT_SUPER_SUPER_SUFFIX,
+    OPT_NEW,
+    OPT_EXPRESSION,
+  };
+
+  SelectorOpt opt;
+
+  // shared 1-5
+  unsigned int posComma;
+
+  // opt1: . Identifier [Arguments]
+  spIdentifier id;
+  spArguments args;
+
+  // opt2: . ExplicitGenericInvocation
+  spExplicitGenericInvocation explGenInvocation;
+
+  // opt3: . this
+  spTokenExp tokThis;
+
+  // opt4: . super SuperSuffix
+  spTokenExp tokSuper;
+  spSuperSuffix superSuffix;
+
+  // opt5: . new [NonWildcardTypeArguments] InnerCreator
+  spTokenExp tokNew;
+  spNonWildcardTypeArguments nonWildcardTypeArguments;
+
+  // opt6: '[' Expression ']'
+  ArrayPair arrayPair;
+  spExpression expr;
+
+  Selector() : opt(OPT_UNDEFINED) {}
 };
 
 /// TypeArguments: < TypeArgument { , TypeArgument } >
@@ -726,7 +774,7 @@ struct Arguments : ASTError {
 ///   PrefixOp Expression3
 ///   ( Expression | Type ) Expression3
 ///   Primary { Selector } { PostfixOp }
-struct Expression3 {
+struct Expression3 : ASTError {
   enum Expression3Opt {
     OPT_UNDEFINED,
     OPT_PREFIXOP_EXPRESSION3,
@@ -746,7 +794,7 @@ struct Expression3 {
 
   // Primary { Selector } { PostfixOp }
   spPrimary primary;
-  // TODO: { Selector }
+  spSelector selector;
   // TODO: { PostfixOp }
 
   Expression3() : opt(OPT_UNDEFINED) {}
