@@ -9,103 +9,104 @@
 
 namespace djp {
 
-typedef std::pair<unsigned int, unsigned int> ArrayPair;
-typedef ArrayPair Diamond;
-typedef std::vector<ArrayPair> ArrayDepth;
+typedef boost::shared_ptr<struct Annotation> spAnnotation;
+typedef boost::shared_ptr<struct AnnotationElement> spAnnotationElement;
+typedef boost::shared_ptr<struct Arguments> spArguments;
 typedef boost::shared_ptr<struct ArrayCreatorRest> spArrayCreatorRest;
 typedef boost::shared_ptr<struct ArrayCreatorRestOpt1> spArrayCreatorRestOpt1;
 typedef boost::shared_ptr<struct ArrayCreatorRestOpt2> spArrayCreatorRestOpt2;
 typedef boost::shared_ptr<struct ArrayInitializer> spArrayInitializer;
-typedef boost::shared_ptr<struct Arguments> spArguments;
 typedef boost::shared_ptr<struct BasicType> spBasicType;
+typedef boost::shared_ptr<struct Block> spBlock;
+typedef boost::shared_ptr<struct BlockStatement> spBlockStatement;
+typedef boost::shared_ptr<struct BooleanLiteral> spBooleanLiteral;
+typedef boost::shared_ptr<struct CharacterLiteral> spCharacterLiteral;
+typedef boost::shared_ptr<struct ClassBody> spClassBody;
+typedef boost::shared_ptr<struct ClassBodyDeclaration> spClassBodyDeclaration;
+typedef boost::shared_ptr<struct ClassCreatorRest> spClassCreatorRest;
+typedef boost::shared_ptr<struct ClassDeclaration> spClassDeclaration;
+typedef boost::shared_ptr<struct ClassOrInterfaceDeclaration>
+  spClassOrInterfaceDeclaration;
+typedef boost::shared_ptr<struct CompilationUnit> spCompilationUnit;
+typedef boost::shared_ptr<struct ConstructorDeclaratorRest>
+  spConstructorDeclaratorRest;
 typedef boost::shared_ptr<struct CreatedName> spCreatedName;
 typedef boost::shared_ptr<struct Creator> spCreator;
 typedef boost::shared_ptr<struct CreatorOpt1> spCreatorOpt1;
 typedef boost::shared_ptr<struct CreatorOpt2> spCreatorOpt2;
-typedef boost::shared_ptr<struct ReferenceType> spReferenceType;
-typedef boost::shared_ptr<struct CompilationUnit> spCompilationUnit;
-typedef boost::shared_ptr<struct PackageDeclaration> spPackageDeclaration;
-typedef boost::shared_ptr<struct ImportDeclarations> spImportDeclarations;
-typedef boost::shared_ptr<struct ImportDeclaration> spImportDeclaration;
-typedef boost::shared_ptr<struct InnerCreator> spInnerCreator;
-typedef boost::shared_ptr<struct Annotation> spAnnotation;
-typedef boost::shared_ptr<struct QualifiedIdentifier> spQualifiedIdentifier;
-typedef boost::shared_ptr<struct AnnotationElement> spAnnotationElement;
 typedef boost::shared_ptr<struct ElementValue> spElementValue;
 typedef boost::shared_ptr<struct ElementValueArrayInitializer>
   spElementValueArrayInitializer;
 typedef boost::shared_ptr<struct ElementValuePair> spElementValuePair;
-typedef boost::shared_ptr<struct Identifier> spIdentifier;
-typedef boost::shared_ptr<struct IdentifierSuffix> spIdentifierSuffix;
+typedef boost::shared_ptr<struct EnumDeclaration>
+  spEnumDeclaration;
 typedef boost::shared_ptr<struct ExplicitGenericInvocation>
   spExplicitGenericInvocation;
 typedef boost::shared_ptr<struct ExplicitGenericInvocationSuffix>
   spExplicitGenericInvocationSuffix;
 typedef boost::shared_ptr<struct Expression> spExpression;
 typedef boost::shared_ptr<struct Expression1> spExpression1;
-typedef boost::shared_ptr<struct Expression1Rest> spExpression1Rest;
 typedef boost::shared_ptr<struct Expression2> spExpression2;
-typedef boost::shared_ptr<struct Expression2Rest> spExpression2Rest;
 typedef boost::shared_ptr<struct Expression3> spExpression3;
+typedef boost::shared_ptr<struct Expression1Rest> spExpression1Rest;
+typedef boost::shared_ptr<struct Expression2Rest> spExpression2Rest;
 typedef boost::shared_ptr<struct ExpressionInBrackets> spExpressionInBrackets;
-typedef boost::shared_ptr<struct Primary> spPrimary;
-typedef boost::shared_ptr<struct PrimaryBasicType> spPrimaryBasicType;
-typedef boost::shared_ptr<struct PrimaryIdentifier> spPrimaryIdentifier;
-typedef boost::shared_ptr<struct PrimaryThisArguments> spPrimaryThisArguments;
-typedef boost::shared_ptr<struct PrimarySuperSuperSuffix>
-  spPrimarySuperSuperSuffix;
-typedef boost::shared_ptr<struct PrimaryNewCreator> spPrimaryNewCreator;
-typedef boost::shared_ptr<struct PrimaryNonWildcardTypeArguments>
-  spPrimaryNonWildcardTypeArguments;
-typedef boost::shared_ptr<struct PrimaryVoidClass> spPrimaryVoidClass;
-typedef boost::shared_ptr<struct Literal> spLiteral;
-typedef boost::shared_ptr<struct IntegerLiteral> spIntegerLiteral;
 typedef boost::shared_ptr<struct FloatingPointLiteral> spFloatingPointLiteral;
-typedef boost::shared_ptr<struct CharacterLiteral> spCharacterLiteral;
-typedef boost::shared_ptr<struct StringLiteral> spStringLiteral;
-typedef boost::shared_ptr<struct BooleanLiteral> spBooleanLiteral;
-typedef struct TokenExp NullLiteral;
-typedef boost::shared_ptr<struct PairExpression> spPairExpression;
-typedef boost::shared_ptr<struct TokenExp> spNullLiteral;
-typedef boost::shared_ptr<struct TypeDeclaration> spTypeDeclaration;
-typedef boost::shared_ptr<struct TypeList> spTypeList;
-typedef boost::shared_ptr<struct ClassCreatorRest> spClassCreatorRest;
-typedef boost::shared_ptr<struct ClassOrInterfaceDeclaration>
-  spClassOrInterfaceDeclaration;
-typedef boost::shared_ptr<struct ClassDeclaration> spClassDeclaration;
+typedef boost::shared_ptr<struct FormalParameters> spFormalParameters;
+typedef boost::shared_ptr<struct FormalParameterDecls> spFormalParameterDecls;
+typedef boost::shared_ptr<struct FormalParameterDeclsRest>
+  spFormalParameterDeclsRest;
+typedef boost::shared_ptr<struct Identifier> spIdentifier;
+typedef boost::shared_ptr<struct IdentifierSuffix> spIdentifierSuffix;
+typedef boost::shared_ptr<struct ImportDeclaration> spImportDeclaration;
+typedef boost::shared_ptr<struct ImportDeclarations> spImportDeclarations;
+typedef boost::shared_ptr<struct IntegerLiteral> spIntegerLiteral;
+typedef boost::shared_ptr<struct InterfaceDeclaration> spInterfaceDeclaration;
+typedef boost::shared_ptr<struct InnerCreator> spInnerCreator;
+typedef boost::shared_ptr<struct Literal> spLiteral;
+typedef boost::shared_ptr<struct MemberDecl> spMemberDecl;
+typedef boost::shared_ptr<struct Modifier> spModifier;
 typedef boost::shared_ptr<struct NormalClassDeclaration>
   spNormalClassDeclaration;
 typedef boost::shared_ptr<struct NonWildcardTypeArguments>
   spNonWildcardTypeArguments;
 typedef boost::shared_ptr<struct NonWildcardTypeArgumentsOrDiamond>
   spNonWildcardTypeArgumentsOrDiamond;
-typedef boost::shared_ptr<struct ClassBody> spClassBody;
-typedef boost::shared_ptr<struct ClassBodyDeclaration> spClassBodyDeclaration;
-typedef boost::shared_ptr<struct ConstructorDeclaratorRest>
-  spConstructorDeclaratorRest;
-typedef boost::shared_ptr<struct FormalParameters> spFormalParameters;
-typedef boost::shared_ptr<struct FormalParameterDecls> spFormalParameterDecls;
-typedef boost::shared_ptr<struct VariableModifier> spVariableModifier;
-typedef boost::shared_ptr<struct FormalParameterDeclsRest>
-  spFormalParameterDeclsRest;
-typedef boost::shared_ptr<struct Block> spBlock;
-typedef boost::shared_ptr<struct BlockStatement> spBlockStatement;
-typedef boost::shared_ptr<struct EnumDeclaration>
-  spEnumDeclaration;
-typedef boost::shared_ptr<struct InterfaceDeclaration> spInterfaceDeclaration;
-typedef boost::shared_ptr<struct MemberDecl> spMemberDecl;
-typedef boost::shared_ptr<struct Modifier> spModifier;
+typedef boost::shared_ptr<struct PackageDeclaration> spPackageDeclaration;
+typedef boost::shared_ptr<struct PairExpression> spPairExpression;
 typedef boost::shared_ptr<struct PrefixOp> spPrefixOp;
+typedef boost::shared_ptr<struct Primary> spPrimary;
+typedef boost::shared_ptr<struct PrimaryBasicType> spPrimaryBasicType;
+typedef boost::shared_ptr<struct PrimaryIdentifier> spPrimaryIdentifier;
+typedef boost::shared_ptr<struct PrimarySuperSuperSuffix>
+  spPrimarySuperSuperSuffix;
+typedef boost::shared_ptr<struct PrimaryThisArguments> spPrimaryThisArguments;
+typedef boost::shared_ptr<struct PrimaryNewCreator> spPrimaryNewCreator;
+typedef boost::shared_ptr<struct PrimaryNonWildcardTypeArguments>
+  spPrimaryNonWildcardTypeArguments;
+typedef boost::shared_ptr<struct PrimaryVoidClass> spPrimaryVoidClass;
+typedef boost::shared_ptr<struct QualifiedIdentifier> spQualifiedIdentifier;
+typedef boost::shared_ptr<struct ReferenceType> spReferenceType;
+typedef boost::shared_ptr<struct StringLiteral> spStringLiteral;
+typedef boost::shared_ptr<struct SuperSuffix> spSuperSuffix;
 typedef boost::shared_ptr<struct TokenExp> spTokenExp;
-typedef boost::shared_ptr<struct VariableDeclaratorId> spVariableDeclaratorId;
-typedef boost::shared_ptr<struct VariableInitializer> spVariableInitializer;
+typedef boost::shared_ptr<struct TokenExp> spNullLiteral;
 typedef boost::shared_ptr<struct Type> spType;
 typedef boost::shared_ptr<struct TypeArgument> spTypeArgument;
-typedef boost::shared_ptr<struct TypeArgumentOpt2> spTypeArgumentOpt2;
 typedef boost::shared_ptr<struct TypeArguments> spTypeArguments;
+typedef boost::shared_ptr<struct TypeArgumentOpt2> spTypeArgumentOpt2;
 typedef boost::shared_ptr<struct TypeArgumentsOrDiamond>
   spTypeArgumentsOrDiamond;
-typedef boost::shared_ptr<struct SuperSuffix> spSuperSuffix;
+typedef boost::shared_ptr<struct TypeDeclaration> spTypeDeclaration;
+typedef boost::shared_ptr<struct TypeList> spTypeList;
+typedef boost::shared_ptr<struct VariableDeclaratorId> spVariableDeclaratorId;
+typedef boost::shared_ptr<struct VariableInitializer> spVariableInitializer;
+typedef boost::shared_ptr<struct VariableModifier> spVariableModifier;
+
+typedef std::pair<unsigned int, unsigned int> ArrayPair;
+typedef std::vector<ArrayPair> ArrayDepth;
+typedef std::pair<unsigned int, unsigned int> Diamond;
+typedef struct TokenExp NullLiteral;
 
 struct ASTError {
   bool err;
