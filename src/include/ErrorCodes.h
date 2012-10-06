@@ -39,6 +39,7 @@ enum ErrorCode {
   ERR_NVAL_EXPLICIT_GENERIC_INVOCATION_SUFFIX,
   ERR_NVAL_HEX,
   ERR_NVAL_IDENTIFIER_SUFFIX,
+  ERR_NVAL_SELECTOR,
   ERR_NVAL_TYPE_ARGUMENT,
 };
 
@@ -75,6 +76,7 @@ public:
       "Invalid ExplicitGenericInvocationSuffix";
     msgs[ERR_NVAL_HEX] = "Invalid Hexadecimal";
     msgs[ERR_NVAL_IDENTIFIER_SUFFIX] = "Invalid IdentifierSuffix";
+    msgs[ERR_NVAL_SELECTOR] = "Invalid Selector";
     msgs[ERR_NVAL_TYPE_ARGUMENT] = "Invalid Type Argument";
   }
 

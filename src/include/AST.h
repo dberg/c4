@@ -394,6 +394,7 @@ struct ReferenceType : ASTError {
 struct Selector : ASTError {
   enum SelectorOpt {
     OPT_UNDEFINED,
+    OPT_IDENTIFIER_ARGUMENTS,
     OPT_EXPLICIT_GENERIC_INVOCATION,
     OPT_THIS,
     OPT_SUPER_SUPER_SUFFIX,
@@ -423,6 +424,7 @@ struct Selector : ASTError {
   // opt5: . new [NonWildcardTypeArguments] InnerCreator
   spTokenExp tokNew;
   spNonWildcardTypeArguments nonWildcardTypeArguments;
+  spInnerCreator innerCreator;
 
   // opt6: '[' Expression ']'
   ArrayPair arrayPair;

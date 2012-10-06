@@ -172,7 +172,7 @@ spAnnotation Parser::parseAnnotation() {
   // an optional AnnotaionElement followed by ')'
   if (lexer->getCurToken() == TOK_LPAREN) {
     int openParenPos = lexer->getCursor() - 1;
-    lexer->getNextToken(); // consume ')'
+    lexer->getNextToken(); // consume '('
 
     // Empty annotation element
     if (lexer->getCurToken() != TOK_RPAREN) {
@@ -610,13 +610,13 @@ void Parser::parseExpression3(spExpression3 &expr3) {
     expr3->primary = primary;
 
     // { Selector }
-    if (lexer->getCurToken() == TOK_COMMA
+    if (lexer->getCurToken() == TOK_PERIOD
       || lexer->getCurToken() == TOK_LBRACKET) {
       expr3->selector = spSelector(new Selector());
       parseSelector(expr3->selector);
       if (expr3->selector->err) {
-	expr3->addErr(-1);
-	return;
+        expr3->addErr(-1);
+        return;
       }
     }
 
@@ -714,9 +714,9 @@ void Parser::parseIdentifierSuffix(spIdentifierSuffix &idSuffix) {
 
       // Error: expected '('
       if (lexer->getCurToken() != TOK_LPAREN) {
-	idSuffix->addErr(diag->addError(lexer->getCursor() - 1,
+        idSuffix->addErr(diag->addError(lexer->getCursor() - 1,
           lexer->getCursor(), ERR_EXP_LPAREN));
-	return;
+        return;
       }
 
       idSuffix->args = spArguments(new Arguments());
@@ -735,15 +735,15 @@ void Parser::parseIdentifierSuffix(spIdentifierSuffix &idSuffix) {
 
       // NonWildcardTypeArguments
       if (lexer->getCurToken() == TOK_OP_LT) {
-	idSuffix->nonWildcardTypeArguments = spNonWildcardTypeArguments(
+        idSuffix->nonWildcardTypeArguments = spNonWildcardTypeArguments(
           new NonWildcardTypeArguments());
-	parseNonWildcardTypeArguments(idSuffix->nonWildcardTypeArguments);
+        parseNonWildcardTypeArguments(idSuffix->nonWildcardTypeArguments);
 
-	// Error: invalid NonWildcardTypeArguments
-	if (idSuffix->nonWildcardTypeArguments->err) {
-	  idSuffix->addErr(-1);
-	  return;
-	}
+        // Error: invalid NonWildcardTypeArguments
+        if (idSuffix->nonWildcardTypeArguments->err) {
+          idSuffix->addErr(-1);
+          return;
+        }
       }
 
       // InnerCreator
@@ -752,8 +752,8 @@ void Parser::parseIdentifierSuffix(spIdentifierSuffix &idSuffix) {
 
       // Error: invalid InnerCreator
       if (idSuffix->innerCreator->err) {
-	idSuffix->addErr(-1);
-	return;
+        idSuffix->addErr(-1);
+        return;
       }
     }
   }
@@ -1527,7 +1527,104 @@ void Parser::parseReferenceType(spReferenceType &refType) {
 ///   . new [NonWildcardTypeArguments] InnerCreator
 ///   '[' Expression ']'
 void Parser::parseSelector(spSelector &selector) {
-  // TODO:
+  if (lexer->getCurToken() == TOK_COMMA) {
+    selector->posComma = lexer->getCursor() - 1;
+    lexer->getNextToken(); // consume '.'
+
+    // . Identifier [Arguments]
+    if (lexer->getCurToken() == TOK_IDENTIFIER) {
+      selector->opt = Selector::OPT_IDENTIFIER_ARGUMENTS;
+      selector->id = spIdentifier(new Identifier(
+        lexer->getCurTokenIni(), lexer->getCurTokenStr()));
+      lexer->getNextToken(); // consume Identifier
+
+      // [Arguments]
+      if (lexer->getCurToken() == TOK_LPAREN) {
+        selector->args = spArguments(new Arguments());
+        parseArguments(selector->args);
+        if (selector->args->err) { selector->addErr(-1); }
+      }
+
+      return;
+    }
+
+    // . ExplicitGenericInvocation
+    if (lexer->getCurToken() == TOK_OP_LT) {
+      selector->opt = Selector::OPT_IDENTIFIER_ARGUMENTS;
+      selector->explGenInvocation = spExplicitGenericInvocation(
+        new ExplicitGenericInvocation());
+      parseExplicitGenericInvocation(selector->explGenInvocation);
+      if (selector->explGenInvocation->err) { selector->addErr(-1); }
+      return;
+    }
+
+    // . this
+    if (lexer->getCurToken() == TOK_KEY_THIS) {
+      selector->opt = Selector::OPT_THIS;
+      selector->tokThis = spTokenExp(new TokenExp(
+        lexer->getCursor() - tokenUtil.getTokenLength(
+        lexer->getCurToken()), lexer->getCurToken()));
+      lexer->getNextToken(); // consume 'this'
+      return;
+    }
+
+    /// . super SuperSuffix
+    if (lexer->getCurToken() == TOK_KEY_SUPER) {
+      selector->opt = Selector::OPT_SUPER_SUPER_SUFFIX;
+      selector->tokSuper = spTokenExp(new TokenExp(
+        lexer->getCursor() - tokenUtil.getTokenLength(
+        lexer->getCurToken()), lexer->getCurToken()));
+      lexer->getNextToken(); // consume 'super'
+
+      selector->superSuffix = spSuperSuffix(new SuperSuffix());
+      parseSuperSuffix(selector->superSuffix);
+      if (selector->superSuffix->err) { selector->addErr(-1); }
+
+      return;
+    }
+
+    /// . new [NonWildcardTypeArguments] InnerCreator
+    if (lexer->getCurToken() == TOK_KEY_NEW) {
+      selector->opt = Selector::OPT_NEW;
+      selector->tokNew = spTokenExp(new TokenExp(
+        lexer->getCursor() - tokenUtil.getTokenLength(
+        lexer->getCurToken()), lexer->getCurToken()));
+      lexer->getNextToken(); // consume 'new'
+
+      // [NonWildcardTypeArguments]
+      if (lexer->getCurToken() == TOK_OP_LT) {
+        selector->nonWildcardTypeArguments = spNonWildcardTypeArguments(
+          new NonWildcardTypeArguments());
+        parseNonWildcardTypeArguments(selector->nonWildcardTypeArguments);
+        if (selector->nonWildcardTypeArguments->err) {
+          selector->addErr(-1);
+          return;
+        }
+      }
+
+      // InnerCreator
+      selector->innerCreator = spInnerCreator(new InnerCreator());
+      parseInnerCreator(selector->innerCreator);
+      if (selector->innerCreator->err) { selector->addErr(-1); }
+      return;
+    }
+  }
+
+  /// '[' Expression ']'
+  if (lexer->getCurToken() == TOK_LBRACKET) {
+    selector->opt = Selector::OPT_EXPRESSION;
+    selector->arrayPair.first = lexer->getCursor() - 1;
+    lexer->getNextToken(); // consume '['
+    selector->expr = spExpression(new Expression());
+    parseExpression(selector->expr);
+    selector->arrayPair.second = lexer->getCursor() - 1;
+    // TODO: check error
+    lexer->getNextToken(); // consume ']'
+    return;
+  }
+
+  selector->addErr(diag->addError(
+    lexer->getCursor() - 1, lexer->getCursor(), ERR_NVAL_SELECTOR));
 }
 
 /// TypeArgument:
@@ -1913,7 +2010,7 @@ void Parser::parseMemberDecl(spMemberDecl &memberDecl) {
       // Identifier
       int pos = lexer->getCurTokenIni();
       memberDecl->identifier
-	= spIdentifier(new Identifier(pos, lexer->getCurTokenStr()));
+        = spIdentifier(new Identifier(pos, lexer->getCurTokenStr()));
       st.addSym(ST_CLASS, lexer->getCurToken(), pos, src->getLine(),
         lexer->getCurTokenStr());
       lexer->getNextToken(); // consume Identifier
@@ -2173,7 +2270,7 @@ void Parser::parseVariableModifier(spVariableModifier &varModifier) {
       if (varModifier->tokFinal) {
         // TODO: Handle error. We already have a 'final' token.
       } else {
-	varModifier->tokFinal = spTokenExp(new TokenExp(
+        varModifier->tokFinal = spTokenExp(new TokenExp(
           lexer->getCursor() - tokenUtil.getTokenLength(
             lexer->getCurToken()), lexer->getCurToken()));
       }
