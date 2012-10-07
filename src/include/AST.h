@@ -74,6 +74,7 @@ typedef boost::shared_ptr<struct NonWildcardTypeArgumentsOrDiamond>
   spNonWildcardTypeArgumentsOrDiamond;
 typedef boost::shared_ptr<struct PackageDeclaration> spPackageDeclaration;
 typedef boost::shared_ptr<struct PairExpression> spPairExpression;
+typedef boost::shared_ptr<struct PostfixOp> spPostfixOp;
 typedef boost::shared_ptr<struct PrefixOp> spPrefixOp;
 typedef boost::shared_ptr<struct Primary> spPrimary;
 typedef boost::shared_ptr<struct PrimaryBasicType> spPrimaryBasicType;
@@ -797,7 +798,7 @@ struct Expression3 : ASTError {
   // Primary { Selector } { PostfixOp }
   spPrimary primary;
   spSelector selector;
-  // TODO: { PostfixOp }
+  spPostfixOp postfixOp;
 
   Expression3() : opt(OPT_UNDEFINED) {}
   bool isEmpty() { return opt == OPT_UNDEFINED; }
@@ -994,6 +995,20 @@ struct StringLiteral {
 
 struct PairExpression {
   spExpression expr;
+};
+
+/// PostfixOp: ++ | --
+struct PostfixOp {
+  enum PostfixOpOpt {
+    OPT_UNDEFINED,
+    OPT_PLUS_PLUS,
+    OPT_MINUS_MINUS,
+  };
+
+  PostfixOpOpt opt;
+  unsigned int pos;
+
+  PostfixOp() : opt(OPT_UNDEFINED), pos(0) {}
 };
 
 /// SuperSuffix:

@@ -1,7 +1,7 @@
-- [ ] Parser::parseExpression3
-  - [ ] PrefixOp Expression3
+- [-] Parser::parseExpression3
+  - [X] PrefixOp Expression3
   - [ ] ( Expression | Type ) Expression3
-  - [ ] Primary { Selector } { PostfixOp }
+  - [X] Primary { Selector } { PostfixOp }
 - [ ] Parser::parseElementValue Expression1
 - [ ] Parser::parseElementValue ElementValueArrayInitializer
 - [ ] Parser::parseExpression2 Expression2Rest

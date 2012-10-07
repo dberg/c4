@@ -620,7 +620,12 @@ void Parser::parseExpression3(spExpression3 &expr3) {
       }
     }
 
-    // TODO: { PostfixOp }
+    // { PostfixOp }
+    if (lexer->getCurToken() == TOK_OP_PLUS_PLUS
+      || lexer->getCurToken() == TOK_OP_MINUS_MINUS) {
+      expr3->postfixOp = spPostfixOp(new PostfixOp());
+      parsePostfixOp(expr3->postfixOp);
+    }
   }
 }
 
@@ -937,6 +942,21 @@ spPackageDeclaration Parser::parsePackageDeclaration(
 
   lexer->getNextToken(); // Consume ';'
   return pkgDecl;
+}
+
+/// PostfixOp: ++ | --
+void Parser::parsePostfixOp(spPostfixOp &postfixOp) {
+  if (lexer->getCurToken() == TOK_OP_MINUS_MINUS) {
+    postfixOp->opt = PostfixOp::OPT_MINUS_MINUS;
+    postfixOp->pos = lexer->getCursor() - 1;
+    return;
+  }
+
+  if (lexer->getCurToken() == TOK_OP_PLUS_PLUS) {
+    postfixOp->opt = PostfixOp::OPT_PLUS_PLUS;
+    postfixOp->pos = lexer->getCursor() - 1;
+    return;
+  }
 }
 
 /// ImportDeclarations:
