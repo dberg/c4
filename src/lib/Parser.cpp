@@ -67,6 +67,27 @@ bool isFloatingPointLiteral(int token) {
     || token == TOK_HEXADECIMAL_FLOATING_POINT_LITERAL);
 }
 
+bool isLiteral(int token) {
+  return (isIntegerLiteral(token)
+    || isFloatingPointLiteral(token)
+    || token == TOK_CHARACTER_LITERAL
+    || token == TOK_STRING_LITERAL
+    || token == TOK_BOOLEAN_LITERAL
+    || token == TOK_NULL_LITERAL);
+}
+
+bool isPrimary(int token) {
+  return (token == TOK_OP_LT
+    || token == TOK_LCURLY_BRACKET
+    || token == TOK_KEY_THIS
+    || token == TOK_KEY_SUPER
+    || token == TOK_KEY_NEW
+    || token == TOK_IDENTIFIER
+    || isBasicType(token)
+    || token == TOK_KEY_VOID
+    || isLiteral(token));
+}
+
 /// ClassModifier: one of
 ///   Annotation public protected private
 ///   abstract static final strictfp
@@ -575,6 +596,41 @@ void Parser::parseExpression3(spExpression3 &expr3) {
     return;
   }
 
+  // Primary { Selector } { PostfixOp }
+  // TODO: One problem with isPrimary is the condition token == TOK_IDENTIFIER.
+  // This condition might indicate the 7th Primary production rule:
+  //   Identifier { . Identifier } [IdentifierSuffix]
+  // TOK_IDENTIFIER  migh also indicate the 2nd Expression3 production rule:
+  //   ( Expression | Type ) Expression3.
+  // So, if we have a TOK_IDENTIFIER and Primary returns an error we should
+  // backtrack and try the 2nd production rule of Expression3.
+  if (isPrimary(lexer->getCurToken())) {
+    spPrimary primary = spPrimary(new Primary());
+    parsePrimary(primary);
+    if (primary->isEmpty() == false) {
+      expr3->opt = Expression3::OPT_PRIMARY_SELECTOR_POSTFIXOP;
+      expr3->primary = primary;
+
+      // { Selector }
+      if (lexer->getCurToken() == TOK_PERIOD
+        || lexer->getCurToken() == TOK_LBRACKET) {
+        expr3->selector = spSelector(new Selector());
+        parseSelector(expr3->selector);
+        if (expr3->selector->err) {
+          expr3->addErr(-1);
+          return;
+        }
+      }
+
+      // { PostfixOp }
+      if (lexer->getCurToken() == TOK_OP_PLUS_PLUS
+        || lexer->getCurToken() == TOK_OP_MINUS_MINUS) {
+        expr3->postfixOp = spPostfixOp(new PostfixOp());
+        parsePostfixOp(expr3->postfixOp);
+      }
+    }
+  }
+
   // ( Expression | Type ) Expression3
   /*
   // TODO:
@@ -601,32 +657,6 @@ void Parser::parseExpression3(spExpression3 &expr3) {
     return;
   }
   */
-
-  // Primary { Selector } { PostfixOp }
-  spPrimary primary = spPrimary(new Primary());
-  parsePrimary(primary);
-  if (primary->isEmpty() == false) {
-    expr3->opt = Expression3::OPT_PRIMARY_SELECTOR_POSTFIXOP;
-    expr3->primary = primary;
-
-    // { Selector }
-    if (lexer->getCurToken() == TOK_PERIOD
-      || lexer->getCurToken() == TOK_LBRACKET) {
-      expr3->selector = spSelector(new Selector());
-      parseSelector(expr3->selector);
-      if (expr3->selector->err) {
-        expr3->addErr(-1);
-        return;
-      }
-    }
-
-    // { PostfixOp }
-    if (lexer->getCurToken() == TOK_OP_PLUS_PLUS
-      || lexer->getCurToken() == TOK_OP_MINUS_MINUS) {
-      expr3->postfixOp = spPostfixOp(new PostfixOp());
-      parsePostfixOp(expr3->postfixOp);
-    }
-  }
 }
 
 /// IdentifierSuffix:
