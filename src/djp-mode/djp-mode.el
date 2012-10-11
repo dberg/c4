@@ -12,6 +12,7 @@
 (defvar djp-face-qualified-id 'nil)
 (defvar djp-face-identifier 'font-lock-function-name-face)
 (defvar djp-face-keyword 'font-lock-keyword-face)
+(defvar djp-face-op nil)
 
 (defface djp-error-face
   `((((class color) (background light))
@@ -141,6 +142,9 @@ The output of the compiler is used to build djp-parse-tree."
 (defun djp-normal-class-declaration (&rest ignore) nil)
 (defun djp-member-decl-modifier-member-decl (&rest ignore) nil)
 (defun djp-member-decl-modifier-static-block (&rest ignore) nil)
+
+(defun djp-node-op (ini end)
+  (if djp-face-op (put-text-property ini end 'face djp-face-op)))
 
 (defun djp-node-annotation (pos-tok-at err &optional ignore)
   (if djp-face-annotation-tok-at

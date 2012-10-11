@@ -1916,8 +1916,9 @@ void Parser::parseClassDeclaration(spClassDeclaration &classDecl) {
 ///   class Identifier [TypeParameters] [extends Type] [implements TypeList]
 ///     ClassBody
 void Parser::parseNormalClassDeclaration(spNormalClassDeclaration &nClassDecl) {
-  // TODO: Handle error.
   if (lexer->getCurToken() != TOK_KEY_CLASS) {
+    nClassDecl->addErr(diag->addError(lexer->getCursor() - 1,
+      lexer->getCursor(), ERR_EXP_CLASS));
     return;
   }
 
@@ -1925,9 +1926,10 @@ void Parser::parseNormalClassDeclaration(spNormalClassDeclaration &nClassDecl) {
     - tokenUtil.getTokenLength(TOK_KEY_CLASS), lexer->getCurToken()));
   lexer->getNextToken(); // consume 'class'
 
-  // TODO: handle error
   // Identifier
   if (lexer->getCurToken() != TOK_IDENTIFIER) {
+    nClassDecl->addErr(diag->addError(lexer->getCursor() - 1,
+      lexer->getCursor(), ERR_EXP_IDENTIFIER));
     return;
   }
 
@@ -1939,7 +1941,26 @@ void Parser::parseNormalClassDeclaration(spNormalClassDeclaration &nClassDecl) {
   lexer->getNextToken(); // consume Identifier
 
   // TODO: [TypeParameters]
-  // TODO: [extends Type]
+
+  // [extends Type]
+  if (lexer->getCurToken() == TOK_KEY_EXTENDS) {
+    nClassDecl->extendsTok = spTokenExp(new TokenExp(lexer->getCursor()
+      - tokenUtil.getTokenLength(TOK_KEY_EXTENDS), lexer->getCurToken()));
+    lexer->getNextToken(); // consume 'extends'
+
+    // Type. We can only inherit from a ReferenceType with no array depth.
+    if (lexer->getCurToken() != TOK_IDENTIFIER) {
+      nClassDecl->addErr(diag->addError(lexer->getCursor() - 1,
+        lexer->getCursor(), ERR_EXP_IDENTIFIER));
+      return;
+    }
+
+    nClassDecl->type = spType(new Type());
+    nClassDecl->type->opt = Type::OPT_REFERENCE_TYPE;
+    nClassDecl->type->refType = spReferenceType(new ReferenceType());
+    parseReferenceType(nClassDecl->type->refType);
+  }
+
   // TODO: [implements TypeList]
 
   nClassDecl->classBody = spClassBody(new ClassBody());
@@ -2005,6 +2026,7 @@ void Parser::parseClassBodyDeclaration(spClassBodyDeclaration &decl) {
   if (isModifierToken(lexer->getCurToken())
       || lexer->getCurToken() == TOK_IDENTIFIER) {
     decl->opt = ClassBodyDeclaration::OPT_MODIFIER_MEMBER_DECL;
+    decl->modifier = spModifier(new Modifier());
     parseModifier(decl->modifier);
     decl->memberDecl = spMemberDecl(new MemberDecl());
     parseMemberDecl(decl->memberDecl);

@@ -46,6 +46,15 @@ void Output::setAnnotations(
   }
 }
 
+void Output::setArrayDepth(ArrayDepth &arrayDepth) {
+  for (int i = 0; i < arrayDepth.size(); i++) {
+    unsigned posOpen = arrayDepth[i].first;
+    unsigned posClose = arrayDepth[i].second;
+    setOp(posOpen, 1);
+    setOp(posClose, 1);
+  }
+}
+
 void Output::setBlock(const spBlock &block) {
   // TODO:
 }
@@ -272,7 +281,22 @@ void Output::setNormalClassDeclaration(
     setClassBody(nClassDecl->classBody);
   }
 
+  if (nClassDecl->extendsTok) {
+    setKeyword(nClassDecl->extendsTok);
+    if (nClassDecl->type) {
+      setType(nClassDecl->type);
+    }
+  }
+
+  // TODO: [TypeParameters]
+  // TODO: [implements TypeList]
+
   output += ")";
+}
+
+void Output::setOp(unsigned int ini, int len) {
+  unsigned int end = ini + len + 1;
+  output += "(djp-node-op " + itos(ini) + " " + itos(end) + ")";
 }
 
 void Output::setPackageDeclaration(const spPackageDeclaration &pkgDecl) {
@@ -297,16 +321,55 @@ void Output::setQualifiedId(int ini, int end) {
     + itos(ini) + " " + itos(end) + ")";
 }
 
+void Output::setReferenceType(const spReferenceType &refType) {
+  if (refType->id) { setIdentifier(refType->id); }
+  if (refType->typeArgs) { setTypeArguments(refType->typeArgs); }
+  for (int i = 0; i < refType->refTypes.size(); i++) {
+    setReferenceType(refType->refTypes[i]);
+  }
+}
+
 void Output::setType(const spType &type) {
   if (type->opt == Type::OPT_BASIC_TYPE) {
     if (type->basicType->token) {
       setKeyword(type->basicType->token);
     }
+    setArrayDepth(type->arrayDepth);
     return;
   }
 
-  if (type->opt == Type::OPT_REFERENCE_TYPE) {
-    // TODO:
+  if (type->opt == Type::OPT_REFERENCE_TYPE && type->refType) {
+    setReferenceType(type->refType);
+    setArrayDepth(type->arrayDepth);
+  }
+}
+
+void Output::setTypeArgument(const spTypeArgument &typeArg) {
+  if (typeArg->opt == TypeArgument::OPT_REFERENCE_TYPE) {
+    if (typeArg->refType) { setReferenceType(typeArg->refType); }
+  }
+
+  if (typeArg->opt == TypeArgument::OPT_QUESTION_MARK) {
+    if (!typeArg->opt2) { return; }
+
+    setOp(typeArg->opt2->posQuestionMark, 1);
+
+    if (typeArg->opt2->tokExtendsOrSuper) {
+      setKeyword(typeArg->opt2->tokExtendsOrSuper);
+    }
+
+    if (typeArg->opt2->refType) {
+      setReferenceType(typeArg->opt2->refType);
+    }
+  }
+}
+
+void Output::setTypeArguments(const spTypeArguments &typeArgs) {
+  if (typeArgs->posLt) { setOp(typeArgs->posLt, 1); }
+  if (typeArgs->posGt) { setOp(typeArgs->posGt, 1); }
+  if (typeArgs->typeArg) { setTypeArgument(typeArgs->typeArg); }
+  for (int i = 0; i < typeArgs->typeArgs.size(); i++) {
+    setTypeArgument(typeArgs->typeArgs[i]);
   }
 }
 

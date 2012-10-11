@@ -194,12 +194,12 @@ struct ClassDeclaration {
 /// Detailed reference:
 /// ClassModifiers(opt) class Identifier TypeParameters(opt)
 ///                           Super(opt) Interfaces(opt) ClassBody
-struct NormalClassDeclaration {
+struct NormalClassDeclaration : ASTError {
   spTokenExp classTok;
   spIdentifier identifier;
   //std::vector<spTypeParameters>
-  //spTokenExp extends;
-  //spType
+  spTokenExp extendsTok;
+  spType type;
   //spTokenExp implements
   //spTypeList
   spClassBody classBody;
@@ -382,7 +382,7 @@ struct BasicType {
 struct ReferenceType : ASTError {
   spIdentifier id;
   spTypeArguments typeArgs;
-  std::vector<ReferenceType> refTypes;
+  std::vector<spReferenceType> refTypes;
 };
 
 /// Selector:

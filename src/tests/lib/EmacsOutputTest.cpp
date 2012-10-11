@@ -57,7 +57,7 @@ TEST(EmacsOutput, ImportDeclaration) {
 TEST(EmacsOutput, NormalClassDeclaration) {
   std::string filename = "Test.java";
   std::string buffer =
-    "public class Test {}\n";
+    "public class Test extends Base {}\n";
   spDiagnosis diag = spDiagnosis(new Diagnosis());
   Parser parser(filename, buffer, diag);
   parser.parse();
@@ -68,7 +68,9 @@ TEST(EmacsOutput, NormalClassDeclaration) {
     "(djp-node-keyword 1 7)"
     "(djp-normal-class-declaration "
     "(djp-node-keyword 8 13)"
-    "(djp-node-identifier 14 18))))";
+    "(djp-node-identifier 14 18)"
+    "(djp-node-keyword 19 26)"
+    "(djp-node-identifier 27 31))))";
   ASSERT_EQ(expected, output.output);
 }
 

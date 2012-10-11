@@ -19,6 +19,7 @@ class Output {
   ErrorUtil errUtil;
 
   void setAnnotations(const std::vector<spAnnotation> &annotations);
+  void setArrayDepth(ArrayDepth &arrayDepth);
   void setBlock(const spBlock &block);
   void setClassBody(const spClassBody &classBody);
   void setClassBodyDeclaration(const spClassBodyDeclaration &decl);
@@ -38,9 +39,13 @@ class Output {
   void setMemberDecl(const spMemberDecl &memberDecl);
   void setModifier(const spModifier &modifier);
   void setNormalClassDeclaration(const spNormalClassDeclaration &nClassDecl);
+  void setOp(unsigned int ini, int len);
   void setPackageDeclaration(const spPackageDeclaration &pkgDecl);
   void setQualifiedId(int ini, int end);
+  void setReferenceType(const spReferenceType &refType);
   void setType(const spType &type);
+  void setTypeArgument(const spTypeArgument &typeArg);
+  void setTypeArguments(const spTypeArguments &typeArgs);
   void setTypeDeclarations(const std::vector<spTypeDeclaration> &typeDecls);
   void setVariableDeclaratorId(const spVariableDeclaratorId &varDeclId);
   void setVariableModifier(const spVariableModifier &varModifier);
