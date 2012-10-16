@@ -31,6 +31,7 @@ enum ErrorCode {
   ERR_EXP_RCURLY_BRACKET,
   ERR_EXP_REFTYPE,
   ERR_EXP_RPAREN,
+  ERR_EXP_SEMICOLON,
   ERR_EXP_SUPER,
   ERR_EXP_TYPE,
   ERR_EXP_VOID,
@@ -67,6 +68,7 @@ public:
     msgs[ERR_EXP_RCURLY_BRACKET] = "Expected closing curly brackets";
     msgs[ERR_EXP_REFTYPE] = "Expected reference type";
     msgs[ERR_EXP_RPAREN] = "Expected closing parenthesis";
+    msgs[ERR_EXP_SEMICOLON] = "Expected semi-colon";
     msgs[ERR_EXP_SUPER] = "Expected keyword super";
     msgs[ERR_EXP_TYPE] = "Expected Type";
     msgs[ERR_EXP_VOID] = "Expected keyword void";

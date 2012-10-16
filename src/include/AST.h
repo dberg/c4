@@ -51,6 +51,7 @@ typedef boost::shared_ptr<struct Expression3> spExpression3;
 typedef boost::shared_ptr<struct Expression1Rest> spExpression1Rest;
 typedef boost::shared_ptr<struct Expression2Rest> spExpression2Rest;
 typedef boost::shared_ptr<struct ExpressionInBrackets> spExpressionInBrackets;
+typedef boost::shared_ptr<struct FieldDeclaratorsRest> spFieldDeclaratorsRest;
 typedef boost::shared_ptr<struct FloatingPointLiteral> spFloatingPointLiteral;
 typedef boost::shared_ptr<struct FormalParameters> spFormalParameters;
 typedef boost::shared_ptr<struct FormalParameterDecls> spFormalParameterDecls;
@@ -65,6 +66,8 @@ typedef boost::shared_ptr<struct InterfaceDeclaration> spInterfaceDeclaration;
 typedef boost::shared_ptr<struct InnerCreator> spInnerCreator;
 typedef boost::shared_ptr<struct Literal> spLiteral;
 typedef boost::shared_ptr<struct MemberDecl> spMemberDecl;
+typedef boost::shared_ptr<struct MethodOrFieldDecl> spMethodOrFieldDecl;
+typedef boost::shared_ptr<struct MethodOrFieldRest> spMethodOrFieldRest;
 typedef boost::shared_ptr<struct Modifier> spModifier;
 typedef boost::shared_ptr<struct NormalClassDeclaration>
   spNormalClassDeclaration;
@@ -101,7 +104,10 @@ typedef boost::shared_ptr<struct TypeArgumentsOrDiamond>
   spTypeArgumentsOrDiamond;
 typedef boost::shared_ptr<struct TypeDeclaration> spTypeDeclaration;
 typedef boost::shared_ptr<struct TypeList> spTypeList;
+typedef boost::shared_ptr<struct VariableDeclarator> spVariableDeclarator;
 typedef boost::shared_ptr<struct VariableDeclaratorId> spVariableDeclaratorId;
+typedef boost::shared_ptr<struct VariableDeclaratorRest>
+  spVariableDeclaratorRest;
 typedef boost::shared_ptr<struct VariableInitializer> spVariableInitializer;
 typedef boost::shared_ptr<struct VariableModifier> spVariableModifier;
 
@@ -245,12 +251,12 @@ struct ClassBodyDeclaration {
 };
 
 /// MemberDecl:
-///   MethodOrFieldDecl
-///   void Identifier VoidMethodDeclaratorRest
-///   Identifier ConstructorDeclaratorRest
-///   GenericMethodOrConstructorDecl
-///   ClassDeclaration
-///   InterfaceDeclaration
+///   (1) MethodOrFieldDecl
+///   (2) void Identifier VoidMethodDeclaratorRest
+///   (3) Identifier ConstructorDeclaratorRest
+///   (4) GenericMethodOrConstructorDecl
+///   (5) ClassDeclaration
+///   (6) InterfaceDeclaration
 struct MemberDecl {
   enum MemberDeclOpt {
     OPT_UNDEFINED,
@@ -264,8 +270,8 @@ struct MemberDecl {
 
   MemberDeclOpt opt;
 
-  // TODO:
-  // MethodOrFieldDecl
+  // (1) MethodOrFieldDecl
+  spMethodOrFieldDecl methodOrFieldDecl;
 
   // TODO:
   // void Identifier VoidMethodDeclaratorRest
@@ -287,6 +293,33 @@ struct MemberDecl {
 };
 
 /// MethodOrFieldDecl: Type Identifier MethodOrFieldRest
+struct MethodOrFieldDecl : ASTError {
+  spType type;
+  spIdentifier id;
+  spMethodOrFieldRest methodOrFieldRest;
+};
+
+/// MethodOrFieldRest:
+///   (1) FieldDeclaratorsRest ;
+///   (2) MethodDeclaratorRest
+struct MethodOrFieldRest : ASTError {
+  enum MethodOrFieldRestOpt {
+    OPT_UNDEFINED,
+    OPT_FIELD,
+    OPT_METHOD,
+  };
+
+  MethodOrFieldRestOpt opt;
+
+  // (1) FieldDeclaratorsRest ;
+  spFieldDeclaratorsRest fieldDeclsRest;
+  unsigned int posSemiColon;
+
+  // TODO:
+  // (2) MethodDeclaratorRest
+
+  MethodOrFieldRest() : opt(OPT_UNDEFINED) {}
+};
 
 /// ConstructorDeclaratorRest:
 ///   FormalParameters [throws QualifiedIdentifierList] Block
@@ -331,7 +364,7 @@ struct VariableModifier {
 /// Type:
 ///   BasicType {[]}
 ///   ReferenceType {[]}
-struct Type {
+struct Type : ASTError {
   enum TypeOpt {
     OPT_UNDEFINED,
     OPT_BASIC_TYPE,
@@ -365,10 +398,23 @@ struct FormalParameterDeclsRest {
   FormalParameterDeclsRest() : opt(OPT_UNDEFINED) {}
 };
 
+/// Identifier VariableDeclaratorRest
+struct VariableDeclarator {
+  spIdentifier id;
+  spVariableDeclaratorRest varDeclRest;
+};
+
 /// VariableDeclaratorId: Identifier {[]}
 struct VariableDeclaratorId {
   spIdentifier identifier;
   ArrayDepth arrayDepth;
+};
+
+/// VariableDeclaratorRest: {'[' ']'} [ = VariableInitializer ]
+struct VariableDeclaratorRest : ASTError {
+  ArrayDepth arrayDepth;
+  unsigned int posEquals;
+  spVariableInitializer varInit;
 };
 
 /// BasicType: byte | short | char | int | long | float | double | boolean
@@ -468,7 +514,7 @@ struct TypeArgumentOpt2 : ASTError {
   spReferenceType refType;
 };
 
-/// Block: { BlockStatements }
+/// Block: '{' BlockStatements '}'
 struct Block {
   std::vector<spBlockStatement> blockStmts;
 };
@@ -551,7 +597,7 @@ struct IdentifierSuffix : ASTError {
   ArrayPair arrayPair;
 
   // shared 2,4-8
-  int posComma;
+  int posPeriod;
 
   // shared 2,4
   spTokenExp tokClass;
@@ -583,7 +629,7 @@ struct IdentifierSuffix : ASTError {
   spNonWildcardTypeArguments nonWildcardTypeArguments;
   spInnerCreator innerCreator;
 
-  IdentifierSuffix() : opt(OPT_UNDEFINED), posComma(0) {}
+  IdentifierSuffix() : opt(OPT_UNDEFINED), posPeriod(0) {}
 };
 
 /// QualifiedIdentifier: Identifier { . Identifier }
@@ -1172,6 +1218,12 @@ struct ExpressionInBrackets : ASTError {
   ExpressionInBrackets() : posOpenBracket(0), posCloseBracket(0) {}
 };
 
+/// FieldDeclaratorsRest: VariableDeclaratorRest { , VariableDeclarator }
+struct FieldDeclaratorsRest : ASTError {
+  spVariableDeclaratorRest varDeclRest;
+  std::vector<std::pair<unsigned int, spVariableDeclarator> > pairsCommaVarDecl;
+};
+
 /// ArrayInitializer:
 ///   '{' [ VariableInitializer { , VariableInitializer } [,] ] '}'
 struct ArrayInitializer : ASTError {
@@ -1185,7 +1237,7 @@ struct ArrayInitializer : ASTError {
 /// VariableInitializer:
 ///   ArrayInitializer
 ///   Expression
-struct VariableInitializer {
+struct VariableInitializer :ASTError {
   enum VariableInitializerOpt {
     OPT_UNDEFINED,
     OPT_ARRAY_INITIALIZER,

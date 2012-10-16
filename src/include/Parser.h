@@ -61,6 +61,7 @@ class Parser {
   spImportDeclaration parseImportDeclaration();
   spImportDeclarations parseImportDeclarations();
   void parseInnerCreator(spInnerCreator &innerCreator);
+  void parseFieldDeclaratorsRest(spFieldDeclaratorsRest &fieldDeclsRest);
   void parseFormalParameters(spFormalParameters &formParams);
   void parseFormalParameterDecls(spFormalParameterDecls &formParamDecls);
   void parseFormalParameterDeclsRest(
@@ -70,6 +71,8 @@ class Parser {
   void parseLiteral(spLiteral &literal);
   void parseModifier(spModifier &modifier);
   void parseMemberDecl(spMemberDecl &memberDecl);
+  void parseMethodOrFieldDecl(spMethodOrFieldDecl &methodOrFieldDecl);
+  void parseMethodOrFieldRest(spMethodOrFieldRest &methodOrFieldRest);
   void parseNonWildcardTypeArguments(
     spNonWildcardTypeArguments &nonWildcardTypeArguments);
   void parseNonWildcardTypeArgumentsOrDiamond(
@@ -104,6 +107,7 @@ class Parser {
     std::vector<spAnnotation> &annotations);
   void parseTypeList(spTypeList &typeList);
   void parseVariableDeclaratorId(spVariableDeclaratorId &varDeclId);
+  void parseVariableDeclaratorRest(spVariableDeclaratorRest &varDeclRest);
   void parseVariableInitializer(spVariableInitializer &varInit);
   void parseVariableModifier(spVariableModifier &varModifier);
 

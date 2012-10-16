@@ -659,6 +659,21 @@ void Parser::parseExpression3(spExpression3 &expr3) {
   */
 }
 
+/// FieldDeclaratorsRest: VariableDeclaratorRest { , VariableDeclarator }
+void Parser::parseFieldDeclaratorsRest(spFieldDeclaratorsRest &fieldDeclsRest) {
+  // VariableDeclaratorRest
+  fieldDeclsRest->varDeclRest
+    = spVariableDeclaratorRest(new VariableDeclaratorRest());
+  parseVariableDeclaratorRest(fieldDeclsRest->varDeclRest);
+  if (fieldDeclsRest->varDeclRest->err) {
+    fieldDeclsRest->addErr(-1);
+    return;
+  }
+
+  // TODO:
+  // { , VariableDeclarator }
+}
+
 /// IdentifierSuffix:
 ///   '[' ( {'[' ']'} . class | Expression ) ']'
 ///   Arguments
@@ -700,13 +715,14 @@ void Parser::parseIdentifierSuffix(spIdentifierSuffix &idSuffix) {
   if (lexer->getCurToken() == TOK_LPAREN) {
     idSuffix->opt = IdentifierSuffix::OPT_ARGUMENTS;
     idSuffix->args = spArguments(new Arguments());
+    parseArguments(idSuffix->args);
     if (idSuffix->args->err) { idSuffix->addErr(-1); }
     return;
   }
 
   // opt4-8
-  if (lexer->getCurToken() == TOK_COMMA) {
-    idSuffix->posComma = lexer->getCursor() - 1;
+  if (lexer->getCurToken() == TOK_PERIOD) {
+    idSuffix->posPeriod = lexer->getCursor() - 1;
     lexer->getNextToken(); // consume '.'
 
     // opt4: . class
@@ -808,7 +824,7 @@ void Parser::parseIdentifierSuffixOpt1Helper(spIdentifierSuffix &idSuffix) {
     return;
   }
 
-  idSuffix->posComma = lexer->getCursor() - 1;
+  idSuffix->posPeriod = lexer->getCursor() - 1;
   lexer->getNextToken(); // consume '.'
 
   // Error: 'super' expected
@@ -1339,6 +1355,7 @@ void Parser::parsePrimaryBasicType(spPrimaryBasicType &primaryBasicType) {
 
 /// Primary: Identifier { . Identifier } [IdentifierSuffix]
 void Parser::parsePrimaryIdentifier(spPrimaryIdentifier &primaryId) {
+  State backup;
   while (lexer->getCurToken() == TOK_IDENTIFIER) {
     spIdentifier id = spIdentifier(new Identifier(
       lexer->getCurTokenIni(), lexer->getCurTokenStr()));
@@ -1346,16 +1363,16 @@ void Parser::parsePrimaryIdentifier(spPrimaryIdentifier &primaryId) {
 
     primaryId->ids.push_back(id);
 
-    if (lexer->getCurToken() != TOK_COMMA) {
+    if (lexer->getCurToken() != TOK_PERIOD) {
       break;
     }
 
+    lexer->saveState(backup);
     lexer->getNextToken(); // consume '.'
 
     if (lexer->getCurToken() != TOK_IDENTIFIER) {
-      primaryId->addErr(diag->addError(lexer->getCursor() - 1,
-        lexer->getCursor(), ERR_EXP_IDENTIFIER));
-      return;
+      lexer->restoreState(backup);
+      break;
     }
   }
 
@@ -2058,12 +2075,12 @@ void Parser::parseClassCreatorRest(spClassCreatorRest &classCreatorRest) {
 }
 
 /// MemberDecl:
-///   MethodOrFieldDecl
-///   void Identifier VoidMethodDeclaratorRest
-///   Identifier ConstructorDeclaratorRest
-///   GenericMethodOrConstructorDecl
-///   ClassDeclaration
-///   InterfaceDeclaration
+///   (1) MethodOrFieldDecl
+///   (2) void Identifier VoidMethodDeclaratorRest
+///   (3) Identifier ConstructorDeclaratorRest
+///   (4) GenericMethodOrConstructorDecl
+///   (5) ClassDeclaration
+///   (6) InterfaceDeclaration
 void Parser::parseMemberDecl(spMemberDecl &memberDecl) {
   // We have an Identifier but we have to discern between a TypeParameter and a
   // Constructor Identifier. For example, the identifier we found can represent
@@ -2076,6 +2093,7 @@ void Parser::parseMemberDecl(spMemberDecl &memberDecl) {
   // We consult the symbol to check if the Identifier name is the same as the
   // class name in our current scope.
   if (lexer->getCurToken() == TOK_IDENTIFIER) {
+    // (3) Identifier ConstructorDeclaratorRest
     if (st.isConstructor(lexer->getCurTokenStr())) {
       memberDecl->opt = MemberDecl::OPT_IDENTIFIER_CONSTRUCTOR_DECLARATOR_REST;
 
@@ -2095,17 +2113,84 @@ void Parser::parseMemberDecl(spMemberDecl &memberDecl) {
     }
   }
 
-  // TODO: MethodOrFieldDecl
+  // (1) MethodOrFieldDecl
+  if (lexer->getCurToken() == TOK_IDENTIFIER
+    || isBasicType(lexer->getCurToken())) {
+    memberDecl->opt = MemberDecl::OPT_METHOD_OR_FIELD_DECL;
+    memberDecl->methodOrFieldDecl
+      = spMethodOrFieldDecl(new MethodOrFieldDecl());
+    parseMethodOrFieldDecl(memberDecl->methodOrFieldDecl);
+    return;
+  }
+
   // TODO: void Identifier VoidMethodDeclaratorRest
-
-  // TODO: Identifier ConstructorDeclaratorRest
-
   // TODO: GenericMethodOrConstructorDecl
   // TODO: ClassDeclaration
   // TODO: InterfaceDeclaration
 
   // TODO:
   lexer->getNextToken();
+}
+
+/// MethodOrFieldDecl: Type Identifier MethodOrFieldRest
+void Parser::parseMethodOrFieldDecl(spMethodOrFieldDecl &methodOrFieldDecl) {
+  // Type
+  methodOrFieldDecl->type = spType(new Type());
+  parseType(methodOrFieldDecl->type);
+  if (methodOrFieldDecl->type->err) {
+    methodOrFieldDecl->addErr(-1);
+    return;
+  }
+
+  // Identifier
+  if (lexer->getCurToken() != TOK_IDENTIFIER) {
+    methodOrFieldDecl->addErr(diag->addError(lexer->getCursor() - 1,
+      lexer->getCursor(), ERR_EXP_IDENTIFIER));
+    return;
+  }
+
+  methodOrFieldDecl->id = spIdentifier(new Identifier(
+    lexer->getCurTokenIni(), lexer->getCurTokenStr()));
+  lexer->getNextToken(); // consume identifier
+
+  // MethodOrFieldRest
+  methodOrFieldDecl->methodOrFieldRest
+    = spMethodOrFieldRest(new MethodOrFieldRest());
+  parseMethodOrFieldRest(methodOrFieldDecl->methodOrFieldRest);
+  if (methodOrFieldDecl->methodOrFieldRest->err) {
+    methodOrFieldDecl->addErr(-1);
+  }
+}
+
+/// MethodOrFieldRest:
+///   (1) FieldDeclaratorsRest ;
+///   (2) MethodDeclaratorRest
+void Parser::parseMethodOrFieldRest(spMethodOrFieldRest &methodOrFieldRest) {
+  // (2) MethodDeclaratorRest
+  if (lexer->getCurToken() == TOK_LPAREN) {
+    methodOrFieldRest->opt = MethodOrFieldRest::OPT_METHOD;
+    // TODO:
+    return;
+  }
+
+  // (1) FieldDeclaratorsRest ;
+  methodOrFieldRest->opt = MethodOrFieldRest::OPT_FIELD;
+  methodOrFieldRest->fieldDeclsRest
+    = spFieldDeclaratorsRest(new FieldDeclaratorsRest());
+  parseFieldDeclaratorsRest(methodOrFieldRest->fieldDeclsRest);
+  if (methodOrFieldRest->fieldDeclsRest->err) {
+    methodOrFieldRest->addErr(-1);
+    return;
+  }
+
+  // ';'
+  if (lexer->getCurToken() != TOK_SEMICOLON) {
+    methodOrFieldRest->addErr(diag->addError(lexer->getCursor() - 1,
+      lexer->getCursor(), ERR_EXP_SEMICOLON));
+  }
+
+  methodOrFieldRest->posSemiColon = lexer->getCursor() - 1;
+  lexer->getNextToken(); // consume ';'
 }
 
 /// NonWildcardTypeArguments: < TypeList >
@@ -2407,7 +2492,12 @@ void Parser::parseType(spType &type) {
     return;
   }
 
-  // TODO: ReferenceType
+  // ReferenceType
+  if (lexer->getCurToken() == TOK_IDENTIFIER) {
+    type->opt = Type::OPT_REFERENCE_TYPE;
+    type->refType = spReferenceType(new ReferenceType());
+    parseReferenceType(type->refType);
+  }
 }
 
 /// TypeList: ReferenceType {, ReferenceType }
@@ -2514,11 +2604,41 @@ void Parser::parseVariableDeclaratorId(spVariableDeclaratorId &varDeclId) {
   }
 }
 
+///  VariableDeclaratorRest {'[' ']'} [ = VariableInitializer ]
+void Parser::parseVariableDeclaratorRest(spVariableDeclaratorRest &varDeclRest) {
+  // {'[' ']'}
+  parseArrayDepth(varDeclRest->arrayDepth);
+
+  // [ = VariableInitializer ]
+  if (lexer->getCurToken() == TOK_OP_EQUALS) {
+    varDeclRest->posEquals = lexer->getCursor() - 1;
+    lexer->getNextToken(); // consume '='
+
+    varDeclRest->varInit = spVariableInitializer(new VariableInitializer());
+    parseVariableInitializer(varDeclRest->varInit);
+    if (varDeclRest->varInit->err) {
+      varDeclRest->addErr(-1);
+    }
+  }
+}
+
 /// VariableInitializer:
 ///   ArrayInitializer
 ///   Expression
 void Parser::parseVariableInitializer(spVariableInitializer &varInit) {
-  // TODO:
+  // ArrayInitializer
+  if (lexer->getCurToken() == TOK_LCURLY_BRACKET) {
+    varInit->opt = VariableInitializer::OPT_ARRAY_INITIALIZER;
+    varInit->arrayInit = spArrayInitializer(new ArrayInitializer());
+    parseArrayInitializer(varInit->arrayInit);
+    if (varInit->arrayInit->err) { varInit->addErr(-1); }
+    return;
+  }
+
+  // Expression
+  varInit->opt = VariableInitializer::OPT_EXPRESSION;
+  varInit->expr = spExpression(new Expression());
+  parseExpression(varInit->expr);
 }
 
 void Parser::parse() {
