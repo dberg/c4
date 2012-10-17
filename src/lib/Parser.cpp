@@ -2009,8 +2009,9 @@ void Parser::parsePairExpression(spPairExpression &pairExpr) {
 
 /// ClassBody: '{' { ClassBodyDeclaration } '}'
 void Parser::parseClassBody(spClassBody &classBody) {
-  // TODO: handle error
   if (lexer->getCurToken() != TOK_LCURLY_BRACKET) {
+    classBody->addErr(diag->addError(lexer->getCursor() - 1,
+      lexer->getCursor(), ERR_EXP_LCURLY_BRACKET));
     return;
   }
 
@@ -2030,8 +2031,11 @@ void Parser::parseClassBody(spClassBody &classBody) {
   }
 
   if (lexer->getCurToken() != TOK_RCURLY_BRACKET) {
+    classBody->addErr(diag->addError(lexer->getCursor() - 1,
+      lexer->getCursor(), ERR_EXP_RCURLY_BRACKET));
     return;
   }
+
   lexer->getNextToken(); // consume '}'
 }
 
@@ -2604,7 +2608,7 @@ void Parser::parseVariableDeclaratorId(spVariableDeclaratorId &varDeclId) {
   }
 }
 
-///  VariableDeclaratorRest {'[' ']'} [ = VariableInitializer ]
+///  VariableDeclaratorRest: {'[' ']'} [ = VariableInitializer ]
 void Parser::parseVariableDeclaratorRest(spVariableDeclaratorRest &varDeclRest) {
   // {'[' ']'}
   parseArrayDepth(varDeclRest->arrayDepth);

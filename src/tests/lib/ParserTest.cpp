@@ -439,6 +439,65 @@ TEST(Parser, AnnotationElementValuePairsStringLiteral) {
   ASSERT_EQ("\"Hello, I'm a String!\"", strLiteralPair1->val);
 }
 
+TEST(Parser, MethodOrFieldRest) {
+  std::string filename = "Test.java";
+  std::string buffer =
+    "class A { protected static Logger l = LoggerFactory.getLogger(A.class);";
+  spDiagnosis diag = spDiagnosis(new Diagnosis());
+  Parser parser(filename, buffer, diag);
+  parser.parse();
+
+  spMemberDecl memberDecl = parser.compilationUnit->typeDecls[0]
+    ->decl->classDecl->nClassDecl->classBody->decls[0]->memberDecl;
+  ASSERT_EQ(MemberDecl::OPT_METHOD_OR_FIELD_DECL, memberDecl->opt);
+
+  // Logger l
+  ASSERT_EQ(Type::OPT_REFERENCE_TYPE, memberDecl->methodOrFieldDecl->type->opt);
+  ASSERT_EQ(27, memberDecl->methodOrFieldDecl->type->refType->id->pos);
+  ASSERT_EQ("Logger",
+    memberDecl->methodOrFieldDecl->type->refType->id->value);
+  ASSERT_EQ(34, memberDecl->methodOrFieldDecl->id->pos);
+  ASSERT_EQ("l", memberDecl->methodOrFieldDecl->id->value);
+
+  // = LoggerFactory.getLogger
+  ASSERT_EQ(MethodOrFieldRest::OPT_FIELD,
+    memberDecl->methodOrFieldDecl->methodOrFieldRest->opt);
+  ASSERT_EQ(70, memberDecl->methodOrFieldDecl->methodOrFieldRest->posSemiColon);
+
+  spVariableDeclaratorRest varDeclRest = memberDecl->methodOrFieldDecl
+    ->methodOrFieldRest->fieldDeclsRest->varDeclRest;
+  ASSERT_EQ(0, varDeclRest->arrayDepth.size());
+  ASSERT_EQ(36, varDeclRest->posEquals);
+  ASSERT_EQ(VariableInitializer::OPT_EXPRESSION, varDeclRest->varInit->opt);
+  ASSERT_EQ(Expression3::OPT_PRIMARY_SELECTOR_POSTFIXOP,
+    varDeclRest->varInit->expr->expr1->expr2->expr3->opt);
+  spPrimary primary = varDeclRest->varInit->expr->expr1->expr2->expr3->primary;
+  ASSERT_EQ(Primary::OPT_IDENTIFIER, primary->opt);
+  ASSERT_EQ(2, primary->primaryId->ids.size());
+  ASSERT_EQ(IdentifierSuffix::OPT_ARGUMENTS, primary->primaryId->idSuffix->opt);
+
+  // (A.class)
+  spArguments args = primary->primaryId->idSuffix->args;
+  ASSERT_EQ(61, args->posLParen);
+  ASSERT_EQ(69, args->posRParen);
+  ASSERT_EQ(1, args->exprs.size());
+  ASSERT_EQ(Expression3::OPT_PRIMARY_SELECTOR_POSTFIXOP,
+    args->exprs[0]->expr1->expr2->expr3->opt);
+  ASSERT_EQ(Primary::OPT_IDENTIFIER,
+    args->exprs[0]->expr1->expr2->expr3->primary->opt);
+
+  spPrimaryIdentifier primaryId
+    = args->exprs[0]->expr1->expr2->expr3->primary->primaryId;
+  ASSERT_EQ(1, primaryId->ids.size());
+  ASSERT_EQ(62,primaryId->ids[0]->pos);
+  ASSERT_EQ("A", primaryId->ids[0]->value);
+  ASSERT_EQ(IdentifierSuffix::OPT_PERIOD_CLASS,
+    primaryId->idSuffix->opt);
+  ASSERT_EQ(63, primaryId->idSuffix->posPeriod);
+  ASSERT_EQ(64, primaryId->idSuffix->tokClass->pos);
+  ASSERT_EQ(TOK_KEY_CLASS, primaryId->idSuffix->tokClass->type);
+}
+
 TEST(Parser, PackageDeclaration) {
   std::string filename = "Test.java";
   std::string buffer = "@myinterface\npackage com.test;";

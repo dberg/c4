@@ -212,7 +212,7 @@ struct NormalClassDeclaration : ASTError {
 };
 
 /// ClassBody: '{' {ClassBodyDeclaration} '}'
-struct ClassBody {
+struct ClassBody : ASTError {
   std::vector<spClassBodyDeclaration> decls;
 };
 
