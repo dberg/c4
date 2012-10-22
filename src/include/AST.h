@@ -790,7 +790,7 @@ struct Expression1 {
 
 /// Expression1Rest: ? Expression : Expression1
 struct Expression1Rest {
-
+  // TODO:
 };
 
 /// Expression2: Expression3 [ Expression2Rest ]
@@ -807,7 +807,7 @@ struct Expression2 {
 ///   { InfixOp Expression3 }
 ///   instanceof Type
 struct Expression2Rest {
-
+  // TODO:
 };
 
 /// Arguments: '(' [ Expression { , Expression }] ')'
@@ -820,9 +820,9 @@ struct Arguments : ASTError {
 };
 
 /// Expression3:
-///   PrefixOp Expression3
-///   ( Expression | Type ) Expression3
-///   Primary { Selector } { PostfixOp }
+///   (1) PrefixOp Expression3
+///   (2) ( Expression | Type ) Expression3
+///   (3) Primary { Selector } { PostfixOp }
 struct Expression3 : ASTError {
   enum Expression3Opt {
     OPT_UNDEFINED,
@@ -833,15 +833,15 @@ struct Expression3 : ASTError {
 
   Expression3Opt opt;
 
-  // PrefixOp Expression3
+  // (1) PrefixOp Expression3
   spPrefixOp prefixOp;
   spExpression3 expr3;
 
-  // ( Expression | Type ) Expression3
+  // (2) ( Expression | Type ) Expression3
   spExpression expr;
   spType type;
 
-  // Primary { Selector } { PostfixOp }
+  // (3) Primary { Selector } { PostfixOp }
   spPrimary primary;
   spSelector selector;
   spPostfixOp postfixOp;

@@ -46,8 +46,16 @@ void Output::setAnnotations(
   }
 }
 
+void Output::setArguments(const spArguments &args) {
+  if (args->posLParen) { setOp(args->posLParen); }
+  if (args->posRParen) { setOp(args->posRParen); }
+  for (unsigned int i = 0; i < args->exprs.size(); i++) {
+    setExpression(args->exprs[0]);
+  }
+}
+
 void Output::setArrayDepth(ArrayDepth &arrayDepth) {
-  for (int i = 0; i < arrayDepth.size(); i++) {
+  for (unsigned int i = 0; i < arrayDepth.size(); i++) {
     unsigned posOpen = arrayDepth[i].first;
     unsigned posClose = arrayDepth[i].second;
     setOp(posOpen, 1);
@@ -136,6 +144,92 @@ void Output::setErrors(const std::vector<spError> &errors) {
   }
 }
 
+void Output::setExpression(const spExpression &expr) {
+  if (expr->expr1) {
+    setExpression1(expr->expr1);
+  }
+
+  // TODO:
+}
+
+void Output::setExpression1(const spExpression1 &expr1) {
+  if (expr1->expr2) {
+    setExpression2(expr1->expr2);
+  }
+
+  if (expr1->expr1Rest) {
+    // TODO:
+    //setExpression1Rest(expr1->expr1Rest);
+  }
+}
+
+void Output::setExpression2(const spExpression2 &expr2) {
+  if (expr2->expr3) {
+    setExpression3(expr2->expr3);
+  }
+
+  if (expr2->expr2Rest) {
+    // TODO:
+    //setExpression2Rest(expr2->expr3Rest);
+  }
+}
+
+void Output::setExpression3(const spExpression3 &expr3) {
+  // TODO:
+  /*
+  if (expr3->opt == Expression3::OPT_PREFIXOP_EXPRESSION3) {
+    if (expr3->prefixOp) {
+      setPrefixOp(expr3->prefixOp);
+    }
+
+    if (expr3->expr3) {
+      setExpression3(expr3->expr3);
+    }
+    return;
+  }
+  */
+
+  // TODO:
+  /*
+  if (expr3->opt == Expression3::OPT_EXPRESSION_TYPE_EXPRESSION3) {
+    if (expr3->expr) {
+      setExpression(expr3->expr);
+    }
+
+    if (expr3->type) {
+      setType(expr3->type);
+    }
+    return;
+  }
+  */
+
+  if (expr3->opt == Expression3::OPT_PRIMARY_SELECTOR_POSTFIXOP) {
+    if (expr3->primary) {
+      setPrimary(expr3->primary);
+    }
+
+    // TODO:
+    /*
+    if (expr3->selector) {
+      setSelector(expr3->selector);
+    }
+
+    if (expr3->postfixOp) {
+      setPostfixOp(expr3->postfixOp)
+    }
+    */
+  }
+}
+
+void Output::setFieldDeclsRest(const spFieldDeclaratorsRest &fieldDeclsRest) {
+  if (fieldDeclsRest->varDeclRest) {
+    setVariableDeclaratorRest(fieldDeclsRest->varDeclRest);
+  }
+
+  // TODO:
+  //std::vector<std::pair<unsigned int, spVariableDeclarator> > pairsCommaVarDecl;
+}
+
 void Output::setFormalParameterDecls(
   const spFormalParameterDecls &formParamDecls) {
   if (formParamDecls->varModifier) {
@@ -173,6 +267,51 @@ void Output::setIdentifier(const spIdentifier &identifier) {
   int ini = identifier->pos + 1;
   int end = ini + identifier->value.length();
   output += "(djp-node-identifier " + itos(ini) + " " + itos(end) + ")";
+}
+
+void Output::setIdentifierSuffix(const spIdentifierSuffix &idSuffix) {
+  if (idSuffix->opt == IdentifierSuffix::OPT_ARRAY_ARRAY_DEPTH_CLASS) {
+    // TODO:
+    return;
+  }
+
+  if (idSuffix->opt == IdentifierSuffix::OPT_ARRAY_EXPRESSION) {
+    // TODO:
+    return;
+  }
+
+  if (idSuffix->opt == IdentifierSuffix::OPT_ARGUMENTS) {
+    if (idSuffix->args) {
+      setArguments(idSuffix->args);
+    }
+    return;
+  }
+
+  if (idSuffix->opt == IdentifierSuffix::OPT_PERIOD_CLASS) {
+    if (idSuffix->posPeriod) { setOp(idSuffix->posPeriod); }
+    if (idSuffix->tokClass) { setKeyword(idSuffix->tokClass); }
+    return;
+  }
+
+  if (idSuffix->opt == IdentifierSuffix::OPT_PERIOD_EXPLICIT_GENERIC_INVOCATION) {
+    // TODO:
+    return;
+  }
+
+  if (idSuffix->opt == IdentifierSuffix::OPT_PERIOD_THIS) {
+    // TODO:
+    return;
+  }
+
+  if (idSuffix->opt == IdentifierSuffix::OPT_PERIOD_SUPER_ARGUMENTS) {
+    // TODO:
+    return;
+  }
+
+  if (idSuffix->opt == IdentifierSuffix::OPT_NEW) {
+    // TODO:
+    return;
+  }
 }
 
 void Output::setImportDeclaration(const spImportDeclaration &import) {
@@ -215,8 +354,10 @@ void Output::setKeyword(int ini, int end) {
 }
 
 void Output::setMemberDecl(const spMemberDecl &memberDecl) {
-  // TODO:
   if (memberDecl->opt == MemberDecl::OPT_METHOD_OR_FIELD_DECL) {
+    if (memberDecl->methodOrFieldDecl) {
+      setMethodOrFieldDecl(memberDecl->methodOrFieldDecl);
+    }
     return;
   }
 
@@ -251,6 +392,43 @@ void Output::setMemberDecl(const spMemberDecl &memberDecl) {
   // TODO:
   if (memberDecl->opt == MemberDecl::OPT_INTERFACE_DECLARATION) {
     return;
+  }
+}
+
+void Output::setMethodOrFieldDecl(
+  const spMethodOrFieldDecl &methodOrFieldDecl) {
+
+  if (methodOrFieldDecl->type) {
+    setType(methodOrFieldDecl->type);
+  }
+
+  if (methodOrFieldDecl->id) {
+    setIdentifier(methodOrFieldDecl->id);
+  }
+
+  if (methodOrFieldDecl->methodOrFieldRest) {
+    setMethodOrFieldRest(methodOrFieldDecl->methodOrFieldRest);
+  }
+}
+
+void Output::setMethodOrFieldRest(
+  const spMethodOrFieldRest &methodOrFieldRest) {
+
+  if (methodOrFieldRest->opt == MethodOrFieldRest::OPT_FIELD) {
+    if (methodOrFieldRest->fieldDeclsRest) {
+      setFieldDeclsRest(methodOrFieldRest->fieldDeclsRest);
+    }
+
+    if (methodOrFieldRest->posSemiColon) {
+      setOp(methodOrFieldRest->posSemiColon);
+    }
+
+    return;
+  }
+
+  // TODO:
+  if (methodOrFieldRest->opt == MethodOrFieldRest::OPT_METHOD) {
+
   }
 }
 
@@ -316,6 +494,65 @@ void Output::setPackageDeclaration(const spPackageDeclaration &pkgDecl) {
   output += ")";
 }
 
+void Output::setPrimary(const spPrimary &primary) {
+  if (primary->opt == Primary::OPT_LITERAL) {
+    // TODO:
+    return;
+  }
+
+  if (primary->opt == Primary::OPT_PAR_EXPRESSION) {
+    // TODO:
+    return;
+  }
+
+  if (primary->opt == Primary::OPT_THIS_ARGUMENTS) {
+    // TODO:
+    return;
+  }
+
+  if (primary->opt == Primary::OPT_SUPER_SUPER_SUFFIX) {
+    // TODO:
+    return;
+  }
+
+  if (primary->opt == Primary::OPT_NEW_CREATOR) {
+    // TODO:
+    return;
+  }
+
+  if (primary->opt == Primary::OPT_NON_WILDCARD_TYPE_ARGUMENTS) {
+    // TODO:
+    return;
+  }
+
+  if (primary->opt == Primary::OPT_IDENTIFIER) {
+    if (primary->primaryId) {
+      setPrimaryIdentifier(primary->primaryId);
+    }
+    return;
+  }
+
+  if (primary->opt == Primary::OPT_BASIC_TYPE) {
+    // TODO:
+    return;
+  }
+
+  if (primary->opt == Primary::OPT_VOID_CLASS) {
+    // TODO:
+    return;
+  }
+}
+
+void Output::setPrimaryIdentifier(const spPrimaryIdentifier &primaryId) {
+  for (unsigned int i = 0; i < primaryId->ids.size(); i++) {
+    setIdentifier(primaryId->ids[i]);
+  }
+
+  if (primaryId->idSuffix) {
+    setIdentifierSuffix(primaryId->idSuffix);
+  }
+}
+
 void Output::setQualifiedId(int ini, int end) {
   output += "(djp-node-qualified-id "
     + itos(ini) + " " + itos(end) + ")";
@@ -324,7 +561,7 @@ void Output::setQualifiedId(int ini, int end) {
 void Output::setReferenceType(const spReferenceType &refType) {
   if (refType->id) { setIdentifier(refType->id); }
   if (refType->typeArgs) { setTypeArguments(refType->typeArgs); }
-  for (int i = 0; i < refType->refTypes.size(); i++) {
+  for (unsigned int i = 0; i < refType->refTypes.size(); i++) {
     setReferenceType(refType->refTypes[i]);
   }
 }
@@ -368,7 +605,7 @@ void Output::setTypeArguments(const spTypeArguments &typeArgs) {
   if (typeArgs->posLt) { setOp(typeArgs->posLt, 1); }
   if (typeArgs->posGt) { setOp(typeArgs->posGt, 1); }
   if (typeArgs->typeArg) { setTypeArgument(typeArgs->typeArg); }
-  for (int i = 0; i < typeArgs->typeArgs.size(); i++) {
+  for (unsigned int i = 0; i < typeArgs->typeArgs.size(); i++) {
     setTypeArgument(typeArgs->typeArgs[i]);
   }
 }
@@ -387,6 +624,37 @@ void Output::setVariableDeclaratorId(
   const spVariableDeclaratorId &varDeclId) {
   if (varDeclId->identifier) {
     setIdentifier(varDeclId->identifier);
+  }
+}
+
+void Output::setVariableDeclaratorRest(
+  const spVariableDeclaratorRest &varDeclRest) {
+
+  setArrayDepth(varDeclRest->arrayDepth);
+
+  if (varDeclRest->posEquals) {
+    setOp(varDeclRest->posEquals);
+  }
+
+  if (varDeclRest->varInit) {
+    setVariableInitializer(varDeclRest->varInit);
+  }
+}
+
+void Output::setVariableInitializer(const spVariableInitializer &varInit) {
+  if (varInit->opt == VariableInitializer::OPT_ARRAY_INITIALIZER) {
+    if (varInit->arrayInit) {
+      // TODO:
+      //setArrayInitializer(varInit->arrayInit);
+    }
+    return;
+  }
+
+  if (varInit->opt == VariableInitializer::OPT_EXPRESSION) {
+    if (varInit->expr) {
+      setExpression(varInit->expr);
+    }
+    return;
   }
 }
 
