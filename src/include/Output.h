@@ -13,8 +13,9 @@ namespace djp {
 /// Emacs output for syntax highlighing.
 /// The first position in the buffer is 1.
 class Output {
-  spDiagnosis diag;
   spCompilationUnit compilationUnit;
+  std::vector<spComment> comments;
+  spDiagnosis diag;
   TokenUtil tokenUtil;
   ErrorUtil errUtil;
 
@@ -26,6 +27,7 @@ class Output {
   void setClassBodyDeclaration(const spClassBodyDeclaration &decl);
   void setClassOrInterfaceDeclaration(
     const spClassOrInterfaceDeclaration &decl);
+  void setComments();
   void setConstructorDeclaratorRest(
     const spConstructorDeclaratorRest &constDeclRest);
   void setErrors(const std::vector<spError> &errors);
@@ -69,8 +71,9 @@ class Output {
 public:
   std::string output;
 
-  Output(const spCompilationUnit &_compilationUnit, spDiagnosis &_diag)
-    : diag(_diag), compilationUnit(_compilationUnit) {}
+  Output(const spCompilationUnit &_compilationUnit,
+    std::vector<spComment> &_comments, spDiagnosis &_diag)
+    : compilationUnit(_compilationUnit), comments(_comments), diag(_diag) {}
 
   void build();
 };

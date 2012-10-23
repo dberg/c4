@@ -32,7 +32,7 @@ int main(int argc, const char **argv) {
     return 1;
   }
 
-  Output output(parser.compilationUnit, diag);
+  Output output(parser.compilationUnit, parser.comments, diag);
   output.build();
   std::cout << output.output;
 

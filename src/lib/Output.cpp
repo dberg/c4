@@ -15,6 +15,8 @@ void Output::build() {
     setTypeDeclarations(compilationUnit->typeDecls);
   }
 
+  setComments();
+
   if (diag->errors.size()) {
     setErrors(diag->errors);
   }
@@ -114,6 +116,18 @@ void Output::setClassOrInterfaceDeclaration(
       // TODO:
       //setEnumDeclaration(decl->classDecl->enumDecl);
     }
+  }
+
+  output += ")";
+}
+
+void Output::setComments() {
+  if (comments.size() == 0) { return; }
+
+  output += "(djp-comments ";
+  for (unsigned int i = 0; i < comments.size(); i++) {
+    output += "(djp-comment " + itos(comments[i]->posIni + 1)
+      + " " + itos(comments[i]->posEnd + 2) + ")";
   }
 
   output += ")";

@@ -113,6 +113,7 @@ typedef boost::shared_ptr<struct VariableModifier> spVariableModifier;
 
 typedef std::pair<unsigned int, unsigned int> ArrayPair;
 typedef std::vector<ArrayPair> ArrayDepth;
+typedef boost::shared_ptr<struct Comment> spComment;
 typedef std::pair<unsigned int, unsigned int> Diamond;
 typedef struct TokenExp NullLiteral;
 
@@ -121,6 +122,20 @@ struct ASTError {
   int errIdx;
   ASTError() : err(false), errIdx(0) {}
   void addErr(int _errIdx) { err = true; errIdx = _errIdx; }
+};
+
+struct Comment {
+  enum CommentOpt {
+    OPT_UNDEFINED,
+    OPT_ONE_LINE,
+    OPT_MULTIPLE_LINES,
+  };
+
+  CommentOpt opt;
+  unsigned int posIni;
+  unsigned int posEnd;
+
+  Comment() : opt(OPT_UNDEFINED), posIni(0), posEnd(0) {}
 };
 
 /// CompilationUnit:
@@ -650,7 +665,7 @@ struct QualifiedIdentifier {
     for (int i = 0; i <= last_key ; i++) {
       qualifiedId += identifiers[i]->value;
       if (i != last_key) {
-	qualifiedId += ".";
+        qualifiedId += ".";
       }
     }
 

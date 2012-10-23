@@ -2646,6 +2646,11 @@ void Parser::parseVariableInitializer(spVariableInitializer &varInit) {
 }
 
 void Parser::parse() {
+  buildParseTree();
+  comments = lexer->getComments();
+}
+
+void Parser::buildParseTree() {
   lexer->getNextToken();
   while (true) {
     switch (lexer->getCurToken()) {
@@ -2659,4 +2664,5 @@ void Parser::parse() {
     }
   }
 }
+
 } // namespace

@@ -50,6 +50,7 @@ int Lexer::getToken() {
   if ('+' == c) return getPlusOrPlusPlusToken();
   if ('-' == c) return getMinusOrMinusMinusToken();
   if ('=' == c) return getEqualsOrEqualsEqualsToken();
+  if ('/' == c) return getCommentToken();
   if (',' == c) return TOK_COMMA;
   if (';' == c) return TOK_SEMICOLON;
   if ('*' == c) return TOK_OP_MUL;
@@ -138,6 +139,42 @@ int Lexer::getCharacterLiteral() {
   return TOK_ERROR;
 }
 
+/// Comments are pre-processed but since we do all parsing in one pass we store
+/// the comments data in the lexer and call getToken() again.
+int Lexer::getCommentToken() {
+  // We peek 1 char ahead to confirm it's a comment,
+  // and which type of comment this is.
+  if (src->peekChar() == '/') {
+    spComment comment = spComment(new Comment());
+    comment->opt = Comment::OPT_ONE_LINE;
+    comment->posIni = getCursor() - 1;
+    char c = src->getChar(); // consume 2nd '/'
+    while ((c = src->getChar()) && c != '\n') ;
+    comment->posEnd = getCursor() - 1;
+    comments.push_back(comment);
+    return getToken();
+  }
+
+  if (src->peekChar() == '*') {
+    spComment comment = spComment(new Comment());
+    comment->opt = Comment::OPT_MULTIPLE_LINES;
+    comment->posIni = getCursor() - 1;
+    char c = src->getChar(); // consume '*'
+    while ((c = src->getChar())) {
+      if (c == '*' && src->peekChar() == '/') {
+        src->getChar(); // consume final '/'
+        comment->posEnd = getCursor() - 1;
+        comments.push_back(comment);
+        return getToken();
+      }
+    }
+
+    return TOK_EOF;
+  }
+
+  return 'c';
+}
+
 int Lexer::getEqualsOrEqualsEqualsToken() {
   // We look 1 char ahead to decided if we have '=='.
   if (src->peekChar() == '=') {
@@ -182,12 +219,12 @@ int Lexer::getEscapeSequence(std::stringstream &ss) {
         // at this point the first octal digit must be a number
         // from zero to three
         if (!(c >= '0' && c <= '3')) {
-	  return TOK_ERROR;
+          return TOK_ERROR;
         }
       }
       if (src->peekChar() == '\'') {
-	ss << src->getChar(); // consume closing single quote
-	return TOK_ESCAPE_SEQUENCE;
+        ss << src->getChar(); // consume closing single quote
+        return TOK_ESCAPE_SEQUENCE;
       }
       return TOK_ERROR;
     }
@@ -210,9 +247,9 @@ int Lexer::getEscapeSequence(std::stringstream &ss) {
     // HexDigit{4}
     for (int i = 0; i < 4; i++) {
       if (isHexDigit(src->peekChar())) {
-	ss << src->getChar(); // consume hex digit
+        ss << src->getChar(); // consume hex digit
       } else {
-	return TOK_ERROR;
+        return TOK_ERROR;
       }
     }
 

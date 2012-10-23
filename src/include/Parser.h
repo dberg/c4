@@ -22,6 +22,7 @@ class Parser {
   TokenUtil tokenUtil;
 
   // Parser
+  void buildParseTree();
   spAnnotation parseAnnotation();
   void parseAnnotationElement(spAnnotationElement &elem);
   void parseAnnotations(std::vector<spAnnotation> &annotations);
@@ -121,6 +122,7 @@ public:
       error(0), error_msg("") {}
 
   spCompilationUnit compilationUnit;
+  std::vector<spComment> comments;
   ST st;
   int error;
   std::string error_msg;

@@ -439,6 +439,25 @@ TEST(Parser, AnnotationElementValuePairsStringLiteral) {
   ASSERT_EQ("\"Hello, I'm a String!\"", strLiteralPair1->val);
 }
 
+TEST(Parser, Comments) {
+  std::string filename = "Test.java";
+  std::string buffer =
+    "import org.test; // a single line comment\n"
+    "/** a class comment */\n"
+    "class A {}";
+  spDiagnosis diag = spDiagnosis(new Diagnosis());
+  Parser parser(filename, buffer, diag);
+  parser.parse();
+
+  ASSERT_EQ(2, parser.comments.size());
+  ASSERT_EQ(Comment::OPT_ONE_LINE, parser.comments[0]->opt);
+  ASSERT_EQ(17, parser.comments[0]->posIni);
+  ASSERT_EQ(41, parser.comments[0]->posEnd);
+  ASSERT_EQ(Comment::OPT_MULTIPLE_LINES, parser.comments[1]->opt);
+  ASSERT_EQ(42, parser.comments[1]->posIni);
+  ASSERT_EQ(63, parser.comments[1]->posEnd);
+}
+
 TEST(Parser, MethodOrFieldRest) {
   std::string filename = "Test.java";
   std::string buffer =

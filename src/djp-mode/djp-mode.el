@@ -9,6 +9,7 @@
 
 ;; Font faces
 (defvar djp-face-annotation-tok-at 'nil)
+(defvar djp-face-comment 'font-lock-comment-face)
 (defvar djp-face-qualified-id 'nil)
 (defvar djp-face-identifier 'font-lock-function-name-face)
 (defvar djp-face-keyword 'font-lock-keyword-face)
@@ -138,10 +139,15 @@ The output of the compiler is used to build djp-parse-tree."
 (defun djp-import-declarations (&rest ignore) nil)
 (defun djp-import-declaration (&rest ignore) nil)
 (defun djp-class-or-interface-declaration (&rest ignore) nil)
+(defun djp-comments (&rest ignore) nil)
 (defun djp-constructor-declarator-rest (&rest ignore) nil)
 (defun djp-normal-class-declaration (&rest ignore) nil)
 (defun djp-member-decl-modifier-member-decl (&rest ignore) nil)
 (defun djp-member-decl-modifier-static-block (&rest ignore) nil)
+
+(defun djp-comment (ini end)
+  (if djp-face-comment
+      (put-text-property ini end 'face djp-face-comment)))
 
 (defun djp-node-op (ini end)
   (if djp-face-op (put-text-property ini end 'face djp-face-op)))

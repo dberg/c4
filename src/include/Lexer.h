@@ -5,6 +5,7 @@
 #include <string>
 #include <sstream>
 #include <boost/shared_ptr.hpp>
+#include "AST.h"
 #include "Diagnosis.h"
 #include "LiteralSupport.h"
 #include "SourceCodeStream.h"
@@ -38,10 +39,12 @@ class Lexer {
   spSourceCodeStream src;
   spLiteralSupport litSupport;
   TokenUtil tokenUtil;
+  std::vector<spComment> comments;
 
   int getToken();
   int getAnnotationToken();
   int getCharacterLiteral();
+  int getCommentToken();
   int getEqualsOrEqualsEqualsToken();
   int getEscapeSequence(std::stringstream &ss);
   int getMinusOrMinusMinusToken();
@@ -64,6 +67,8 @@ public:
   unsigned int getCurTokenIni() {
     return src->getCursor() - curTokenStr.length();
   }
+
+  std::vector<spComment>& getComments() { return comments; }
 
   void saveState(State &state);
   void restoreState(State &state);
