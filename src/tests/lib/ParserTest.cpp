@@ -458,7 +458,7 @@ TEST(Parser, Comments) {
   ASSERT_EQ(63, parser.comments[1]->posEnd);
 }
 
-TEST(Parser, MethodOrFieldRest) {
+TEST(Parser, MethodOrFieldRestOptField) {
   std::string filename = "Test.java";
   std::string buffer =
     "class A { protected static Logger l = LoggerFactory.getLogger(A.class);";
@@ -515,6 +515,28 @@ TEST(Parser, MethodOrFieldRest) {
   ASSERT_EQ(63, primaryId->idSuffix->posPeriod);
   ASSERT_EQ(64, primaryId->idSuffix->tokClass->pos);
   ASSERT_EQ(TOK_KEY_CLASS, primaryId->idSuffix->tokClass->type);
+}
+
+TEST(Parser, MethodOrFieldRestOptMethod) {
+  std::string filename = "Test.java";
+  std::string buffer =
+    "abstract class A { "
+    "abstract public String hello("
+    "@A1 Integer year, @A2(\"name\") String name);"
+    "}";
+  spDiagnosis diag = spDiagnosis(new Diagnosis());
+  Parser parser(filename, buffer, diag);
+  parser.parse();
+
+  spMethodOrFieldRest methodOrFieldRest = parser.compilationUnit->typeDecls[0]
+    ->decl->classDecl->nClassDecl->classBody->decls[0]->memberDecl
+    ->methodOrFieldDecl->methodOrFieldRest;
+  ASSERT_EQ(MethodOrFieldRest::OPT_METHOD, methodOrFieldRest->opt);
+  ASSERT_EQ(47, methodOrFieldRest->methodDeclRest->formParams->posLParen);
+  ASSERT_EQ(89, methodOrFieldRest->methodDeclRest->formParams->posRParen);
+  ASSERT_EQ(Type::OPT_REFERENCE_TYPE,
+    methodOrFieldRest->methodDeclRest->formParams->formParamDecls->type->opt);
+  ASSERT_EQ(90, methodOrFieldRest->methodDeclRest->posSemiColon);
 }
 
 TEST(Parser, PackageDeclaration) {

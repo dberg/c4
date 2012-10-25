@@ -439,6 +439,46 @@ void Parser::parseElementValue(spElementValue &value) {
   // TODO: ElementValueArrayInitializer
 }
 
+/// Block: '{' BlockStatements '}'
+void Parser::parseBlock(spBlock &block) {
+  // '{'
+  if (lexer->getCurToken() != TOK_LCURLY_BRACKET) {
+    block->addErr(diag->addError(lexer->getCursor() - 1,
+      lexer->getCursor(), ERR_EXP_LCURLY_BRACKET));
+    return;
+  }
+
+  block->posLCBracket = lexer->getCursor() - 1;
+  lexer->getNextToken(); // consume '{'
+
+  // BlockStatements
+  parseBlockStatements(block->blockStmts);
+
+  // '}'
+  if (lexer->getCurToken() != TOK_RCURLY_BRACKET) {
+    block->addErr(diag->addError(lexer->getCursor() - 1,
+      lexer->getCursor(), ERR_EXP_RCURLY_BRACKET));
+    return;
+  }
+
+  block->posRCBracket = lexer->getCursor() - 1;
+  lexer->getNextToken(); // consume '}'
+
+}
+
+/// BlockStatement:
+///   LocalVariableDeclarationStatement
+///   ClassOrInterfaceDeclaration
+///   [Identifier :] Statement
+void Parser::parseBlockStatement(spBlockStatement &blockStmt) {
+  // TODO:
+}
+
+/// BlockStatements: { BlockStatement }
+void Parser::parseBlockStatements(std::vector<spBlockStatement> &blockStmts) {
+  // TODO:
+}
+
 void Parser::parseBooleanLiteral(spBooleanLiteral &boolLit) {
   boolLit->pos = lexer->getCurTokenIni();
   if (lexer->getCurTokenStr().compare("true") == 0) {
@@ -2136,6 +2176,41 @@ void Parser::parseMemberDecl(spMemberDecl &memberDecl) {
   lexer->getNextToken();
 }
 
+/// MethodDeclaratorRest:
+///  FormalParameters {'[' ']'} [throws QualifiedIdentifierList] (Block | ;)
+void Parser::parseMethodDeclaratorRest(spMethodDeclaratorRest &methodDeclRest) {
+  // FormalParameters
+  methodDeclRest->formParams = spFormalParameters(new FormalParameters);
+  parseFormalParameters(methodDeclRest->formParams);
+  if (methodDeclRest->formParams->err) {
+    methodDeclRest->addErr(-1);
+    return;
+  }
+
+  // {'[' ']'}
+  if (lexer->getCurToken() == TOK_LBRACKET) {
+    parseArrayDepth(methodDeclRest->arrayDepth);
+  }
+
+  // [throws QualifiedIdentifierList]
+  // TODO:
+
+  // (Block | ;)
+  // (1) ';'
+  // This should be an abstract method.
+  if (lexer->getCurToken() == TOK_SEMICOLON) {
+    methodDeclRest->posSemiColon = lexer->getCursor() - 1;
+    return;
+  }
+
+  // (2) Block
+  methodDeclRest->block = spBlock(new Block);
+  parseBlock(methodDeclRest->block);
+  if (methodDeclRest->block->err) {
+    methodDeclRest->addErr(-1);
+  }
+}
+
 /// MethodOrFieldDecl: Type Identifier MethodOrFieldRest
 void Parser::parseMethodOrFieldDecl(spMethodOrFieldDecl &methodOrFieldDecl) {
   // Type
@@ -2173,7 +2248,12 @@ void Parser::parseMethodOrFieldRest(spMethodOrFieldRest &methodOrFieldRest) {
   // (2) MethodDeclaratorRest
   if (lexer->getCurToken() == TOK_LPAREN) {
     methodOrFieldRest->opt = MethodOrFieldRest::OPT_METHOD;
-    // TODO:
+    methodOrFieldRest->methodDeclRest = spMethodDeclaratorRest(
+      new MethodDeclaratorRest);
+    parseMethodDeclaratorRest(methodOrFieldRest->methodDeclRest);
+    if (methodOrFieldRest->methodDeclRest->err) {
+      methodOrFieldRest->addErr(-1);
+    }
     return;
   }
 
@@ -2367,10 +2447,11 @@ void Parser::parseCreatedNameHelper(spCreatedName &createdName) {
 /// FormalParameters: ( [FormalParameterDecls] )
 void Parser::parseFormalParameters(spFormalParameters &formParams) {
   if (lexer->getCurToken() != TOK_LPAREN) {
-    diag->addError(lexer->getCurTokenIni(), lexer->getCursor(), ERR_EXP_LPAREN);
-    formParams->error = 1;
+    formParams->addErr(diag->addError(lexer->getCurTokenIni(),
+      lexer->getCursor(), ERR_EXP_LPAREN));
     return;
   }
+  formParams->posLParen = lexer->getCursor() - 1;
   lexer->getNextToken(); // consume '('
 
   // If our current token is a closing paren we're done and we skip trying
@@ -2385,10 +2466,12 @@ void Parser::parseFormalParameters(spFormalParameters &formParams) {
   parseFormalParameterDecls(formParams->formParamDecls);
 
   if (lexer->getCurToken() != TOK_RPAREN) {
-    diag->addError(lexer->getCurTokenIni(), lexer->getCursor(), ERR_EXP_RPAREN);
-    formParams->error = 1;
+    formParams->addErr(diag->addError(lexer->getCurTokenIni(),
+      lexer->getCursor(), ERR_EXP_RPAREN));
     return;
   }
+
+  formParams->posRParen = lexer->getCursor() - 1;
   lexer->getNextToken(); // consume ')'
 }
 

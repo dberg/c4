@@ -32,6 +32,9 @@ class Parser {
   void parseArrayCreatorRestOpt2(spArrayCreatorRestOpt2 &opt2);
   void parseArrayDepth(ArrayDepth &arrayDepth);
   void parseArrayInitializer(spArrayInitializer &arrayInit);
+  void parseBlock(spBlock &block);
+  void parseBlockStatement(spBlockStatement &blockStmt);
+  void parseBlockStatements(std::vector<spBlockStatement> &blockStmts);
   void parseBooleanLiteral(spBooleanLiteral &boolLit);
   void parseCharacterLiteral(spCharacterLiteral &charLit);
   void parseClassBody(spClassBody &classBody);
@@ -72,6 +75,7 @@ class Parser {
   void parseLiteral(spLiteral &literal);
   void parseModifier(spModifier &modifier);
   void parseMemberDecl(spMemberDecl &memberDecl);
+  void parseMethodDeclaratorRest(spMethodDeclaratorRest &methodDeclRest);
   void parseMethodOrFieldDecl(spMethodOrFieldDecl &methodOrFieldDecl);
   void parseMethodOrFieldRest(spMethodOrFieldRest &methodOrFieldRest);
   void parseNonWildcardTypeArguments(

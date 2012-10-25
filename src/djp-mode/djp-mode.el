@@ -11,7 +11,7 @@
 (defvar djp-face-annotation-tok-at 'nil)
 (defvar djp-face-comment 'font-lock-comment-face)
 (defvar djp-face-qualified-id 'nil)
-(defvar djp-face-identifier 'font-lock-function-name-face)
+(defvar djp-face-identifier 'font-lock-variable-name-face)
 (defvar djp-face-keyword 'font-lock-keyword-face)
 (defvar djp-face-op nil)
 

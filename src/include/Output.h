@@ -36,6 +36,7 @@ class Output {
   void setExpression2(const spExpression2 &expr2);
   void setExpression3(const spExpression3 &expr3);
   void setFieldDeclsRest(const spFieldDeclaratorsRest &fieldDeclsRest);
+  void setFormalParameters(const spFormalParameters &formParams);
   void setFormalParameterDecls(const spFormalParameterDecls &formParamDecls);
   void setFormalParameterDeclsRest(
     const spFormalParameterDeclsRest &formParamDeclsRest);
@@ -46,6 +47,7 @@ class Output {
   void setKeyword(int ini, int end);
   void setKeyword(const spTokenExp &token);
   void setMemberDecl(const spMemberDecl &memberDecl);
+  void setMethodDeclaratorRest(const spMethodDeclaratorRest &methodDeclRest);
   void setMethodOrFieldDecl(const spMethodOrFieldDecl &methodOrFieldDecl);
   void setMethodOrFieldRest(const spMethodOrFieldRest &methodOrFieldRest);
   void setModifier(const spModifier &modifier);

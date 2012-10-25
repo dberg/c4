@@ -244,6 +244,20 @@ void Output::setFieldDeclsRest(const spFieldDeclaratorsRest &fieldDeclsRest) {
   //std::vector<std::pair<unsigned int, spVariableDeclarator> > pairsCommaVarDecl;
 }
 
+void Output::setFormalParameters(const spFormalParameters &formParams) {
+  if (formParams->posLParen) {
+    setOp(formParams->posLParen);
+  }
+
+  if (formParams->posRParen) {
+    setOp(formParams->posRParen);
+  }
+
+  if (formParams->formParamDecls) {
+    setFormalParameterDecls(formParams->formParamDecls);
+  }
+}
+
 void Output::setFormalParameterDecls(
   const spFormalParameterDecls &formParamDecls) {
   if (formParamDecls->varModifier) {
@@ -409,6 +423,31 @@ void Output::setMemberDecl(const spMemberDecl &memberDecl) {
   }
 }
 
+void Output::setMethodDeclaratorRest(
+  const spMethodDeclaratorRest &methodDeclRest) {
+
+  if (methodDeclRest->formParams) {
+    setFormalParameters(methodDeclRest->formParams);
+  }
+
+  setArrayDepth(methodDeclRest->arrayDepth);
+
+  if (methodDeclRest->tokThrows) {
+    setKeyword(methodDeclRest->tokThrows);
+  }
+
+  // TODO:
+  //spQualifiedIdentifierList qualifiedIdList;
+
+  if (methodDeclRest->block) {
+    setBlock(methodDeclRest->block);
+  }
+
+  if (methodDeclRest->posSemiColon) {
+    setOp(methodDeclRest->posSemiColon);
+  }
+}
+
 void Output::setMethodOrFieldDecl(
   const spMethodOrFieldDecl &methodOrFieldDecl) {
 
@@ -440,9 +479,10 @@ void Output::setMethodOrFieldRest(
     return;
   }
 
-  // TODO:
   if (methodOrFieldRest->opt == MethodOrFieldRest::OPT_METHOD) {
-
+    if (methodOrFieldRest->methodDeclRest) {
+      setMethodDeclaratorRest(methodOrFieldRest->methodDeclRest);
+    }
   }
 }
 

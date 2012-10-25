@@ -66,6 +66,7 @@ typedef boost::shared_ptr<struct InterfaceDeclaration> spInterfaceDeclaration;
 typedef boost::shared_ptr<struct InnerCreator> spInnerCreator;
 typedef boost::shared_ptr<struct Literal> spLiteral;
 typedef boost::shared_ptr<struct MemberDecl> spMemberDecl;
+typedef boost::shared_ptr<struct MethodDeclaratorRest> spMethodDeclaratorRest;
 typedef boost::shared_ptr<struct MethodOrFieldDecl> spMethodOrFieldDecl;
 typedef boost::shared_ptr<struct MethodOrFieldRest> spMethodOrFieldRest;
 typedef boost::shared_ptr<struct Modifier> spModifier;
@@ -307,6 +308,22 @@ struct MemberDecl {
   MemberDecl() : opt(OPT_UNDEFINED) {}
 };
 
+/// MethodDeclaratorRest:
+///  FormalParameters {'[' ']'} [throws QualifiedIdentifierList] (Block | ;)
+struct MethodDeclaratorRest : ASTError {
+  spFormalParameters formParams;
+  ArrayDepth arrayDepth;
+
+  spTokenExp tokThrows;
+  // TODO:
+  //spQualifiedIdentifierList qualifiedIdList;
+
+  spBlock block;
+  unsigned int posSemiColon;
+
+  MethodDeclaratorRest() : posSemiColon(0) {}
+};
+
 /// MethodOrFieldDecl: Type Identifier MethodOrFieldRest
 struct MethodOrFieldDecl : ASTError {
   spType type;
@@ -330,8 +347,8 @@ struct MethodOrFieldRest : ASTError {
   spFieldDeclaratorsRest fieldDeclsRest;
   unsigned int posSemiColon;
 
-  // TODO:
   // (2) MethodDeclaratorRest
+  spMethodDeclaratorRest methodDeclRest;
 
   MethodOrFieldRest() : opt(OPT_UNDEFINED) {}
 };
@@ -345,11 +362,12 @@ struct ConstructorDeclaratorRest {
   spBlock block;
 };
 
-/// FormalParameters: ( [FormalParameterDecls] )
-struct FormalParameters {
-  int error;
+/// FormalParameters: '(' [FormalParameterDecls] ')'
+struct FormalParameters : ASTError {
+  unsigned int posLParen;
+  unsigned int posRParen;
   spFormalParameterDecls formParamDecls;
-  FormalParameters() : error(0) {}
+  FormalParameters() : posLParen(0), posRParen(0) {}
 };
 
 /// FormalParameterDecls: {VariableModifier} Type FormalParameterDeclsRest
@@ -530,13 +548,20 @@ struct TypeArgumentOpt2 : ASTError {
 };
 
 /// Block: '{' BlockStatements '}'
-struct Block {
+struct Block : ASTError {
+  unsigned int posLCBracket;
+  unsigned int posRCBracket;
   std::vector<spBlockStatement> blockStmts;
+
+  Block() : posLCBracket(0), posRCBracket(0) {}
 };
 
-/// TODO:
-struct BlockStatement {
-
+/// BlockStatement:
+///   LocalVariableDeclarationStatement
+///   ClassOrInterfaceDeclaration
+///   [Identifier :] Statement
+struct BlockStatement : ASTError {
+  // TODO:
 };
 
 /// TODO:
