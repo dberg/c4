@@ -93,6 +93,8 @@ typedef boost::shared_ptr<struct PrimaryVoidClass> spPrimaryVoidClass;
 typedef boost::shared_ptr<struct QualifiedIdentifier> spQualifiedIdentifier;
 typedef boost::shared_ptr<struct ReferenceType> spReferenceType;
 typedef boost::shared_ptr<struct Selector> spSelector;
+typedef boost::shared_ptr<struct Statement> spStatement;
+typedef boost::shared_ptr<struct StatementExpression> spStatementExpression;
 typedef boost::shared_ptr<struct StringLiteral> spStringLiteral;
 typedef boost::shared_ptr<struct SuperSuffix> spSuperSuffix;
 typedef boost::shared_ptr<struct TokenExp> spTokenExp;
@@ -315,6 +317,7 @@ struct MethodDeclaratorRest : ASTError {
   ArrayDepth arrayDepth;
 
   spTokenExp tokThrows;
+
   // TODO:
   //spQualifiedIdentifierList qualifiedIdList;
 
@@ -513,6 +516,63 @@ struct Selector : ASTError {
   Selector() : opt(OPT_UNDEFINED) {}
 };
 
+/// Statement:
+///   (1) Block
+///   (2) ;
+///   (3) Identifier : Statement
+///   (4) StatementExpression ;
+///   (5) if ParExpression Statement [else Statement]
+///   (6) assert Expression [: Expression] ;
+///   (7) switch ParExpression '{' SwitchBlockStatementGroups '}'
+///   (8) while ParExpression Statement
+///   (9) do Statement while ParExpression ;
+///   (10) for '(' ForControl ')' Statement
+///   (11) break [Identifier] ;
+///   (12) continue [Identifier] ;
+///   (13) return [Expression] ;
+///   (14) throw Expression ;
+///   (15) synchronized ParExpression Block
+///   (16) try Block ( Catches | [Catches] Finally )
+///   (17) try ResourceSpecification Block [Catches] [Finally]
+struct Statement : ASTError {
+  enum StatementOpt {
+    OPT_UNDEFINED,
+    OPT_BLOCK,
+    OPT_SEMI_COLON,
+    OPT_ID_STMT,
+    OPT_STMT_EXPR,
+    OPT_IF,
+    OPT_ASSERT,
+    OPT_SWITCH,
+    OPT_WHILE,
+    OPT_DO,
+    OPT_BREAK,
+    OPT_CONTINUE,
+    OPT_RETURN,
+    OPT_THROW,
+    OPT_SYNC,
+    OPT_TRY_BLOCK,
+    OPT_TRY_RESOURCE,
+  };
+
+  StatementOpt opt;
+
+  spBlock block;
+  unsigned int posSemiColon;
+  spIdentifier id;
+  unsigned int posColon;
+  spStatement stmt;
+  spStatementExpression stmtExpr;
+  // TODO:
+
+  Statement() : opt(OPT_UNDEFINED) {}
+};
+
+/// StatementExpression: Expression
+struct StatementExpression : ASTError {
+  spExpression expr;
+};
+
 /// TypeArguments: < TypeArgument { , TypeArgument } >
 struct TypeArguments : ASTError {
   unsigned int posLt;
@@ -557,11 +617,31 @@ struct Block : ASTError {
 };
 
 /// BlockStatement:
-///   LocalVariableDeclarationStatement
-///   ClassOrInterfaceDeclaration
-///   [Identifier :] Statement
+///   (1) LocalVariableDeclarationStatement
+///   (2) ClassOrInterfaceDeclaration
+///   (3) [Identifier :] Statement
 struct BlockStatement : ASTError {
-  // TODO:
+  enum BlockStatementOpt {
+    OPT_UNDEFINED,
+    OPT_LOCAL_VAR,
+    OPT_CLASS_OR_INTERFACE_DECL,
+    OPT_ID_STMT,
+  };
+
+  BlockStatementOpt opt;
+
+  // (1) LocalVariableDeclarationStatement
+  //spLocalVariableDeclarationStatement localVar;
+
+  // (2) ClassOrInterfaceDeclaration
+  spClassOrInterfaceDeclaration decl;
+
+  // (3) [Identifier :] Statement
+  spIdentifier id;
+  unsigned int posColon;
+  spStatement stmt;
+
+  BlockStatement() : opt(OPT_UNDEFINED) {}
 };
 
 /// TODO:
@@ -854,7 +934,8 @@ struct Expression2Rest {
 struct Arguments : ASTError {
   unsigned int posLParen;
   unsigned int posRParen;
-  std::vector<spExpression> exprs;
+  spExpression expr;
+  std::vector<std::pair<unsigned int, spExpression> > exprs;
 
   Arguments() : posLParen(0), posRParen(0) {}
 };

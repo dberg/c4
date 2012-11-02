@@ -23,6 +23,7 @@ class Output {
   void setArguments(const spArguments &args);
   void setArrayDepth(ArrayDepth &arrayDepth);
   void setBlock(const spBlock &block);
+  void setBlockStatement(const spBlockStatement &blockStmt);
   void setClassBody(const spClassBody &classBody);
   void setClassBodyDeclaration(const spClassBodyDeclaration &decl);
   void setClassOrInterfaceDeclaration(
@@ -58,6 +59,8 @@ class Output {
   void setPrimaryIdentifier(const spPrimaryIdentifier &primaryId);
   void setQualifiedId(int ini, int end);
   void setReferenceType(const spReferenceType &refType);
+  void setStatement(const spStatement &stmt);
+  void setStatementExpression(const spStatementExpression &stmtExpr);
   void setType(const spType &type);
   void setTypeArgument(const spTypeArgument &typeArg);
   void setTypeArguments(const spTypeArguments &typeArgs);

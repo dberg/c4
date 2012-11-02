@@ -245,7 +245,6 @@ void Parser::parseAnnotations(std::vector<spAnnotation> &annotations) {
 
 /// Arguments: '(' [ Expression { , Expression }] ')'
 void Parser::parseArguments(spArguments &args) {
-
   if (lexer->getCurToken() != TOK_LPAREN) {
     args->addErr(diag->addError(
       lexer->getCursor() - 1, lexer->getCursor(), ERR_EXP_ARGUMENTS));
@@ -261,13 +260,28 @@ void Parser::parseArguments(spArguments &args) {
     return;
   }
 
-  while (true) {
+  // Expression
+  args->expr = spExpression(new Expression());
+  parseExpression(args->expr);
+  if (args->expr->isEmpty()) {
+    return;
+  }
+
+  // { , Expression }
+  while (lexer->getCurToken() == TOK_COMMA) {
+    unsigned int posComma = lexer->getCursor() - 1;
+    lexer->getNextToken(); // consume ','
+
     spExpression expr = spExpression(new Expression());
     parseExpression(expr);
     if (expr->isEmpty()) {
       break;
     }
-    args->exprs.push_back(expr);
+
+    std::pair<unsigned int, spExpression> pair;
+    pair.first = posComma;
+    pair.second = expr;
+    args->exprs.push_back(pair);
   }
 
   if (lexer->getCurToken() == TOK_RPAREN) {
@@ -463,7 +477,6 @@ void Parser::parseBlock(spBlock &block) {
 
   block->posRCBracket = lexer->getCursor() - 1;
   lexer->getNextToken(); // consume '}'
-
 }
 
 /// BlockStatement:
@@ -471,12 +484,51 @@ void Parser::parseBlock(spBlock &block) {
 ///   ClassOrInterfaceDeclaration
 ///   [Identifier :] Statement
 void Parser::parseBlockStatement(spBlockStatement &blockStmt) {
-  // TODO:
+  State state;
+
+  // TODO: LocalVariableDeclarationStatement
+  // TODO: ClassOrInterfaceDeclaration
+
+  // [Identifier :] Statement
+  blockStmt->opt = BlockStatement::OPT_ID_STMT;
+  if (lexer->getCurToken() == TOK_IDENTIFIER) {
+    lexer->saveState(state);
+    spIdentifier id = spIdentifier(new Identifier(
+      state.cursor - state.tokenStr.length(), state.tokenStr));
+    lexer->getNextToken(); // consume Identifier
+
+    if (lexer->getCurToken() == TOK_OP_COLON) {
+      blockStmt->id = id;
+      blockStmt->posColon = lexer->getCursor() - 1;
+      lexer->getNextToken(); // consume ':'
+    } else {
+      lexer->restoreState(state);
+    }
+  }
+
+  spStatement stmt = spStatement(new Statement());
+  parseStatement(stmt);
+  if (stmt->err) {
+    blockStmt->addErr(-1);
+    return;
+  }
+
+  // Accept stmt
+  blockStmt->stmt = stmt;
 }
 
 /// BlockStatements: { BlockStatement }
 void Parser::parseBlockStatements(std::vector<spBlockStatement> &blockStmts) {
-  // TODO:
+  // TODO: can we check which tokens are candidates for a block stmt?
+  while (true) {
+    spBlockStatement blockStmt = spBlockStatement(new BlockStatement);
+    parseBlockStatement(blockStmt);
+    if (blockStmt->err) {
+      blockStmt->addErr(-1);
+      return;
+    }
+    blockStmts.push_back(blockStmt);
+  }
 }
 
 void Parser::parseBooleanLiteral(spBooleanLiteral &boolLit) {
@@ -1273,18 +1325,18 @@ void Parser::parseLiteral(spLiteral &literal) {
 }
 
 /// Primary:
-///   Literal
-///   ParExpression
-///   this [Arguments]
-///   super SuperSuffix
-///   new Creator
-///   NonWildcardTypeArguments
+///   (1) Literal
+///   (2) ParExpression
+///   (3) this [Arguments]
+///   (4) super SuperSuffix
+///   (5) new Creator
+///   (6) NonWildcardTypeArguments
 ///     ( ExplicitGenericInvocationSuffix | this Arguments )
-///   Identifier { . Identifier } [IdentifierSuffix]
-///   BasicType {[]} . class
-///   void . class
+///   (7) Identifier { . Identifier } [IdentifierSuffix]
+///   (8) BasicType {[]} . class
+///   (9) void . class
 void Parser::parsePrimary(spPrimary &primary) {
-  // NonWildcardTypeArguments
+  // (6) NonWildcardTypeArguments
   if (lexer->getCurToken() == TOK_OP_LT) {
     primary->opt = Primary::OPT_NON_WILDCARD_TYPE_ARGUMENTS;
     primary->nonWildcardTypeArguments = spPrimaryNonWildcardTypeArguments(
@@ -1293,7 +1345,7 @@ void Parser::parsePrimary(spPrimary &primary) {
     return;
   }
 
-  // ParExpression
+  // (2) ParExpression
   if (lexer->getCurToken() == TOK_LCURLY_BRACKET) {
     primary->opt = Primary::OPT_PAR_EXPRESSION;
     primary->pairExpr = spPairExpression(new PairExpression());
@@ -1301,7 +1353,7 @@ void Parser::parsePrimary(spPrimary &primary) {
     return;
   }
 
-  // this [Arguments]
+  // (3) this [Arguments]
   if (lexer->getCurToken() == TOK_KEY_THIS) {
     primary->opt = Primary::OPT_THIS_ARGUMENTS;
     primary->thisArgs = spPrimaryThisArguments(new PrimaryThisArguments());
@@ -1309,7 +1361,7 @@ void Parser::parsePrimary(spPrimary &primary) {
     return;
   }
 
-  // super SuperSuffix
+  // (4) super SuperSuffix
   if (lexer->getCurToken() == TOK_KEY_SUPER) {
     primary->opt = Primary::OPT_SUPER_SUPER_SUFFIX;
     primary->superSuperSuffix = spPrimarySuperSuperSuffix(
@@ -1318,7 +1370,7 @@ void Parser::parsePrimary(spPrimary &primary) {
     return;
   }
 
-  // new Creator
+  // (5) new Creator
   if (lexer->getCurToken() == TOK_KEY_NEW) {
     primary->opt = Primary::OPT_NEW_CREATOR;
     primary->newCreator = spPrimaryNewCreator(new PrimaryNewCreator());
@@ -1326,7 +1378,7 @@ void Parser::parsePrimary(spPrimary &primary) {
     return;
   }
 
-  // Identifier { . Identifier } [IdentifierSuffix]
+  // (7) Identifier { . Identifier } [IdentifierSuffix]
   if (lexer->getCurToken() == TOK_IDENTIFIER) {
     primary->opt = Primary::OPT_IDENTIFIER;
     primary->primaryId = spPrimaryIdentifier(new PrimaryIdentifier());
@@ -1334,7 +1386,7 @@ void Parser::parsePrimary(spPrimary &primary) {
     return;
   }
 
-  // BasicType {[]} . class
+  // (8) BasicType {[]} . class
   if (isBasicType(lexer->getCurToken())) {
     primary->opt = Primary::OPT_BASIC_TYPE;
     primary->primaryBasicType = spPrimaryBasicType(new PrimaryBasicType());
@@ -1342,7 +1394,7 @@ void Parser::parsePrimary(spPrimary &primary) {
     return;
   }
 
-  // void . class
+  // (9) void . class
   if (lexer->getCurToken() == TOK_KEY_VOID) {
     primary->opt = Primary::OPT_VOID_CLASS;
     primary->primaryVoidClass = spPrimaryVoidClass(new PrimaryVoidClass());
@@ -1350,7 +1402,7 @@ void Parser::parsePrimary(spPrimary &primary) {
     return;
   }
 
-  // Literal
+  // (1) Literal
   spLiteral literal = spLiteral(new Literal());
   parseLiteral(literal);
   if (literal->isEmpty() == false) {
@@ -1732,6 +1784,151 @@ void Parser::parseSelector(spSelector &selector) {
 
   selector->addErr(diag->addError(
     lexer->getCursor() - 1, lexer->getCursor(), ERR_NVAL_SELECTOR));
+}
+
+/// Statement:
+///   (1) Block
+///   (2) ;
+///   (3) Identifier : Statement
+///   (4) StatementExpression ;
+///   (5) if ParExpression Statement [else Statement]
+///   (6) assert Expression [: Expression] ;
+///   (7) switch ParExpression '{' SwitchBlockStatementGroups '}'
+///   (8) while ParExpression Statement
+///   (9) do Statement while ParExpression ;
+///   (10) for '(' ForControl ')' Statement
+///   (11) break [Identifier] ;
+///   (12) continue [Identifier] ;
+///   (13) return [Expression] ;
+///   (14) throw Expression ;
+///   (15) synchronized ParExpression Block
+///   (16) try Block ( Catches | [Catches] Finally )
+///   (17) try ResourceSpecification Block [Catches] [Finally]
+void Parser::parseStatement(spStatement &stmt) {
+  // (1) Block
+  if (lexer->getCurToken() == TOK_LCURLY_BRACKET) {
+    stmt->opt = Statement::OPT_BLOCK;
+    stmt->block = spBlock(new Block());
+    parseBlock(stmt->block);
+    return;
+  }
+
+  // (2) ;
+  if (lexer->getCurToken() == TOK_SEMICOLON) {
+    stmt->opt = Statement::OPT_SEMI_COLON;
+    stmt->posSemiColon = lexer->getCursor() - 1;
+    lexer->getNextToken(); // consume ';'
+    return;
+  }
+
+  // We skip (3) and (4)
+
+  // (5) if ParExpression Statement [else Statement]
+  if (lexer->getCurToken() == TOK_KEY_IF) {
+    // TODO:
+    return;
+  }
+
+  // (6) assert Expression [: Expression] ;
+  if (lexer->getCurToken() == TOK_KEY_ASSERT) {
+    // TODO:
+    return;
+  }
+
+  // (7) switch ParExpression '{' SwitchBlockStatementGroups '}'
+  if (lexer->getCurToken() == TOK_KEY_SWITCH) {
+    // TODO:
+    return;
+  }
+
+  // (8) while ParExpression Statement
+  if (lexer->getCurToken() == TOK_KEY_WHILE) {
+    // TODO:
+    return;
+  }
+
+  // (9) do Statement while ParExpression ;
+  if (lexer->getCurToken() == TOK_KEY_DO) {
+    // TODO:
+    return;
+  }
+
+  // (10) for '(' ForControl ')' Statement
+  if (lexer->getCurToken() == TOK_KEY_FOR) {
+    // TODO:
+    return;
+  }
+
+  // (11) break [Identifier] ;
+  if (lexer->getCurToken() == TOK_KEY_BREAK) {
+    // TODO:
+    return;
+  }
+
+  // (12) continue [Identifier] ;
+  if (lexer->getCurToken() == TOK_KEY_CONTINUE) {
+    // TODO:
+    return;
+  }
+
+  // (13) return [Expression] ;
+  if (lexer->getCurToken() == TOK_KEY_RETURN) {
+    // TODO:
+    return;
+  }
+
+  // (14) throw Expression ;
+  if (lexer->getCurToken() == TOK_KEY_THROW) {
+    // TODO:
+    return;
+  }
+
+  // (15) synchronized ParExpression Block
+  if (lexer->getCurToken() == TOK_KEY_SYNCHRONIZED) {
+    // TODO:
+    return;
+  }
+
+  // TODO:
+  // (16) try Block ( Catches | [Catches] Finally )
+  // (17) try ResourceSpecification Block [Catches] [Finally]
+
+  // (3) Identifier : Statement
+  // (4) StatementExpression ;
+  if (lexer->getCurToken() == TOK_IDENTIFIER) {
+    State state;
+    lexer->saveState(state);
+    spIdentifier id = spIdentifier(new Identifier(
+      lexer->getCurTokenIni(), lexer->getCurTokenStr()));
+    lexer->getNextToken(); // consume Identifier
+
+    // (3)
+    if (lexer->getCurToken() == TOK_OP_COLON) {
+      stmt->opt = Statement::OPT_ID_STMT;
+      stmt->id = id;
+      stmt->posColon = lexer->getCursor() - 1;
+      lexer->getNextToken(); // consume ':'
+      stmt->stmt = spStatement(new Statement);
+      parseStatement(stmt->stmt);
+      if (stmt->stmt->err) { stmt->addErr(-1); }
+      return;
+    }
+
+    lexer->restoreState(state);
+  }
+
+  // (4)
+  stmt->opt = Statement::OPT_STMT_EXPR;
+  stmt->stmtExpr = spStatementExpression(new StatementExpression);
+  parseStatementExpression(stmt->stmtExpr);
+  if (stmt->stmtExpr->err) { stmt->addErr(-1); }
+}
+
+/// StatementExpression: Expression
+void Parser::parseStatementExpression(spStatementExpression &stmtExpr) {
+  stmtExpr->expr = spExpression(new Expression);
+  parseExpression(stmtExpr->expr);
+  if (stmtExpr->expr->isEmpty()) { stmtExpr->addErr(-1); }
 }
 
 /// TypeArgument:

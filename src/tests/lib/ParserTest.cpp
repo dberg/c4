@@ -499,14 +499,13 @@ TEST(Parser, MethodOrFieldRestOptField) {
   spArguments args = primary->primaryId->idSuffix->args;
   ASSERT_EQ(61, args->posLParen);
   ASSERT_EQ(69, args->posRParen);
-  ASSERT_EQ(1, args->exprs.size());
   ASSERT_EQ(Expression3::OPT_PRIMARY_SELECTOR_POSTFIXOP,
-    args->exprs[0]->expr1->expr2->expr3->opt);
+    args->expr->expr1->expr2->expr3->opt);
   ASSERT_EQ(Primary::OPT_IDENTIFIER,
-    args->exprs[0]->expr1->expr2->expr3->primary->opt);
+    args->expr->expr1->expr2->expr3->primary->opt);
 
   spPrimaryIdentifier primaryId
-    = args->exprs[0]->expr1->expr2->expr3->primary->primaryId;
+    = args->expr->expr1->expr2->expr3->primary->primaryId;
   ASSERT_EQ(1, primaryId->ids.size());
   ASSERT_EQ(62,primaryId->ids[0]->pos);
   ASSERT_EQ("A", primaryId->ids[0]->value);
@@ -537,6 +536,36 @@ TEST(Parser, MethodOrFieldRestOptMethod) {
   ASSERT_EQ(Type::OPT_REFERENCE_TYPE,
     methodOrFieldRest->methodDeclRest->formParams->formParamDecls->type->opt);
   ASSERT_EQ(90, methodOrFieldRest->methodDeclRest->posSemiColon);
+}
+
+TEST(Parser, Block) {
+  std::string filename = "Test.java";
+  std::string buffer =
+    "class A { public String hello() {"
+    "logger.debug(\"message\", p1);"
+    "}";
+  spDiagnosis diag = spDiagnosis(new Diagnosis());
+  Parser parser(filename, buffer, diag);
+  parser.parse();
+
+  spBlock block = parser.compilationUnit->typeDecls[0]
+    ->decl->classDecl->nClassDecl->classBody->decls[0]->memberDecl
+    ->methodOrFieldDecl->methodOrFieldRest->methodDeclRest->block;
+  ASSERT_EQ(32, block->posLCBracket);
+  ASSERT_EQ(61, block->posRCBracket);
+  ASSERT_EQ(2, block->blockStmts.size());
+
+  spBlockStatement blockStmt1 = block->blockStmts[0];
+  ASSERT_EQ(BlockStatement::OPT_ID_STMT, blockStmt1->opt);
+  ASSERT_EQ(Statement::OPT_STMT_EXPR, blockStmt1->stmt->opt);
+  ASSERT_EQ(Expression3::OPT_PRIMARY_SELECTOR_POSTFIXOP,
+    blockStmt1->stmt->stmtExpr->expr->expr1->expr2->expr3->opt);
+  ASSERT_EQ(Primary::OPT_IDENTIFIER,
+    blockStmt1->stmt->stmtExpr->expr->expr1->expr2->expr3->primary->opt);
+
+  spBlockStatement blockStmt2 = block->blockStmts[1];
+  ASSERT_EQ(BlockStatement::OPT_ID_STMT, blockStmt2->opt);
+  ASSERT_EQ(Statement::OPT_SEMI_COLON, blockStmt2->stmt->opt);
 }
 
 TEST(Parser, PackageDeclaration) {

@@ -51,8 +51,11 @@ void Output::setAnnotations(
 void Output::setArguments(const spArguments &args) {
   if (args->posLParen) { setOp(args->posLParen); }
   if (args->posRParen) { setOp(args->posRParen); }
+  if (args->expr) { setExpression(args->expr); }
+
   for (unsigned int i = 0; i < args->exprs.size(); i++) {
-    setExpression(args->exprs[0]);
+    setOp(args->exprs[i].first);
+    setExpression(args->exprs[i].second);
   }
 }
 
@@ -66,7 +69,38 @@ void Output::setArrayDepth(ArrayDepth &arrayDepth) {
 }
 
 void Output::setBlock(const spBlock &block) {
-  // TODO:
+  if (block->posLCBracket) { setOp(block->posLCBracket); }
+
+  for (unsigned int i = 0; i < block->blockStmts.size(); i++) {
+    setBlockStatement(block->blockStmts[i]);
+  }
+
+  if (block->posRCBracket) { setOp(block->posRCBracket); }
+}
+
+void Output::setBlockStatement(const spBlockStatement &blockStmt) {
+  if (blockStmt->opt == BlockStatement::OPT_LOCAL_VAR) {
+    // TODO:
+    return;
+  }
+
+  if (blockStmt->opt == BlockStatement::OPT_CLASS_OR_INTERFACE_DECL) {
+    // TODO:
+    return;
+  }
+
+  if (blockStmt->opt == BlockStatement::OPT_ID_STMT) {
+    if (blockStmt->id) {
+      setIdentifier(blockStmt->id);
+      if (blockStmt->posColon) {
+	setOp(blockStmt->posColon);
+      }
+    }
+
+    if (blockStmt->stmt) {
+      setStatement(blockStmt->stmt);
+    }
+  }
 }
 
 void Output::setClassBody(const spClassBody &classBody) {
@@ -617,6 +651,100 @@ void Output::setReferenceType(const spReferenceType &refType) {
   if (refType->typeArgs) { setTypeArguments(refType->typeArgs); }
   for (unsigned int i = 0; i < refType->refTypes.size(); i++) {
     setReferenceType(refType->refTypes[i]);
+  }
+}
+
+void Output::setStatement(const spStatement &stmt) {
+  if (stmt->opt == Statement::OPT_BLOCK) {
+    // TODO:
+    return;
+  }
+
+  if (stmt->opt == Statement::OPT_SEMI_COLON) {
+    // TODO:
+    return;
+  }
+
+  if (stmt->opt == Statement::OPT_ID_STMT) {
+    // TODO:
+    return;
+  }
+
+  if (stmt->opt == Statement::OPT_STMT_EXPR) {
+    if (stmt->stmtExpr) {
+      setStatementExpression(stmt->stmtExpr);
+    }
+
+    if (stmt->posSemiColon) {
+      setOp(stmt->posSemiColon);
+    }
+    return;
+  }
+
+  if (stmt->opt == Statement::OPT_IF) {
+    // TODO:
+    return;
+  }
+
+  if (stmt->opt == Statement::OPT_ASSERT) {
+    // TODO:
+    return;
+  }
+
+  if (stmt->opt == Statement::OPT_SWITCH) {
+    // TODO:
+    return;
+  }
+
+  if (stmt->opt == Statement::OPT_WHILE) {
+    // TODO:
+    return;
+  }
+
+  if (stmt->opt == Statement::OPT_DO) {
+    // TODO:
+    return;
+  }
+
+  if (stmt->opt == Statement::OPT_BREAK) {
+    // TODO:
+    return;
+  }
+
+  if (stmt->opt == Statement::OPT_CONTINUE) {
+    // TODO:
+    return;
+  }
+
+  if (stmt->opt == Statement::OPT_RETURN) {
+    // TODO:
+    return;
+  }
+
+  if (stmt->opt == Statement::OPT_THROW) {
+    // TODO:
+    return;
+  }
+
+  if (stmt->opt == Statement::OPT_SYNC) {
+    // TODO:
+    return;
+  }
+
+  if (stmt->opt == Statement::OPT_TRY_BLOCK) {
+    // TODO:
+    return;
+  }
+
+  if (stmt->opt == Statement::OPT_TRY_RESOURCE) {
+    // TODO:
+    return;
+  }
+}
+
+void Output::setStatementExpression(const spStatementExpression &stmtExpr) {
+  if (stmtExpr->expr) {
+    setExpression(stmtExpr->expr);
   }
 }
 
