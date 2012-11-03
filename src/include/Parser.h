@@ -119,6 +119,10 @@ class Parser {
   void parseVariableInitializer(spVariableInitializer &varInit);
   void parseVariableModifier(spVariableModifier &varModifier);
 
+  // Helper methods
+  void saveState(State &state);
+  void restoreState(State &state);
+
 public:
   Parser(
     const std::string _filename, const std::string &_buffer, spDiagnosis &_diag)

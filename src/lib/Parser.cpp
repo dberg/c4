@@ -174,6 +174,20 @@ bool isValidInitTokenOfTypeDeclaration(int token) {
   return false;
 }
 
+// Helper methods
+void Parser::saveState(State &state) {
+  state.diagErrorsSize = diag->errors.size();
+  lexer->saveState(state);
+}
+
+void Parser::restoreState(State &state) {
+  while (diag->errors.size() > state.diagErrorsSize) {
+    diag->errors.pop_back();
+  }
+
+  lexer->restoreState(state);
+}
+
 /// Annotation: @ QualifiedIdentifier [ ( [AnnotationElement] ) ]
 spAnnotation Parser::parseAnnotation() {
   spAnnotation annotation = spAnnotation(new Annotation());
@@ -303,10 +317,10 @@ void Parser::parseArguments(spArguments &args) {
 void Parser::parseArrayCreatorRest(spArrayCreatorRest &arrayCreatorRest) {
   // We look ahead to decide if we have option 1 or option 2
   State openBracketState;
-  lexer->saveState(openBracketState);
+  saveState(openBracketState);
   lexer->getNextToken(); // consume '['
   int lookahead = lexer->getCurToken();
-  lexer->restoreState(openBracketState);
+  restoreState(openBracketState);
 
   // Option 1
   if (lookahead == TOK_RBRACKET) {
@@ -359,7 +373,7 @@ void Parser::parseArrayCreatorRestOpt2(spArrayCreatorRestOpt2 &opt2) {
   // Expression in brackets
   while (true) {
     if (lexer->getCurToken() != TOK_LBRACKET) { return; }
-    lexer->saveState(openBracketState);
+    saveState(openBracketState);
 
     spExpressionInBrackets exprInBrackets
       = spExpressionInBrackets(new ExpressionInBrackets());
@@ -367,7 +381,7 @@ void Parser::parseArrayCreatorRestOpt2(spArrayCreatorRestOpt2 &opt2) {
     lexer->getNextToken(); // consume '['
     if (lexer->getCurToken() == TOK_RBRACKET) {
       // We have an empty array so we restore the state and break out.
-      lexer->restoreState(openBracketState);
+      restoreState(openBracketState);
       break;
     }
 
@@ -484,7 +498,7 @@ void Parser::parseBlockStatement(spBlockStatement &blockStmt) {
   // [Identifier :] Statement
   blockStmt->opt = BlockStatement::OPT_ID_STMT;
   if (lexer->getCurToken() == TOK_IDENTIFIER) {
-    lexer->saveState(state);
+    saveState(state);
     spIdentifier id = spIdentifier(new Identifier(
       state.cursor - state.tokenStr.length(), state.tokenStr));
     lexer->getNextToken(); // consume Identifier
@@ -494,7 +508,7 @@ void Parser::parseBlockStatement(spBlockStatement &blockStmt) {
       blockStmt->posColon = lexer->getCursor() - 1;
       lexer->getNextToken(); // consume ':'
     } else {
-      lexer->restoreState(state);
+      restoreState(state);
     }
   }
 
@@ -931,10 +945,10 @@ void Parser::parseElementValuePairs(std::vector<spElementValuePair> &pairs) {
 
   // Lookahed for a '='.
   State identifierState;
-  lexer->saveState(identifierState);
+  saveState(identifierState);
   lexer->getNextToken(); // consume Identifier
   if (lexer->getCurToken() != TOK_OP_EQUALS) {
-    lexer->restoreState(identifierState);
+    restoreState(identifierState);
     return;
   }
 
@@ -1445,11 +1459,11 @@ void Parser::parsePrimaryIdentifier(spPrimaryIdentifier &primaryId) {
       break;
     }
 
-    lexer->saveState(backup);
+    saveState(backup);
     lexer->getNextToken(); // consume '.'
 
     if (lexer->getCurToken() != TOK_IDENTIFIER) {
-      lexer->restoreState(backup);
+      restoreState(backup);
       break;
     }
   }
@@ -1627,10 +1641,10 @@ spQualifiedIdentifier Parser::parseQualifiedIdentifier() {
 
     // We have a period, if the next token is not an identifier we restore
     // the period token state and exit the while loop
-    lexer->saveState(backup);
+    saveState(backup);
     lexer->getNextToken();
     if (lexer->getCurToken() != TOK_IDENTIFIER) {
-      lexer->restoreState(backup);
+      restoreState(backup);
       break;
     }
 
@@ -1882,7 +1896,7 @@ void Parser::parseStatement(spStatement &stmt) {
   // (4) StatementExpression ;
   if (lexer->getCurToken() == TOK_IDENTIFIER) {
     State state;
-    lexer->saveState(state);
+    saveState(state);
     spIdentifier id = spIdentifier(new Identifier(
       lexer->getCurTokenIni(), lexer->getCurTokenStr()));
     lexer->getNextToken(); // consume Identifier
@@ -1899,7 +1913,7 @@ void Parser::parseStatement(spStatement &stmt) {
       return;
     }
 
-    lexer->restoreState(state);
+    restoreState(state);
   }
 
   // (4)
@@ -2023,7 +2037,7 @@ void Parser::parseTypeArgumentsOrDiamond(
 
   // We need to look ahead for the next token.
   State ltState;
-  lexer->saveState(ltState);
+  saveState(ltState);
   lexer->getNextToken(); // consume '<'
 
   // Diamond
@@ -2037,7 +2051,7 @@ void Parser::parseTypeArgumentsOrDiamond(
 
   // At this point we know that we don't have a diamond, and we parse
   // TypeArguments.
-  lexer->restoreState(ltState);
+  restoreState(ltState);
   typeArgsOrDiam->opt = TypeArgumentsOrDiamond::OPT_TYPE_ARGUMENTS;
   // GCC(4.6.3). If we don't create typeArgs separately and then assign
   // it to typeArgsOrDiam things get weird with the last 'if' condition.
