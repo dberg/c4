@@ -8,6 +8,7 @@
 #include "Diagnosis.h"
 #include "ErrorCodes.h"
 #include "Lexer.h"
+#include "ParserState.h"
 #include "SourceCodeStream.h"
 #include "SymbolTable.h"
 #include "Token.h"

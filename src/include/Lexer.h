@@ -8,17 +8,11 @@
 #include "AST.h"
 #include "Diagnosis.h"
 #include "LiteralSupport.h"
+#include "ParserState.h"
 #include "SourceCodeStream.h"
 #include "Token.h"
 
 namespace djp {
-
-// Current State of the Lexer. We use this to perform lookaheads and restore
-// or consult the previous state if necessary.
-struct State {
-  int cursor, line, token;
-  std::string tokenStr;
-};
 
 // Helpers
 bool isBinaryDigit(char c);

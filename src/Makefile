@@ -90,6 +90,11 @@ $(obj)/File.o: $(libdir)/File.cpp $(incdir)/File.h
 
 $(obj)/Lexer.o: $(libdir)/Lexer.cpp \
                 $(incdir)/Lexer.h \
+                $(incdir)/AST.h \
+                $(incdir)/Diagnosis.h \
+                $(incdir)/LiteralSupport.h \
+                $(incdir)/ParserState.h \
+                $(incdir)/SourceCodeStream.h \
                 $(incdir)/Token.h
 	$(CXX) $(CFLAGS) $(INC) -c $< -o $@
 
@@ -101,6 +106,7 @@ $(obj)/Parser.o: $(libdir)/Parser.cpp \
                  $(incdir)/Parser.h \
                  $(incdir)/AST.h \
                  $(incdir)/ErrorCodes.h \
+                 $(incdir)/ParserState.h \
                  $(incdir)/Token.h
 	$(CXX) $(CFLAGS) $(INC) -c $< -o $@
 
