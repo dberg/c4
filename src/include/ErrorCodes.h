@@ -7,8 +7,11 @@
 namespace djp {
 
 struct Error {
-  int ini, end, type;
-  Error(int ini, int end, int type) : ini(ini), end(end), type(type) {}
+  int type;
+  unsigned ini;
+  unsigned end;
+  Error(int type, unsigned ini, unsigned end)
+    : type(type), ini(ini), end(end) {}
 };
 
 typedef boost::shared_ptr<struct Error> spError;

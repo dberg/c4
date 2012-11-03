@@ -198,7 +198,7 @@ int LiteralSupport::getHexNumeral(std::stringstream &ss) {
 
   // Lookahead and confirm that we have valid hex digit.
   if (!(isHexDigit(src->peekChar()) || src->peekChar() == '.')) {
-    diag->addError(start, src->getCursor(), ERR_NVAL_HEX);
+    diag->addErr(ERR_NVAL_HEX, start, src->getCursor());
     return TOK_ERROR;
   }
 
@@ -207,7 +207,7 @@ int LiteralSupport::getHexNumeral(std::stringstream &ss) {
   if (src->peekChar() == '.') {
     if (!isHexDigit(src->peekChar(1))) {
       src->ungetChar(2);
-      diag->addError(start, src->getCursor(), ERR_NVAL_HEX);
+      diag->addErr(ERR_NVAL_HEX, start, src->getCursor());
       return TOK_ERROR;
     }
 
@@ -244,7 +244,7 @@ int LiteralSupport::getHexNumeral(std::stringstream &ss) {
   // We have a floating point.
   // The binary exponent indicator is mandatory.
   if (!isBinaryExponentIndicator(src->peekChar())) {
-    diag->addError(start, src->getCursor(), ERR_NVAL_HEX);
+    diag->addErr(ERR_NVAL_HEX, start, src->getCursor());
     return TOK_ERROR;
   }
 
@@ -260,7 +260,7 @@ int LiteralSupport::getHexNumeral(std::stringstream &ss) {
   int digitCount = consumeDigitsPOrUnderscores(ss, isDecimalDigit);
   if (digitCount <= 0) {
     // Invalid or missing Signed integer
-    diag->addError(start, src->getCursor(), ERR_NVAL_HEX);
+    diag->addErr(ERR_NVAL_HEX, start, src->getCursor());
     return TOK_ERROR;
   }
 

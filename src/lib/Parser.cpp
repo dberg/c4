@@ -183,7 +183,7 @@ spAnnotation Parser::parseAnnotation() {
   // QualifiedIdentifier
   if (lexer->getCurToken() != TOK_IDENTIFIER) {
     annotation->err = true;
-    diag->addError(annotation->posTokAt, annotation->posTokAt + 1, ERR_EXP_QID);
+    diag->addErr(ERR_EXP_QID, annotation->posTokAt);
     return annotation;
   }
 
@@ -201,14 +201,14 @@ spAnnotation Parser::parseAnnotation() {
       parseAnnotationElement(annotation->elem);
       if (annotation->elem->err) {
         annotation->err = true;
-        diag->addError(annotation->posTokAt, openParenPos, ERR_NVAL_ANNOT_ELEM);
+        diag->addErr(ERR_NVAL_ANNOT_ELEM, annotation->posTokAt, openParenPos);
         return annotation;
       }
     }
 
     if (lexer->getCurToken() != TOK_RPAREN) {
       annotation->err = true;
-      diag->addError(annotation->posTokAt, openParenPos, ERR_EXP_LPAREN);
+      diag->addErr(ERR_EXP_LPAREN, annotation->posTokAt, openParenPos);
       return annotation;
     }
 
@@ -246,8 +246,7 @@ void Parser::parseAnnotations(std::vector<spAnnotation> &annotations) {
 /// Arguments: '(' [ Expression { , Expression }] ')'
 void Parser::parseArguments(spArguments &args) {
   if (lexer->getCurToken() != TOK_LPAREN) {
-    args->addErr(diag->addError(
-      lexer->getCursor() - 1, lexer->getCursor(), ERR_EXP_ARGUMENTS));
+    args->addErr(diag->addErr(ERR_EXP_ARGUMENTS, lexer->getCursor() - 1));
     return;
   }
 
@@ -291,10 +290,8 @@ void Parser::parseArguments(spArguments &args) {
   }
 
   // Error
-  args->addErr(diag->addError(
-    lexer->getCurTokenIni(),
-    lexer->getCursor(),
-    ERR_EXP_RCURLY_BRACKET));
+  args->addErr(diag->addErr(ERR_EXP_RCURLY_BRACKET,
+    lexer->getCurTokenIni(), lexer->getCursor()));
 }
 
 /// ArrayCreatorRest:
@@ -338,14 +335,12 @@ void Parser::parseArrayCreatorRestOpt1(spArrayCreatorRestOpt1 &opt1) {
   parseArrayDepth(opt1->arrayDepth);
 
   if (opt1->arrayDepth.size() < 1) {
-    opt1->addErr(diag->addError(
-      lexer->getCursor() - 1, lexer->getCursor(), ERR_EXP_ARRAY));
+    opt1->addErr(diag->addErr(ERR_EXP_ARRAY, lexer->getCursor() - 1));
     return;
   }
 
   if (lexer->getCurToken() == TOK_RCURLY_BRACKET) {
-    opt1->addErr(diag->addError(
-      lexer->getCursor() - 1, lexer->getCursor(), ERR_EXP_LCURLY_BRACKET));
+    opt1->addErr(diag->addErr(ERR_EXP_LCURLY_BRACKET, lexer->getCursor() - 1));
     return;
   }
 
@@ -386,8 +381,8 @@ void Parser::parseArrayCreatorRestOpt2(spArrayCreatorRestOpt2 &opt2) {
     // TODO: check for errors in the expression.
 
     if (lexer->getCurToken() != TOK_RBRACKET) {
-      exprInBrackets->addErr(diag->addError(
-        lexer->getCursor() - 1, lexer->getCursor(), ERR_EXP_RBRACKET));
+      exprInBrackets->addErr(diag->addErr(
+        ERR_EXP_RBRACKET, lexer->getCursor() - 1));
       opt2->addErr(-1);
       return;
     }
@@ -395,8 +390,8 @@ void Parser::parseArrayCreatorRestOpt2(spArrayCreatorRestOpt2 &opt2) {
 
   // Check if we have at least one expression in brackets.
   if (opt2->exprInBracketsList.size() == 0) {
-    opt2->addErr(diag->addError(lexer->getCursor() - 1, lexer->getCursor(),
-      ERR_EXP_EXPRESSION_IN_BRACKETS));
+    opt2->addErr(diag->addErr(
+      ERR_EXP_EXPRESSION_IN_BRACKETS, lexer->getCursor() - 1));
     return;
   }
 
@@ -415,8 +410,7 @@ void Parser::parseArrayDepth(ArrayDepth &arrayDepth) {
     lexer->getNextToken(); // consume '['
 
     if (lexer->getCurToken() != TOK_RBRACKET) {
-      diag->addError(
-        lexer->getCurTokenIni(), lexer->getCursor(), ERR_EXP_RBRACKET);
+      diag->addErr(ERR_EXP_RBRACKET, lexer->getCurTokenIni());
       return;
     }
 
@@ -457,8 +451,7 @@ void Parser::parseElementValue(spElementValue &value) {
 void Parser::parseBlock(spBlock &block) {
   // '{'
   if (lexer->getCurToken() != TOK_LCURLY_BRACKET) {
-    block->addErr(diag->addError(lexer->getCursor() - 1,
-      lexer->getCursor(), ERR_EXP_LCURLY_BRACKET));
+    block->addErr(diag->addErr(ERR_EXP_LCURLY_BRACKET, lexer->getCursor() - 1));
     return;
   }
 
@@ -470,8 +463,7 @@ void Parser::parseBlock(spBlock &block) {
 
   // '}'
   if (lexer->getCurToken() != TOK_RCURLY_BRACKET) {
-    block->addErr(diag->addError(lexer->getCursor() - 1,
-      lexer->getCursor(), ERR_EXP_RCURLY_BRACKET));
+    block->addErr(diag->addErr(ERR_EXP_RCURLY_BRACKET, lexer->getCursor() - 1));
     return;
   }
 
@@ -624,8 +616,8 @@ void Parser::parseCreatorOpt2(spCreatorOpt2 &opt2) {
   }
 
   // Error
-  opt2->addErr(diag->addError(lexer->getCursor() - 1, lexer->getCursor(),
-    ERR_EXP_CLASS_OR_ARRAY_CREATOR_REST));
+  opt2->addErr(diag->addErr(
+    ERR_EXP_CLASS_OR_ARRAY_CREATOR_REST, lexer->getCursor() - 1));
 }
 
 /// Expression: Expression1 [ AssignmentOperator Expression1 ]
@@ -793,8 +785,7 @@ void Parser::parseIdentifierSuffix(spIdentifierSuffix &idSuffix) {
 
     // Error: ']' expected
     if (lexer->getCurToken() != TOK_RBRACKET) {
-      idSuffix->addErr(diag->addError(lexer->getCursor() - 1,
-        lexer->getCursor(), ERR_EXP_RBRACKET));
+      idSuffix->addErr(diag->addErr(ERR_EXP_RBRACKET, lexer->getCursor() - 1));
       return;
     }
 
@@ -857,8 +848,7 @@ void Parser::parseIdentifierSuffix(spIdentifierSuffix &idSuffix) {
 
       // Error: expected '('
       if (lexer->getCurToken() != TOK_LPAREN) {
-        idSuffix->addErr(diag->addError(lexer->getCursor() - 1,
-          lexer->getCursor(), ERR_EXP_LPAREN));
+        idSuffix->addErr(diag->addErr(ERR_EXP_LPAREN, lexer->getCursor() - 1));
         return;
       }
 
@@ -902,8 +892,8 @@ void Parser::parseIdentifierSuffix(spIdentifierSuffix &idSuffix) {
   }
 
   // error
-  idSuffix->addErr(diag->addError(lexer->getCursor() - 1, lexer->getCursor(),
-    ERR_NVAL_IDENTIFIER_SUFFIX));
+  idSuffix->addErr(diag->addErr(
+    ERR_NVAL_IDENTIFIER_SUFFIX, lexer->getCursor() - 1));
 }
 
 void Parser::parseIdentifierSuffixOpt1Helper(spIdentifierSuffix &idSuffix) {
@@ -911,8 +901,7 @@ void Parser::parseIdentifierSuffixOpt1Helper(spIdentifierSuffix &idSuffix) {
 
   // Error: '.' expected
   if (lexer->getCurToken() != TOK_COMMA) {
-    idSuffix->addErr(diag->addError(lexer->getCursor() - 1,
-      lexer->getCursor(), ERR_EXP_COMMA));
+    idSuffix->addErr(diag->addErr(ERR_EXP_COMMA, lexer->getCursor() - 1));
     return;
   }
 
@@ -921,8 +910,7 @@ void Parser::parseIdentifierSuffixOpt1Helper(spIdentifierSuffix &idSuffix) {
 
   // Error: 'super' expected
   if (lexer->getCurToken() != TOK_KEY_SUPER) {
-    idSuffix->addErr(diag->addError(lexer->getCursor() - 1,
-      lexer->getCursor(), ERR_EXP_SUPER));
+    idSuffix->addErr(diag->addErr(ERR_EXP_SUPER, lexer->getCursor() - 1));
     return;
   }
 
@@ -960,8 +948,8 @@ void Parser::parseElementValuePairs(std::vector<spElementValuePair> &pairs) {
   pair->value = spElementValue(new ElementValue());
   parseElementValue(pair->value);
   if (pair->value->opt == ElementValue::OPT_UNDEFINED) {
-    diag->addError(
-      lexer->getCurTokenIni(), lexer->getCursor(), ERR_EXP_ELEMENT_VALUE);
+    diag->addErr(ERR_EXP_ELEMENT_VALUE,
+      lexer->getCurTokenIni(), lexer->getCursor());
   }
 
   // Even if we have an error while parsing the element value we add the pair
@@ -1046,10 +1034,8 @@ void Parser::parseExplicitGenericInvocationSuffix(
   }
 
   // Error
-  explGen->addErr(diag->addError(
-        lexer->getCursor() - 1,
-        lexer->getCursor(),
-        ERR_NVAL_EXPLICIT_GENERIC_INVOCATION_SUFFIX));
+  explGen->addErr(diag->addErr(
+    ERR_NVAL_EXPLICIT_GENERIC_INVOCATION_SUFFIX, lexer->getCursor() - 1));
 }
 
 
@@ -1167,8 +1153,8 @@ spImportDeclaration Parser::parseImportDeclaration() {
 void Parser::parseInnerCreator(spInnerCreator &innerCreator) {
   // Error: expected Identifier
   if (lexer->getCurToken() != TOK_IDENTIFIER) {
-    innerCreator->addErr(diag->addError(lexer->getCursor() - 1,
-      lexer->getCursor(), ERR_EXP_IDENTIFIER));
+    innerCreator->addErr(diag->addErr(
+      ERR_EXP_IDENTIFIER, lexer->getCursor() - 1));
     return;
   }
 
@@ -1424,8 +1410,8 @@ void Parser::parsePrimaryBasicType(spPrimaryBasicType &primaryBasicType) {
 
   // '.'
   if (lexer->getCurToken() != TOK_COMMA) {
-    primaryBasicType->addErr(diag->addError(lexer->getCursor() - 1,
-      lexer->getCursor(), ERR_EXP_COMMA));
+    primaryBasicType->addErr(diag->addErr(
+      ERR_EXP_COMMA, lexer->getCursor() - 1));
     return;
   }
 
@@ -1434,8 +1420,8 @@ void Parser::parsePrimaryBasicType(spPrimaryBasicType &primaryBasicType) {
 
   // 'class'
   if (lexer->getCurToken() != TOK_KEY_CLASS) {
-    primaryBasicType->addErr(diag->addError(lexer->getCursor() - 1,
-      lexer->getCursor(), ERR_EXP_CLASS));
+    primaryBasicType->addErr(diag->addErr(
+      ERR_EXP_CLASS, lexer->getCursor() - 1));
     return;
   }
 
@@ -1569,8 +1555,8 @@ void Parser::parsePrimaryNonWildcardTypeArguments(
 
     // Arguments
     if (lexer->getCurToken() == TOK_LPAREN) {
-      primaryNonWildcard->addErr(diag->addError(
-        lexer->getCursor() - 1, lexer->getCursor(), ERR_EXP_ARGUMENTS));
+      primaryNonWildcard->addErr(diag->addErr(
+        ERR_EXP_ARGUMENTS, lexer->getCursor() - 1));
       return;
     }
 
@@ -1590,8 +1576,8 @@ void Parser::parsePrimaryNonWildcardTypeArguments(
 /// Primary: void . class
 void Parser::parsePrimaryVoidClass(spPrimaryVoidClass &primaryVoidClass) {
   if (lexer->getCurToken() != TOK_KEY_VOID) {
-    primaryVoidClass->addErr(diag->addError(lexer->getCursor() - 1,
-      lexer->getCursor(), ERR_EXP_VOID));
+    primaryVoidClass->addErr(diag->addErr(
+      ERR_EXP_VOID, lexer->getCursor() - 1));
     return;
   }
 
@@ -1603,8 +1589,8 @@ void Parser::parsePrimaryVoidClass(spPrimaryVoidClass &primaryVoidClass) {
 
   // '.'
   if (lexer->getCurToken() != TOK_COMMA) {
-    primaryVoidClass->addErr(diag->addError(lexer->getCursor() - 1,
-      lexer->getCursor(), ERR_EXP_COMMA));
+    primaryVoidClass->addErr(diag->addErr(
+      ERR_EXP_COMMA, lexer->getCursor() - 1));
     return;
   }
 
@@ -1613,8 +1599,8 @@ void Parser::parsePrimaryVoidClass(spPrimaryVoidClass &primaryVoidClass) {
 
   // 'class'
   if (lexer->getCurToken() != TOK_KEY_CLASS) {
-    primaryVoidClass->addErr(diag->addError(lexer->getCursor() - 1,
-      lexer->getCursor(), ERR_EXP_CLASS));
+    primaryVoidClass->addErr(diag->addErr(
+      ERR_EXP_CLASS, lexer->getCursor() - 1));
     return;
   }
 
@@ -1782,8 +1768,7 @@ void Parser::parseSelector(spSelector &selector) {
     return;
   }
 
-  selector->addErr(diag->addError(
-    lexer->getCursor() - 1, lexer->getCursor(), ERR_NVAL_SELECTOR));
+  selector->addErr(diag->addErr(ERR_NVAL_SELECTOR, lexer->getCursor() - 1));
 }
 
 /// Statement:
@@ -1952,8 +1937,7 @@ void Parser::parseTypeArgument(spTypeArgument &typeArg) {
   }
 
   // error
-  typeArg->addErr(diag->addError(
-    lexer->getCursor() - 1, lexer->getCursor(), ERR_NVAL_TYPE_ARGUMENT));
+  typeArg->addErr(diag->addErr(ERR_NVAL_TYPE_ARGUMENT, lexer->getCursor() - 1));
 }
 
 /// TypeArgument: ? [(extends|super) ReferenceType]
@@ -1974,8 +1958,7 @@ void Parser::parseTypeArgumentOpt2(spTypeArgumentOpt2 &opt2) {
   lexer->getNextToken(); // consume token
 
   if (lexer->getCurToken() != TOK_IDENTIFIER) {
-    opt2->addErr(diag->addError(
-      lexer->getCursor() - 1, lexer->getCursor(), ERR_EXP_REFTYPE));
+    opt2->addErr(diag->addErr(ERR_EXP_REFTYPE, lexer->getCursor() - 1));
     return;
   }
 
@@ -2022,8 +2005,7 @@ void Parser::parseTypeArguments(spTypeArguments &typeArgs) {
   }
 
   // error
-  typeArgs->addErr(diag->addError(
-    lexer->getCursor() - 1, lexer->getCursor(), ERR_EXP_OP_GT));
+  typeArgs->addErr(diag->addErr(ERR_EXP_OP_GT, lexer->getCursor() - 1));
 }
 
 /// TypeArgumentsOrDiamond:
@@ -2034,8 +2016,8 @@ void Parser::parseTypeArgumentsOrDiamond(
 
   int posLt = lexer->getCursor() - 1;
   if (lexer->getCurToken() != TOK_OP_LT) {
-    typeArgsOrDiam->addErr(diag->addError(posLt,
-      lexer->getCursor(), ERR_EXP_OP_LT));
+    typeArgsOrDiam->addErr(diag->addErr(
+      ERR_EXP_OP_LT, posLt, lexer->getCursor()));
     return;
   }
 
@@ -2171,8 +2153,7 @@ void Parser::parseClassDeclaration(spClassDeclaration &classDecl) {
 ///     ClassBody
 void Parser::parseNormalClassDeclaration(spNormalClassDeclaration &nClassDecl) {
   if (lexer->getCurToken() != TOK_KEY_CLASS) {
-    nClassDecl->addErr(diag->addError(lexer->getCursor() - 1,
-      lexer->getCursor(), ERR_EXP_CLASS));
+    nClassDecl->addErr(diag->addErr(ERR_EXP_CLASS, lexer->getCursor() - 1));
     return;
   }
 
@@ -2182,8 +2163,8 @@ void Parser::parseNormalClassDeclaration(spNormalClassDeclaration &nClassDecl) {
 
   // Identifier
   if (lexer->getCurToken() != TOK_IDENTIFIER) {
-    nClassDecl->addErr(diag->addError(lexer->getCursor() - 1,
-      lexer->getCursor(), ERR_EXP_IDENTIFIER));
+    nClassDecl->addErr(diag->addErr(
+      ERR_EXP_IDENTIFIER, lexer->getCursor() - 1));
     return;
   }
 
@@ -2204,8 +2185,8 @@ void Parser::parseNormalClassDeclaration(spNormalClassDeclaration &nClassDecl) {
 
     // Type. We can only inherit from a ReferenceType with no array depth.
     if (lexer->getCurToken() != TOK_IDENTIFIER) {
-      nClassDecl->addErr(diag->addError(lexer->getCursor() - 1,
-        lexer->getCursor(), ERR_EXP_IDENTIFIER));
+      nClassDecl->addErr(diag->addErr(
+        ERR_EXP_IDENTIFIER, lexer->getCursor() - 1));
       return;
     }
 
@@ -2241,14 +2222,14 @@ void Parser::parsePairExpression(spPairExpression &pairExpr) {
   }
 
   // Error
-  diag->addError(pos, lexer->getCursor(), ERR_EXP_LPAREN);
+  diag->addErr(ERR_EXP_LPAREN, pos, lexer->getCursor());
 }
 
 /// ClassBody: '{' { ClassBodyDeclaration } '}'
 void Parser::parseClassBody(spClassBody &classBody) {
   if (lexer->getCurToken() != TOK_LCURLY_BRACKET) {
-    classBody->addErr(diag->addError(lexer->getCursor() - 1,
-      lexer->getCursor(), ERR_EXP_LCURLY_BRACKET));
+    classBody->addErr(diag->addErr(
+      ERR_EXP_LCURLY_BRACKET, lexer->getCursor() - 1));
     return;
   }
 
@@ -2268,8 +2249,8 @@ void Parser::parseClassBody(spClassBody &classBody) {
   }
 
   if (lexer->getCurToken() != TOK_RCURLY_BRACKET) {
-    classBody->addErr(diag->addError(lexer->getCursor() - 1,
-      lexer->getCursor(), ERR_EXP_RCURLY_BRACKET));
+    classBody->addErr(diag->addErr(
+      ERR_EXP_RCURLY_BRACKET, lexer->getCursor() - 1));
     return;
   }
 
@@ -2420,8 +2401,8 @@ void Parser::parseMethodOrFieldDecl(spMethodOrFieldDecl &methodOrFieldDecl) {
 
   // Identifier
   if (lexer->getCurToken() != TOK_IDENTIFIER) {
-    methodOrFieldDecl->addErr(diag->addError(lexer->getCursor() - 1,
-      lexer->getCursor(), ERR_EXP_IDENTIFIER));
+    methodOrFieldDecl->addErr(diag->addErr(
+      ERR_EXP_IDENTIFIER, lexer->getCursor() - 1));
     return;
   }
 
@@ -2466,8 +2447,8 @@ void Parser::parseMethodOrFieldRest(spMethodOrFieldRest &methodOrFieldRest) {
 
   // ';'
   if (lexer->getCurToken() != TOK_SEMICOLON) {
-    methodOrFieldRest->addErr(diag->addError(lexer->getCursor() - 1,
-      lexer->getCursor(), ERR_EXP_SEMICOLON));
+    methodOrFieldRest->addErr(diag->addErr(
+      ERR_EXP_SEMICOLON, lexer->getCursor() - 1));
   }
 
   methodOrFieldRest->posSemiColon = lexer->getCursor() - 1;
@@ -2480,8 +2461,8 @@ void Parser::parseNonWildcardTypeArguments(
 
   // TOK_OP_LT
   if (lexer->getCurToken() != TOK_OP_LT) {
-    nonWildcardTypeArguments->addErr(diag->addError(
-      lexer->getCursor() - 1, lexer->getCursor(), ERR_EXP_OP_LT));
+    nonWildcardTypeArguments->addErr(diag->addErr(
+      ERR_EXP_OP_LT, lexer->getCursor() - 1));
     return;
   }
 
@@ -2497,8 +2478,8 @@ void Parser::parseNonWildcardTypeArguments(
 
   // TOK_OP_GT
   if (lexer->getCurToken() != TOK_OP_GT) {
-    nonWildcardTypeArguments->addErr(diag->addError(
-      lexer->getCursor() - 1, lexer->getCursor(), ERR_EXP_OP_GT));
+    nonWildcardTypeArguments->addErr(diag->addErr(
+      ERR_EXP_OP_GT, lexer->getCursor() - 1));
     return;
   }
 
@@ -2512,8 +2493,8 @@ void Parser::parseNonWildcardTypeArguments(
 void Parser::parseNonWildcardTypeArgumentsOrDiamond(
   spNonWildcardTypeArgumentsOrDiamond &nonWildcardOrDiam) {
   if (lexer->getCurToken() != TOK_OP_LT) {
-    nonWildcardOrDiam->addErr(diag->addError(lexer->getCursor() - 1,
-      lexer->getCursor(), ERR_EXP_OP_LT));
+    nonWildcardOrDiam->addErr(diag->addErr(
+      ERR_EXP_OP_LT, lexer->getCursor() - 1));
     return;
   }
 
@@ -2611,8 +2592,8 @@ void Parser::parseCreatedName(spCreatedName &createdName) {
 void Parser::parseCreatedNameHelper(spCreatedName &createdName) {
   // Identifier
   if (lexer->getCurToken() != TOK_IDENTIFIER) {
-    createdName->addErr(diag->addError(lexer->getCursor() - 1,
-      lexer->getCursor(), ERR_EXP_IDENTIFIER));
+    createdName->addErr(diag->addErr(
+      ERR_EXP_IDENTIFIER, lexer->getCursor() - 1));
     return;
   }
 
@@ -2644,8 +2625,8 @@ void Parser::parseCreatedNameHelper(spCreatedName &createdName) {
 /// FormalParameters: ( [FormalParameterDecls] )
 void Parser::parseFormalParameters(spFormalParameters &formParams) {
   if (lexer->getCurToken() != TOK_LPAREN) {
-    formParams->addErr(diag->addError(lexer->getCurTokenIni(),
-      lexer->getCursor(), ERR_EXP_LPAREN));
+    formParams->addErr(diag->addErr(
+      ERR_EXP_LPAREN, lexer->getCurTokenIni(), lexer->getCursor()));
     return;
   }
   formParams->posLParen = lexer->getCursor() - 1;
@@ -2663,8 +2644,8 @@ void Parser::parseFormalParameters(spFormalParameters &formParams) {
   parseFormalParameterDecls(formParams->formParamDecls);
 
   if (lexer->getCurToken() != TOK_RPAREN) {
-    formParams->addErr(diag->addError(lexer->getCurTokenIni(),
-      lexer->getCursor(), ERR_EXP_RPAREN));
+    formParams->addErr(diag->addErr(
+      ERR_EXP_RPAREN, lexer->getCurTokenIni(), lexer->getCursor()));
     return;
   }
 
@@ -2687,7 +2668,7 @@ void Parser::parseFormalParameterDecls(spFormalParameterDecls &formParamDecls) {
   // Constructor(final var) or Constructor(@Annot var).
   if (formParamDecls->varModifier->isEmpty() == false
     && formParamDecls->type->isEmpty()) {
-    diag->addError(lexer->getCurTokenIni(), lexer->getCursor(), ERR_EXP_TYPE);
+    diag->addErr(ERR_EXP_TYPE, lexer->getCurTokenIni(), lexer->getCursor());
   }
 
   // If we have a Type we expect a FormalParameterDeclRest
@@ -2745,8 +2726,8 @@ void Parser::parseSuperSuffix(spSuperSuffix &superSuffix) {
 
     // Error
     if (lexer->getCurToken() != TOK_IDENTIFIER) {
-      superSuffix->err = diag->addError(lexer->getCurTokenIni(),
-        lexer->getCursor(), ERR_EXP_IDENTIFIER);
+      superSuffix->err = diag->addErr(
+        ERR_EXP_IDENTIFIER, lexer->getCurTokenIni(), lexer->getCursor());
       return;
     }
 
@@ -2788,7 +2769,7 @@ void Parser::parseType(spType &type) {
 void Parser::parseTypeList(spTypeList &typeList) {
   if (lexer->getCurToken() != TOK_IDENTIFIER) {
     unsigned int cursor = lexer->getCursor();
-    typeList->addErr(diag->addError(cursor - 1, cursor, ERR_EXP_IDENTIFIER));
+    typeList->addErr(diag->addErr(ERR_EXP_IDENTIFIER, cursor - 1));
     return;
   }
 
@@ -2804,7 +2785,7 @@ void Parser::parseTypeList(spTypeList &typeList) {
 
     if (lexer->getCurToken() != TOK_IDENTIFIER) {
       unsigned int cursor = lexer->getCursor();
-      typeList->addErr(diag->addError(cursor - 1, cursor, ERR_EXP_IDENTIFIER));
+      typeList->addErr(diag->addErr(ERR_EXP_IDENTIFIER, cursor - 1));
       return;
     }
 
@@ -2840,8 +2821,8 @@ void Parser::parseFormalParameterDeclsRest(
 
     // We expect a VariableDeclaratorId
     if (lexer->getCurToken() != TOK_IDENTIFIER) {
-      diag->addError(
-        lexer->getCurTokenIni(), lexer->getCursor(), ERR_EXP_IDENTIFIER);
+      diag->addErr(
+        ERR_EXP_IDENTIFIER, lexer->getCurTokenIni(), lexer->getCursor());
       return;
     }
 
@@ -2850,8 +2831,7 @@ void Parser::parseFormalParameterDeclsRest(
     // Corner case in the grammar. The array form is invalid in the form:
     // (int ... a[])
     if (formParamDeclsRest->varDeclId->arrayDepth.size() > 0) {
-      diag->addError(
-        lexer->getCurTokenIni(), lexer->getCursor(), ERR_NVAL_ARRAY);
+      diag->addErr(ERR_NVAL_ARRAY, lexer->getCurTokenIni(), lexer->getCursor());
     }
 
     return;
@@ -2864,8 +2844,8 @@ void Parser::parseFormalParameterDeclsRest(
 
   // Handle error
   if (formParamDeclsRest->varDeclId->identifier->value.length() == 0) {
-    diag->addError(
-      lexer->getCurTokenIni(), lexer->getCursor(), ERR_EXP_IDENTIFIER);
+    diag->addErr(ERR_EXP_IDENTIFIER, lexer->getCurTokenIni(),
+      lexer->getCursor());
   }
 
   // [ , FormalParameterDecls ]

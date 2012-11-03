@@ -93,7 +93,7 @@ void Output::setBlockStatement(const spBlockStatement &blockStmt) {
     if (blockStmt->id) {
       setIdentifier(blockStmt->id);
       if (blockStmt->posColon) {
-	setOp(blockStmt->posColon);
+        setOp(blockStmt->posColon);
       }
     }
 
