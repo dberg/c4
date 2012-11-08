@@ -74,6 +74,8 @@ class Parser {
   void parseIntegerLiteral(spIntegerLiteral &intLiteral);
   void parseFloatingPointLiteral(spFloatingPointLiteral &fpLiteral);
   void parseLiteral(spLiteral &literal);
+  void parseLocalVariableDeclarationStatement(
+    spLocalVariableDeclarationStatement &localVar);
   void parseModifier(spModifier &modifier);
   void parseMemberDecl(spMemberDecl &memberDecl);
   void parseMethodDeclaratorRest(spMethodDeclaratorRest &methodDeclRest);
@@ -116,8 +118,12 @@ class Parser {
   void parseTypeList(spTypeList &typeList);
   void parseVariableDeclaratorId(spVariableDeclaratorId &varDeclId);
   void parseVariableDeclaratorRest(spVariableDeclaratorRest &varDeclRest);
+  void parseVariableDeclarator(spVariableDeclarator &varDecl);
+  void parseVariableDeclarators(spVariableDeclarators &varDecls);
   void parseVariableInitializer(spVariableInitializer &varInit);
   void parseVariableModifier(spVariableModifier &varModifier);
+  void parseVoidMethodDeclaratorRest(
+    spVoidMethodDeclaratorRest &voidMethDeclRest);
 
   // Helper methods
   void saveState(State &state);

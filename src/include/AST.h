@@ -65,6 +65,8 @@ typedef boost::shared_ptr<struct IntegerLiteral> spIntegerLiteral;
 typedef boost::shared_ptr<struct InterfaceDeclaration> spInterfaceDeclaration;
 typedef boost::shared_ptr<struct InnerCreator> spInnerCreator;
 typedef boost::shared_ptr<struct Literal> spLiteral;
+typedef boost::shared_ptr<struct LocalVariableDeclarationStatement>
+  spLocalVariableDeclarationStatement;
 typedef boost::shared_ptr<struct MemberDecl> spMemberDecl;
 typedef boost::shared_ptr<struct MethodDeclaratorRest> spMethodDeclaratorRest;
 typedef boost::shared_ptr<struct MethodOrFieldDecl> spMethodOrFieldDecl;
@@ -108,11 +110,14 @@ typedef boost::shared_ptr<struct TypeArgumentsOrDiamond>
 typedef boost::shared_ptr<struct TypeDeclaration> spTypeDeclaration;
 typedef boost::shared_ptr<struct TypeList> spTypeList;
 typedef boost::shared_ptr<struct VariableDeclarator> spVariableDeclarator;
+typedef boost::shared_ptr<struct VariableDeclarators> spVariableDeclarators;
 typedef boost::shared_ptr<struct VariableDeclaratorId> spVariableDeclaratorId;
 typedef boost::shared_ptr<struct VariableDeclaratorRest>
   spVariableDeclaratorRest;
 typedef boost::shared_ptr<struct VariableInitializer> spVariableInitializer;
 typedef boost::shared_ptr<struct VariableModifier> spVariableModifier;
+typedef boost::shared_ptr<struct VoidMethodDeclaratorRest>
+  spVoidMethodDeclaratorRest;
 
 typedef std::pair<unsigned int, unsigned int> ArrayPair;
 typedef std::vector<ArrayPair> ArrayDepth;
@@ -275,7 +280,7 @@ struct ClassBodyDeclaration {
 ///   (4) GenericMethodOrConstructorDecl
 ///   (5) ClassDeclaration
 ///   (6) InterfaceDeclaration
-struct MemberDecl {
+struct MemberDecl : ASTError {
   enum MemberDeclOpt {
     OPT_UNDEFINED,
     OPT_METHOD_OR_FIELD_DECL,
@@ -288,14 +293,17 @@ struct MemberDecl {
 
   MemberDeclOpt opt;
 
+  // Shared by 2,3
+  spIdentifier id;
+
   // (1) MethodOrFieldDecl
   spMethodOrFieldDecl methodOrFieldDecl;
 
-  // TODO:
-  // void Identifier VoidMethodDeclaratorRest
+  // (2) void Identifier VoidMethodDeclaratorRest
+  spTokenExp tokVoid;
+  spVoidMethodDeclaratorRest voidMethDeclRest;
 
-  // Identifier ConstructorDeclaratorRest
-  spIdentifier identifier;
+  // (3) Identifier ConstructorDeclaratorRest
   spConstructorDeclaratorRest constDeclRest;
 
   // TODO:
@@ -322,7 +330,7 @@ struct MethodDeclaratorRest : ASTError {
   //spQualifiedIdentifierList qualifiedIdList;
 
   spBlock block;
-  unsigned int posSemiColon;
+  unsigned posSemiColon;
 
   MethodDeclaratorRest() : posSemiColon(0) {}
 };
@@ -348,7 +356,7 @@ struct MethodOrFieldRest : ASTError {
 
   // (1) FieldDeclaratorsRest ;
   spFieldDeclaratorsRest fieldDeclsRest;
-  unsigned int posSemiColon;
+  unsigned posSemiColon;
 
   // (2) MethodDeclaratorRest
   spMethodDeclaratorRest methodDeclRest;
@@ -384,7 +392,7 @@ struct FormalParameterDecls {
 ///   final
 ///   Annotation
 /// One 'final' keyword is allowed, while we can have zero or more annotations.
-struct VariableModifier {
+struct VariableModifier : ASTError {
   spTokenExp tokFinal;
   std::vector<spAnnotation> annotations;
 
@@ -395,6 +403,21 @@ struct VariableModifier {
 
     return false;
   }
+};
+
+/// VoidMethodDeclaratorRest:
+///   FormalParameters [throws QualifiedIdentifierList] (Block | ;)
+struct VoidMethodDeclaratorRest : ASTError {
+  spFormalParameters formParams;
+
+  spTokenExp tokThrows;
+  // TODO:
+  //spQualifiedIdentifierList qualifiedIdList;
+
+  spBlock block;
+  unsigned posSemiColon;
+
+  VoidMethodDeclaratorRest() : posSemiColon(0) {}
 };
 
 /// Type:
@@ -434,10 +457,16 @@ struct FormalParameterDeclsRest {
   FormalParameterDeclsRest() : opt(OPT_UNDEFINED) {}
 };
 
-/// Identifier VariableDeclaratorRest
-struct VariableDeclarator {
+/// VariableDeclarator: Identifier VariableDeclaratorRest
+struct VariableDeclarator : ASTError {
   spIdentifier id;
   spVariableDeclaratorRest varDeclRest;
+};
+
+/// VariableDeclarators: VariableDeclarator { , VariableDeclarator }
+struct VariableDeclarators : ASTError {
+  spVariableDeclarator varDecl;
+  std::vector<std::pair<unsigned, spVariableDeclarator> > semiColonAndVarDecls;
 };
 
 /// VariableDeclaratorId: Identifier {[]}
@@ -558,7 +587,7 @@ struct Statement : ASTError {
   StatementOpt opt;
 
   spBlock block;
-  unsigned int posSemiColon;
+  unsigned posSemiColon;
   spIdentifier id;
   unsigned int posColon;
   spStatement stmt;
@@ -631,7 +660,7 @@ struct BlockStatement : ASTError {
   BlockStatementOpt opt;
 
   // (1) LocalVariableDeclarationStatement
-  //spLocalVariableDeclarationStatement localVar;
+  spLocalVariableDeclarationStatement localVar;
 
   // (2) ClassOrInterfaceDeclaration
   spClassOrInterfaceDeclaration decl;
@@ -1104,6 +1133,17 @@ struct Literal {
   Literal() : opt(OPT_UNDEFINED) {}
 
   bool isEmpty() { return opt == OPT_UNDEFINED; }
+};
+
+/// LocalVariableDeclarationStatement:
+///   { VariableModifier } Type VariableDeclarators ;
+struct LocalVariableDeclarationStatement : ASTError{
+  spVariableModifier varModifier;
+  spType type;
+  spVariableDeclarators varDecls;
+  unsigned posSemiColon;
+
+  LocalVariableDeclarationStatement() : posSemiColon(0) {}
 };
 
 /// IntegerLiteral:

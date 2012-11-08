@@ -568,6 +568,32 @@ TEST(Parser, Block) {
   ASSERT_EQ(Statement::OPT_SEMI_COLON, blockStmt2->stmt->opt);
 }
 
+TEST(Parser, LocalVariableDeclarationStatement) {
+  std::string filename = "Test.java";
+  std::string buffer = "class A { void test() { Exec exe = createExec(); }}";
+  spDiagnosis diag = spDiagnosis(new Diagnosis());
+  Parser parser(filename, buffer, diag);
+  parser.parse();
+
+  spMemberDecl memberDecl = parser.compilationUnit
+    ->typeDecls[0]->decl->classDecl->nClassDecl->classBody->decls[0]
+    ->memberDecl;
+
+  ASSERT_EQ(MemberDecl::OPT_VOID_IDENTIFIER_VOID_METHOD_DECLARATOR_REST,
+    memberDecl->opt);
+
+  spVariableDeclaratorRest varDeclRest = memberDecl->voidMethDeclRest->block
+    ->blockStmts[0]->localVar->varDecls->varDecl->varDeclRest;
+
+  ASSERT_EQ(33, varDeclRest->posEquals);
+
+  spPrimary primary = varDeclRest->varInit->expr->expr1->expr2->expr3->primary;
+  ASSERT_EQ(35, primary->primaryId->ids[0]->pos);
+  ASSERT_EQ("createExec",  primary->primaryId->ids[0]->value);
+  ASSERT_EQ(45, primary->primaryId->idSuffix->args->posLParen);
+  ASSERT_EQ(46, primary->primaryId->idSuffix->args->posRParen);
+}
+
 TEST(Parser, PackageDeclaration) {
   std::string filename = "Test.java";
   std::string buffer = "@myinterface\npackage com.test;";
@@ -816,8 +842,8 @@ TEST(Parser, ClassConstructor) {
     classBodyDecl->opt);
   ASSERT_EQ(MemberDecl::OPT_IDENTIFIER_CONSTRUCTOR_DECLARATOR_REST,
     classBodyDecl->memberDecl->opt);
-  ASSERT_EQ(12, classBodyDecl->memberDecl->identifier->pos);
-  ASSERT_EQ("Abc", classBodyDecl->memberDecl->identifier->value);
+  ASSERT_EQ(12, classBodyDecl->memberDecl->id->pos);
+  ASSERT_EQ("Abc", classBodyDecl->memberDecl->id->value);
 }
 
 TEST(Parser, ClassConstructorParameter) {

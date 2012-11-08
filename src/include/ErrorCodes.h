@@ -45,6 +45,7 @@ enum ErrorCode {
   ERR_NVAL_IDENTIFIER_SUFFIX,
   ERR_NVAL_SELECTOR,
   ERR_NVAL_TYPE_ARGUMENT,
+  ERR_VAR_MODIFIER_FINAL,
 };
 
 class ErrorUtil {
@@ -83,6 +84,7 @@ public:
     msgs[ERR_NVAL_IDENTIFIER_SUFFIX] = "Invalid IdentifierSuffix";
     msgs[ERR_NVAL_SELECTOR] = "Invalid Selector";
     msgs[ERR_NVAL_TYPE_ARGUMENT] = "Invalid Type Argument";
+    msgs[ERR_VAR_MODIFIER_FINAL] = "Duplicate 'final' keyword";
   }
 
   const std::string getMessage(int error) {

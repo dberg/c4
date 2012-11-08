@@ -431,8 +431,8 @@ void Output::setMemberDecl(const spMemberDecl &memberDecl) {
 
   if (memberDecl->opt ==
     MemberDecl::OPT_IDENTIFIER_CONSTRUCTOR_DECLARATOR_REST) {
-    if (memberDecl->identifier) {
-      setIdentifier(memberDecl->identifier);
+    if (memberDecl->id) {
+      setIdentifier(memberDecl->id);
     }
 
     if (memberDecl->constDeclRest) {

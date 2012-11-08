@@ -140,8 +140,7 @@ bool isValidInitTokenOfClassBodyDeclaration(int token) {
   }
 
   // MemberDecl
-  // TODO: What else?
-  if (TOK_IDENTIFIER == token) {
+  if (TOK_IDENTIFIER == token || isBasicType(token) || TOK_KEY_VOID == token) {
     return true;
   }
 
@@ -176,11 +175,13 @@ bool isValidInitTokenOfTypeDeclaration(int token) {
 
 // Helper methods
 void Parser::saveState(State &state) {
+  // TODO: symbol table
   state.diagErrorsSize = diag->errors.size();
   lexer->saveState(state);
 }
 
 void Parser::restoreState(State &state) {
+  // TODO: symbol table
   while (diag->errors.size() > state.diagErrorsSize) {
     diag->errors.pop_back();
   }
@@ -490,9 +491,20 @@ void Parser::parseBlock(spBlock &block) {
 ///   ClassOrInterfaceDeclaration
 ///   [Identifier :] Statement
 void Parser::parseBlockStatement(spBlockStatement &blockStmt) {
+  // LocalVariableDeclarationStatement
   State state;
+  saveState(state);
+  spLocalVariableDeclarationStatement localVar =
+    spLocalVariableDeclarationStatement(new LocalVariableDeclarationStatement);
+  parseLocalVariableDeclarationStatement(localVar);
+  if (localVar->err) {
+    restoreState(state);
+  } else {
+    blockStmt->opt = BlockStatement::OPT_LOCAL_VAR;
+    blockStmt->localVar = localVar;
+    return;
+  }
 
-  // TODO: LocalVariableDeclarationStatement
   // TODO: ClassOrInterfaceDeclaration
 
   // [Identifier :] Statement
@@ -1322,6 +1334,46 @@ void Parser::parseLiteral(spLiteral &literal) {
     literal->nullLiteral = spNullLiteral(new NullLiteral());
     parseNullLiteral(literal->nullLiteral);
   }
+}
+
+/// LocalVariableDeclarationStatement:
+///   { VariableModifier } Type VariableDeclarators ;
+void Parser::parseLocalVariableDeclarationStatement(
+  spLocalVariableDeclarationStatement &localVar) {
+
+  // { VariableModifier }
+  localVar->varModifier = spVariableModifier(new VariableModifier);
+  parseVariableModifier(localVar->varModifier);
+  if (localVar->varModifier->err) {
+    localVar->addErr(-1);
+    return;
+  }
+
+  // Type
+  localVar->type = spType(new Type);
+  parseType(localVar->type);
+  if (localVar->type->err) {
+    localVar->addErr(-1);
+    return;
+  }
+
+  // VariableDeclarators
+  localVar->varDecls = spVariableDeclarators(new VariableDeclarators);
+  parseVariableDeclarators(localVar->varDecls);
+  if (localVar->varDecls->err) {
+    localVar->addErr(-1);
+    return;
+  }
+
+  // ';'
+  if (lexer->getCurToken() == TOK_SEMICOLON) {
+    localVar->posSemiColon = lexer->getCursor() - 1;
+    lexer->getNextToken(); // consume ';'
+    return;
+  }
+
+  // Error
+  localVar->addErr(diag->addErr(ERR_EXP_SEMICOLON, lexer->getCursor() - 1));
 }
 
 /// Primary:
@@ -2277,7 +2329,9 @@ void Parser::parseClassBody(spClassBody &classBody) {
 ///   [static] Block
 void Parser::parseClassBodyDeclaration(spClassBodyDeclaration &decl) {
   if (isModifierToken(lexer->getCurToken())
-      || lexer->getCurToken() == TOK_IDENTIFIER) {
+      || lexer->getCurToken() == TOK_IDENTIFIER
+      || lexer->getCurToken() == TOK_KEY_VOID) {
+
     decl->opt = ClassBodyDeclaration::OPT_MODIFIER_MEMBER_DECL;
     decl->modifier = spModifier(new Modifier());
     parseModifier(decl->modifier);
@@ -2335,7 +2389,7 @@ void Parser::parseMemberDecl(spMemberDecl &memberDecl) {
 
       // Identifier
       int pos = lexer->getCurTokenIni();
-      memberDecl->identifier
+      memberDecl->id
         = spIdentifier(new Identifier(pos, lexer->getCurTokenStr()));
       st.addSym(ST_CLASS, lexer->getCurToken(), pos, src->getLine(),
         lexer->getCurTokenStr());
@@ -2359,7 +2413,35 @@ void Parser::parseMemberDecl(spMemberDecl &memberDecl) {
     return;
   }
 
-  // TODO: void Identifier VoidMethodDeclaratorRest
+  // (2) void Identifier VoidMethodDeclaratorRest
+  if (lexer->getCurToken() == TOK_KEY_VOID) {
+    memberDecl->opt
+      = MemberDecl::OPT_VOID_IDENTIFIER_VOID_METHOD_DECLARATOR_REST;
+
+    memberDecl->tokVoid = spTokenExp(new TokenExp(
+      lexer->getCursor() - tokenUtil.getTokenLength(
+      lexer->getCurToken()), lexer->getCurToken()));
+    lexer->getNextToken(); // consume 'void'
+
+    if (lexer->getCurToken() != TOK_IDENTIFIER) {
+      memberDecl->addErr(diag->addErr(ERR_EXP_IDENTIFIER,
+        lexer->getCurTokenIni(), lexer->getCursor()));
+      return;
+    }
+
+    memberDecl->id = spIdentifier(new Identifier(
+      lexer->getCurTokenIni(), lexer->getCurTokenStr()));
+    lexer->getNextToken(); // consume Identifier
+
+    memberDecl->voidMethDeclRest = spVoidMethodDeclaratorRest(
+      new VoidMethodDeclaratorRest);
+    parseVoidMethodDeclaratorRest(memberDecl->voidMethDeclRest);
+    if (memberDecl->voidMethDeclRest->err) {
+      memberDecl->addErr(-1);
+      return;
+    }
+  }
+
   // TODO: GenericMethodOrConstructorDecl
   // TODO: ClassDeclaration
   // TODO: InterfaceDeclaration
@@ -2704,7 +2786,10 @@ void Parser::parseVariableModifier(spVariableModifier &varModifier) {
 
     if (lexer->getCurToken() == TOK_KEY_FINAL) {
       if (varModifier->tokFinal) {
-        // TODO: Handle error. We already have a 'final' token.
+        // Error. We already have a 'final' token.
+	varModifier->addErr(diag->addErr(ERR_VAR_MODIFIER_FINAL,
+          lexer->getCurTokenIni(), lexer->getCursor()));
+	return;
       } else {
         varModifier->tokFinal = spTokenExp(new TokenExp(
           lexer->getCursor() - tokenUtil.getTokenLength(
@@ -2718,6 +2803,37 @@ void Parser::parseVariableModifier(spVariableModifier &varModifier) {
     if (lexer->getCurToken() == TOK_ANNOTATION) {
       parseAnnotations(varModifier->annotations);
     }
+  }
+}
+
+/// VoidMethodDeclaratorRest:
+///   FormalParameters [throws QualifiedIdentifierList] (Block | ;)
+void Parser::parseVoidMethodDeclaratorRest(
+  spVoidMethodDeclaratorRest &voidMethDeclRest) {
+
+  // FormalParameters
+  voidMethDeclRest->formParams = spFormalParameters(new FormalParameters);
+  parseFormalParameters(voidMethDeclRest->formParams);
+  if (voidMethDeclRest->formParams->err) {
+    voidMethDeclRest->addErr(-1);
+    return;
+  }
+
+  // TODO:
+  // [throws QualifiedIdentifierList]
+
+  // (Block | ;)
+  // (1) ';'
+  if (lexer->getCurToken() == TOK_SEMICOLON) {
+    voidMethDeclRest->posSemiColon = lexer->getCursor() - 1;
+    return;
+  }
+
+  // (2) Block
+  voidMethDeclRest->block = spBlock(new Block);
+  parseBlock(voidMethDeclRest->block);
+  if (voidMethDeclRest->block->err) {
+    voidMethDeclRest->addErr(-1);
   }
 }
 
@@ -2776,7 +2892,10 @@ void Parser::parseType(spType &type) {
     type->opt = Type::OPT_REFERENCE_TYPE;
     type->refType = spReferenceType(new ReferenceType());
     parseReferenceType(type->refType);
+    return;
   }
+
+  type->addErr(-1);
 }
 
 /// TypeList: ReferenceType {, ReferenceType }
@@ -2897,6 +3016,59 @@ void Parser::parseVariableDeclaratorRest(spVariableDeclaratorRest &varDeclRest) 
     if (varDeclRest->varInit->err) {
       varDeclRest->addErr(-1);
     }
+  }
+}
+
+/// VariableDeclarator: Identifier VariableDeclaratorRest
+void Parser::parseVariableDeclarator(spVariableDeclarator &varDecl) {
+  if (lexer->getCurToken() != TOK_IDENTIFIER) {
+    varDecl->addErr(diag->addErr(ERR_EXP_IDENTIFIER, lexer->getCursor() - 1));
+    return;
+  }
+
+  // Identifier
+  varDecl->id = spIdentifier(
+    new Identifier(lexer->getCurTokenIni(), lexer->getCurTokenStr()));
+  lexer->getNextToken(); // consume Identifier
+
+  // VariableDeclaratorRest
+  varDecl->varDeclRest = spVariableDeclaratorRest(new VariableDeclaratorRest);
+  parseVariableDeclaratorRest(varDecl->varDeclRest);
+  if (varDecl->varDeclRest->err) {
+    varDecl->addErr(-1);
+    return;
+  }
+}
+
+/// VariableDeclarators: VariableDeclarator { , VariableDeclarator }
+void Parser::parseVariableDeclarators(spVariableDeclarators &varDecls) {
+  // VariableDeclarator
+  varDecls->varDecl = spVariableDeclarator(new VariableDeclarator);
+  parseVariableDeclarator(varDecls->varDecl);
+  if (varDecls->varDecl->err) {
+    varDecls->addErr(-1);
+    return;
+  }
+
+  // { , VariableDeclarator }
+  State state;
+  while (lexer->getCurToken() == TOK_COMMA) {
+    saveState(state);
+    unsigned posComma = lexer->getCursor() - 1;
+    lexer->getNextToken(); // consume ','
+
+    spVariableDeclarator varDecl = spVariableDeclarator(new VariableDeclarator);
+    parseVariableDeclarator(varDecl);
+    if (varDecl->err) {
+      restoreState(state);
+      return;
+    }
+
+    std::pair<unsigned, spVariableDeclarator> pair;
+    pair.first = posComma;
+    pair.second = varDecl;
+
+    varDecls->semiColonAndVarDecls.push_back(pair);
   }
 }
 
