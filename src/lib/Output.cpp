@@ -423,9 +423,20 @@ void Output::setMemberDecl(const spMemberDecl &memberDecl) {
     return;
   }
 
-  // TODO:
   if (memberDecl->opt ==
     MemberDecl::OPT_VOID_IDENTIFIER_VOID_METHOD_DECLARATOR_REST) {
+    if (memberDecl->tokVoid) {
+      setKeyword(memberDecl->tokVoid);
+    }
+
+    if (memberDecl->id) {
+      setIdentifier(memberDecl->id);
+    }
+
+    if (memberDecl->voidMethDeclRest) {
+      setVoidMethodDeclaratorRest(memberDecl->voidMethDeclRest);
+    }
+
     return;
   }
 
@@ -846,6 +857,26 @@ void Output::setVariableModifier(const spVariableModifier &varModifier) {
   }
 
   setAnnotations(varModifier->annotations);
+}
+
+void Output::setVoidMethodDeclaratorRest(
+  const spVoidMethodDeclaratorRest &voidMethDeclRest) {
+
+  if (voidMethDeclRest->formParams) {
+    setFormalParameters(voidMethDeclRest->formParams);
+  }
+
+  if (voidMethDeclRest->tokThrows) {
+    setKeyword(voidMethDeclRest->tokThrows);
+  }
+
+  if (voidMethDeclRest->block) {
+    setBlock(voidMethDeclRest->block);
+  }
+
+  if (voidMethDeclRest->posSemiColon) {
+    setOp(voidMethDeclRest->posSemiColon);
+  }
 }
 
 // Helper methods

@@ -69,6 +69,8 @@ class Output {
   void setVariableDeclaratorRest(const spVariableDeclaratorRest &varDeclRest);
   void setVariableInitializer(const spVariableInitializer &varInit);
   void setVariableModifier(const spVariableModifier &varModifier);
+  void setVoidMethodDeclaratorRest(
+    const spVoidMethodDeclaratorRest &voidMethDeclRest);
 
   // Helper methods
   const std::string itos(int i);
