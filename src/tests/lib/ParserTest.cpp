@@ -53,11 +53,10 @@ TEST(Parser, AnnotationElementValuePairs) {
   ASSERT_TRUE(intLiteralPair2->intSuffix);
 }
 
-TEST(Parser, AnnotationElementValuePairsIntegerLiterals) {
+TEST(Parser, AnnotationElementValuePairsBoolean) {
   std::string filename = "Test.java";
   std::string buffer =
-    "@myinterface("
-    "v1=0b01,v2=0B1_1L,v3=10,v4=2_0L,v5=0xA0,v6=0XF_0L,v7=001,v8=0_76L)\n"
+    "@myinterface(v1=true, v2=false)"
     "package com.test;";
   spDiagnosis diag = spDiagnosis(new Diagnosis());
   Parser parser(filename, buffer, diag);
@@ -69,90 +68,76 @@ TEST(Parser, AnnotationElementValuePairsIntegerLiterals) {
   // Pair 1
   spElementValuePair pair1 = pairs[0];
   spExpression3 expr3Pair1 = pair1->value->expr1->expr2->expr3;
-  spIntegerLiteral intLiteralPair1 = expr3Pair1->primary->literal->intLiteral;
+  spBooleanLiteral boolLiteralPair1 = expr3Pair1->primary->literal->boolLiteral;
   ASSERT_EQ(Primary::OPT_LITERAL, expr3Pair1->primary->opt);
-  ASSERT_EQ(Literal::OPT_INTEGER, expr3Pair1->primary->literal->opt);
-  ASSERT_EQ(IntegerLiteral::OPT_BINARY, intLiteralPair1->opt);
-  ASSERT_EQ(16, intLiteralPair1->pos);
-  ASSERT_EQ("0b01", intLiteralPair1->value);
-  ASSERT_FALSE(intLiteralPair1->intSuffix);
+  ASSERT_EQ(Literal::OPT_BOOLEAN, expr3Pair1->primary->literal->opt);
+  ASSERT_EQ(16, boolLiteralPair1->pos);
+  ASSERT_TRUE(boolLiteralPair1->val);
 
   // Pair 2
   spElementValuePair pair2 = pairs[1];
   spExpression3 expr3Pair2 = pair2->value->expr1->expr2->expr3;
-  spIntegerLiteral intLiteralPair2 = expr3Pair2->primary->literal->intLiteral;
+  spBooleanLiteral boolLiteralPair2 = expr3Pair2->primary->literal->boolLiteral;
   ASSERT_EQ(Primary::OPT_LITERAL, expr3Pair2->primary->opt);
-  ASSERT_EQ(Literal::OPT_INTEGER, expr3Pair2->primary->literal->opt);
-  ASSERT_EQ(IntegerLiteral::OPT_BINARY, intLiteralPair2->opt);
-  ASSERT_EQ(24, intLiteralPair2->pos);
-  ASSERT_EQ("0B1_1L", intLiteralPair2->value);
-  ASSERT_TRUE(intLiteralPair2->intSuffix);
+  ASSERT_EQ(Literal::OPT_BOOLEAN, expr3Pair2->primary->literal->opt);
+  ASSERT_EQ(25, boolLiteralPair2->pos);
+  ASSERT_FALSE(boolLiteralPair2->val);
+}
+
+TEST(Parser, AnnotationElementValuePairsCharacterLiteral) {
+  std::string filename = "Test.java";
+  // INFO: We escape the universal character name \uAa89
+  // so it's not pre-processed by the c++ compiler.
+  std::string buffer =
+    "@myinterface(v1='A', v2='\n', v3='\034', v4='\\uAa89')"
+    //               16      24       33         44
+    "package com.test;";
+  spDiagnosis diag = spDiagnosis(new Diagnosis());
+  Parser parser(filename, buffer, diag);
+  parser.parse();
+
+  std::vector<spElementValuePair> pairs = parser.compilationUnit->pkgDecl
+    ->annotations[0]->elem->pairs;
+
+  // Pair 1
+  spElementValuePair pair1 = pairs[0];
+  spExpression3 expr3Pair1 = pair1->value->expr1->expr2->expr3;
+  spCharacterLiteral charLiteralPair1
+    = expr3Pair1->primary->literal->charLiteral;
+  ASSERT_EQ(Primary::OPT_LITERAL, expr3Pair1->primary->opt);
+  ASSERT_EQ(Literal::OPT_CHAR, expr3Pair1->primary->literal->opt);
+  ASSERT_EQ(16, charLiteralPair1->pos);
+  ASSERT_EQ("'A'", charLiteralPair1->val);
+
+  // Pair 2
+  spElementValuePair pair2 = pairs[1];
+  spExpression3 expr3Pair2 = pair2->value->expr1->expr2->expr3;
+  spCharacterLiteral charLiteralPair2
+    = expr3Pair2->primary->literal->charLiteral;
+  ASSERT_EQ(Primary::OPT_LITERAL, expr3Pair2->primary->opt);
+  ASSERT_EQ(Literal::OPT_CHAR, expr3Pair2->primary->literal->opt);
+  ASSERT_EQ(24, charLiteralPair2->pos);
+  ASSERT_EQ("'\n'", charLiteralPair2->val);
 
   // Pair 3
   spElementValuePair pair3 = pairs[2];
   spExpression3 expr3Pair3 = pair3->value->expr1->expr2->expr3;
-  spIntegerLiteral intLiteralPair3 = expr3Pair3->primary->literal->intLiteral;
+  spCharacterLiteral charLiteralPair3
+    = expr3Pair3->primary->literal->charLiteral;
   ASSERT_EQ(Primary::OPT_LITERAL, expr3Pair3->primary->opt);
-  ASSERT_EQ(Literal::OPT_INTEGER, expr3Pair3->primary->literal->opt);
-  ASSERT_EQ(IntegerLiteral::OPT_DECIMAL, intLiteralPair3->opt);
-  ASSERT_EQ(34, intLiteralPair3->pos);
-  ASSERT_EQ("10", intLiteralPair3->value);
-  ASSERT_FALSE(intLiteralPair3->intSuffix);
+  ASSERT_EQ(Literal::OPT_CHAR, expr3Pair3->primary->literal->opt);
+  ASSERT_EQ(32, charLiteralPair3->pos);
+  ASSERT_EQ("'\034'", charLiteralPair3->val);
 
   // Pair 4
   spElementValuePair pair4 = pairs[3];
   spExpression3 expr3Pair4 = pair4->value->expr1->expr2->expr3;
-  spIntegerLiteral intLiteralPair4 = expr3Pair4->primary->literal->intLiteral;
+  spCharacterLiteral charLiteralPair4
+    = expr3Pair4->primary->literal->charLiteral;
   ASSERT_EQ(Primary::OPT_LITERAL, expr3Pair4->primary->opt);
-  ASSERT_EQ(Literal::OPT_INTEGER, expr3Pair4->primary->literal->opt);
-  ASSERT_EQ(IntegerLiteral::OPT_DECIMAL, intLiteralPair4->opt);
-  ASSERT_EQ(40, intLiteralPair4->pos);
-  ASSERT_EQ("2_0L", intLiteralPair4->value);
-  ASSERT_TRUE(intLiteralPair4->intSuffix);
-
-  // Pair 5
-  spElementValuePair pair5 = pairs[4];
-  spExpression3 expr3Pair5 = pair5->value->expr1->expr2->expr3;
-  spIntegerLiteral intLiteralPair5 = expr3Pair5->primary->literal->intLiteral;
-  ASSERT_EQ(Primary::OPT_LITERAL, expr3Pair5->primary->opt);
-  ASSERT_EQ(Literal::OPT_INTEGER, expr3Pair5->primary->literal->opt);
-  ASSERT_EQ(IntegerLiteral::OPT_HEX, intLiteralPair5->opt);
-  ASSERT_EQ(48, intLiteralPair5->pos);
-  ASSERT_EQ("0xA0", intLiteralPair5->value);
-  ASSERT_FALSE(intLiteralPair5->intSuffix);
-
-  // Pair 6
-  spElementValuePair pair6 = pairs[5];
-  spExpression3 expr3Pair6 = pair6->value->expr1->expr2->expr3;
-  spIntegerLiteral intLiteralPair6 = expr3Pair6->primary->literal->intLiteral;
-  ASSERT_EQ(Primary::OPT_LITERAL, expr3Pair6->primary->opt);
-  ASSERT_EQ(Literal::OPT_INTEGER, expr3Pair6->primary->literal->opt);
-  ASSERT_EQ(IntegerLiteral::OPT_HEX, intLiteralPair6->opt);
-  ASSERT_EQ(56, intLiteralPair6->pos);
-  ASSERT_EQ("0XF_0L", intLiteralPair6->value);
-  ASSERT_TRUE(intLiteralPair6->intSuffix);
-
-  // Pair 7
-  spElementValuePair pair7 = pairs[6];
-  spExpression3 expr3Pair7 = pair7->value->expr1->expr2->expr3;
-  spIntegerLiteral intLiteralPair7 = expr3Pair7->primary->literal->intLiteral;
-  ASSERT_EQ(Primary::OPT_LITERAL, expr3Pair7->primary->opt);
-  ASSERT_EQ(Literal::OPT_INTEGER, expr3Pair7->primary->literal->opt);
-  ASSERT_EQ(IntegerLiteral::OPT_OCTAL, intLiteralPair7->opt);
-  ASSERT_EQ(66, intLiteralPair7->pos);
-  ASSERT_EQ("001", intLiteralPair7->value);
-  ASSERT_FALSE(intLiteralPair7->intSuffix);
-
-  // Pair 8
-  spElementValuePair pair8 = pairs[7];
-  spExpression3 expr3Pair8 = pair8->value->expr1->expr2->expr3;
-  spIntegerLiteral intLiteralPair8 = expr3Pair8->primary->literal->intLiteral;
-  ASSERT_EQ(Primary::OPT_LITERAL, expr3Pair8->primary->opt);
-  ASSERT_EQ(Literal::OPT_INTEGER, expr3Pair8->primary->literal->opt);
-  ASSERT_EQ(IntegerLiteral::OPT_OCTAL, intLiteralPair8->opt);
-  ASSERT_EQ(73, intLiteralPair8->pos);
-  ASSERT_EQ("0_76L", intLiteralPair8->value);
-  ASSERT_TRUE(intLiteralPair8->intSuffix);
+  ASSERT_EQ(Literal::OPT_CHAR, expr3Pair4->primary->literal->opt);
+  ASSERT_EQ(40, charLiteralPair4->pos);
+  ASSERT_EQ("'\\uAa89'", charLiteralPair4->val);
 }
 
 TEST(Parser, AnnotationElementValuePairsDecimalFloatingPointLiterals) {
@@ -305,10 +290,11 @@ TEST(Parser, AnnotationElementValuePairsHexadecimalFloatingPointLiterals) {
   ASSERT_EQ("0x.12p+12F", fpLiteralPair3->value);
 }
 
-TEST(Parser, AnnotationElementValuePairsBoolean) {
+TEST(Parser, AnnotationElementValuePairsIntegerLiterals) {
   std::string filename = "Test.java";
   std::string buffer =
-    "@myinterface(v1=true, v2=false)"
+    "@myinterface("
+    "v1=0b01,v2=0B1_1L,v3=10,v4=2_0L,v5=0xA0,v6=0XF_0L,v7=001,v8=0_76L)\n"
     "package com.test;";
   spDiagnosis diag = spDiagnosis(new Diagnosis());
   Parser parser(filename, buffer, diag);
@@ -320,20 +306,90 @@ TEST(Parser, AnnotationElementValuePairsBoolean) {
   // Pair 1
   spElementValuePair pair1 = pairs[0];
   spExpression3 expr3Pair1 = pair1->value->expr1->expr2->expr3;
-  spBooleanLiteral boolLiteralPair1 = expr3Pair1->primary->literal->boolLiteral;
+  spIntegerLiteral intLiteralPair1 = expr3Pair1->primary->literal->intLiteral;
   ASSERT_EQ(Primary::OPT_LITERAL, expr3Pair1->primary->opt);
-  ASSERT_EQ(Literal::OPT_BOOLEAN, expr3Pair1->primary->literal->opt);
-  ASSERT_EQ(16, boolLiteralPair1->pos);
-  ASSERT_TRUE(boolLiteralPair1->val);
+  ASSERT_EQ(Literal::OPT_INTEGER, expr3Pair1->primary->literal->opt);
+  ASSERT_EQ(IntegerLiteral::OPT_BINARY, intLiteralPair1->opt);
+  ASSERT_EQ(16, intLiteralPair1->pos);
+  ASSERT_EQ("0b01", intLiteralPair1->value);
+  ASSERT_FALSE(intLiteralPair1->intSuffix);
 
   // Pair 2
   spElementValuePair pair2 = pairs[1];
   spExpression3 expr3Pair2 = pair2->value->expr1->expr2->expr3;
-  spBooleanLiteral boolLiteralPair2 = expr3Pair2->primary->literal->boolLiteral;
+  spIntegerLiteral intLiteralPair2 = expr3Pair2->primary->literal->intLiteral;
   ASSERT_EQ(Primary::OPT_LITERAL, expr3Pair2->primary->opt);
-  ASSERT_EQ(Literal::OPT_BOOLEAN, expr3Pair2->primary->literal->opt);
-  ASSERT_EQ(25, boolLiteralPair2->pos);
-  ASSERT_FALSE(boolLiteralPair2->val);
+  ASSERT_EQ(Literal::OPT_INTEGER, expr3Pair2->primary->literal->opt);
+  ASSERT_EQ(IntegerLiteral::OPT_BINARY, intLiteralPair2->opt);
+  ASSERT_EQ(24, intLiteralPair2->pos);
+  ASSERT_EQ("0B1_1L", intLiteralPair2->value);
+  ASSERT_TRUE(intLiteralPair2->intSuffix);
+
+  // Pair 3
+  spElementValuePair pair3 = pairs[2];
+  spExpression3 expr3Pair3 = pair3->value->expr1->expr2->expr3;
+  spIntegerLiteral intLiteralPair3 = expr3Pair3->primary->literal->intLiteral;
+  ASSERT_EQ(Primary::OPT_LITERAL, expr3Pair3->primary->opt);
+  ASSERT_EQ(Literal::OPT_INTEGER, expr3Pair3->primary->literal->opt);
+  ASSERT_EQ(IntegerLiteral::OPT_DECIMAL, intLiteralPair3->opt);
+  ASSERT_EQ(34, intLiteralPair3->pos);
+  ASSERT_EQ("10", intLiteralPair3->value);
+  ASSERT_FALSE(intLiteralPair3->intSuffix);
+
+  // Pair 4
+  spElementValuePair pair4 = pairs[3];
+  spExpression3 expr3Pair4 = pair4->value->expr1->expr2->expr3;
+  spIntegerLiteral intLiteralPair4 = expr3Pair4->primary->literal->intLiteral;
+  ASSERT_EQ(Primary::OPT_LITERAL, expr3Pair4->primary->opt);
+  ASSERT_EQ(Literal::OPT_INTEGER, expr3Pair4->primary->literal->opt);
+  ASSERT_EQ(IntegerLiteral::OPT_DECIMAL, intLiteralPair4->opt);
+  ASSERT_EQ(40, intLiteralPair4->pos);
+  ASSERT_EQ("2_0L", intLiteralPair4->value);
+  ASSERT_TRUE(intLiteralPair4->intSuffix);
+
+  // Pair 5
+  spElementValuePair pair5 = pairs[4];
+  spExpression3 expr3Pair5 = pair5->value->expr1->expr2->expr3;
+  spIntegerLiteral intLiteralPair5 = expr3Pair5->primary->literal->intLiteral;
+  ASSERT_EQ(Primary::OPT_LITERAL, expr3Pair5->primary->opt);
+  ASSERT_EQ(Literal::OPT_INTEGER, expr3Pair5->primary->literal->opt);
+  ASSERT_EQ(IntegerLiteral::OPT_HEX, intLiteralPair5->opt);
+  ASSERT_EQ(48, intLiteralPair5->pos);
+  ASSERT_EQ("0xA0", intLiteralPair5->value);
+  ASSERT_FALSE(intLiteralPair5->intSuffix);
+
+  // Pair 6
+  spElementValuePair pair6 = pairs[5];
+  spExpression3 expr3Pair6 = pair6->value->expr1->expr2->expr3;
+  spIntegerLiteral intLiteralPair6 = expr3Pair6->primary->literal->intLiteral;
+  ASSERT_EQ(Primary::OPT_LITERAL, expr3Pair6->primary->opt);
+  ASSERT_EQ(Literal::OPT_INTEGER, expr3Pair6->primary->literal->opt);
+  ASSERT_EQ(IntegerLiteral::OPT_HEX, intLiteralPair6->opt);
+  ASSERT_EQ(56, intLiteralPair6->pos);
+  ASSERT_EQ("0XF_0L", intLiteralPair6->value);
+  ASSERT_TRUE(intLiteralPair6->intSuffix);
+
+  // Pair 7
+  spElementValuePair pair7 = pairs[6];
+  spExpression3 expr3Pair7 = pair7->value->expr1->expr2->expr3;
+  spIntegerLiteral intLiteralPair7 = expr3Pair7->primary->literal->intLiteral;
+  ASSERT_EQ(Primary::OPT_LITERAL, expr3Pair7->primary->opt);
+  ASSERT_EQ(Literal::OPT_INTEGER, expr3Pair7->primary->literal->opt);
+  ASSERT_EQ(IntegerLiteral::OPT_OCTAL, intLiteralPair7->opt);
+  ASSERT_EQ(66, intLiteralPair7->pos);
+  ASSERT_EQ("001", intLiteralPair7->value);
+  ASSERT_FALSE(intLiteralPair7->intSuffix);
+
+  // Pair 8
+  spElementValuePair pair8 = pairs[7];
+  spExpression3 expr3Pair8 = pair8->value->expr1->expr2->expr3;
+  spIntegerLiteral intLiteralPair8 = expr3Pair8->primary->literal->intLiteral;
+  ASSERT_EQ(Primary::OPT_LITERAL, expr3Pair8->primary->opt);
+  ASSERT_EQ(Literal::OPT_INTEGER, expr3Pair8->primary->literal->opt);
+  ASSERT_EQ(IntegerLiteral::OPT_OCTAL, intLiteralPair8->opt);
+  ASSERT_EQ(73, intLiteralPair8->pos);
+  ASSERT_EQ("0_76L", intLiteralPair8->value);
+  ASSERT_TRUE(intLiteralPair8->intSuffix);
 }
 
 TEST(Parser, AnnotationElementValuePairsNull) {
@@ -356,62 +412,6 @@ TEST(Parser, AnnotationElementValuePairsNull) {
   ASSERT_EQ(Literal::OPT_NULL, expr3Pair->primary->literal->opt);
   ASSERT_EQ(16, nullLiteralPair->pos);
   ASSERT_EQ(TOK_NULL_LITERAL, nullLiteralPair->type);
-}
-
-TEST(Parser, AnnotationElementValuePairsCharacterLiteral) {
-  std::string filename = "Test.java";
-  // INFO: We escape the universal character name \uAa89
-  // so it's not pre-processed by the c++ compiler.
-  std::string buffer =
-    "@myinterface(v1='A', v2='\n', v3='\034', v4='\\uAa89')"
-    //               16      24       33         44
-    "package com.test;";
-  spDiagnosis diag = spDiagnosis(new Diagnosis());
-  Parser parser(filename, buffer, diag);
-  parser.parse();
-
-  std::vector<spElementValuePair> pairs = parser.compilationUnit->pkgDecl
-    ->annotations[0]->elem->pairs;
-
-  // Pair 1
-  spElementValuePair pair1 = pairs[0];
-  spExpression3 expr3Pair1 = pair1->value->expr1->expr2->expr3;
-  spCharacterLiteral charLiteralPair1
-    = expr3Pair1->primary->literal->charLiteral;
-  ASSERT_EQ(Primary::OPT_LITERAL, expr3Pair1->primary->opt);
-  ASSERT_EQ(Literal::OPT_CHAR, expr3Pair1->primary->literal->opt);
-  ASSERT_EQ(16, charLiteralPair1->pos);
-  ASSERT_EQ("'A'", charLiteralPair1->val);
-
-  // Pair 2
-  spElementValuePair pair2 = pairs[1];
-  spExpression3 expr3Pair2 = pair2->value->expr1->expr2->expr3;
-  spCharacterLiteral charLiteralPair2
-    = expr3Pair2->primary->literal->charLiteral;
-  ASSERT_EQ(Primary::OPT_LITERAL, expr3Pair2->primary->opt);
-  ASSERT_EQ(Literal::OPT_CHAR, expr3Pair2->primary->literal->opt);
-  ASSERT_EQ(24, charLiteralPair2->pos);
-  ASSERT_EQ("'\n'", charLiteralPair2->val);
-
-  // Pair 3
-  spElementValuePair pair3 = pairs[2];
-  spExpression3 expr3Pair3 = pair3->value->expr1->expr2->expr3;
-  spCharacterLiteral charLiteralPair3
-    = expr3Pair3->primary->literal->charLiteral;
-  ASSERT_EQ(Primary::OPT_LITERAL, expr3Pair3->primary->opt);
-  ASSERT_EQ(Literal::OPT_CHAR, expr3Pair3->primary->literal->opt);
-  ASSERT_EQ(32, charLiteralPair3->pos);
-  ASSERT_EQ("'\034'", charLiteralPair3->val);
-
-  // Pair 4
-  spElementValuePair pair4 = pairs[3];
-  spExpression3 expr3Pair4 = pair4->value->expr1->expr2->expr3;
-  spCharacterLiteral charLiteralPair4
-    = expr3Pair4->primary->literal->charLiteral;
-  ASSERT_EQ(Primary::OPT_LITERAL, expr3Pair4->primary->opt);
-  ASSERT_EQ(Literal::OPT_CHAR, expr3Pair4->primary->literal->opt);
-  ASSERT_EQ(40, charLiteralPair4->pos);
-  ASSERT_EQ("'\\uAa89'", charLiteralPair4->val);
 }
 
 TEST(Parser, AnnotationElementValuePairsStringLiteral) {
@@ -439,6 +439,175 @@ TEST(Parser, AnnotationElementValuePairsStringLiteral) {
   ASSERT_EQ("\"Hello, I'm a String!\"", strLiteralPair1->val);
 }
 
+TEST(Parser, Block) {
+  std::string filename = "Test.java";
+  std::string buffer =
+    "class A { public String hello() {"
+    "logger.debug(\"message\", p1);"
+    "}";
+  spDiagnosis diag = spDiagnosis(new Diagnosis());
+  Parser parser(filename, buffer, diag);
+  parser.parse();
+
+  spBlock block = parser.compilationUnit->typeDecls[0]
+    ->decl->classDecl->nClassDecl->classBody->decls[0]->memberDecl
+    ->methodOrFieldDecl->methodOrFieldRest->methodDeclRest->block;
+  ASSERT_EQ(32, block->posLCBracket);
+  ASSERT_EQ(61, block->posRCBracket);
+  ASSERT_EQ(2, block->blockStmts.size());
+
+  spBlockStatement blockStmt1 = block->blockStmts[0];
+  ASSERT_EQ(BlockStatement::OPT_ID_STMT, blockStmt1->opt);
+  ASSERT_EQ(Statement::OPT_STMT_EXPR, blockStmt1->stmt->opt);
+  ASSERT_EQ(Expression3::OPT_PRIMARY_SELECTOR_POSTFIXOP,
+    blockStmt1->stmt->stmtExpr->expr->expr1->expr2->expr3->opt);
+  ASSERT_EQ(Primary::OPT_IDENTIFIER,
+    blockStmt1->stmt->stmtExpr->expr->expr1->expr2->expr3->primary->opt);
+
+  spBlockStatement blockStmt2 = block->blockStmts[1];
+  ASSERT_EQ(BlockStatement::OPT_ID_STMT, blockStmt2->opt);
+  ASSERT_EQ(Statement::OPT_SEMI_COLON, blockStmt2->stmt->opt);
+}
+
+TEST(Parser, ClassConstructor) {
+  std::string filename = "Test.java";
+  std::string buffer = "class Abc { Abc() {} }";
+  spDiagnosis diag = spDiagnosis(new Diagnosis());
+  Parser parser(filename, buffer, diag);
+  parser.parse();
+
+  spClassBodyDeclaration classBodyDecl = parser.compilationUnit->typeDecls[0]
+    ->decl->classDecl->nClassDecl->classBody->decls[0];
+  ASSERT_EQ(ClassBodyDeclaration::OPT_MODIFIER_MEMBER_DECL,
+    classBodyDecl->opt);
+  ASSERT_EQ(MemberDecl::OPT_IDENTIFIER_CONSTRUCTOR_DECLARATOR_REST,
+    classBodyDecl->memberDecl->opt);
+  ASSERT_EQ(12, classBodyDecl->memberDecl->id->pos);
+  ASSERT_EQ("Abc", classBodyDecl->memberDecl->id->value);
+}
+
+TEST(Parser, ClassConstructorAnnotationParameter) {
+  std::string filename = "Test.java";
+  std::string buffer = "class Abc { Abc(@myannotation int a) {} }";
+  spDiagnosis diag = spDiagnosis(new Diagnosis());
+  Parser parser(filename, buffer, diag);
+  parser.parse();
+
+  spFormalParameterDecls formParamDecls = parser.compilationUnit->typeDecls[0]
+    ->decl->classDecl->nClassDecl->classBody->decls[0]->memberDecl
+    ->constDeclRest->formParams->formParamDecls;
+  ASSERT_EQ(1, formParamDecls->varModifier->annotations.size());
+  ASSERT_EQ(16, formParamDecls->varModifier->annotations[0]->posTokAt);
+}
+
+TEST(Parser, ClassConstructorParameter) {
+  std::string filename = "Test.java";
+  std::string buffer = "class Abc { Abc(int a) {} }";
+  spDiagnosis diag = spDiagnosis(new Diagnosis());
+  Parser parser(filename, buffer, diag);
+  parser.parse();
+
+  spFormalParameterDecls formParamDecls = parser.compilationUnit->typeDecls[0]
+    ->decl->classDecl->nClassDecl->classBody->decls[0]->memberDecl
+    ->constDeclRest->formParams->formParamDecls;
+  ASSERT_EQ(Type::OPT_BASIC_TYPE, formParamDecls->type->opt);
+  ASSERT_EQ(16, formParamDecls->type->basicType->token->pos);
+  ASSERT_EQ(TOK_KEY_INT, formParamDecls->type->basicType->token->type);
+  ASSERT_EQ(20, formParamDecls->formParamDeclsRest->varDeclId->identifier->pos);
+  ASSERT_EQ("a",
+    formParamDecls->formParamDeclsRest->varDeclId->identifier->value);
+}
+
+TEST(Parser, ClassConstructorParameterArray) {
+  std::string filename = "Test.java";
+  std::string buffer = "class Abc { Abc(int[] a) {} }";
+  spDiagnosis diag = spDiagnosis(new Diagnosis());
+  Parser parser(filename, buffer, diag);
+  parser.parse();
+
+  spFormalParameterDecls formParamDecls = parser.compilationUnit->typeDecls[0]
+    ->decl->classDecl->nClassDecl->classBody->decls[0]->memberDecl
+    ->constDeclRest->formParams->formParamDecls;
+  ASSERT_EQ(1, formParamDecls->type->arrayDepth.size());
+  ASSERT_EQ(0, formParamDecls->formParamDeclsRest->varDeclId->arrayDepth.size());
+}
+
+TEST(Parser, ClassConstructorParameterEllipsis) {
+  std::string filename = "Test.java";
+  std::string buffer = "class Abc { Abc(int ... a) {} }";
+  spDiagnosis diag = spDiagnosis(new Diagnosis());
+  Parser parser(filename, buffer, diag);
+  parser.parse();
+
+  spFormalParameterDeclsRest formParamDeclsRest = parser.compilationUnit
+    ->typeDecls[0]->decl->classDecl->nClassDecl->classBody->decls[0]
+    ->memberDecl->constDeclRest->formParams->formParamDecls->formParamDeclsRest;
+  ASSERT_EQ(FormalParameterDeclsRest::OPT_VAR_ARITY, formParamDeclsRest->opt);
+  ASSERT_EQ(24, formParamDeclsRest->varDeclId->identifier->pos);
+  ASSERT_EQ("a", formParamDeclsRest->varDeclId->identifier->value);
+}
+
+TEST(Parser, ClassConstructorParameters) {
+  std::string filename = "Test.java";
+  std::string buffer = "class Abc { Abc(int a, double b) {} }";
+  spDiagnosis diag = spDiagnosis(new Diagnosis());
+  Parser parser(filename, buffer, diag);
+  parser.parse();
+
+  spFormalParameterDecls formParamDecls = parser.compilationUnit->typeDecls[0]
+    ->decl->classDecl->nClassDecl->classBody->decls[0]->memberDecl
+    ->constDeclRest->formParams->formParamDecls;
+
+  // param 1
+  ASSERT_EQ(Type::OPT_BASIC_TYPE, formParamDecls->type->opt);
+  ASSERT_EQ(16, formParamDecls->type->basicType->token->pos);
+  ASSERT_EQ(TOK_KEY_INT, formParamDecls->type->basicType->token->type);
+  ASSERT_EQ(20, formParamDecls->formParamDeclsRest->varDeclId->identifier->pos);
+  ASSERT_EQ("a",
+    formParamDecls->formParamDeclsRest->varDeclId->identifier->value);
+
+  // param 2
+  spFormalParameterDecls formParamDecls2
+    = formParamDecls->formParamDeclsRest->formParamDecls;
+  ASSERT_EQ(Type::OPT_BASIC_TYPE, formParamDecls2->type->opt);
+  ASSERT_EQ(23, formParamDecls2->type->basicType->token->pos);
+  ASSERT_EQ(TOK_KEY_DOUBLE, formParamDecls2->type->basicType->token->type);
+  ASSERT_EQ(30,
+    formParamDecls2->formParamDeclsRest->varDeclId->identifier->pos);
+  ASSERT_EQ("b",
+    formParamDecls2->formParamDeclsRest->varDeclId->identifier->value);
+}
+
+TEST(Parser, ClassDeclaration) {
+  std::string filename = "Test.java";
+  std::string buffer = "@myinterface\npublic class Abc extends Def { }";
+  spDiagnosis diag = spDiagnosis(new Diagnosis());
+  Parser parser(filename, buffer, diag);
+  parser.parse();
+
+  spClassOrInterfaceDeclaration decl
+    = parser.compilationUnit->typeDecls[0]->decl;
+
+  ASSERT_EQ(1, parser.compilationUnit->typeDecls.size());
+  ASSERT_EQ(1, decl->modifier->annotations.size());
+  ASSERT_EQ(1, decl->modifier->tokens.size());
+  ASSERT_EQ(13, decl->modifier->tokens[0]->pos);
+  ASSERT_EQ(TOK_KEY_PUBLIC, decl->modifier->tokens[0]->type);
+  ASSERT_EQ(TOK_KEY_CLASS, decl->classDecl->nClassDecl->classTok->type);
+  ASSERT_EQ(20, decl->classDecl->nClassDecl->classTok->pos);
+  ASSERT_EQ(26, decl->classDecl->nClassDecl->identifier->pos);
+  ASSERT_EQ("Abc", decl->classDecl->nClassDecl->identifier->value);
+  ASSERT_EQ(30, decl->classDecl->nClassDecl->extendsTok->pos);
+  ASSERT_EQ(Type::OPT_REFERENCE_TYPE, decl->classDecl->nClassDecl->type->opt);
+  ASSERT_EQ(38, decl->classDecl->nClassDecl->type->refType->id->pos);
+  ASSERT_EQ("Def", decl->classDecl->nClassDecl->type->refType->id->value);
+
+  ASSERT_EQ(2, parser.st.symbols.size());
+  spSymbol sym = parser.st.scopePeek();
+  ASSERT_EQ(ST_CLASS, sym->type);
+  ASSERT_EQ(0, sym->scope);
+}
+
 TEST(Parser, Comments) {
   std::string filename = "Test.java";
   std::string buffer =
@@ -456,6 +625,99 @@ TEST(Parser, Comments) {
   ASSERT_EQ(Comment::OPT_MULTIPLE_LINES, parser.comments[1]->opt);
   ASSERT_EQ(42, parser.comments[1]->posIni);
   ASSERT_EQ(63, parser.comments[1]->posEnd);
+}
+
+TEST(Parser, Errors) {
+  std::string filename = "Test.java";
+  std::string buffer = "@";
+  spDiagnosis diag = spDiagnosis(new Diagnosis());
+  Parser parser(filename, buffer, diag);
+  parser.parse();
+  ASSERT_EQ(1, diag->errors.size());
+}
+
+TEST(Parser, ImportDeclarations) {
+  std::string filename = "Test.java";
+  std::string buffer =
+    "import com.test1.Test1;\n"
+    "import com.test2.*;\n"
+    "import static com.test3.Test3;\n"
+    "import static com.test4.*;\n";
+
+  spDiagnosis diag = spDiagnosis(new Diagnosis());
+  Parser parser(filename, buffer, diag);
+  parser.parse();
+  ASSERT_EQ(4, parser.compilationUnit->impDecls->imports.size());
+
+  // import 1
+  ASSERT_EQ(0, parser.compilationUnit->impDecls->imports[0]->posTokImport);
+  ASSERT_EQ(-1, parser.compilationUnit->impDecls->imports[0]->posTokStatic);
+  ASSERT_EQ(-1, parser.compilationUnit->impDecls->imports[0]->iniOnDemand);
+  ASSERT_EQ(-1, parser.compilationUnit->impDecls->imports[0]->endOnDemand);
+  ASSERT_EQ("com.test1.Test1",
+    parser.compilationUnit->impDecls->imports[0]->getImport());
+  ASSERT_FALSE(parser.compilationUnit->impDecls->imports[0]->err);
+  ASSERT_EQ(SINGLE_TYPE_IMPORT_DECLARATION,
+    parser.compilationUnit->impDecls->imports[0]->type);
+
+  // import 2
+  ASSERT_EQ(24, parser.compilationUnit->impDecls->imports[1]->posTokImport);
+  ASSERT_EQ(-1, parser.compilationUnit->impDecls->imports[1]->posTokStatic);
+  ASSERT_EQ(40, parser.compilationUnit->impDecls->imports[1]->iniOnDemand);
+  ASSERT_EQ(41, parser.compilationUnit->impDecls->imports[1]->endOnDemand);
+  ASSERT_EQ("com.test2.*",
+    parser.compilationUnit->impDecls->imports[1]->getImport());
+  ASSERT_FALSE(parser.compilationUnit->impDecls->imports[0]->err);
+  ASSERT_EQ(TYPE_IMPORT_ON_DEMAND_DECLARATION,
+    parser.compilationUnit->impDecls->imports[1]->type);
+
+  // import 3
+  ASSERT_EQ(44, parser.compilationUnit->impDecls->imports[2]->posTokImport);
+  ASSERT_EQ(51, parser.compilationUnit->impDecls->imports[2]->posTokStatic);
+  ASSERT_EQ(-1, parser.compilationUnit->impDecls->imports[2]->iniOnDemand);
+  ASSERT_EQ(-1, parser.compilationUnit->impDecls->imports[2]->endOnDemand);
+  ASSERT_EQ("com.test3.Test3",
+    parser.compilationUnit->impDecls->imports[2]->getImport());
+  ASSERT_FALSE(parser.compilationUnit->impDecls->imports[2]->err);
+  ASSERT_EQ(SINGLE_STATIC_IMPORT_DECLARATION,
+    parser.compilationUnit->impDecls->imports[2]->type);
+
+  // import 4
+  ASSERT_EQ(75, parser.compilationUnit->impDecls->imports[3]->posTokImport);
+  ASSERT_EQ(82, parser.compilationUnit->impDecls->imports[3]->posTokStatic);
+  ASSERT_EQ(98, parser.compilationUnit->impDecls->imports[3]->iniOnDemand);
+  ASSERT_EQ(99, parser.compilationUnit->impDecls->imports[3]->endOnDemand);
+  ASSERT_EQ("com.test4.*",
+    parser.compilationUnit->impDecls->imports[3]->getImport());
+  ASSERT_FALSE(parser.compilationUnit->impDecls->imports[3]->err);
+  ASSERT_EQ(STATIC_IMPORT_ON_DEMAND_DECLARATION,
+    parser.compilationUnit->impDecls->imports[3]->type);
+}
+
+TEST(Parser, LocalVariableDeclarationStatement) {
+  std::string filename = "Test.java";
+  std::string buffer = "class A { void test() { Exec exe = createExec(); }}";
+  spDiagnosis diag = spDiagnosis(new Diagnosis());
+  Parser parser(filename, buffer, diag);
+  parser.parse();
+
+  spMemberDecl memberDecl = parser.compilationUnit
+    ->typeDecls[0]->decl->classDecl->nClassDecl->classBody->decls[0]
+    ->memberDecl;
+
+  ASSERT_EQ(MemberDecl::OPT_VOID_IDENTIFIER_VOID_METHOD_DECLARATOR_REST,
+    memberDecl->opt);
+
+  spVariableDeclaratorRest varDeclRest = memberDecl->voidMethDeclRest->block
+    ->blockStmts[0]->localVar->varDecls->varDecl->varDeclRest;
+
+  ASSERT_EQ(33, varDeclRest->posEquals);
+
+  spPrimary primary = varDeclRest->varInit->expr->expr1->expr2->expr3->primary;
+  ASSERT_EQ(35, primary->primaryId->ids[0]->pos);
+  ASSERT_EQ("createExec",  primary->primaryId->ids[0]->value);
+  ASSERT_EQ(45, primary->primaryId->idSuffix->args->posLParen);
+  ASSERT_EQ(46, primary->primaryId->idSuffix->args->posRParen);
 }
 
 TEST(Parser, MethodOrFieldRestOptField) {
@@ -536,62 +798,6 @@ TEST(Parser, MethodOrFieldRestOptMethod) {
   ASSERT_EQ(Type::OPT_REFERENCE_TYPE,
     methodOrFieldRest->methodDeclRest->formParams->formParamDecls->type->opt);
   ASSERT_EQ(90, methodOrFieldRest->methodDeclRest->posSemiColon);
-}
-
-TEST(Parser, Block) {
-  std::string filename = "Test.java";
-  std::string buffer =
-    "class A { public String hello() {"
-    "logger.debug(\"message\", p1);"
-    "}";
-  spDiagnosis diag = spDiagnosis(new Diagnosis());
-  Parser parser(filename, buffer, diag);
-  parser.parse();
-
-  spBlock block = parser.compilationUnit->typeDecls[0]
-    ->decl->classDecl->nClassDecl->classBody->decls[0]->memberDecl
-    ->methodOrFieldDecl->methodOrFieldRest->methodDeclRest->block;
-  ASSERT_EQ(32, block->posLCBracket);
-  ASSERT_EQ(61, block->posRCBracket);
-  ASSERT_EQ(2, block->blockStmts.size());
-
-  spBlockStatement blockStmt1 = block->blockStmts[0];
-  ASSERT_EQ(BlockStatement::OPT_ID_STMT, blockStmt1->opt);
-  ASSERT_EQ(Statement::OPT_STMT_EXPR, blockStmt1->stmt->opt);
-  ASSERT_EQ(Expression3::OPT_PRIMARY_SELECTOR_POSTFIXOP,
-    blockStmt1->stmt->stmtExpr->expr->expr1->expr2->expr3->opt);
-  ASSERT_EQ(Primary::OPT_IDENTIFIER,
-    blockStmt1->stmt->stmtExpr->expr->expr1->expr2->expr3->primary->opt);
-
-  spBlockStatement blockStmt2 = block->blockStmts[1];
-  ASSERT_EQ(BlockStatement::OPT_ID_STMT, blockStmt2->opt);
-  ASSERT_EQ(Statement::OPT_SEMI_COLON, blockStmt2->stmt->opt);
-}
-
-TEST(Parser, LocalVariableDeclarationStatement) {
-  std::string filename = "Test.java";
-  std::string buffer = "class A { void test() { Exec exe = createExec(); }}";
-  spDiagnosis diag = spDiagnosis(new Diagnosis());
-  Parser parser(filename, buffer, diag);
-  parser.parse();
-
-  spMemberDecl memberDecl = parser.compilationUnit
-    ->typeDecls[0]->decl->classDecl->nClassDecl->classBody->decls[0]
-    ->memberDecl;
-
-  ASSERT_EQ(MemberDecl::OPT_VOID_IDENTIFIER_VOID_METHOD_DECLARATOR_REST,
-    memberDecl->opt);
-
-  spVariableDeclaratorRest varDeclRest = memberDecl->voidMethDeclRest->block
-    ->blockStmts[0]->localVar->varDecls->varDecl->varDeclRest;
-
-  ASSERT_EQ(33, varDeclRest->posEquals);
-
-  spPrimary primary = varDeclRest->varInit->expr->expr1->expr2->expr3->primary;
-  ASSERT_EQ(35, primary->primaryId->ids[0]->pos);
-  ASSERT_EQ("createExec",  primary->primaryId->ids[0]->value);
-  ASSERT_EQ(45, primary->primaryId->idSuffix->args->posLParen);
-  ASSERT_EQ(46, primary->primaryId->idSuffix->args->posRParen);
 }
 
 TEST(Parser, PackageDeclaration) {
@@ -740,212 +946,6 @@ TEST(Parser, PrimaryNewCreator) {
 /// TODO: It seems that this production rule does not apply when inside of
 ///       annotations.
 //TEST(Parser, PrimaryNonWildcardTypeArguments) {}
-
-TEST(Parser, ImportDeclarations) {
-  std::string filename = "Test.java";
-  std::string buffer =
-    "import com.test1.Test1;\n"
-    "import com.test2.*;\n"
-    "import static com.test3.Test3;\n"
-    "import static com.test4.*;\n";
-
-  spDiagnosis diag = spDiagnosis(new Diagnosis());
-  Parser parser(filename, buffer, diag);
-  parser.parse();
-  ASSERT_EQ(4, parser.compilationUnit->impDecls->imports.size());
-
-  // import 1
-  ASSERT_EQ(0, parser.compilationUnit->impDecls->imports[0]->posTokImport);
-  ASSERT_EQ(-1, parser.compilationUnit->impDecls->imports[0]->posTokStatic);
-  ASSERT_EQ(-1, parser.compilationUnit->impDecls->imports[0]->iniOnDemand);
-  ASSERT_EQ(-1, parser.compilationUnit->impDecls->imports[0]->endOnDemand);
-  ASSERT_EQ("com.test1.Test1",
-    parser.compilationUnit->impDecls->imports[0]->getImport());
-  ASSERT_FALSE(parser.compilationUnit->impDecls->imports[0]->err);
-  ASSERT_EQ(SINGLE_TYPE_IMPORT_DECLARATION,
-    parser.compilationUnit->impDecls->imports[0]->type);
-
-  // import 2
-  ASSERT_EQ(24, parser.compilationUnit->impDecls->imports[1]->posTokImport);
-  ASSERT_EQ(-1, parser.compilationUnit->impDecls->imports[1]->posTokStatic);
-  ASSERT_EQ(40, parser.compilationUnit->impDecls->imports[1]->iniOnDemand);
-  ASSERT_EQ(41, parser.compilationUnit->impDecls->imports[1]->endOnDemand);
-  ASSERT_EQ("com.test2.*",
-    parser.compilationUnit->impDecls->imports[1]->getImport());
-  ASSERT_FALSE(parser.compilationUnit->impDecls->imports[0]->err);
-  ASSERT_EQ(TYPE_IMPORT_ON_DEMAND_DECLARATION,
-    parser.compilationUnit->impDecls->imports[1]->type);
-
-  // import 3
-  ASSERT_EQ(44, parser.compilationUnit->impDecls->imports[2]->posTokImport);
-  ASSERT_EQ(51, parser.compilationUnit->impDecls->imports[2]->posTokStatic);
-  ASSERT_EQ(-1, parser.compilationUnit->impDecls->imports[2]->iniOnDemand);
-  ASSERT_EQ(-1, parser.compilationUnit->impDecls->imports[2]->endOnDemand);
-  ASSERT_EQ("com.test3.Test3",
-    parser.compilationUnit->impDecls->imports[2]->getImport());
-  ASSERT_FALSE(parser.compilationUnit->impDecls->imports[2]->err);
-  ASSERT_EQ(SINGLE_STATIC_IMPORT_DECLARATION,
-    parser.compilationUnit->impDecls->imports[2]->type);
-
-  // import 4
-  ASSERT_EQ(75, parser.compilationUnit->impDecls->imports[3]->posTokImport);
-  ASSERT_EQ(82, parser.compilationUnit->impDecls->imports[3]->posTokStatic);
-  ASSERT_EQ(98, parser.compilationUnit->impDecls->imports[3]->iniOnDemand);
-  ASSERT_EQ(99, parser.compilationUnit->impDecls->imports[3]->endOnDemand);
-  ASSERT_EQ("com.test4.*",
-    parser.compilationUnit->impDecls->imports[3]->getImport());
-  ASSERT_FALSE(parser.compilationUnit->impDecls->imports[3]->err);
-  ASSERT_EQ(STATIC_IMPORT_ON_DEMAND_DECLARATION,
-    parser.compilationUnit->impDecls->imports[3]->type);
-}
-
-TEST(Parser, ClassDeclaration) {
-  std::string filename = "Test.java";
-  std::string buffer = "@myinterface\npublic class Abc extends Def { }";
-  spDiagnosis diag = spDiagnosis(new Diagnosis());
-  Parser parser(filename, buffer, diag);
-  parser.parse();
-
-  spClassOrInterfaceDeclaration decl
-    = parser.compilationUnit->typeDecls[0]->decl;
-
-  ASSERT_EQ(1, parser.compilationUnit->typeDecls.size());
-  ASSERT_EQ(1, decl->modifier->annotations.size());
-  ASSERT_EQ(1, decl->modifier->tokens.size());
-  ASSERT_EQ(13, decl->modifier->tokens[0]->pos);
-  ASSERT_EQ(TOK_KEY_PUBLIC, decl->modifier->tokens[0]->type);
-  ASSERT_EQ(TOK_KEY_CLASS, decl->classDecl->nClassDecl->classTok->type);
-  ASSERT_EQ(20, decl->classDecl->nClassDecl->classTok->pos);
-  ASSERT_EQ(26, decl->classDecl->nClassDecl->identifier->pos);
-  ASSERT_EQ("Abc", decl->classDecl->nClassDecl->identifier->value);
-  ASSERT_EQ(30, decl->classDecl->nClassDecl->extendsTok->pos);
-  ASSERT_EQ(Type::OPT_REFERENCE_TYPE, decl->classDecl->nClassDecl->type->opt);
-  ASSERT_EQ(38, decl->classDecl->nClassDecl->type->refType->id->pos);
-  ASSERT_EQ("Def", decl->classDecl->nClassDecl->type->refType->id->value);
-
-  ASSERT_EQ(2, parser.st.symbols.size());
-  spSymbol sym = parser.st.scopePeek();
-  ASSERT_EQ(ST_CLASS, sym->type);
-  ASSERT_EQ(0, sym->scope);
-}
-
-TEST(Parser, ClassConstructor) {
-  std::string filename = "Test.java";
-  std::string buffer = "class Abc { Abc() {} }";
-  spDiagnosis diag = spDiagnosis(new Diagnosis());
-  Parser parser(filename, buffer, diag);
-  parser.parse();
-
-  spClassBodyDeclaration classBodyDecl = parser.compilationUnit->typeDecls[0]
-    ->decl->classDecl->nClassDecl->classBody->decls[0];
-  ASSERT_EQ(ClassBodyDeclaration::OPT_MODIFIER_MEMBER_DECL,
-    classBodyDecl->opt);
-  ASSERT_EQ(MemberDecl::OPT_IDENTIFIER_CONSTRUCTOR_DECLARATOR_REST,
-    classBodyDecl->memberDecl->opt);
-  ASSERT_EQ(12, classBodyDecl->memberDecl->id->pos);
-  ASSERT_EQ("Abc", classBodyDecl->memberDecl->id->value);
-}
-
-TEST(Parser, ClassConstructorParameter) {
-  std::string filename = "Test.java";
-  std::string buffer = "class Abc { Abc(int a) {} }";
-  spDiagnosis diag = spDiagnosis(new Diagnosis());
-  Parser parser(filename, buffer, diag);
-  parser.parse();
-
-  spFormalParameterDecls formParamDecls = parser.compilationUnit->typeDecls[0]
-    ->decl->classDecl->nClassDecl->classBody->decls[0]->memberDecl
-    ->constDeclRest->formParams->formParamDecls;
-  ASSERT_EQ(Type::OPT_BASIC_TYPE, formParamDecls->type->opt);
-  ASSERT_EQ(16, formParamDecls->type->basicType->token->pos);
-  ASSERT_EQ(TOK_KEY_INT, formParamDecls->type->basicType->token->type);
-  ASSERT_EQ(20, formParamDecls->formParamDeclsRest->varDeclId->identifier->pos);
-  ASSERT_EQ("a",
-    formParamDecls->formParamDeclsRest->varDeclId->identifier->value);
-}
-
-TEST(Parser, ClassConstructorParameterArray) {
-  std::string filename = "Test.java";
-  std::string buffer = "class Abc { Abc(int[] a) {} }";
-  spDiagnosis diag = spDiagnosis(new Diagnosis());
-  Parser parser(filename, buffer, diag);
-  parser.parse();
-
-  spFormalParameterDecls formParamDecls = parser.compilationUnit->typeDecls[0]
-    ->decl->classDecl->nClassDecl->classBody->decls[0]->memberDecl
-    ->constDeclRest->formParams->formParamDecls;
-  ASSERT_EQ(1, formParamDecls->type->arrayDepth.size());
-  ASSERT_EQ(0, formParamDecls->formParamDeclsRest->varDeclId->arrayDepth.size());
-}
-
-TEST(Parser, ClassConstructorParameters) {
-  std::string filename = "Test.java";
-  std::string buffer = "class Abc { Abc(int a, double b) {} }";
-  spDiagnosis diag = spDiagnosis(new Diagnosis());
-  Parser parser(filename, buffer, diag);
-  parser.parse();
-
-  spFormalParameterDecls formParamDecls = parser.compilationUnit->typeDecls[0]
-    ->decl->classDecl->nClassDecl->classBody->decls[0]->memberDecl
-    ->constDeclRest->formParams->formParamDecls;
-
-  // param 1
-  ASSERT_EQ(Type::OPT_BASIC_TYPE, formParamDecls->type->opt);
-  ASSERT_EQ(16, formParamDecls->type->basicType->token->pos);
-  ASSERT_EQ(TOK_KEY_INT, formParamDecls->type->basicType->token->type);
-  ASSERT_EQ(20, formParamDecls->formParamDeclsRest->varDeclId->identifier->pos);
-  ASSERT_EQ("a",
-    formParamDecls->formParamDeclsRest->varDeclId->identifier->value);
-
-  // param 2
-  spFormalParameterDecls formParamDecls2
-    = formParamDecls->formParamDeclsRest->formParamDecls;
-  ASSERT_EQ(Type::OPT_BASIC_TYPE, formParamDecls2->type->opt);
-  ASSERT_EQ(23, formParamDecls2->type->basicType->token->pos);
-  ASSERT_EQ(TOK_KEY_DOUBLE, formParamDecls2->type->basicType->token->type);
-  ASSERT_EQ(30,
-    formParamDecls2->formParamDeclsRest->varDeclId->identifier->pos);
-  ASSERT_EQ("b",
-    formParamDecls2->formParamDeclsRest->varDeclId->identifier->value);
-}
-
-TEST(Parser, ClassConstructorParameterEllipsis) {
-  std::string filename = "Test.java";
-  std::string buffer = "class Abc { Abc(int ... a) {} }";
-  spDiagnosis diag = spDiagnosis(new Diagnosis());
-  Parser parser(filename, buffer, diag);
-  parser.parse();
-
-  spFormalParameterDeclsRest formParamDeclsRest = parser.compilationUnit
-    ->typeDecls[0]->decl->classDecl->nClassDecl->classBody->decls[0]
-    ->memberDecl->constDeclRest->formParams->formParamDecls->formParamDeclsRest;
-  ASSERT_EQ(FormalParameterDeclsRest::OPT_VAR_ARITY, formParamDeclsRest->opt);
-  ASSERT_EQ(24, formParamDeclsRest->varDeclId->identifier->pos);
-  ASSERT_EQ("a", formParamDeclsRest->varDeclId->identifier->value);
-}
-
-TEST(Parser, ClassConstructorAnnotationParameter) {
-  std::string filename = "Test.java";
-  std::string buffer = "class Abc { Abc(@myannotation int a) {} }";
-  spDiagnosis diag = spDiagnosis(new Diagnosis());
-  Parser parser(filename, buffer, diag);
-  parser.parse();
-
-  spFormalParameterDecls formParamDecls = parser.compilationUnit->typeDecls[0]
-    ->decl->classDecl->nClassDecl->classBody->decls[0]->memberDecl
-    ->constDeclRest->formParams->formParamDecls;
-  ASSERT_EQ(1, formParamDecls->varModifier->annotations.size());
-  ASSERT_EQ(16, formParamDecls->varModifier->annotations[0]->posTokAt);
-}
-
-TEST(Parser, Errors) {
-  std::string filename = "Test.java";
-  std::string buffer = "@";
-  spDiagnosis diag = spDiagnosis(new Diagnosis());
-  Parser parser(filename, buffer, diag);
-  parser.parse();
-  ASSERT_EQ(1, diag->errors.size());
-}
 
 int main(int argc, char **argv) {
   ::testing::InitGoogleTest(&argc, argv);
