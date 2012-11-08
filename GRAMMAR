@@ -286,7 +286,7 @@ CatchClause:
   catch '(' {VariableModifier} CatchType Identifier ')' Block
 
 CatchType:
-  Identifier { | Identifier }
+  Identifier { '|' Identifier }
 
 Finally:
   finally Block
