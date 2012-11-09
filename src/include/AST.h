@@ -20,6 +20,9 @@ typedef boost::shared_ptr<struct BasicType> spBasicType;
 typedef boost::shared_ptr<struct Block> spBlock;
 typedef boost::shared_ptr<struct BlockStatement> spBlockStatement;
 typedef boost::shared_ptr<struct BooleanLiteral> spBooleanLiteral;
+typedef boost::shared_ptr<struct Catches> spCatches;
+typedef boost::shared_ptr<struct CatchClause> spCatchClause;
+typedef boost::shared_ptr<struct CatchType> spCatchType;
 typedef boost::shared_ptr<struct CharacterLiteral> spCharacterLiteral;
 typedef boost::shared_ptr<struct ClassBody> spClassBody;
 typedef boost::shared_ptr<struct ClassBodyDeclaration> spClassBodyDeclaration;
@@ -52,6 +55,7 @@ typedef boost::shared_ptr<struct Expression1Rest> spExpression1Rest;
 typedef boost::shared_ptr<struct Expression2Rest> spExpression2Rest;
 typedef boost::shared_ptr<struct ExpressionInBrackets> spExpressionInBrackets;
 typedef boost::shared_ptr<struct FieldDeclaratorsRest> spFieldDeclaratorsRest;
+typedef boost::shared_ptr<struct Finally> spFinally;
 typedef boost::shared_ptr<struct FloatingPointLiteral> spFloatingPointLiteral;
 typedef boost::shared_ptr<struct FormalParameters> spFormalParameters;
 typedef boost::shared_ptr<struct FormalParameterDecls> spFormalParameterDecls;
@@ -592,7 +596,9 @@ struct Statement : ASTError {
   unsigned int posColon;
   spStatement stmt;
   spStatementExpression stmtExpr;
-  // TODO:
+  spTokenExp tokTry;
+  spCatches catches;
+  spFinally finally;
 
   Statement() : opt(OPT_UNDEFINED) {}
 };
@@ -1190,6 +1196,32 @@ struct BooleanLiteral {
   bool val;
 };
 
+/// Catches: CatchClause { CatchClause }
+struct Catches : ASTError {
+  spCatchClause catchClause;
+  std::vector<spCatchClause> catchClauses;
+};
+
+/// CatchClause:
+///   catch '(' {VariableModifier} CatchType Identifier ')' Block
+struct CatchClause : ASTError {
+  unsigned posLParen;
+  unsigned posRParen;
+  spTokenExp tokCatch;
+  std::vector<spVariableModifier> varMods;
+  spCatchType catchType;
+  spIdentifier id;
+  spBlock block;
+
+  CatchClause() : posLParen(0), posRParen(0) {}
+};
+
+/// CatchType: Identifier { '|' Identifier }
+struct CatchType : ASTError {
+  spIdentifier id;
+  std::vector<std::pair<unsigned, spIdentifier> > pipeAndId;
+};
+
 struct CharacterLiteral {
   int pos;
   std::string val;
@@ -1383,6 +1415,12 @@ struct ExpressionInBrackets : ASTError {
 struct FieldDeclaratorsRest : ASTError {
   spVariableDeclaratorRest varDeclRest;
   std::vector<std::pair<unsigned int, spVariableDeclarator> > pairsCommaVarDecl;
+};
+
+/// Finally: finally Block
+struct Finally : ASTError {
+  spTokenExp tokFinally;
+  spBlock block;
 };
 
 /// ArrayInitializer:

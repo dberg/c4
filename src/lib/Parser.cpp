@@ -474,6 +474,14 @@ void Parser::parseBlock(spBlock &block) {
   lexer->getNextToken(); // consume '{'
 
   // BlockStatements
+  // Check for a closing curly bracket. This means we don't have a
+  // BlockStatement.
+  if (lexer->getCurToken() == TOK_RCURLY_BRACKET) {
+    block->posRCBracket = lexer->getCursor() - 1;
+    lexer->getNextToken(); // consume '}'
+    return;
+  }
+
   parseBlockStatements(block->blockStmts);
 
   // '}'
@@ -524,7 +532,7 @@ void Parser::parseBlockStatement(spBlockStatement &blockStmt) {
     }
   }
 
-  spStatement stmt = spStatement(new Statement());
+  spStatement stmt = spStatement(new Statement);
   parseStatement(stmt);
   if (stmt->err) {
     blockStmt->addErr(-1);
@@ -538,7 +546,7 @@ void Parser::parseBlockStatement(spBlockStatement &blockStmt) {
 /// BlockStatements: { BlockStatement }
 void Parser::parseBlockStatements(std::vector<spBlockStatement> &blockStmts) {
   // TODO: can we check which tokens are candidates for a block stmt?
-  while (true) {
+  while (lexer->getCurToken() != TOK_RCURLY_BRACKET) {
     spBlockStatement blockStmt = spBlockStatement(new BlockStatement);
     parseBlockStatement(blockStmt);
     if (blockStmt->err) {
@@ -557,6 +565,101 @@ void Parser::parseBooleanLiteral(spBooleanLiteral &boolLit) {
     boolLit->val = false;
   }
   lexer->getNextToken(); // consume 'true' or 'false'
+}
+
+/// CatchClause:
+///   catch '(' {VariableModifier} CatchType Identifier ')' Block
+void Parser::parseCatchClause(spCatchClause &catchClause) {
+  // 'catch'
+  if (lexer->getCurToken() != TOK_KEY_CATCH) {
+    catchClause->addErr(diag->addErr(ERR_EXP_CATCH,
+      lexer->getCurTokenIni(), lexer->getCursor()));
+    return;
+  }
+
+  catchClause->tokCatch = spTokenExp(new TokenExp(
+    lexer->getCursor() - tokenUtil.getTokenLength(
+      lexer->getCurToken()), lexer->getCurToken()));
+  lexer->getNextToken(); // consume 'catch'
+
+  // '('
+  if (lexer->getCurToken() != TOK_LPAREN) {
+    catchClause->addErr(diag->addErr(ERR_EXP_LPAREN, lexer->getCursor() - 1));
+    return;
+  }
+
+  catchClause->posLParen = lexer->getCursor() - 1;
+  lexer->getNextToken(); // consume '('
+
+  // TODO:
+  // {VariableModifier}
+
+  // CatchType
+  catchClause->catchType = spCatchType(new CatchType);
+  parseCatchType(catchClause->catchType);
+  if (catchClause->catchType->err) {
+    catchClause->addErr(-1);
+    return;
+  }
+
+  // Identifier
+  catchClause->id = spIdentifier(new Identifier(
+    lexer->getCurTokenIni(), lexer->getCurTokenStr()));
+  lexer->getNextToken(); // consume Identifier
+
+  // ')'
+  if (lexer->getCurToken() != TOK_RPAREN) {
+    catchClause->addErr(diag->addErr(ERR_EXP_RPAREN, lexer->getCursor() - 1));
+    return;
+  }
+
+  catchClause->posRParen = lexer->getCursor() - 1;
+  lexer->getNextToken(); // consume ')'
+
+  // Block
+  catchClause->block = spBlock(new Block);
+  parseBlock(catchClause->block);
+  if (catchClause->block->err) {
+    catchClause->addErr(-1);
+    return;
+  }
+}
+
+/// Catches: CatchClause { CatchClause }
+void Parser::parseCatches(spCatches &catches) {
+  catches->catchClause = spCatchClause(new CatchClause);
+  parseCatchClause(catches->catchClause);
+  if (catches->catchClause->err) {
+    catches->addErr(-1);
+    return;
+  }
+
+  while (true) {
+    spCatchClause catchClause = spCatchClause(new CatchClause);
+    parseCatchClause(catchClause);
+    if (catchClause->err) {
+      return;
+    }
+
+    catches->catchClauses.push_back(catchClause);
+  }
+}
+
+/// CatchType: Identifier { '|' Identifier }
+void Parser::parseCatchType(spCatchType &catchType) {
+  // Identifier
+  if (lexer->getCurToken() != TOK_IDENTIFIER) {
+    catchType->addErr(diag->addErr(
+      ERR_EXP_IDENTIFIER, lexer->getCursor() - 1));
+    return;
+  }
+
+  catchType->id = spIdentifier(new Identifier(
+    lexer->getCurTokenIni(), lexer->getCurTokenStr()));
+  lexer->getNextToken(); // consume Identifier
+
+  // TODO:
+  // { '|' Identifier }
 }
 
 void Parser::parseCharacterLiteral(spCharacterLiteral &charLit) {
@@ -648,7 +751,7 @@ void Parser::parseCreatorOpt2(spCreatorOpt2 &opt2) {
 
 /// Expression: Expression1 [ AssignmentOperator Expression1 ]
 void Parser::parseExpression(spExpression &expr) {
-  spExpression1 expr1 = spExpression1(new Expression1());
+  spExpression1 expr1 = spExpression1(new Expression1);
   parseExpression1(expr1);
   if (expr1->isEmpty()) {
     return;
@@ -661,7 +764,7 @@ void Parser::parseExpression(spExpression &expr) {
 
 /// Expression1: Expression2 [Expression1Rest]
 void Parser::parseExpression1(spExpression1 &expr1) {
-  spExpression2 expr2 = spExpression2(new Expression2());
+  spExpression2 expr2 = spExpression2(new Expression2);
   parseExpression2(expr2);
   if (expr2->isEmpty()) {
     return;
@@ -767,6 +870,27 @@ void Parser::parseExpression3(spExpression3 &expr3) {
     return;
   }
   */
+}
+
+/// Finally: finally Block
+void Parser::parseFinally(spFinally &finally) {
+  // 'finally'
+  if (lexer->getCurToken() != TOK_KEY_FINALLY) {
+    finally->addErr(-1);
+    return;
+  }
+
+  finally->tokFinally = spTokenExp(new TokenExp(
+    lexer->getCursor() - tokenUtil.getTokenLength(
+      lexer->getCurToken()), lexer->getCurToken()));
+  lexer->getNextToken(); // consume 'finally'
+
+  // Block
+  finally->block = spBlock(new Block);
+  parseBlock(finally->block);
+  if (finally->block->err) {
+    finally->addErr(-1);
+  }
 }
 
 /// FieldDeclaratorsRest: VariableDeclaratorRest { , VariableDeclarator }
@@ -1940,9 +2064,52 @@ void Parser::parseStatement(spStatement &stmt) {
     return;
   }
 
-  // TODO:
   // (16) try Block ( Catches | [Catches] Finally )
   // (17) try ResourceSpecification Block [Catches] [Finally]
+  if (lexer->getCurToken() == TOK_KEY_TRY) {
+    stmt->tokTry = spTokenExp(new TokenExp(
+      lexer->getCursor() - tokenUtil.getTokenLength(
+      lexer->getCurToken()), lexer->getCurToken()));
+    lexer->getNextToken(); // consume 'try'
+
+    if (lexer->getCurToken() == TOK_LCURLY_BRACKET) {
+      stmt->opt = Statement::OPT_TRY_BLOCK;
+
+      // Block
+      stmt->block = spBlock(new Block);
+      parseBlock(stmt->block);
+      if (stmt->block->err) {
+        stmt->addErr(-1);
+        return;
+      }
+
+      // Catches
+      if (lexer->getCurToken() == TOK_KEY_CATCH) {
+        stmt->catches = spCatches(new Catches);
+        parseCatches(stmt->catches);
+        if (stmt->catches->err) {
+          stmt->addErr(-1);
+          return;
+        }
+      }
+
+      // Finally
+      if (lexer->getCurToken() == TOK_KEY_FINALLY) {
+        stmt->finally = spFinally(new Finally);
+        parseFinally(stmt->finally);
+        if (stmt->finally->err) {
+          stmt->addErr(-1);
+          return;
+        }
+      }
+      return;
+    }
+
+    // TODO: (17)
+
+    stmt->addErr(-1);
+    return;
+  }
 
   // (3) Identifier : Statement
   // (4) StatementExpression ;
@@ -2333,9 +2500,9 @@ void Parser::parseClassBodyDeclaration(spClassBodyDeclaration &decl) {
       || lexer->getCurToken() == TOK_KEY_VOID) {
 
     decl->opt = ClassBodyDeclaration::OPT_MODIFIER_MEMBER_DECL;
-    decl->modifier = spModifier(new Modifier());
+    decl->modifier = spModifier(new Modifier);
     parseModifier(decl->modifier);
-    decl->memberDecl = spMemberDecl(new MemberDecl());
+    decl->memberDecl = spMemberDecl(new MemberDecl);
     parseMemberDecl(decl->memberDecl);
     return;
   }
@@ -2787,9 +2954,9 @@ void Parser::parseVariableModifier(spVariableModifier &varModifier) {
     if (lexer->getCurToken() == TOK_KEY_FINAL) {
       if (varModifier->tokFinal) {
         // Error. We already have a 'final' token.
-	varModifier->addErr(diag->addErr(ERR_VAR_MODIFIER_FINAL,
+        varModifier->addErr(diag->addErr(ERR_VAR_MODIFIER_FINAL,
           lexer->getCurTokenIni(), lexer->getCursor()));
-	return;
+        return;
       } else {
         varModifier->tokFinal = spTokenExp(new TokenExp(
           lexer->getCursor() - tokenUtil.getTokenLength(

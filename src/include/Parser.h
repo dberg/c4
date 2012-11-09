@@ -37,6 +37,9 @@ class Parser {
   void parseBlockStatement(spBlockStatement &blockStmt);
   void parseBlockStatements(std::vector<spBlockStatement> &blockStmts);
   void parseBooleanLiteral(spBooleanLiteral &boolLit);
+  void parseCatches(spCatches &catches);
+  void parseCatchClause(spCatchClause &catchClause);
+  void parseCatchType(spCatchType &catchType);
   void parseCharacterLiteral(spCharacterLiteral &charLit);
   void parseClassBody(spClassBody &classBody);
   void parseClassBodyDeclaration(spClassBodyDeclaration &decl);
@@ -61,6 +64,7 @@ class Parser {
   void parseExpression1(spExpression1 &expr1);
   void parseExpression2(spExpression2 &expr2);
   void parseExpression3(spExpression3 &expr3);
+  void parseFinally(spFinally &finally);
   void parseIdentifierSuffix(spIdentifierSuffix &idSuffix);
   void parseIdentifierSuffixOpt1Helper(spIdentifierSuffix &idSuffix);
   spImportDeclaration parseImportDeclaration();

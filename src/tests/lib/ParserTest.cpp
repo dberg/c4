@@ -938,7 +938,7 @@ TEST(Parser, PrimaryNewCreator) {
 /// ExplicitGenericInvocationSuffix:
 ///   super SuperSuffix
 ///   Identifier Arguments
-/// Arguments: '(' [ Expression { , Expression }] ')'w
+/// Arguments: '(' [ Expression { , Expression }] ')'
 /// SuperSuffix:
 ///   Arguments
 ///   . Identifier [Arguments]
@@ -946,6 +946,33 @@ TEST(Parser, PrimaryNewCreator) {
 /// TODO: It seems that this production rule does not apply when inside of
 ///       annotations.
 //TEST(Parser, PrimaryNonWildcardTypeArguments) {}
+
+TEST(Parser, Statement) {
+  std::string filename = "Test.java";
+  std::string buffer = "class X { void x() { "
+    "try {} catch (Exception e) {} }}";
+
+  spDiagnosis diag = spDiagnosis(new Diagnosis());
+  Parser parser(filename, buffer, diag);
+  parser.parse();
+
+  spStatement stmt = parser.compilationUnit->typeDecls[0]->decl->classDecl
+    ->nClassDecl->classBody->decls[0]->memberDecl->voidMethDeclRest->block
+    ->blockStmts[0]->stmt;
+
+  ASSERT_EQ(stmt->opt, Statement::OPT_TRY_BLOCK);
+  ASSERT_EQ(21, stmt->tokTry->pos);
+  ASSERT_EQ(TOK_KEY_TRY, stmt->tokTry->type);
+  ASSERT_EQ(28, stmt->catches->catchClause->tokCatch->pos);
+  ASSERT_EQ(TOK_KEY_CATCH, stmt->catches->catchClause->tokCatch->type);
+  ASSERT_EQ(34, stmt->catches->catchClause->posLParen);
+  ASSERT_EQ(46, stmt->catches->catchClause->posRParen);
+  ASSERT_EQ(35, stmt->catches->catchClause->catchType->id->pos);
+  ASSERT_EQ("Exception", stmt->catches->catchClause->catchType->id->value);
+  ASSERT_EQ(45, stmt->catches->catchClause->id->pos);
+  ASSERT_EQ("e", stmt->catches->catchClause->id->value);
+}
+
 
 int main(int argc, char **argv) {
   ::testing::InitGoogleTest(&argc, argv);

@@ -19,6 +19,7 @@ typedef boost::shared_ptr<struct Error> spError;
 enum ErrorCode {
   ERR_EXP_ARGUMENTS,
   ERR_EXP_ARRAY,
+  ERR_EXP_CATCH,
   ERR_EXP_CLASS,
   ERR_EXP_CLASS_OR_ARRAY_CREATOR_REST,
   ERR_EXP_COMMA,
@@ -56,6 +57,7 @@ public:
   ErrorUtil() {
     msgs[ERR_EXP_ARGUMENTS] = "Expected Arguments";
     msgs[ERR_EXP_ARRAY] = "Expected Array";
+    msgs[ERR_EXP_CATCH] = "Expected 'catch' expression";
     msgs[ERR_EXP_CLASS] = "Expected keyword class";
     msgs[ERR_EXP_CLASS_OR_ARRAY_CREATOR_REST] =
       "Expected ClassCreatorRest or ArrayCreatorRest";
