@@ -103,6 +103,28 @@ void Output::setBlockStatement(const spBlockStatement &blockStmt) {
   }
 }
 
+void Output::setCatches(const spCatches &catches) {
+  if (catches->catchClause) { setCatchClause(catches->catchClause); }
+  for (unsigned int i = 0; i < catches->catchClauses.size(); i++) {
+    setCatchClause(catches->catchClauses[0]);
+  }
+}
+
+void Output::setCatchClause(const spCatchClause &catchClause) {
+  if (catchClause->tokCatch) { setKeyword(catchClause->tokCatch); }
+  if (catchClause->posLParen) { setOp(catchClause->posLParen); }
+  // TODO: {VariableModifier}
+  if (catchClause->catchType) { setCatchType(catchClause->catchType); }
+  if (catchClause->id) { setIdentifier(catchClause->id); }
+  if (catchClause->posRParen) { setOp(catchClause->posRParen); }
+  if (catchClause->block) { setBlock(catchClause->block); }
+}
+
+void Output::setCatchType(const spCatchType &catchType) {
+  if (catchType->id) { setIdentifier(catchType->id); }
+  // TODO: { '|' Identifier }
+}
+
 void Output::setClassBody(const spClassBody &classBody) {
   for (std::size_t i = 0; i < classBody->decls.size(); i++) {
     setClassBodyDeclaration(classBody->decls[i]);
@@ -276,6 +298,11 @@ void Output::setFieldDeclsRest(const spFieldDeclaratorsRest &fieldDeclsRest) {
 
   // TODO:
   //std::vector<std::pair<unsigned int, spVariableDeclarator> > pairsCommaVarDecl;
+}
+
+void Output::setFinally(const spFinally &finally) {
+  if (finally->tokFinally) { setKeyword(finally->tokFinally); }
+  if (finally->block) { setBlock(finally->block); }
 }
 
 void Output::setFormalParameters(const spFormalParameters &formParams) {
@@ -742,8 +769,12 @@ void Output::setStatement(const spStatement &stmt) {
     return;
   }
 
+  // try Block ( Catches | [Catches] Finally )
   if (stmt->opt == Statement::OPT_TRY_BLOCK) {
-    // TODO:
+    if (stmt->tokTry) { setKeyword(stmt->tokTry); }
+    if (stmt->block) { setBlock(stmt->block); }
+    if (stmt->catches) { setCatches(stmt->catches); }
+    if (stmt->finally) { setFinally(stmt->finally); }
     return;
   }
 

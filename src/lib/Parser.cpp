@@ -546,7 +546,11 @@ void Parser::parseBlockStatement(spBlockStatement &blockStmt) {
 /// BlockStatements: { BlockStatement }
 void Parser::parseBlockStatements(std::vector<spBlockStatement> &blockStmts) {
   // TODO: can we check which tokens are candidates for a block stmt?
-  while (lexer->getCurToken() != TOK_RCURLY_BRACKET) {
+  unsigned pos = 0;
+  while (lexer->getCurToken() != TOK_RCURLY_BRACKET
+    && pos != lexer->getCursor()) {
+
+    pos = lexer->getCursor();
     spBlockStatement blockStmt = spBlockStatement(new BlockStatement);
     parseBlockStatement(blockStmt);
     if (blockStmt->err) {
@@ -634,7 +638,7 @@ void Parser::parseCatches(spCatches &catches) {
     return;
   }
 
-  while (true) {
+  while (lexer->getCurToken() == TOK_KEY_CATCH) {
     spCatchClause catchClause = spCatchClause(new CatchClause);
     parseCatchClause(catchClause);
     if (catchClause->err) {

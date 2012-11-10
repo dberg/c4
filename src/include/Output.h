@@ -24,6 +24,9 @@ class Output {
   void setArrayDepth(ArrayDepth &arrayDepth);
   void setBlock(const spBlock &block);
   void setBlockStatement(const spBlockStatement &blockStmt);
+  void setCatches(const spCatches &catches);
+  void setCatchClause(const spCatchClause &catchClause);
+  void setCatchType(const spCatchType &catchType);
   void setClassBody(const spClassBody &classBody);
   void setClassBodyDeclaration(const spClassBodyDeclaration &decl);
   void setClassOrInterfaceDeclaration(
@@ -37,6 +40,7 @@ class Output {
   void setExpression2(const spExpression2 &expr2);
   void setExpression3(const spExpression3 &expr3);
   void setFieldDeclsRest(const spFieldDeclaratorsRest &fieldDeclsRest);
+  void setFinally(const spFinally &finally);
   void setFormalParameters(const spFormalParameters &formParams);
   void setFormalParameterDecls(const spFormalParameterDecls &formParamDecls);
   void setFormalParameterDeclsRest(
