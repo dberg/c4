@@ -24,27 +24,43 @@ void Output::build() {
   output += ")";
 }
 
-/// We return zero or more of the form:
-/// (annotation INI ERR (qualified-id INI END))
-/// where the annotation ini marks the position of the token '@' and we delimit
-/// qualified-id as one element being the ini the first identifier and the end
-/// the last identifier.
+void Output::setAnnotationElement(const spAnnotationElement elem) {
+  if (elem->opt == AnnotationElement::OPT_ELEMENT_VALUE_PAIRS) {
+    for (unsigned i = 0; i < elem->pairs.size(); i++) {
+      setElementValuePair(elem->pairs[i]);
+    }
+    return;
+  }
+
+  if (elem->opt == AnnotationElement::OPT_ELEMENT_VALUE) {
+    if (elem->value) {
+      setElementValue(elem->value);
+    }
+  }
+}
+
+void Output::setAnnotation(const spAnnotation &annotation) {
+  if (annotation->qualifiedId) {
+    // '@'
+    output += "(djp-node-annotation-tok-at "
+      + itos(annotation->posTokAt + 1) + ")";
+
+    // QualifiedId
+    int ini = annotation->qualifiedId->ini + 1;
+    int end = annotation->qualifiedId->end + 2;
+    setQualifiedId(ini, end);
+  }
+
+  if (annotation->elem) {
+    setAnnotationElement(annotation->elem);
+  }
+}
+
 void Output::setAnnotations(
   const std::vector<spAnnotation> &annotations) {
 
   for (std::size_t i = 0; i < annotations.size(); i++) {
-    int ini = 0; int end = 0;
-    if (annotations[i]->qualifiedId) {
-      ini = annotations[i]->qualifiedId->ini + 1;
-      end = annotations[i]->qualifiedId->end + 2;
-    }
-
-    output += "(djp-node-annotation "
-      + itos(annotations[i]->posTokAt + 1) + " "
-      + itos((int) annotations[i]->err)
-      + " (djp-node-qualified-id "
-      + itos(ini) + " "
-      + itos(end) + "))";
+    setAnnotation(annotations[i]);
   }
 }
 
@@ -202,6 +218,39 @@ void Output::setConstructorDeclaratorRest(
   }
 
   output += ")";
+}
+
+void Output::setElementValue(const spElementValue &value) {
+  if (value->opt == ElementValue::OPT_ANNOTATION) {
+    if (value->annotation) {
+      setAnnotation(value->annotation);
+    }
+    return;
+  }
+
+  if (value->opt == ElementValue::OPT_EXPRESSION1) {
+    if (value->expr1) {
+      setExpression1(value->expr1);
+    }
+    return;
+  }
+
+  if (value->opt == ElementValue::OPT_ELEMENT_VALUE_ARRAY_INITIALIZER) {
+    if (value->elemValArrayInit) {
+      // TODO:
+      //setElementValueArrayInitializer(value->elemValArrayInit);
+    }
+  }
+}
+
+void Output::setElementValuePair(const spElementValuePair &pair) {
+  if (pair->id) {
+    setIdentifier(pair->id);
+  }
+
+  if (pair->value) {
+    setElementValue(pair->value);
+  }
 }
 
 void Output::setErrors(const std::vector<spError> &errors) {
@@ -442,6 +491,40 @@ void Output::setKeyword(int ini, int end) {
   output += "(djp-node-keyword " + itos(ini) + " " + itos(end) + ")";
 }
 
+void Output::setLiteral(const spLiteral &literal) {
+  if (literal->opt == Literal::OPT_INTEGER) {
+    // TODO:
+    return;
+  }
+
+  if (literal->opt == Literal::OPT_FLOATING_POINT) {
+    // TODO:
+    return;
+  }
+
+  if (literal->opt == Literal::OPT_CHAR) {
+    // TODO:
+    return;
+  }
+
+  if (literal->opt == Literal::OPT_STRING) {
+    if (literal->strLiteral) {
+      setStringLiteral(literal->strLiteral);
+    }
+    return;
+  }
+
+  if (literal->opt == Literal::OPT_BOOLEAN) {
+    // TODO:
+    return;
+  }
+
+  if (literal->opt == Literal::OPT_NULL) {
+    // TODO:
+    return;
+  }
+}
+
 void Output::setMemberDecl(const spMemberDecl &memberDecl) {
   if (memberDecl->opt == MemberDecl::OPT_METHOD_OR_FIELD_DECL) {
     if (memberDecl->methodOrFieldDecl) {
@@ -622,7 +705,9 @@ void Output::setPackageDeclaration(const spPackageDeclaration &pkgDecl) {
 
 void Output::setPrimary(const spPrimary &primary) {
   if (primary->opt == Primary::OPT_LITERAL) {
-    // TODO:
+    if (primary->literal) {
+      setLiteral(primary->literal);
+    }
     return;
   }
 
@@ -788,6 +873,13 @@ void Output::setStatementExpression(const spStatementExpression &stmtExpr) {
   if (stmtExpr->expr) {
     setExpression(stmtExpr->expr);
   }
+}
+
+void Output::setStringLiteral(const spStringLiteral &strLiteral) {
+  unsigned ini = strLiteral->pos + 1;
+  unsigned end = ini + strLiteral->val.length();
+  output += "(djp-node-string-literal "
+    + itos(ini) + " " + itos(end) + ")";
 }
 
 void Output::setType(const spType &type) {

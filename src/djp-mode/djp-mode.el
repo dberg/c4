@@ -10,9 +10,10 @@
 ;; Font faces
 (defvar djp-face-annotation-tok-at 'nil)
 (defvar djp-face-comment 'font-lock-comment-face)
-(defvar djp-face-qualified-id 'nil)
 (defvar djp-face-identifier 'font-lock-variable-name-face)
 (defvar djp-face-keyword 'font-lock-keyword-face)
+(defvar djp-face-qualified-id 'nil)
+(defvar djp-face-string-literal 'font-lock-string-face)
 (defvar djp-face-op nil)
 
 (defface djp-error-face
@@ -152,22 +153,26 @@ The output of the compiler is used to build djp-parse-tree."
 (defun djp-node-op (ini end)
   (if djp-face-op (put-text-property ini end 'face djp-face-op)))
 
-(defun djp-node-annotation (pos-tok-at err &optional ignore)
+(defun djp-node-annotation-tok-at (pos-tok-at)
   (if djp-face-annotation-tok-at
       (put-text-property pos-tok-at
 			 (+ pos-tok-at 1) 'face djp-face-annotation-tok-at)))
 
-(defun djp-node-qualified-id (ini end)
-  (if djp-face-qualified-id
-      (put-text-property ini end 'face djp-face-qualified-id)))
+(defun djp-node-identifier (ini end)
+  (if djp-face-identifier
+      (put-text-property ini end 'face djp-face-identifier)))
 
 (defun djp-node-keyword (ini end)
   (if djp-face-keyword
       (put-text-property ini end 'face djp-face-keyword)))
 
-(defun djp-node-identifier (ini end)
-  (if djp-face-identifier
-      (put-text-property ini end 'face djp-face-identifier)))
+(defun djp-node-qualified-id (ini end)
+  (if djp-face-qualified-id
+      (put-text-property ini end 'face djp-face-qualified-id)))
+
+(defun djp-node-string-literal (ini end)
+  (if djp-face-string-literal
+      (put-text-property ini end 'face djp-face-string-literal)))
 
 (defun djp-error (ini end msg)
   (let ((ovl (make-overlay ini end)))

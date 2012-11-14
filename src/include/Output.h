@@ -19,6 +19,8 @@ class Output {
   TokenUtil tokenUtil;
   ErrorUtil errUtil;
 
+  void setAnnotationElement(const spAnnotationElement elem);
+  void setAnnotation(const spAnnotation &annotation);
   void setAnnotations(const std::vector<spAnnotation> &annotations);
   void setArguments(const spArguments &args);
   void setArrayDepth(ArrayDepth &arrayDepth);
@@ -34,6 +36,8 @@ class Output {
   void setComments();
   void setConstructorDeclaratorRest(
     const spConstructorDeclaratorRest &constDeclRest);
+  void setElementValue(const spElementValue &value);
+  void setElementValuePair(const spElementValuePair &pair);
   void setErrors(const std::vector<spError> &errors);
   void setExpression(const spExpression &expr);
   void setExpression1(const spExpression1 &expr1);
@@ -51,6 +55,7 @@ class Output {
   void setImportDeclarations(const spImportDeclarations &impDecls);
   void setKeyword(int ini, int end);
   void setKeyword(const spTokenExp &token);
+  void setLiteral(const spLiteral &literal);
   void setMemberDecl(const spMemberDecl &memberDecl);
   void setMethodDeclaratorRest(const spMethodDeclaratorRest &methodDeclRest);
   void setMethodOrFieldDecl(const spMethodOrFieldDecl &methodOrFieldDecl);
@@ -65,6 +70,7 @@ class Output {
   void setReferenceType(const spReferenceType &refType);
   void setStatement(const spStatement &stmt);
   void setStatementExpression(const spStatementExpression &stmtExpr);
+  void setStringLiteral(const spStringLiteral &strLiteral);
   void setType(const spType &type);
   void setTypeArgument(const spTypeArgument &typeArg);
   void setTypeArguments(const spTypeArguments &typeArgs);
