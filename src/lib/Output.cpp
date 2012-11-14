@@ -401,9 +401,16 @@ void Output::setFormalParameterDeclsRest(
   }
 }
 
-void Output::setIdentifier(const spIdentifier &identifier) {
+void Output::setIdentifier(const spIdentifier &identifier, IdentifierOpt opt) {
   int ini = identifier->pos + 1;
   int end = ini + identifier->value.length();
+
+  if (opt == Output::OPT_IDENTIFIER_REFERENCE_TYPE) {
+    output += "(djp-node-reference-type-id "
+      + itos(ini) + " " + itos(end) + ")";
+    return;
+  }
+
   output += "(djp-node-identifier " + itos(ini) + " " + itos(end) + ")";
 }
 
@@ -661,7 +668,8 @@ void Output::setNormalClassDeclaration(
   }
 
   if (nClassDecl->identifier) {
-    setIdentifier(nClassDecl->identifier);
+    setIdentifier(nClassDecl->identifier,
+      Output::OPT_IDENTIFIER_REFERENCE_TYPE);
   }
 
   if (nClassDecl->classBody) {
@@ -770,7 +778,10 @@ void Output::setQualifiedId(int ini, int end) {
 }
 
 void Output::setReferenceType(const spReferenceType &refType) {
-  if (refType->id) { setIdentifier(refType->id); }
+  if (refType->id) {
+    setIdentifier(refType->id, Output::OPT_IDENTIFIER_REFERENCE_TYPE);
+  }
+
   if (refType->typeArgs) { setTypeArguments(refType->typeArgs); }
   for (unsigned int i = 0; i < refType->refTypes.size(); i++) {
     setReferenceType(refType->refTypes[i]);

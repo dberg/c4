@@ -19,6 +19,11 @@ class Output {
   TokenUtil tokenUtil;
   ErrorUtil errUtil;
 
+  enum IdentifierOpt {
+    OPT_UNDEFINED,
+    OPT_IDENTIFIER_REFERENCE_TYPE,
+  };
+
   void setAnnotationElement(const spAnnotationElement elem);
   void setAnnotation(const spAnnotation &annotation);
   void setAnnotations(const std::vector<spAnnotation> &annotations);
@@ -49,7 +54,8 @@ class Output {
   void setFormalParameterDecls(const spFormalParameterDecls &formParamDecls);
   void setFormalParameterDeclsRest(
     const spFormalParameterDeclsRest &formParamDeclsRest);
-  void setIdentifier(const spIdentifier &identifier);
+  void setIdentifier(const spIdentifier &identifier,
+    IdentifierOpt opt = Output::OPT_UNDEFINED);
   void setIdentifierSuffix(const spIdentifierSuffix &idSuffix);
   void setImportDeclaration(const spImportDeclaration &import);
   void setImportDeclarations(const spImportDeclarations &impDecls);
