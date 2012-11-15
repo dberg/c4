@@ -96,7 +96,9 @@ void Output::setBlock(const spBlock &block) {
 
 void Output::setBlockStatement(const spBlockStatement &blockStmt) {
   if (blockStmt->opt == BlockStatement::OPT_LOCAL_VAR) {
-    // TODO:
+    if (blockStmt->localVar) {
+      setLocalVariableDeclarationStatement(blockStmt->localVar);
+    }
     return;
   }
 
@@ -532,6 +534,27 @@ void Output::setLiteral(const spLiteral &literal) {
   }
 }
 
+void Output::setLocalVariableDeclarationStatement(
+  const spLocalVariableDeclarationStatement &localVar) {
+
+  if (localVar->varModifier) {
+    setVariableModifier(localVar->varModifier);
+  }
+
+  if (localVar->type) {
+    setType(localVar->type);
+  }
+
+  if (localVar->varDecls) {
+    setVariableDeclarators(localVar->varDecls);
+  }
+
+  if (localVar->posSemiColon) {
+    setOp(localVar->posSemiColon);
+  }
+}
+
+
 void Output::setMemberDecl(const spMemberDecl &memberDecl) {
   if (memberDecl->opt == MemberDecl::OPT_METHOD_OR_FIELD_DECL) {
     if (memberDecl->methodOrFieldDecl) {
@@ -947,6 +970,16 @@ void Output::setTypeDeclarations(
   }
 }
 
+void Output::setVariableDeclarator(const spVariableDeclarator &varDecl) {
+  if (varDecl->id) {
+    setIdentifier(varDecl->id);
+  }
+
+  if (varDecl->varDeclRest) {
+    setVariableDeclaratorRest(varDecl->varDeclRest);
+  }
+}
+
 void Output::setVariableDeclaratorId(
   const spVariableDeclaratorId &varDeclId) {
   if (varDeclId->identifier) {
@@ -965,6 +998,19 @@ void Output::setVariableDeclaratorRest(
 
   if (varDeclRest->varInit) {
     setVariableInitializer(varDeclRest->varInit);
+  }
+}
+
+void Output::setVariableDeclarators(const spVariableDeclarators &varDecls) {
+  if (varDecls->varDecl) {
+    setVariableDeclarator(varDecls->varDecl);
+  }
+
+  for (unsigned i = 0; i < varDecls->semiColonAndVarDecls.size(); i++) {
+    std::pair<unsigned, spVariableDeclarator> pair =
+      varDecls->semiColonAndVarDecls[i];
+    setOp(pair.first);
+    setVariableDeclarator(pair.second);
   }
 }
 

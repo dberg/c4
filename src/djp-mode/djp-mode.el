@@ -13,7 +13,7 @@
 (defvar djp-face-identifier 'nil)
 (defvar djp-face-keyword 'font-lock-keyword-face)
 (defvar djp-face-qualified-id 'nil)
-(defvar djp-face-reference-type-id 'nil)
+(defvar djp-face-reference-type-id 'font-lock-type-face)
 (defvar djp-face-string-literal 'font-lock-string-face)
 (defvar djp-face-op nil)
 

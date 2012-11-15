@@ -62,6 +62,8 @@ class Output {
   void setKeyword(int ini, int end);
   void setKeyword(const spTokenExp &token);
   void setLiteral(const spLiteral &literal);
+  void setLocalVariableDeclarationStatement(
+    const spLocalVariableDeclarationStatement &localVar);
   void setMemberDecl(const spMemberDecl &memberDecl);
   void setMethodDeclaratorRest(const spMethodDeclaratorRest &methodDeclRest);
   void setMethodOrFieldDecl(const spMethodOrFieldDecl &methodOrFieldDecl);
@@ -81,8 +83,10 @@ class Output {
   void setTypeArgument(const spTypeArgument &typeArg);
   void setTypeArguments(const spTypeArguments &typeArgs);
   void setTypeDeclarations(const std::vector<spTypeDeclaration> &typeDecls);
+  void setVariableDeclarator(const spVariableDeclarator &varDecl);
   void setVariableDeclaratorId(const spVariableDeclaratorId &varDeclId);
   void setVariableDeclaratorRest(const spVariableDeclaratorRest &varDeclRest);
+  void setVariableDeclarators(const spVariableDeclarators &varDecls);
   void setVariableInitializer(const spVariableInitializer &varInit);
   void setVariableModifier(const spVariableModifier &varModifier);
   void setVoidMethodDeclaratorRest(
