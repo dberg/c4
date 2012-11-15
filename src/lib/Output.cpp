@@ -139,8 +139,15 @@ void Output::setCatchClause(const spCatchClause &catchClause) {
 }
 
 void Output::setCatchType(const spCatchType &catchType) {
-  if (catchType->id) { setIdentifier(catchType->id); }
-  // TODO: { '|' Identifier }
+  if (catchType->id) {
+    setIdentifier(catchType->id, Output::OPT_IDENTIFIER_REFERENCE_TYPE);
+  }
+
+  for (unsigned i = 0; i < catchType->pipeAndId.size(); i++) {
+    std::pair<unsigned, spIdentifier> pair = catchType->pipeAndId[i];
+    setOp(pair.first);
+    setIdentifier(pair.second, Output::OPT_IDENTIFIER_REFERENCE_TYPE);
+  }
 }
 
 void Output::setClassBody(const spClassBody &classBody) {
