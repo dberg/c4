@@ -822,6 +822,32 @@ TEST(Parser, PackageDeclaration) {
     parser.compilationUnit->pkgDecl->qualifiedId->end);
 }
 
+TEST(Parser, ParExpression) {
+  std::string filename = "Test.java";
+  std::string buffer
+    = "class A { void h() { if (s.equals(\"x\")) { return; }}}";
+
+  spDiagnosis diag = spDiagnosis(new Diagnosis());
+  Parser parser(filename, buffer, diag);
+  parser.parse();
+
+  spBlockStatement blockStmt = parser.compilationUnit->typeDecls[0]->decl
+    ->classDecl->nClassDecl->classBody->decls[0]->memberDecl->voidMethDeclRest
+    ->block->blockStmts[0];
+  ASSERT_EQ(BlockStatement::OPT_ID_STMT, blockStmt->opt);
+  ASSERT_EQ(Statement::OPT_IF, blockStmt->stmt->opt);
+  ASSERT_EQ(21, blockStmt->stmt->tokIf->pos);
+  ASSERT_EQ(TOK_KEY_IF, blockStmt->stmt->tokIf->type);
+  ASSERT_EQ(24, blockStmt->stmt->parExpr->posLParen);
+  ASSERT_EQ(38, blockStmt->stmt->parExpr->posRParen);
+
+  spStringLiteral strLiteral = blockStmt->stmt->parExpr->expr->expr1->expr2
+    ->expr3->primary->primaryId->idSuffix->args->expr->expr1->expr2->expr3
+    ->primary->literal->strLiteral;
+  ASSERT_EQ(34, strLiteral->pos);
+  ASSERT_EQ("\"x\"", strLiteral->val);
+}
+
 /// Primary: new Creator
 /// Creator:
 ///   NonWildcardTypeArguments CreatedName ClassCreatorRest

@@ -94,6 +94,7 @@ class Parser {
   spPackageDeclaration parsePackageDeclaration(
     std::vector<spAnnotation> &annotations);
   void parsePairExpression(spPairExpression &pairExpr);
+  void parseParExpression(spParExpression &parExpr);
   void parsePostfixOp(spPostfixOp &postfixOp);
   void parsePrimary(spPrimary &primary);
   void parsePrimaryBasicType(spPrimaryBasicType &primaryBasicType);

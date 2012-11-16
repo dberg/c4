@@ -1987,7 +1987,7 @@ void Parser::parseStatement(spStatement &stmt) {
   // (1) Block
   if (lexer->getCurToken() == TOK_LCURLY_BRACKET) {
     stmt->opt = Statement::OPT_BLOCK;
-    stmt->block = spBlock(new Block());
+    stmt->block = spBlock(new Block);
     parseBlock(stmt->block);
     return;
   }
@@ -2004,7 +2004,41 @@ void Parser::parseStatement(spStatement &stmt) {
 
   // (5) if ParExpression Statement [else Statement]
   if (lexer->getCurToken() == TOK_KEY_IF) {
-    // TODO:
+    // 'if'
+    stmt->opt = Statement::OPT_IF;
+    stmt->tokIf = spTokenExp(new TokenExp(
+      lexer->getCursor() - tokenUtil.getTokenLength(
+      lexer->getCurToken()), lexer->getCurToken()));
+    lexer->getNextToken(); // consume 'if'
+
+    // ParExpression
+    stmt->parExpr = spParExpression(new ParExpression);
+    parseParExpression(stmt->parExpr);
+    if (stmt->parExpr->err) {
+      stmt->addErr(-1);
+      return;
+    }
+
+    // Statement
+    stmt->stmtIf = spStatement(new Statement);
+    parseStatement(stmt->stmtIf);
+    if (stmt->stmtIf->err) {
+      stmt->addErr(-1);
+      return;
+    }
+
+    // [else Statement]
+    if (lexer->getCurToken() == TOK_KEY_ELSE) {
+      stmt->tokElse = spTokenExp(new TokenExp(
+        lexer->getCursor() - tokenUtil.getTokenLength(
+        lexer->getCurToken()), lexer->getCurToken()));
+      lexer->getNextToken(); // consume 'else'
+
+      stmt->stmtElse = spStatement(new Statement);
+      parseStatement(stmt->stmtElse);
+      if (stmt->stmtElse->err) { stmt->addErr(-1); }
+    }
+
     return;
   }
 
@@ -2052,7 +2086,30 @@ void Parser::parseStatement(spStatement &stmt) {
 
   // (13) return [Expression] ;
   if (lexer->getCurToken() == TOK_KEY_RETURN) {
-    // TODO:
+    // 'return'
+    stmt->tokReturn = spTokenExp(new TokenExp(
+      lexer->getCursor() - tokenUtil.getTokenLength(
+      lexer->getCurToken()), lexer->getCurToken()));
+    lexer->getNextToken(); // consume 'return'
+
+    // [Expression]
+    if (lexer->getCurToken() != TOK_SEMICOLON) {
+      stmt->exprReturn = spExpression(new Expression);
+      parseExpression(stmt->exprReturn);
+      if (stmt->exprReturn->isEmpty()) {
+	stmt->addErr(-1);
+	return;
+      }
+    }
+
+    // ';'
+    if (lexer->getCurToken() == TOK_SEMICOLON) {
+      stmt->posSemiColon = lexer->getCursor() - 1;
+      lexer->getNextToken(); // consume ';'
+      return;
+    }
+
+    stmt->addErr(diag->addErr(ERR_EXP_SEMICOLON, lexer->getCursor() - 1));
     return;
   }
 
@@ -2460,6 +2517,35 @@ void Parser::parsePairExpression(spPairExpression &pairExpr) {
 
   // Error
   diag->addErr(ERR_EXP_LPAREN, pos, lexer->getCursor());
+}
+
+/// ParExpression: '(' Expression ')'
+void Parser::parseParExpression(spParExpression &parExpr) {
+  // '('
+  if (lexer->getCurToken() != TOK_LPAREN) {
+    parExpr->addErr(diag->addErr(ERR_EXP_LPAREN, lexer->getCursor() - 1));
+    return;
+  }
+
+  parExpr->posLParen = lexer->getCursor() - 1;
+  lexer->getNextToken(); // consume '('
+
+  // Expression
+  parExpr->expr = spExpression(new Expression);
+  parseExpression(parExpr->expr);
+  if (parExpr->expr->isEmpty()) {
+    parExpr->addErr(-1);
+    return;
+  }
+
+  // ')'
+  if (lexer->getCurToken() != TOK_RPAREN) {
+    parExpr->addErr(diag->addErr(ERR_EXP_RPAREN, lexer->getCursor() - 1));
+    return;
+  }
+
+  parExpr->posRParen = lexer->getCursor() - 1;
+  lexer->getNextToken(); // consume ')'
 }
 
 /// ClassBody: '{' { ClassBodyDeclaration } '}'

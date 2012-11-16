@@ -85,6 +85,7 @@ typedef boost::shared_ptr<struct NonWildcardTypeArgumentsOrDiamond>
 typedef boost::shared_ptr<struct PackageDeclaration> spPackageDeclaration;
 typedef boost::shared_ptr<struct PairExpression> spPairExpression;
 typedef boost::shared_ptr<struct PostfixOp> spPostfixOp;
+typedef boost::shared_ptr<struct ParExpression> spParExpression;
 typedef boost::shared_ptr<struct PrefixOp> spPrefixOp;
 typedef boost::shared_ptr<struct Primary> spPrimary;
 typedef boost::shared_ptr<struct PrimaryBasicType> spPrimaryBasicType;
@@ -590,12 +591,36 @@ struct Statement : ASTError {
 
   StatementOpt opt;
 
+  // shared 1,16
   spBlock block;
+
+  // shared 2,4, 13
   unsigned posSemiColon;
+
+  // (1) Block
+
+  // (2) ';'
+
+  // (3) Identifier : Statement
   spIdentifier id;
   unsigned int posColon;
   spStatement stmt;
+
+  // (4) StatementExpression ;
   spStatementExpression stmtExpr;
+
+  // (5) if ParExpression Statement [else Statement]
+  spTokenExp tokIf;
+  spStatement stmtIf;
+  spTokenExp tokElse;
+  spStatement stmtElse;
+  spParExpression parExpr;
+
+  // (13) return [Expression] ;
+  spTokenExp tokReturn;
+  spExpression exprReturn;
+
+  // (16) try Block ( Catches | [Catches] Finally )
   spTokenExp tokTry;
   spCatches catches;
   spFinally finally;
@@ -1007,16 +1032,16 @@ struct Expression3 : ASTError {
 };
 
 /// Primary: 
-///   Literal
-///   ParExpression
-///   this [Arguments]
-///   super SuperSuffix
-///   new Creator
-///   NonWildcardTypeArguments
-///     ( ExplicitGenericInvocationSuffix | this Arguments )
-///   Identifier { . Identifier } [IdentifierSuffix]
-///   BasicType {[]} . class
-///   void . class
+///   (1) Literal
+///   (2) ParExpression
+///   (3) this [Arguments]
+///   (4) super SuperSuffix
+///   (5) new Creator
+///   (6) NonWildcardTypeArguments
+///         ( ExplicitGenericInvocationSuffix | this Arguments )
+///   (7) Identifier { . Identifier } [IdentifierSuffix]
+///   (8) BasicType {[]} . class
+///   (9) void . class
 struct Primary {
   enum PrimaryEnum {
     OPT_UNDEFINED,
@@ -1234,6 +1259,15 @@ struct StringLiteral {
 
 struct PairExpression {
   spExpression expr;
+};
+
+/// ParExpression: '(' Expression ')'
+struct ParExpression : ASTError {
+  unsigned posLParen;
+  unsigned posRParen;
+  spExpression expr;
+
+  ParExpression() : posLParen(0), posRParen(0) {}
 };
 
 /// PostfixOp: ++ | --

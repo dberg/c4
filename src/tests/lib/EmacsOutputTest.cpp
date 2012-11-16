@@ -17,8 +17,8 @@ TEST(EmacsOutput, PackageDeclaration) {
   output.build();
   std::string expected =
     "((djp-package-declaration "
-    "(djp-node-annotation 1 0 "
-    "(djp-node-qualified-id 2 13))"
+    "(djp-node-annotation-tok-at 1)"
+    "(djp-node-qualified-id 2 13)"
     "(djp-node-keyword 14 21)"
     "(djp-node-qualified-id 22 30)))";
   ASSERT_EQ(expected, output.output);
@@ -68,9 +68,9 @@ TEST(EmacsOutput, NormalClassDeclaration) {
     "(djp-node-keyword 1 7)"
     "(djp-normal-class-declaration "
     "(djp-node-keyword 8 13)"
-    "(djp-node-identifier 14 18)"
+    "(djp-node-reference-type-id 14 18)"
     "(djp-node-keyword 19 26)"
-    "(djp-node-identifier 27 31))))";
+    "(djp-node-reference-type-id 27 31))))";
   ASSERT_EQ(expected, output.output);
 }
 
@@ -86,7 +86,7 @@ TEST(EmacsOutput, ClassConstructor) {
     "((djp-class-or-interface-declaration "
     "(djp-normal-class-declaration "
     "(djp-node-keyword 1 6)"
-    "(djp-node-identifier 7 10)"
+    "(djp-node-reference-type-id 7 10)"
     "(djp-member-decl-modifier-member-decl "
     "(djp-node-identifier 13 16)"
     "(djp-constructor-declarator-rest )))))";
@@ -105,7 +105,7 @@ TEST(EmacsOutput, ClassConstructorParameters) {
     "((djp-class-or-interface-declaration "
     "(djp-normal-class-declaration "
     "(djp-node-keyword 1 6)"
-    "(djp-node-identifier 7 10)"
+    "(djp-node-reference-type-id 7 10)"
     "(djp-member-decl-modifier-member-decl "
     "(djp-node-identifier 13 16)"
     "(djp-constructor-declarator-rest "
