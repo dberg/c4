@@ -3,6 +3,25 @@
 namespace djp {
 
 // Helper functions
+bool isAssignmentOperator(int token) {
+  if (TOK_OP_EQUALS == token
+    || TOK_OP_PLUS_EQUALS == token
+    || TOK_OP_MINUS_EQUALS == token
+    || TOK_OP_MUL_EQUALS == token
+    || TOK_OP_DIV_EQUALS == token
+    || TOK_OP_AMPERSAND_EQUALS == token
+    || TOK_OP_PIPE_EQUALS == token
+    || TOK_OP_CARRET_EQUALS == token
+    || TOK_OP_REM_EQUALS == token
+    || TOK_OP_LSHIFT_EQUALS == token
+    || TOK_OP_RSHIFT_EQUALS == token
+    || TOK_OP_TRIPLE_RSHIFT_EQUALS == token) {
+    return true;
+  }
+
+  return false;
+}
+
 bool isBasicType(int token) {
   if (TOK_KEY_BYTE == token
     || TOK_KEY_SHORT == token
@@ -813,6 +832,32 @@ void Parser::parseExpression3(spExpression3 &expr3) {
     return;
   }
 
+  // ( Expression | Type ) Expression3
+  /*
+  // TODO:
+  // Expression will lead us back to Expression3 checks so we have to avoid
+  // getting stuck into this madness.
+  spExpression expr = spExpression(new Expression());
+  parseExpression(expr);
+  if (expr->isEmpty() == false) {
+    expr3->opt = Expression3::OPT_EXPRESSION_TYPE_EXPRESSION3;
+    expr3->expr = expr;
+    expr3->expr3 = spExpression3(new Expression3());
+    parseExpression3(expr3->expr3);
+    return;
+  }
+
+  spType type = spType(new Type());
+  parseType(type);
+  if (type->isEmpty() == false) {
+    expr3->opt = Expression3::OPT_EXPRESSION_TYPE_EXPRESSION3;
+    expr3->type = type;
+    expr3->expr3 = spExpression3(new Expression3());
+    parseExpression3(expr3->expr3);
+    return;
+  }
+  */
+
   // Primary { Selector } { PostfixOp }
   // TODO: One problem with isPrimary is the condition token == TOK_IDENTIFIER.
   // This condition might indicate the 7th Primary production rule:
@@ -847,33 +892,6 @@ void Parser::parseExpression3(spExpression3 &expr3) {
       }
     }
   }
-
-  // ( Expression | Type ) Expression3
-  /*
-  // TODO:
-  // Expression will lead us back to Expression3 checks.
-  // We should check if we have a token that is a candidate for Expression3
-  // before we check for Expression or we can be stuck an infinite loop.
-  spExpression expr = spExpression(new Expression());
-  parseExpression(expr);
-  if (expr->isEmpty() == false) {
-    expr3->opt = Expression3::OPT_EXPRESSION_TYPE_EXPRESSION3;
-    expr3->expr = expr;
-    expr3->expr3 = spExpression3(new Expression3());
-    parseExpression3(expr3->expr3);
-    return;
-  }
-
-  spType type = spType(new Type());
-  parseType(type);
-  if (type->isEmpty() == false) {
-    expr3->opt = Expression3::OPT_EXPRESSION_TYPE_EXPRESSION3;
-    expr3->type = type;
-    expr3->expr3 = spExpression3(new Expression3());
-    parseExpression3(expr3->expr3);
-    return;
-  }
-  */
 }
 
 /// Finally: finally Block

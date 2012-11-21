@@ -16,6 +16,7 @@ typedef boost::shared_ptr<struct ArrayCreatorRest> spArrayCreatorRest;
 typedef boost::shared_ptr<struct ArrayCreatorRestOpt1> spArrayCreatorRestOpt1;
 typedef boost::shared_ptr<struct ArrayCreatorRestOpt2> spArrayCreatorRestOpt2;
 typedef boost::shared_ptr<struct ArrayInitializer> spArrayInitializer;
+typedef boost::shared_ptr<struct AssignmentOperator> spAssignmentOperator;
 typedef boost::shared_ptr<struct BasicType> spBasicType;
 typedef boost::shared_ptr<struct Block> spBlock;
 typedef boost::shared_ptr<struct BlockStatement> spBlockStatement;
@@ -951,7 +952,9 @@ struct ExplicitGenericInvocationSuffix : ASTError {
 /// Expression: Expression1 [ AssignmentOperator Expression1 ]
 struct Expression {
   spExpression1 expr1;
-  // TODO: [ AssignmentOperator Expression1 ]
+  // [ AssignmentOperator Expression1 ]
+  spAssignmentOperator assignOp;
+  spExpression1 assignExpr1;
 
   bool isEmpty() {
     return (expr1) ? false : true;
@@ -1465,6 +1468,25 @@ struct ArrayInitializer : ASTError {
   std::vector<spVariableInitializer> varInitList;
 
   ArrayInitializer() : posOpenCBrace(0), posCloseCBrace(0) {}
+};
+
+/// AssignmentOperator:
+///   =
+///   +=
+///   -=
+///   *=
+///   /=
+///   &=
+///   |=
+///   ^=
+///   %=
+///   <<=
+///   >>=
+///   >>>=
+struct AssignmentOperator : ASTError {
+  unsigned pos;
+  int tokAssignOp;
+  AssignmentOperator() : pos(0), tokAssignOp(TOK_ERROR) {}
 };
 
 /// VariableInitializer:

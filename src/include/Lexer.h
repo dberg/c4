@@ -36,16 +36,23 @@ class Lexer {
   std::vector<spComment> comments;
 
   int getToken();
+  int getAmpersandToken();
   int getAnnotationToken();
+  int getCarretToken();
   int getCharacterLiteral();
-  int getCommentToken();
-  int getEqualsOrEqualsEqualsToken();
+  int getCommentOrDivToken();
+  int getEqualsToken();
   int getEscapeSequence(std::stringstream &ss);
-  int getMinusOrMinusMinusToken();
+  int getGreaterThenToken();
+  int getLessThenToken();
+  int getMinusToken();
   int getNumberToken(char c);
+  int getMulToken();
   int getPeriodOrEllipsisToken(std::stringstream &ss);
   int getPeriodStartingToken();
-  int getPlusOrPlusPlusToken();
+  int getPipeToken();
+  int getPlusToken();
+  int getRemToken();
   int getStringLiteral();
   int getTokenIdentifier(char c);
 

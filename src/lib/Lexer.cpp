@@ -47,14 +47,20 @@ int Lexer::getToken() {
   if ('\'' == c) return getCharacterLiteral();
   if ('"' == c) return getStringLiteral();
   if ('.' == c) return getPeriodStartingToken();
-  if ('+' == c) return getPlusOrPlusPlusToken();
-  if ('-' == c) return getMinusOrMinusMinusToken();
-  if ('=' == c) return getEqualsOrEqualsEqualsToken();
-  if ('/' == c) return getCommentToken();
+  if ('+' == c) return getPlusToken();
+  if ('-' == c) return getMinusToken();
+  if ('=' == c) return getEqualsToken();
+  if ('/' == c) return getCommentOrDivToken();
+  if ('&' == c) return getAmpersandToken();
+  if ('|' == c) return getPipeToken();
+  if ('^' == c) return getCarretToken();
+  if ('%' == c) return getRemToken();
+  if ('>' == c) return getGreaterThenToken();
+  if ('<' == c) return getLessThenToken();
   if (',' == c) return TOK_COMMA;
   if (';' == c) return TOK_SEMICOLON;
   if (':' == c) return TOK_OP_COLON;
-  if ('*' == c) return TOK_OP_MUL;
+  if ('*' == c) return getMulToken();
   if ('~' == c) return TOK_OP_TILDE;
   if ('!' == c) return TOK_OP_EXCLAMATION;
   if ('{' == c) return TOK_LCURLY_BRACKET;
@@ -63,8 +69,6 @@ int Lexer::getToken() {
   if (')' == c) return TOK_RPAREN;
   if ('[' == c) return TOK_LBRACKET;
   if (']' == c) return TOK_RBRACKET;
-  if ('<' == c) return TOK_OP_LT;
-  if ('>' == c) return TOK_OP_GT;
 
   if (isdigit(c)) return getNumberToken(c);
 
@@ -72,6 +76,21 @@ int Lexer::getToken() {
   if (isJavaLetter(c)) return getTokenIdentifier(c);
 
   return c;
+}
+
+int Lexer::getAmpersandToken() {
+  // We look 1 char ahead to decided if we have '&=' or '&&'
+  if (src->peekChar() == '=') {
+    src->getChar(); // conume '='
+    return TOK_OP_AMPERSAND_EQUALS;
+  }
+
+  if (src->peekChar() == '&') {
+    src->getChar(); // consume '&'
+    return TOK_OP_AMPERSAND_AMPERSAND;
+  }
+
+  return TOK_OP_AMPERSAND;
 }
 
 /// Return TOK_ANNOTATION | TOK_ANNOTATION_TYPE_DECLARATION
@@ -104,6 +123,16 @@ int Lexer::getAnnotationToken() {
   }
 
   return TOK_ANNOTATION;
+}
+
+int Lexer::getCarretToken() {
+  // We look 1 char ahead to decided if we have '^='.
+  if (src->peekChar() == '=') {
+    src->getChar(); // conume '='
+    return TOK_OP_CARRET_EQUALS;
+  }
+
+  return TOK_OP_CARRET;
 }
 
 int Lexer::getCharacterLiteral() {
@@ -140,9 +169,10 @@ int Lexer::getCharacterLiteral() {
   return TOK_ERROR;
 }
 
-/// Comments are pre-processed but since we do all parsing in one pass we store
-/// the comments data in the lexer and call getToken() again.
-int Lexer::getCommentToken() {
+/// A forward slash character indicates a comment, divisor or an assignment
+/// operation. Comments are pre-processed but since we do all parsing in one
+//// pass we store the comments data in the lexer and call getToken() again.
+int Lexer::getCommentOrDivToken() {
   // We peek 1 char ahead to confirm it's a comment,
   // and which type of comment this is.
   if (src->peekChar() == '/') {
@@ -173,10 +203,17 @@ int Lexer::getCommentToken() {
     return TOK_EOF;
   }
 
-  return 'c';
+  // Divisor
+  // We look 1 char ahead to decided if we have '/='.
+  if (src->peekChar() == '=') {
+    src->getChar(); // conume '='
+    return TOK_OP_DIV_EQUALS;
+  }
+
+  return TOK_OP_DIV;
 }
 
-int Lexer::getEqualsOrEqualsEqualsToken() {
+int Lexer::getEqualsToken() {
   // We look 1 char ahead to decided if we have '=='.
   if (src->peekChar() == '=') {
     src->getChar(); // conume '='
@@ -265,6 +302,16 @@ int Lexer::getEscapeSequence(std::stringstream &ss) {
   return TOK_ERROR;
 }
 
+int Lexer::getMulToken() {
+  // We look 1 char ahead to decided if we have '*' or '*='.
+  if (src->peekChar() == '=') {
+    src->getChar(); // conume '='
+    return TOK_OP_MUL_EQUALS;
+  }
+
+  return TOK_OP_MUL;
+}
+
 /// Returns one of:
 ///   TOK_DECIMAL_NUMERAL
 ///   TOK_DECIMAL_NUMERAL_WITH_INT_TYPE_SUFFIX
@@ -301,6 +348,21 @@ int Lexer::getPeriodStartingToken() {
   return tok;
 }
 
+int Lexer::getPipeToken() {
+  // We look 1 char ahead to decided if we have '|=' or '||'.
+  if (src->peekChar() == '=') {
+    src->getChar(); // conume '='
+    return TOK_OP_PIPE_EQUALS;
+  }
+
+  if (src->peekChar() == '|') {
+    src->getChar();
+    return TOK_OP_PIPE_PIPE;
+  }
+
+  return TOK_OP_PIPE;
+}
+
 /// Return TOK_PERIOD | TOK_ELLIPSIS
 int Lexer::getPeriodOrEllipsisToken(std::stringstream &ss) {
   // We look 2 chars ahead to decide if we have an ellipsis.
@@ -321,14 +383,29 @@ int Lexer::getPeriodOrEllipsisToken(std::stringstream &ss) {
   return TOK_PERIOD;
 }
 
-int Lexer::getPlusOrPlusPlusToken() {
-  // We look 1 char ahead to decided if we have '++'.
+int Lexer::getPlusToken() {
+  // We look 1 char ahead to decided if we have '++' or '+='
   if (src->peekChar() == '+') {
     src->getChar();
     return TOK_OP_PLUS_PLUS;
   }
 
+  if (src->peekChar() == '=') {
+    src->getChar();
+    return TOK_OP_PLUS_EQUALS;
+  }
+
   return TOK_OP_PLUS;
+}
+
+int Lexer::getRemToken() {
+  // We look 1 char ahead to decided if we have '%='.
+  if (src->peekChar() == '=') {
+    src->getChar(); // consume '='
+    return TOK_OP_REM_EQUALS;
+  }
+
+  return TOK_OP_REM;
 }
 
 int Lexer::getStringLiteral() {
@@ -361,11 +438,65 @@ int Lexer::getStringLiteral() {
   return TOK_ERROR;
 }
 
-int Lexer::getMinusOrMinusMinusToken() {
-  // We look 1 char ahead to decided if we have '--'.
+int Lexer::getGreaterThenToken() {
+  // We should check for '>', '>=', '>>', '>>=', '>>>', '>>>='.
+  if (src->peekChar() == '=') {
+    src->getChar(); // consume '='
+    return TOK_OP_GT_EQUALS;
+  }
+
+  if (src->peekChar() == '>') {
+    src->getChar(); // consume 2nd '>'
+    if (src->peekChar() == '=') {
+      src->getChar(); // consume '='
+      return TOK_OP_RSHIFT_EQUALS;
+    }
+
+    if (src->peekChar() == '>') {
+      src->getChar(); // consume 3rd '>'
+      if (src->peekChar() == '=') {
+	src->getChar(); // consume '='
+	return TOK_OP_TRIPLE_RSHIFT_EQUALS;
+      }
+
+      return TOK_OP_TRIPLE_RSHIFT;
+    }
+
+    return TOK_OP_RSHIFT;
+  }
+
+  return TOK_OP_GT;
+}
+
+int Lexer::getLessThenToken() {
+  // We should check for '<', '<=', '<<' or '<<='.
+  if (src->peekChar() == '=') {
+    src->getChar(); // consume '='
+    return TOK_OP_LT_EQUALS;
+  }
+
+  if (src->peekChar() == '<') {
+    src->getChar();
+    if (src->peekChar() == '=') {
+      src->getChar(); // consume '='
+      return TOK_OP_LSHIFT_EQUALS;
+    }
+    return TOK_OP_LSHIFT;
+  }
+
+  return TOK_OP_LT;
+}
+
+int Lexer::getMinusToken() {
+  // We look 1 char ahead to decided if we have '--' or '-='.
   if (src->peekChar() == '-') {
     src->getChar();
     return TOK_OP_MINUS_MINUS;
+  }
+
+  if (src->peekChar() == '=') {
+    src->getChar();
+    return TOK_OP_MINUS_EQUALS;
   }
 
   return TOK_OP_MINUS;
