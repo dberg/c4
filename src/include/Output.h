@@ -28,7 +28,9 @@ class Output {
   void setAnnotation(const spAnnotation &annotation);
   void setAnnotations(const std::vector<spAnnotation> &annotations);
   void setArguments(const spArguments &args);
+  void setArrayCreatorRest(const spArrayCreatorRest &arrayCreatorRest);
   void setArrayDepth(ArrayDepth &arrayDepth);
+  void setArrayInitializer(const spArrayInitializer arrayInit);
   void setBlock(const spBlock &block);
   void setBlockStatement(const spBlockStatement &blockStmt);
   void setCatches(const spCatches &catches);
@@ -36,11 +38,14 @@ class Output {
   void setCatchType(const spCatchType &catchType);
   void setClassBody(const spClassBody &classBody);
   void setClassBodyDeclaration(const spClassBodyDeclaration &decl);
+  void setClassCreatorRest(const spClassCreatorRest &classCreatorRest);
   void setClassOrInterfaceDeclaration(
     const spClassOrInterfaceDeclaration &decl);
   void setComments();
   void setConstructorDeclaratorRest(
     const spConstructorDeclaratorRest &constDeclRest);
+  void setCreatedName(const spCreatedName &createdName);
+  void setCreator(const spCreator &creator);
   void setElementValue(const spElementValue &value);
   void setElementValuePair(const spElementValuePair &pair);
   void setErrors(const std::vector<spError> &errors);
@@ -69,6 +74,8 @@ class Output {
   void setMethodOrFieldDecl(const spMethodOrFieldDecl &methodOrFieldDecl);
   void setMethodOrFieldRest(const spMethodOrFieldRest &methodOrFieldRest);
   void setModifier(const spModifier &modifier);
+  void setNonWildcardTypeArguments(
+    const spNonWildcardTypeArguments &nonWildcardTypeArguments);
   void setNormalClassDeclaration(const spNormalClassDeclaration &nClassDecl);
   void setOp(unsigned int ini, int len = 1);
   void setPackageDeclaration(const spPackageDeclaration &pkgDecl);
@@ -82,6 +89,7 @@ class Output {
   void setType(const spType &type);
   void setTypeArgument(const spTypeArgument &typeArg);
   void setTypeArguments(const spTypeArguments &typeArgs);
+  void setTypeArgumentsOrDiamond(const spTypeArgumentsOrDiamond typeArgsOrDiam);
   void setTypeDeclarations(const std::vector<spTypeDeclaration> &typeDecls);
   void setVariableDeclarator(const spVariableDeclarator &varDecl);
   void setVariableDeclaratorId(const spVariableDeclaratorId &varDeclId);

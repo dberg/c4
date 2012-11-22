@@ -1408,7 +1408,7 @@ struct ClassCreatorRest : ASTError {
 ///   '['
 ///     ( ']' { '[]' } ArrayInitializer |
 ///       Expression ']' { '[' Expression ']' } { '[]' } )
-///   ']'  <--- probably a typo.
+///   ']'  <--- probably a typo in the grammar.
 ///
 /// Non-terminals are enclosed in square brackets.
 struct ArrayCreatorRest : ASTError {
@@ -1463,8 +1463,8 @@ struct Finally : ASTError {
 /// ArrayInitializer:
 ///   '{' [ VariableInitializer { , VariableInitializer } [,] ] '}'
 struct ArrayInitializer : ASTError {
-  unsigned int posOpenCBrace;
-  unsigned int posCloseCBrace;
+  unsigned posOpenCBrace;
+  unsigned posCloseCBrace;
   std::vector<spVariableInitializer> varInitList;
 
   ArrayInitializer() : posOpenCBrace(0), posCloseCBrace(0) {}

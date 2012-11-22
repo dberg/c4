@@ -75,12 +75,65 @@ void Output::setArguments(const spArguments &args) {
   }
 }
 
+void Output::setArrayCreatorRest(
+  const spArrayCreatorRest &arrayCreatorRest) {
+
+  if (arrayCreatorRest->opt == ArrayCreatorRest::OPT_ARRAY_INITIALIZER) {
+    if (!arrayCreatorRest->opt1) { return; }
+    setArrayDepth(arrayCreatorRest->opt1->arrayDepth);
+    if (arrayCreatorRest->opt1->arrayInitializer) {
+      setArrayInitializer(arrayCreatorRest->opt1->arrayInitializer);
+    }
+
+    return;
+  }
+
+  if (arrayCreatorRest->opt == ArrayCreatorRest::OPT_EXPRESSION) {
+    if (!arrayCreatorRest->opt2) { return; }
+
+    for (unsigned i = 0;
+         i < arrayCreatorRest->opt2->exprInBracketsList.size(); i++) {
+
+      spExpressionInBrackets exprInBr
+        = arrayCreatorRest->opt2->exprInBracketsList[i];
+
+      if (exprInBr->posOpenBracket) {
+        setOp(exprInBr->posOpenBracket);
+      }
+
+      if (exprInBr->posCloseBracket) {
+        setOp(exprInBr->posCloseBracket);
+      }
+
+      if (exprInBr->expr) {
+        setExpression(exprInBr->expr);
+      }
+
+    }
+    setArrayDepth(arrayCreatorRest->opt2->arrayDepth);
+  }
+}
+
 void Output::setArrayDepth(ArrayDepth &arrayDepth) {
   for (unsigned int i = 0; i < arrayDepth.size(); i++) {
     unsigned posOpen = arrayDepth[i].first;
     unsigned posClose = arrayDepth[i].second;
     setOp(posOpen, 1);
     setOp(posClose, 1);
+  }
+}
+
+void Output::setArrayInitializer(const spArrayInitializer arrayInit) {
+  if (arrayInit->posOpenCBrace) {
+    setOp(arrayInit->posOpenCBrace);
+  }
+
+  if (arrayInit->posOpenCBrace) {
+    setOp(arrayInit->posOpenCBrace);
+  }
+
+  for (unsigned i = 0; i < arrayInit->varInitList.size(); i++) {
+    setVariableInitializer(arrayInit->varInitList[i]);
   }
 }
 
@@ -181,6 +234,16 @@ void Output::setClassBodyDeclaration(const spClassBodyDeclaration &decl) {
   }
 }
 
+void Output::setClassCreatorRest(const spClassCreatorRest &classCreatorRest) {
+  if (classCreatorRest->args) {
+    setArguments(classCreatorRest->args);
+  }
+
+  if (classCreatorRest->classBody) {
+    setClassBody(classCreatorRest->classBody);
+  }
+}
+
 void Output::setClassOrInterfaceDeclaration(
   const spClassOrInterfaceDeclaration &decl) {
 
@@ -227,6 +290,54 @@ void Output::setConstructorDeclaratorRest(
   }
 
   output += ")";
+}
+
+void Output::setCreatedName(const spCreatedName &createdName) {
+  if (createdName->id) {
+    setIdentifier(createdName->id, Output::OPT_IDENTIFIER_REFERENCE_TYPE);
+  }
+
+  if (createdName->typeArgsOrDiam) {
+    setTypeArgumentsOrDiamond(createdName->typeArgsOrDiam);
+  }
+
+  for (unsigned i = 0; i < createdName->createdNames.size(); i++) {
+    setCreatedName(createdName->createdNames[i]);
+  }
+}
+
+void Output::setCreator(const spCreator &creator) {
+  if (creator->opt == Creator::OPT_NON_WILDCARD_TYPE_ARGUMENTS) {
+    if (creator->opt1->nonWildcardTypeArguments) {
+      setNonWildcardTypeArguments(creator->opt1->nonWildcardTypeArguments);
+    }
+
+    if (creator->opt1->createdName) {
+      setCreatedName(creator->opt1->createdName);
+    }
+
+    if (creator->opt1->classCreatorRest) {
+      setClassCreatorRest(creator->opt1->classCreatorRest);
+    }
+
+    return;
+  }
+
+  if (creator->opt == Creator::OPT_CREATED_NAME) {
+    if (!creator->opt2) { return; }
+
+    if (creator->opt2->createdName) {
+      setCreatedName(creator->opt2->createdName);
+    }
+
+    if (creator->opt2->classCreatorRest) {
+      setClassCreatorRest(creator->opt2->classCreatorRest);
+    }
+
+    if (creator->opt2->arrayCreatorRest) {
+      setArrayCreatorRest(creator->opt2->arrayCreatorRest);
+    }
+  }
 }
 
 void Output::setElementValue(const spElementValue &value) {
@@ -695,6 +806,12 @@ void Output::setModifier(const spModifier &modifier) {
   }
 }
 
+void Output::setNonWildcardTypeArguments(
+  const spNonWildcardTypeArguments &nonWildcardTypeArguments) {
+  // TODO:
+}
+
+
 void Output::setNormalClassDeclaration(
   const spNormalClassDeclaration &nClassDecl) {
 
@@ -773,7 +890,16 @@ void Output::setPrimary(const spPrimary &primary) {
   }
 
   if (primary->opt == Primary::OPT_NEW_CREATOR) {
-    // TODO:
+    if (primary->newCreator) {
+      if (primary->newCreator->tokNew) {
+        setKeyword(primary->newCreator->tokNew);
+      }
+
+      if (primary->newCreator->creator) {
+        setCreator(primary->newCreator->creator);
+      }
+    }
+
     return;
   }
 
@@ -985,6 +1111,11 @@ void Output::setTypeDeclarations(
   }
 }
 
+void Output::setTypeArgumentsOrDiamond(
+  const spTypeArgumentsOrDiamond typeArgsOrDiam) {
+  // TODO:
+}
+
 void Output::setVariableDeclarator(const spVariableDeclarator &varDecl) {
   if (varDecl->id) {
     setIdentifier(varDecl->id);
@@ -1032,8 +1163,7 @@ void Output::setVariableDeclarators(const spVariableDeclarators &varDecls) {
 void Output::setVariableInitializer(const spVariableInitializer &varInit) {
   if (varInit->opt == VariableInitializer::OPT_ARRAY_INITIALIZER) {
     if (varInit->arrayInit) {
-      // TODO:
-      //setArrayInitializer(varInit->arrayInit);
+      setArrayInitializer(varInit->arrayInit);
     }
     return;
   }
