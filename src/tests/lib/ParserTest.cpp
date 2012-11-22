@@ -454,19 +454,16 @@ TEST(Parser, Block) {
     ->methodOrFieldDecl->methodOrFieldRest->methodDeclRest->block;
   ASSERT_EQ(32, block->posLCBracket);
   ASSERT_EQ(61, block->posRCBracket);
-  ASSERT_EQ(2, block->blockStmts.size());
+  ASSERT_EQ(1, block->blockStmts.size());
 
   spBlockStatement blockStmt1 = block->blockStmts[0];
   ASSERT_EQ(BlockStatement::OPT_ID_STMT, blockStmt1->opt);
   ASSERT_EQ(Statement::OPT_STMT_EXPR, blockStmt1->stmt->opt);
+  ASSERT_EQ(60, blockStmt1->stmt->posSemiColon);
   ASSERT_EQ(Expression3::OPT_PRIMARY_SELECTOR_POSTFIXOP,
     blockStmt1->stmt->stmtExpr->expr->expr1->expr2->expr3->opt);
   ASSERT_EQ(Primary::OPT_IDENTIFIER,
     blockStmt1->stmt->stmtExpr->expr->expr1->expr2->expr3->primary->opt);
-
-  spBlockStatement blockStmt2 = block->blockStmts[1];
-  ASSERT_EQ(BlockStatement::OPT_ID_STMT, blockStmt2->opt);
-  ASSERT_EQ(Statement::OPT_SEMI_COLON, blockStmt2->stmt->opt);
 }
 
 TEST(Parser, ClassConstructor) {

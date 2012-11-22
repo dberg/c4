@@ -1484,9 +1484,7 @@ struct ArrayInitializer : ASTError {
 ///   >>=
 ///   >>>=
 struct AssignmentOperator : ASTError {
-  unsigned pos;
-  int tokAssignOp;
-  AssignmentOperator() : pos(0), tokAssignOp(TOK_ERROR) {}
+  spTokenExp tok;
 };
 
 /// VariableInitializer:

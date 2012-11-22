@@ -782,7 +782,23 @@ void Parser::parseExpression(spExpression &expr) {
 
   expr->expr1 = expr1;
 
-  // TODO: [ AssignmentOperator Expression1 ]
+  // [ AssignmentOperator Expression1 ]
+  if (isAssignmentOperator(lexer->getCurToken())) {
+    expr->assignOp = spAssignmentOperator(new AssignmentOperator);
+    expr->assignOp->tok = spTokenExp(new TokenExp(
+    lexer->getCursor() - tokenUtil.getTokenLength(
+      lexer->getCurToken()), lexer->getCurToken()));
+    lexer->getNextToken(); // consume assignment token
+
+    spExpression1 assignExpr1 = spExpression1(new Expression1);
+    parseExpression1(assignExpr1);
+    if (assignExpr1->isEmpty()) {
+      //expr->addErr(-1);
+      return;
+    }
+
+    expr->assignExpr1 = assignExpr1;
+  }
 }
 
 /// Expression1: Expression2 [Expression1Rest]
@@ -801,7 +817,7 @@ void Parser::parseExpression1(spExpression1 &expr1) {
 
 /// Expression2: Expression3 [ Expression2Rest ]
 void Parser::parseExpression2(spExpression2 &expr2) {
-  spExpression3 expr3 = spExpression3(new Expression3());
+  spExpression3 expr3 = spExpression3(new Expression3);
   parseExpression3(expr3);
   if (expr3->isEmpty()) {
     return;
@@ -867,7 +883,7 @@ void Parser::parseExpression3(spExpression3 &expr3) {
   // So, if we have a TOK_IDENTIFIER and Primary returns an error we should
   // backtrack and try the 2nd production rule of Expression3.
   if (isPrimary(lexer->getCurToken())) {
-    spPrimary primary = spPrimary(new Primary());
+    spPrimary primary = spPrimary(new Primary);
     parsePrimary(primary);
     if (primary->isEmpty() == false) {
       expr3->opt = Expression3::OPT_PRIMARY_SELECTOR_POSTFIXOP;
@@ -944,11 +960,13 @@ void Parser::parseIdentifierSuffix(spIdentifierSuffix &idSuffix) {
     // opt1
     if (lexer->getCurToken() == TOK_RBRACKET
       || lexer->getCurToken() == TOK_COMMA) {
+      // '[' {'[' ']'}  ']' '.' class
       idSuffix->opt = IdentifierSuffix::OPT_ARRAY_ARRAY_DEPTH_CLASS;
       // {'[' ']'} . class
       parseIdentifierSuffixOpt1Helper(idSuffix);
     } else {
       // opt2
+      // '[' Expression ']'
       idSuffix->opt = IdentifierSuffix::OPT_ARRAY_EXPRESSION;
       idSuffix->expr = spExpression(new Expression());
       parseExpression(idSuffix->expr);
@@ -1868,7 +1886,7 @@ void Parser::parseReferenceType(spReferenceType &refType) {
 
   // [TypeArguments]
   if (lexer->getCurToken() == TOK_OP_LT) {
-    refType->typeArgs = spTypeArguments(new TypeArguments());
+    refType->typeArgs = spTypeArguments(new TypeArguments);
     parseTypeArguments(refType->typeArgs);
   }
 
@@ -2219,6 +2237,14 @@ void Parser::parseStatement(spStatement &stmt) {
   stmt->stmtExpr = spStatementExpression(new StatementExpression);
   parseStatementExpression(stmt->stmtExpr);
   if (stmt->stmtExpr->err) { stmt->addErr(-1); }
+
+  // ';'
+  if (lexer->getCurToken() != TOK_SEMICOLON) {
+    stmt->addErr(diag->addErr(ERR_EXP_SEMICOLON, lexer->getCursor() - 1));
+  }
+
+  stmt->posSemiColon = lexer->getCursor() - 1;
+  lexer->getNextToken(); // consume ';'
 }
 
 /// StatementExpression: Expression
@@ -2384,9 +2410,9 @@ std::vector<spTypeDeclaration> Parser::parseTypeDeclarations(
   }
 
   while (isValidInitTokenOfTypeDeclaration(lexer->getCurToken())) {
-    spTypeDeclaration typeDecl = spTypeDeclaration(new TypeDeclaration());
+    spTypeDeclaration typeDecl = spTypeDeclaration(new TypeDeclaration);
     typeDecl->decl = spClassOrInterfaceDeclaration(
-      new ClassOrInterfaceDeclaration());
+      new ClassOrInterfaceDeclaration);
     parseClassOrInterfaceDeclaration(typeDecl->decl);
     typeDecls.push_back(typeDecl);
   }
@@ -2401,7 +2427,7 @@ void Parser::parseClassOrInterfaceDeclaration(
 
   // Modifier
   if (!decl->modifier) {
-    decl->modifier = spModifier(new Modifier());
+    decl->modifier = spModifier(new Modifier);
   }
 
   parseModifier(decl->modifier);
@@ -2409,7 +2435,7 @@ void Parser::parseClassOrInterfaceDeclaration(
   if (lexer->getCurToken() == TOK_KEY_CLASS
     || lexer->getCurToken() == TOK_KEY_ENUM) {
 
-    decl->classDecl = spClassDeclaration(new ClassDeclaration());
+    decl->classDecl = spClassDeclaration(new ClassDeclaration);
     parseClassDeclaration(decl->classDecl);
     return;
   }
@@ -2445,7 +2471,7 @@ void Parser::parseModifier(spModifier &modifier) {
 void Parser::parseClassDeclaration(spClassDeclaration &classDecl) {
   if (lexer->getCurToken() == TOK_KEY_CLASS) {
     classDecl->nClassDecl = spNormalClassDeclaration(
-      new NormalClassDeclaration());
+      new NormalClassDeclaration);
     parseNormalClassDeclaration(classDecl->nClassDecl);
     return;
   }
@@ -2504,13 +2530,13 @@ void Parser::parseNormalClassDeclaration(spNormalClassDeclaration &nClassDecl) {
 
     nClassDecl->type = spType(new Type());
     nClassDecl->type->opt = Type::OPT_REFERENCE_TYPE;
-    nClassDecl->type->refType = spReferenceType(new ReferenceType());
+    nClassDecl->type->refType = spReferenceType(new ReferenceType);
     parseReferenceType(nClassDecl->type->refType);
   }
 
   // TODO: [implements TypeList]
 
-  nClassDecl->classBody = spClassBody(new ClassBody());
+  nClassDecl->classBody = spClassBody(new ClassBody);
   parseClassBody(nClassDecl->classBody);
 }
 
@@ -2584,7 +2610,7 @@ void Parser::parseClassBody(spClassBody &classBody) {
     }
 
     spClassBodyDeclaration decl = spClassBodyDeclaration(
-      new ClassBodyDeclaration());
+      new ClassBodyDeclaration);
     parseClassBodyDeclaration(decl);
     classBody->decls.push_back(decl);
   }
@@ -2618,7 +2644,7 @@ void Parser::parseClassBodyDeclaration(spClassBodyDeclaration &decl) {
   // TODO: [static] Block
 
   // TODO:
-  lexer->getNextToken();
+  //lexer->getNextToken();
 }
 
 /// ClassCreatorRest: Arguments [ClassBody]
@@ -2722,7 +2748,7 @@ void Parser::parseMemberDecl(spMemberDecl &memberDecl) {
   // TODO: InterfaceDeclaration
 
   // TODO:
-  lexer->getNextToken();
+  //lexer->getNextToken();
 }
 
 /// MethodDeclaratorRest:
@@ -2993,7 +3019,7 @@ void Parser::parseCreatedNameHelper(spCreatedName &createdName) {
   }
 }
 
-/// FormalParameters: ( [FormalParameterDecls] )
+/// FormalParameters: '(' [FormalParameterDecls] ')'
 void Parser::parseFormalParameters(spFormalParameters &formParams) {
   if (lexer->getCurToken() != TOK_LPAREN) {
     formParams->addErr(diag->addErr(
@@ -3165,7 +3191,7 @@ void Parser::parseType(spType &type) {
   // ReferenceType
   if (lexer->getCurToken() == TOK_IDENTIFIER) {
     type->opt = Type::OPT_REFERENCE_TYPE;
-    type->refType = spReferenceType(new ReferenceType());
+    type->refType = spReferenceType(new ReferenceType);
     parseReferenceType(type->refType);
     return;
   }
