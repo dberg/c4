@@ -720,7 +720,8 @@ void Output::setNormalClassDeclaration(
 }
 
 void Output::setOp(unsigned int ini, int len) {
-  unsigned int end = ini + len + 1;
+  ini++;
+  unsigned int end = ini + len;
   output += "(djp-node-op " + itos(ini) + " " + itos(end) + ")";
 }
 
