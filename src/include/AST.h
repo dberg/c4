@@ -523,7 +523,7 @@ struct Selector : ASTError {
   SelectorOpt opt;
 
   // shared 1-5
-  unsigned int posComma;
+  unsigned int posPeriod;
 
   // opt1: . Identifier [Arguments]
   spIdentifier id;

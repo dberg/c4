@@ -294,7 +294,7 @@ void Parser::parseArguments(spArguments &args) {
   }
 
   // Expression
-  args->expr = spExpression(new Expression());
+  args->expr = spExpression(new Expression);
   parseExpression(args->expr);
   if (args->expr->isEmpty()) {
     return;
@@ -305,7 +305,7 @@ void Parser::parseArguments(spArguments &args) {
     unsigned int posComma = lexer->getCursor() - 1;
     lexer->getNextToken(); // consume ','
 
-    spExpression expr = spExpression(new Expression());
+    spExpression expr = spExpression(new Expression);
     parseExpression(expr);
     if (expr->isEmpty()) {
       break;
@@ -698,14 +698,14 @@ void Parser::parseCreator(spCreator &creator) {
   // Option 1
   if (lexer->getCurToken() == TOK_OP_LT) {
     creator->opt = Creator::OPT_NON_WILDCARD_TYPE_ARGUMENTS;
-    creator->opt1 = spCreatorOpt1(new CreatorOpt1());
+    creator->opt1 = spCreatorOpt1(new CreatorOpt1);
     parseCreatorOpt1(creator->opt1);
     return;
   }
 
   // Option 2
   creator->opt = Creator::OPT_CREATED_NAME;
-  creator->opt2 = spCreatorOpt2(new CreatorOpt2());
+  creator->opt2 = spCreatorOpt2(new CreatorOpt2);
   parseCreatorOpt2(creator->opt2);
 }
 
@@ -744,7 +744,7 @@ void Parser::parseCreatorOpt1(spCreatorOpt1 &opt1) {
 /// CreatorOpt2: CreatedName ( ClassCreatorRest | ArrayCreatorRest )
 void Parser::parseCreatorOpt2(spCreatorOpt2 &opt2) {
   // CreatedName
-  opt2->createdName = spCreatedName(new CreatedName());
+  opt2->createdName = spCreatedName(new CreatedName);
   parseCreatedName(opt2->createdName);
 
   if (opt2->createdName->err) {
@@ -755,14 +755,14 @@ void Parser::parseCreatorOpt2(spCreatorOpt2 &opt2) {
   // ( ClassCreatorRest | ArrayCreatorRest )
   // ClassCreatorRest
   if (lexer->getCurToken() == TOK_LPAREN) {
-    opt2->classCreatorRest = spClassCreatorRest(new ClassCreatorRest());
+    opt2->classCreatorRest = spClassCreatorRest(new ClassCreatorRest);
     parseClassCreatorRest(opt2->classCreatorRest);
     return;
   }
 
   // ArrayCreatorRest
   if (lexer->getCurToken() == TOK_LBRACKET) {
-    opt2->arrayCreatorRest = spArrayCreatorRest(new ArrayCreatorRest());
+    opt2->arrayCreatorRest = spArrayCreatorRest(new ArrayCreatorRest);
     parseArrayCreatorRest(opt2->arrayCreatorRest);
     return;
   }
@@ -892,7 +892,7 @@ void Parser::parseExpression3(spExpression3 &expr3) {
       // { Selector }
       if (lexer->getCurToken() == TOK_PERIOD
         || lexer->getCurToken() == TOK_LBRACKET) {
-        expr3->selector = spSelector(new Selector());
+        expr3->selector = spSelector(new Selector);
         parseSelector(expr3->selector);
         if (expr3->selector->err) {
           expr3->addErr(-1);
@@ -1739,7 +1739,7 @@ void Parser::parsePrimaryNewCreator(spPrimaryNewCreator &primaryNewCreator) {
   lexer->getNextToken(); // consume 'new'
 
   // Creator
-  primaryNewCreator->creator = spCreator(new Creator());
+  primaryNewCreator->creator = spCreator(new Creator);
   parseCreator(primaryNewCreator->creator);
 }
 
@@ -1902,8 +1902,8 @@ void Parser::parseReferenceType(spReferenceType &refType) {
 ///   . new [NonWildcardTypeArguments] InnerCreator
 ///   '[' Expression ']'
 void Parser::parseSelector(spSelector &selector) {
-  if (lexer->getCurToken() == TOK_COMMA) {
-    selector->posComma = lexer->getCursor() - 1;
+  if (lexer->getCurToken() == TOK_PERIOD) {
+    selector->posPeriod = lexer->getCursor() - 1;
     lexer->getNextToken(); // consume '.'
 
     // . Identifier [Arguments]
@@ -1915,7 +1915,7 @@ void Parser::parseSelector(spSelector &selector) {
 
       // [Arguments]
       if (lexer->getCurToken() == TOK_LPAREN) {
-        selector->args = spArguments(new Arguments());
+        selector->args = spArguments(new Arguments);
         parseArguments(selector->args);
         if (selector->args->err) { selector->addErr(-1); }
       }
@@ -2650,7 +2650,7 @@ void Parser::parseClassBodyDeclaration(spClassBodyDeclaration &decl) {
 /// ClassCreatorRest: Arguments [ClassBody]
 void Parser::parseClassCreatorRest(spClassCreatorRest &classCreatorRest) {
   // Arguments
-  spArguments args = spArguments(new Arguments());
+  spArguments args = spArguments(new Arguments);
   classCreatorRest->args = args;
   parseArguments(classCreatorRest->args);
   if (classCreatorRest->args->err) {
@@ -3312,7 +3312,7 @@ void Parser::parseVariableDeclaratorRest(spVariableDeclaratorRest &varDeclRest) 
     varDeclRest->posEquals = lexer->getCursor() - 1;
     lexer->getNextToken(); // consume '='
 
-    varDeclRest->varInit = spVariableInitializer(new VariableInitializer());
+    varDeclRest->varInit = spVariableInitializer(new VariableInitializer);
     parseVariableInitializer(varDeclRest->varInit);
     if (varDeclRest->varInit->err) {
       varDeclRest->addErr(-1);
@@ -3388,7 +3388,7 @@ void Parser::parseVariableInitializer(spVariableInitializer &varInit) {
 
   // Expression
   varInit->opt = VariableInitializer::OPT_EXPRESSION;
-  varInit->expr = spExpression(new Expression());
+  varInit->expr = spExpression(new Expression);
   parseExpression(varInit->expr);
 }
 
