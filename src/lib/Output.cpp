@@ -277,7 +277,14 @@ void Output::setExpression(const spExpression &expr) {
     setExpression1(expr->expr1);
   }
 
-  // TODO:
+  if (expr->assignOp && expr->assignOp->tok) {
+    setOp(expr->assignOp->tok->pos,
+      tokenUtil.getTokenLength(expr->assignOp->tok->type));
+
+    if (expr->assignExpr1) {
+      setExpression1(expr->assignExpr1);
+    }
+  }
 }
 
 void Output::setExpression1(const spExpression1 &expr1) {
