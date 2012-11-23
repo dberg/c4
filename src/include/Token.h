@@ -199,6 +199,8 @@ public:
     keywords["volatile"] = TOK_KEY_VOLATILE;
     keywords["while"] = TOK_KEY_WHILE;
 
+    tokensLen[TOK_NULL_LITERAL] = 4;
+
     tokensLen[TOK_KEY_ABSTRACT] = 8;
     tokensLen[TOK_KEY_ASSERT] = 6;
     tokensLen[TOK_KEY_BOOLEAN] = 7;
