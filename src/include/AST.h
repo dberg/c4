@@ -84,9 +84,8 @@ typedef boost::shared_ptr<struct NonWildcardTypeArguments>
 typedef boost::shared_ptr<struct NonWildcardTypeArgumentsOrDiamond>
   spNonWildcardTypeArgumentsOrDiamond;
 typedef boost::shared_ptr<struct PackageDeclaration> spPackageDeclaration;
-typedef boost::shared_ptr<struct PairExpression> spPairExpression;
-typedef boost::shared_ptr<struct PostfixOp> spPostfixOp;
 typedef boost::shared_ptr<struct ParExpression> spParExpression;
+typedef boost::shared_ptr<struct PostfixOp> spPostfixOp;
 typedef boost::shared_ptr<struct PrefixOp> spPrefixOp;
 typedef boost::shared_ptr<struct Primary> spPrimary;
 typedef boost::shared_ptr<struct PrimaryBasicType> spPrimaryBasicType;
@@ -1061,7 +1060,7 @@ struct Primary {
 
   PrimaryEnum opt;
   spLiteral literal;
-  spPairExpression pairExpr;
+  spParExpression parExpr;
   spPrimaryThisArguments thisArgs;
   spPrimarySuperSuperSuffix superSuperSuffix;
   spPrimaryNewCreator newCreator;
@@ -1258,10 +1257,6 @@ struct CharacterLiteral {
 struct StringLiteral {
   int pos;
   std::string val;
-};
-
-struct PairExpression {
-  spExpression expr;
 };
 
 /// ParExpression: '(' Expression ')'

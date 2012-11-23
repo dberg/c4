@@ -1564,8 +1564,8 @@ void Parser::parsePrimary(spPrimary &primary) {
   // (2) ParExpression
   if (lexer->getCurToken() == TOK_LCURLY_BRACKET) {
     primary->opt = Primary::OPT_PAR_EXPRESSION;
-    primary->pairExpr = spPairExpression(new PairExpression());
-    parsePairExpression(primary->pairExpr);
+    primary->parExpr = spParExpression(new ParExpression());
+    parseParExpression(primary->parExpr);
     return;
   }
 
@@ -2544,23 +2544,6 @@ void Parser::parseNullLiteral(spTokenExp &nullLiteral) {
   nullLiteral->pos = lexer->getCurTokenIni();
   nullLiteral->type = TOK_NULL_LITERAL;
   lexer->getNextToken(); // consume 'null'
-}
-
-/// PairExpression: ( Expression )
-void Parser::parsePairExpression(spPairExpression &pairExpr) {
-  int pos = src->getCursor();
-  lexer->getNextToken(); // consume '('
-
-  pairExpr->expr = spExpression(new Expression());
-  parseExpression(pairExpr->expr);
-
-  if (lexer->getCurToken() == TOK_RCURLY_BRACKET) {
-    lexer->getNextToken(); // consume ')'
-    return;
-  }
-
-  // Error
-  diag->addErr(ERR_EXP_LPAREN, pos, lexer->getCursor());
 }
 
 /// ParExpression: '(' Expression ')'
