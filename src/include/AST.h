@@ -986,10 +986,25 @@ struct Expression2 {
 };
 
 /// Expression2Rest:
-///   { InfixOp Expression3 }
-///   instanceof Type
-struct Expression2Rest {
-  // TODO:
+///   (1) { InfixOp Expression3 }
+///   (2) instanceof Type
+struct Expression2Rest : ASTError {
+  enum Expression2RestOpt {
+    OPT_UNDEFINED,
+    OPT_INFIXOP_EXPR3,
+    OPT_INSTANCEOF_TYPE,
+  };
+
+  Expression2RestOpt opt;
+
+  // (1)
+  std::vector<std::pair<spTokenExp, spExpression3> > pairs;
+
+  // (2)
+  spTokenExp tokInstanceOf;
+  spType type;
+
+  Expression2Rest() : opt(OPT_UNDEFINED) {}
 };
 
 /// Arguments: '(' [ Expression { , Expression }] ')'

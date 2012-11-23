@@ -130,6 +130,32 @@ bool isModifierToken(int token) {
   return false;
 }
 
+bool isInfixOp(int token) {
+  if (TOK_OP_PIPE_PIPE == token
+    || TOK_OP_AMPERSAND_AMPERSAND == token
+    || TOK_OP_PIPE == token
+    || TOK_OP_CARRET == token
+    || TOK_OP_AMPERSAND == token
+    || TOK_OP_EQUALS_EQUALS == token
+    || TOK_OP_EXCLAMATION_EQUALS == token
+    || TOK_OP_LT == token
+    || TOK_OP_GT == token
+    || TOK_OP_LT_EQUALS == token
+    || TOK_OP_GT_EQUALS == token
+    || TOK_OP_LSHIFT == token
+    || TOK_OP_RSHIFT == token
+    || TOK_OP_TRIPLE_RSHIFT == token
+    || TOK_OP_PLUS == token
+    || TOK_OP_MINUS == token
+    || TOK_OP_MUL == token
+    || TOK_OP_DIV == token
+    || TOK_OP_REM == token) {
+    return true;
+  }
+
+  return false;
+}
+
 bool isPrefixOp(int token) {
   if (TOK_OP_PLUS_PLUS == token
     || TOK_OP_MINUS_MINUS == token
@@ -825,8 +851,63 @@ void Parser::parseExpression2(spExpression2 &expr2) {
 
   expr2->expr3 = expr3;
 
-  // TODO:
-  // Expression2Rest
+  // [ Expression2Rest ]
+  spExpression2Rest expr2Rest = spExpression2Rest(new Expression2Rest);
+  parseExpression2Rest(expr2Rest);
+  if (expr2Rest->opt != Expression2Rest::OPT_UNDEFINED) {
+    expr2->expr2Rest = expr2Rest;
+  }
+}
+
+/// Expression2Rest:
+///   (1) { InfixOp Expression3 }
+///   (2) instanceof Type
+void Parser::parseExpression2Rest(spExpression2Rest &expr2Rest) {
+  // (2) instanceof Type
+  if (lexer->getCurToken() == TOK_KEY_INSTANCEOF) {
+    expr2Rest->opt = Expression2Rest::OPT_INSTANCEOF_TYPE;
+    expr2Rest->tokInstanceOf = spTokenExp(new TokenExp(
+      lexer->getCursor() - tokenUtil.getTokenLength(
+        lexer->getCurToken()), lexer->getCurToken()));
+    lexer->getNextToken(); // consume 'instanceof'
+
+    expr2Rest->type = spType(new Type);
+    parseType(expr2Rest->type);
+
+    if (expr2Rest->type->err) {
+      expr2Rest->addErr(-1);
+    }
+
+    return;
+  }
+
+  if (!isInfixOp(lexer->getCurToken())) {
+    return;
+  }
+
+  // (1) { InfixOp Expression3 }
+  expr2Rest->opt = Expression2Rest::OPT_INFIXOP_EXPR3;
+
+  do {
+    spTokenExp tok = spTokenExp(new TokenExp(
+      lexer->getCursor() - tokenUtil.getTokenLength(
+        lexer->getCurToken()), lexer->getCurToken()));
+    lexer->getNextToken(); // consume InfixOp
+
+    spExpression3 expr3 = spExpression3(new Expression3);
+    parseExpression3(expr3);
+
+    if (expr3->isEmpty()) {
+      expr2Rest->addErr(-1);
+      return;
+    }
+
+    std::pair<spTokenExp, spExpression3> pair;
+    pair.first = tok;
+    pair.second = expr3;
+
+    expr2Rest->pairs.push_back(pair);
+  } while (isInfixOp(lexer->getCurToken()));
 }
 
 /// Expression3:
@@ -2133,8 +2214,8 @@ void Parser::parseStatement(spStatement &stmt) {
       stmt->exprReturn = spExpression(new Expression);
       parseExpression(stmt->exprReturn);
       if (stmt->exprReturn->isEmpty()) {
-	stmt->addErr(-1);
-	return;
+        stmt->addErr(-1);
+        return;
       }
     }
 

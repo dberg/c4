@@ -633,6 +633,34 @@ TEST(Parser, Errors) {
   ASSERT_EQ(1, diag->errors.size());
 }
 
+TEST(Parser, Expression2Rest) {
+  std::string filename = "Test.java";
+  std::string buffer = "class C { void m() { if (x == null) { return; }}}";
+  spDiagnosis diag = spDiagnosis(new Diagnosis());
+  Parser parser(filename, buffer, diag);
+  parser.parse();
+
+  spBlockStatement blockStmt = parser.compilationUnit->typeDecls[0]->decl
+    ->classDecl->nClassDecl->classBody->decls[0]->memberDecl
+    ->voidMethDeclRest->block->blockStmts[0];
+
+  ASSERT_EQ(BlockStatement::OPT_ID_STMT, blockStmt->opt);
+  ASSERT_EQ(Statement::OPT_IF, blockStmt->stmt->opt);
+
+  spExpression2Rest expr2Rest
+    = blockStmt->stmt->parExpr->expr->expr1->expr2->expr2Rest;
+
+  ASSERT_EQ(Expression2Rest::OPT_INFIXOP_EXPR3, expr2Rest->opt);
+  std::pair<spTokenExp, spExpression3> pair = expr2Rest->pairs[0];
+  ASSERT_EQ(27, pair.first->pos);
+  ASSERT_EQ(TOK_OP_EQUALS_EQUALS, pair.first->type);
+
+  spExpression3 expr3 = pair.second;
+  ASSERT_EQ(Expression3::OPT_PRIMARY_SELECTOR_POSTFIXOP, expr3->opt);
+  ASSERT_EQ(Literal::OPT_NULL, expr3->primary->literal->opt);
+}
+
+
 TEST(Parser, ImportDeclarations) {
   std::string filename = "Test.java";
   std::string buffer =
