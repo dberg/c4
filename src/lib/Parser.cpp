@@ -3096,6 +3096,7 @@ void Parser::parseFormalParameters(spFormalParameters &formParams) {
   // If our current token is a closing paren we're done and we skip trying
   // to parse FormalParameterDecls.
   if (lexer->getCurToken() == TOK_RPAREN) {
+    formParams->posRParen = lexer->getCursor() - 1;
     lexer->getNextToken(); // consume ')'
     return;
   }
