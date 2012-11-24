@@ -2203,6 +2203,7 @@ void Parser::parseStatement(spStatement &stmt) {
 
   // (13) return [Expression] ;
   if (lexer->getCurToken() == TOK_KEY_RETURN) {
+    stmt->opt = Statement::OPT_RETURN;
     // 'return'
     stmt->tokReturn = spTokenExp(new TokenExp(
       lexer->getCursor() - tokenUtil.getTokenLength(

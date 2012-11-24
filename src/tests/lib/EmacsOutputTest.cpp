@@ -115,3 +115,38 @@ TEST(EmacsOutput, ClassConstructorParameters) {
     "(djp-node-identifier 31 32))))))";
   ASSERT_EQ(expected, output.output);
 }
+
+TEST(EmacsOutput, Expression2Rest) {
+  std::string filename = "Test.java";
+  std::string buffer = "class C { void m() { if (x == null) { return; }}}";
+  spDiagnosis diag = spDiagnosis(new Diagnosis());
+  Parser parser(filename, buffer, diag);
+  parser.parse();
+  Output output(parser.compilationUnit, parser.comments, diag);
+  output.build();
+  std::string expected =
+    "((djp-class-or-interface-declaration "
+    "(djp-normal-class-declaration "
+    "(djp-node-keyword 1 6)"
+    "(djp-node-reference-type-id 7 8)"
+    "(djp-member-decl-modifier-member-decl "
+    "(djp-node-keyword 11 15)" // void
+    "(djp-node-identifier 16 17)" // m
+    "(djp-node-op 17 18)" // (
+    "(djp-node-op 18 19)" // )
+    "(djp-node-op 20 21)" // {
+    "(djp-node-keyword 22 24)" // if
+    "(djp-node-op 25 26)" // (
+    "(djp-node-identifier 26 27)" // x
+    "(djp-node-op 28 30)" // ==
+    "(djp-node-keyword 31 35)" // null
+    "(djp-node-op 35 36)" // )
+    "(djp-node-op 37 38)" // {
+    "(djp-node-keyword 39 45)" // return
+    "(djp-node-op 45 46)" // ;
+    "(djp-node-op 47 48)" // }
+    "(djp-node-op 48 49)))))"; // }
+
+  ASSERT_EQ(expected, output.output);
+}
+

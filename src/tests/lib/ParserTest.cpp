@@ -658,6 +658,8 @@ TEST(Parser, Expression2Rest) {
   spExpression3 expr3 = pair.second;
   ASSERT_EQ(Expression3::OPT_PRIMARY_SELECTOR_POSTFIXOP, expr3->opt);
   ASSERT_EQ(Literal::OPT_NULL, expr3->primary->literal->opt);
+  ASSERT_EQ(30, expr3->primary->literal->nullLiteral->pos);
+  ASSERT_EQ(TOK_NULL_LITERAL, expr3->primary->literal->nullLiteral->type);
 }
 
 

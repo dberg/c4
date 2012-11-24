@@ -52,6 +52,7 @@ class Output {
   void setExpression(const spExpression &expr);
   void setExpression1(const spExpression1 &expr1);
   void setExpression2(const spExpression2 &expr2);
+  void setExpression2Rest(const spExpression2Rest &expr2Rest);
   void setExpression3(const spExpression3 &expr3);
   void setFieldDeclsRest(const spFieldDeclaratorsRest &fieldDeclsRest);
   void setFinally(const spFinally &finally);
@@ -79,6 +80,7 @@ class Output {
   void setNormalClassDeclaration(const spNormalClassDeclaration &nClassDecl);
   void setOp(unsigned int ini, int len = 1);
   void setPackageDeclaration(const spPackageDeclaration &pkgDecl);
+  void setParExpression(const spParExpression &parExpr);
   void setPrimary(const spPrimary &primary);
   void setPrimaryIdentifier(const spPrimaryIdentifier &primaryId);
   void setQualifiedId(int ini, int end);

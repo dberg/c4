@@ -611,10 +611,10 @@ struct Statement : ASTError {
 
   // (5) if ParExpression Statement [else Statement]
   spTokenExp tokIf;
+  spParExpression parExpr;
   spStatement stmtIf;
   spTokenExp tokElse;
   spStatement stmtElse;
-  spParExpression parExpr;
 
   // (13) return [Expression] ;
   spTokenExp tokReturn;

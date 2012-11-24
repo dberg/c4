@@ -415,8 +415,29 @@ void Output::setExpression2(const spExpression2 &expr2) {
   }
 
   if (expr2->expr2Rest) {
-    // TODO:
-    //setExpression2Rest(expr2->expr3Rest);
+    setExpression2Rest(expr2->expr2Rest);
+  }
+}
+
+void Output::setExpression2Rest(const spExpression2Rest &expr2Rest) {
+  if (expr2Rest->opt == Expression2Rest::OPT_INFIXOP_EXPR3) {
+    for (unsigned i = 0; i < expr2Rest->pairs.size(); i++) {
+      spTokenExp op = expr2Rest->pairs[0].first;
+      setOp(op->pos, tokenUtil.getTokenLength(op->type));
+      setExpression3(expr2Rest->pairs[0].second);
+    }
+    return;
+  }
+
+  if (expr2Rest->opt == Expression2Rest::OPT_INSTANCEOF_TYPE) {
+    if (expr2Rest->tokInstanceOf) {
+      setKeyword(expr2Rest->tokInstanceOf);
+    }
+
+    if (expr2Rest->type) {
+      setType(expr2Rest->type);
+    }
+    return;
   }
 }
 
@@ -654,7 +675,9 @@ void Output::setLiteral(const spLiteral &literal) {
   }
 
   if (literal->opt == Literal::OPT_NULL) {
-    // TODO:
+    if (literal->nullLiteral) {
+      setKeyword(literal->nullLiteral);
+    }
     return;
   }
 }
@@ -866,6 +889,12 @@ void Output::setPackageDeclaration(const spPackageDeclaration &pkgDecl) {
   output += ")";
 }
 
+void Output::setParExpression(const spParExpression &parExpr) {
+  if (parExpr->posLParen) { setOp(parExpr->posLParen); }
+  if (parExpr->expr) { setExpression(parExpr->expr); }
+  if (parExpr->posRParen) { setOp(parExpr->posRParen); }
+}
+
 void Output::setPrimary(const spPrimary &primary) {
   if (primary->opt == Primary::OPT_LITERAL) {
     if (primary->literal) {
@@ -954,12 +983,17 @@ void Output::setReferenceType(const spReferenceType &refType) {
 
 void Output::setStatement(const spStatement &stmt) {
   if (stmt->opt == Statement::OPT_BLOCK) {
-    // TODO:
+    if (stmt->block) {
+      setBlock(stmt->block);
+    }
     return;
   }
 
   if (stmt->opt == Statement::OPT_SEMI_COLON) {
-    // TODO:
+    if (stmt->posSemiColon) {
+      setOp(stmt->posSemiColon);
+    }
+
     return;
   }
 
@@ -980,7 +1014,26 @@ void Output::setStatement(const spStatement &stmt) {
   }
 
   if (stmt->opt == Statement::OPT_IF) {
-    // TODO:
+    if (stmt->tokIf) {
+      setKeyword(stmt->tokIf);
+    }
+
+    if (stmt->parExpr) {
+      setParExpression(stmt->parExpr);
+    }
+
+    if (stmt->stmtIf) {
+      setStatement(stmt->stmtIf);
+    }
+
+    if (stmt->tokElse) {
+      setKeyword(stmt->tokElse);
+    }
+
+    if (stmt->stmtElse) {
+      setStatement(stmt->stmtElse);
+    }
+
     return;
   }
 
@@ -1015,7 +1068,18 @@ void Output::setStatement(const spStatement &stmt) {
   }
 
   if (stmt->opt == Statement::OPT_RETURN) {
-    // TODO:
+    if (stmt->tokReturn) {
+      setKeyword(stmt->tokReturn);
+    }
+
+    if (stmt->exprReturn) {
+      setExpression(stmt->exprReturn);
+    }
+
+    if (stmt->posSemiColon) {
+      setOp(stmt->posSemiColon);
+    }
+
     return;
   }
 
