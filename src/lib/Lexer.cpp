@@ -62,7 +62,7 @@ int Lexer::getToken() {
   if (':' == c) return TOK_OP_COLON;
   if ('*' == c) return getMulToken();
   if ('~' == c) return TOK_OP_TILDE;
-  if ('!' == c) return TOK_OP_EXCLAMATION;
+  if ('!' == c) return getExclamationToken();
   if ('{' == c) return TOK_LCURLY_BRACKET;
   if ('}' == c) return TOK_RCURLY_BRACKET;
   if ('(' == c) return TOK_LPAREN;
@@ -300,6 +300,16 @@ int Lexer::getEscapeSequence(std::stringstream &ss) {
   }
 
   return TOK_ERROR;
+}
+
+int Lexer::getExclamationToken() {
+  // We look 1 char ahead to decided if we have '!='
+  if (src->peekChar() == '=') {
+    src->getChar(); // conume '='
+    return TOK_OP_EXCLAMATION_EQUALS;
+  }
+
+  return TOK_OP_EXCLAMATION;
 }
 
 int Lexer::getMulToken() {

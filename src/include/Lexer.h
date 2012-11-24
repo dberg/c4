@@ -43,6 +43,7 @@ class Lexer {
   int getCommentOrDivToken();
   int getEqualsToken();
   int getEscapeSequence(std::stringstream &ss);
+  int getExclamationToken();
   int getGreaterThenToken();
   int getLessThenToken();
   int getMinusToken();
