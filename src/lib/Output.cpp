@@ -118,8 +118,8 @@ void Output::setArrayDepth(ArrayDepth &arrayDepth) {
   for (unsigned int i = 0; i < arrayDepth.size(); i++) {
     unsigned posOpen = arrayDepth[i].first;
     unsigned posClose = arrayDepth[i].second;
-    setOp(posOpen, 1);
-    setOp(posClose, 1);
+    setOp(posOpen);
+    setOp(posClose);
   }
 }
 
@@ -442,22 +442,19 @@ void Output::setExpression2Rest(const spExpression2Rest &expr2Rest) {
 }
 
 void Output::setExpression3(const spExpression3 &expr3) {
-  // TODO:
-  /*
   if (expr3->opt == Expression3::OPT_PREFIXOP_EXPRESSION3) {
-    if (expr3->prefixOp) {
-      setPrefixOp(expr3->prefixOp);
+    if (expr3->prefixOp && expr3->prefixOp->pos) {
+      setOp(expr3->prefixOp->pos,
+        tokenUtil.getTokenLength(expr3->prefixOp->token));
     }
 
     if (expr3->expr3) {
       setExpression3(expr3->expr3);
     }
+
     return;
   }
-  */
 
-  // TODO:
-  /*
   if (expr3->opt == Expression3::OPT_EXPRESSION_TYPE_EXPRESSION3) {
     if (expr3->expr) {
       setExpression(expr3->expr);
@@ -466,9 +463,13 @@ void Output::setExpression3(const spExpression3 &expr3) {
     if (expr3->type) {
       setType(expr3->type);
     }
+
+    if (expr3->expr3) {
+      setExpression3(expr3->expr3);
+    }
+
     return;
   }
-  */
 
   if (expr3->opt == Expression3::OPT_PRIMARY_SELECTOR_POSTFIXOP) {
     if (expr3->primary) {
