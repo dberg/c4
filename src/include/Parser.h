@@ -19,6 +19,7 @@ class Parser {
   spSourceCodeStream src;
   spDiagnosis diag;
   spLexer lexer;
+  bool expr3ExprLock;
   std::vector<std::string> scopes;
   TokenUtil tokenUtil;
 
@@ -139,8 +140,8 @@ public:
     const std::string _filename, const std::string &_buffer, spDiagnosis &_diag)
     : filename(_filename),
       src(spSourceCodeStream(new SourceCodeStream(_buffer))),
-      diag(_diag), lexer(spLexer(new Lexer(src, _diag))),
-      compilationUnit(spCompilationUnit(new CompilationUnit())),
+      diag(_diag), lexer(spLexer(new Lexer(src, _diag))), expr3ExprLock(false),
+      compilationUnit(spCompilationUnit(new CompilationUnit)),
       error(0), error_msg("") {}
 
   spCompilationUnit compilationUnit;

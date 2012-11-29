@@ -104,7 +104,8 @@ bool isPrimary(int token) {
     || token == TOK_IDENTIFIER
     || isBasicType(token)
     || token == TOK_KEY_VOID
-    || isLiteral(token));
+    || isLiteral(token)
+    || token == TOK_LPAREN);
 }
 
 /// ClassModifier: one of
@@ -810,19 +811,24 @@ void Parser::parseExpression(spExpression &expr) {
 
   // [ AssignmentOperator Expression1 ]
   if (isAssignmentOperator(lexer->getCurToken())) {
-    expr->assignOp = spAssignmentOperator(new AssignmentOperator);
-    expr->assignOp->tok = spTokenExp(new TokenExp(
-    lexer->getCursor() - tokenUtil.getTokenLength(
-      lexer->getCurToken()), lexer->getCurToken()));
+    State state;
+    saveState(state);
+
+    spAssignmentOperator assignOp
+      = spAssignmentOperator(new AssignmentOperator);
+    assignOp->tok = spTokenExp(new TokenExp(
+      lexer->getCursor() - tokenUtil.getTokenLength(
+        lexer->getCurToken()), lexer->getCurToken()));
     lexer->getNextToken(); // consume assignment token
 
     spExpression1 assignExpr1 = spExpression1(new Expression1);
     parseExpression1(assignExpr1);
     if (assignExpr1->isEmpty()) {
-      //expr->addErr(-1);
+      restoreState(state);
       return;
     }
 
+    expr->assignOp = assignOp;
     expr->assignExpr1 = assignExpr1;
   }
 }
@@ -911,58 +917,90 @@ void Parser::parseExpression2Rest(spExpression2Rest &expr2Rest) {
 }
 
 /// Expression3:
-///   PrefixOp Expression3
-///   ( Expression | Type ) Expression3
-///   Primary { Selector } { PostfixOp }
+///   (1) PrefixOp Expression3
+///   (2) ( Expression | Type ) Expression3
+///   (3) Primary { Selector } { PostfixOp }
 ///
 /// The first option is recursive only if the prefixes are '!' and '~'.
 /// For example: !!a; ~~b; are legal expressions but ++++a; is invalid
 /// while ~++c; is valid;
 void Parser::parseExpression3(spExpression3 &expr3) {
-  // PrefixOp Expression3
+  // (1) PrefixOp Expression3
   if (isPrefixOp(lexer->getCurToken())) {
     expr3->opt = Expression3::OPT_PREFIXOP_EXPRESSION3;
     expr3->prefixOp = spPrefixOp(new PrefixOp(
       lexer->getCurTokenIni(), lexer->getCurToken()));
-    expr3->expr3 = spExpression3(new Expression3());
+    lexer->getNextToken(); // consume PrefixOp
+
+    expr3->expr3 = spExpression3(new Expression3);
     parseExpression3(expr3->expr3);
     return;
   }
 
-  // ( Expression | Type ) Expression3
-  /*
-  // TODO:
-  // Expression will lead us back to Expression3 checks so we have to avoid
-  // getting stuck into this madness.
-  spExpression expr = spExpression(new Expression());
-  parseExpression(expr);
-  if (expr->isEmpty() == false) {
-    expr3->opt = Expression3::OPT_EXPRESSION_TYPE_EXPRESSION3;
-    expr3->expr = expr;
-    expr3->expr3 = spExpression3(new Expression3());
-    parseExpression3(expr3->expr3);
-    return;
-  }
+  // (2) ( Expression | Type ) Expression3
+  // We use a lock in case Expression lead us back to Expression3.
+  // This won't be pretty.
+  if (expr3ExprLock == false) {
+    expr3ExprLock = true;
 
-  spType type = spType(new Type());
-  parseType(type);
-  if (type->isEmpty() == false) {
-    expr3->opt = Expression3::OPT_EXPRESSION_TYPE_EXPRESSION3;
-    expr3->type = type;
-    expr3->expr3 = spExpression3(new Expression3());
-    parseExpression3(expr3->expr3);
-    return;
-  }
-  */
+    State state;
+    saveState(state);
 
-  // Primary { Selector } { PostfixOp }
-  // TODO: One problem with isPrimary is the condition token == TOK_IDENTIFIER.
-  // This condition might indicate the 7th Primary production rule:
-  //   Identifier { . Identifier } [IdentifierSuffix]
-  // TOK_IDENTIFIER  migh also indicate the 2nd Expression3 production rule:
-  //   ( Expression | Type ) Expression3.
-  // So, if we have a TOK_IDENTIFIER and Primary returns an error we should
-  // backtrack and try the 2nd production rule of Expression3.
+    // Let's try Type first
+    spType type = spType(new Type);
+    parseType(type);
+    if (type->err == false) {
+      // We have Type so we check for Expression3
+      spExpression3 expr3FromOpt2 = spExpression3(new Expression3);
+      parseExpression3(expr3FromOpt2);
+      if (expr3FromOpt2->err == false) {
+        // We have Type and Expression3 and our work is done here.
+        expr3->opt = Expression3::OPT_EXPRESSION_TYPE_EXPRESSION3;
+        expr3->type = type;
+        expr3->expr3 = expr3FromOpt2;
+        // Unlock recursion!
+        expr3ExprLock = false;
+	return;
+      }
+
+      // Expression3 failed
+      restoreState(state);
+    }
+
+    // We're now looking for: Expression Expression3
+    // Expression
+    spExpression expr = spExpression(new Expression);
+    parseExpression(expr);
+    if (expr->isEmpty()) {
+      // This means that the final production rule from Expression3 will fail
+      // so we can resume our work here.
+      restoreState(state);
+      // Unlock recursion!
+      expr3ExprLock = false;
+      return;
+    }
+
+    // Expression3
+    spExpression3 expr3FromOpt2 = spExpression3(new Expression3);
+    parseExpression3(expr3FromOpt2);
+    if (expr3FromOpt2->err) {
+      // Expression3 failed, our next option is the 3rd production rule from
+      // Expression3.
+      restoreState(state);
+      // Unlock recursion!
+      expr3ExprLock = false;
+    } else {
+      // We have Expression and Expression3 and our work is done here.
+      expr3->opt = Expression3::OPT_EXPRESSION_TYPE_EXPRESSION3;
+      expr3->expr = expr;
+      expr3->expr3 = expr3FromOpt2;
+      // Unlock recursion!
+      expr3ExprLock = false;
+      return;
+    }
+  } // expr3ExprLock
+
+  // (3) Primary { Selector } { PostfixOp }
   if (isPrimary(lexer->getCurToken())) {
     spPrimary primary = spPrimary(new Primary);
     parsePrimary(primary);
@@ -987,8 +1025,12 @@ void Parser::parseExpression3(spExpression3 &expr3) {
         expr3->postfixOp = spPostfixOp(new PostfixOp());
         parsePostfixOp(expr3->postfixOp);
       }
+
+      return;
     }
   }
+
+  expr3->addErr(-1);
 }
 
 /// Finally: finally Block
@@ -1068,7 +1110,7 @@ void Parser::parseIdentifierSuffix(spIdentifierSuffix &idSuffix) {
   // opt3: Arguments
   if (lexer->getCurToken() == TOK_LPAREN) {
     idSuffix->opt = IdentifierSuffix::OPT_ARGUMENTS;
-    idSuffix->args = spArguments(new Arguments());
+    idSuffix->args = spArguments(new Arguments);
     parseArguments(idSuffix->args);
     if (idSuffix->args->err) { idSuffix->addErr(-1); }
     return;
@@ -1539,14 +1581,14 @@ void Parser::parseFloatingPointLiteral(spFloatingPointLiteral &fpLiteral) {
 void Parser::parseLiteral(spLiteral &literal) {
   if (isIntegerLiteral(lexer->getCurToken())) {
     literal->opt = Literal::OPT_INTEGER;
-    literal->intLiteral = spIntegerLiteral(new IntegerLiteral());
+    literal->intLiteral = spIntegerLiteral(new IntegerLiteral);
     parseIntegerLiteral(literal->intLiteral);
     return;
   }
 
   if (isFloatingPointLiteral(lexer->getCurToken())) {
     literal->opt = Literal::OPT_FLOATING_POINT;
-    literal->fpLiteral = spFloatingPointLiteral(new FloatingPointLiteral());
+    literal->fpLiteral = spFloatingPointLiteral(new FloatingPointLiteral);
     parseFloatingPointLiteral(literal->fpLiteral);
     return;
   }
@@ -1554,7 +1596,7 @@ void Parser::parseLiteral(spLiteral &literal) {
   // CharacterLiteral
   if (lexer->getCurToken() == TOK_CHARACTER_LITERAL) {
     literal->opt = Literal::OPT_CHAR;
-    literal->charLiteral = spCharacterLiteral(new CharacterLiteral());
+    literal->charLiteral = spCharacterLiteral(new CharacterLiteral);
     parseCharacterLiteral(literal->charLiteral);
     return;
   }
@@ -1562,21 +1604,21 @@ void Parser::parseLiteral(spLiteral &literal) {
   // StringLiteral
   if (lexer->getCurToken() == TOK_STRING_LITERAL) {
     literal->opt = Literal::OPT_STRING;
-    literal->strLiteral = spStringLiteral(new StringLiteral());
+    literal->strLiteral = spStringLiteral(new StringLiteral);
     parseStringLiteral(literal->strLiteral);
     return;
   }
 
   if (lexer->getCurToken() == TOK_BOOLEAN_LITERAL) {
     literal->opt = Literal::OPT_BOOLEAN;
-    literal->boolLiteral = spBooleanLiteral(new BooleanLiteral());
+    literal->boolLiteral = spBooleanLiteral(new BooleanLiteral);
     parseBooleanLiteral(literal->boolLiteral);
     return;
   }
 
   if (lexer->getCurToken() == TOK_NULL_LITERAL) {
     literal->opt = Literal::OPT_NULL;
-    literal->nullLiteral = spNullLiteral(new NullLiteral());
+    literal->nullLiteral = spNullLiteral(new NullLiteral);
     parseNullLiteral(literal->nullLiteral);
   }
 }
@@ -1643,10 +1685,13 @@ void Parser::parsePrimary(spPrimary &primary) {
   }
 
   // (2) ParExpression
-  if (lexer->getCurToken() == TOK_LCURLY_BRACKET) {
+  if (lexer->getCurToken() == TOK_LPAREN) {
+    spParExpression parExpr = spParExpression(new ParExpression);
+    parseParExpression(parExpr);
+    if (parExpr->err) { return; }
+
     primary->opt = Primary::OPT_PAR_EXPRESSION;
-    primary->parExpr = spParExpression(new ParExpression());
-    parseParExpression(primary->parExpr);
+    primary->parExpr = parExpr;
     return;
   }
 
@@ -1662,7 +1707,7 @@ void Parser::parsePrimary(spPrimary &primary) {
   if (lexer->getCurToken() == TOK_KEY_SUPER) {
     primary->opt = Primary::OPT_SUPER_SUPER_SUFFIX;
     primary->superSuperSuffix = spPrimarySuperSuperSuffix(
-      new PrimarySuperSuperSuffix());
+      new PrimarySuperSuperSuffix);
     parsePrimarySuperSuperSuffix(primary->superSuperSuffix);
     return;
   }
@@ -1670,7 +1715,7 @@ void Parser::parsePrimary(spPrimary &primary) {
   // (5) new Creator
   if (lexer->getCurToken() == TOK_KEY_NEW) {
     primary->opt = Primary::OPT_NEW_CREATOR;
-    primary->newCreator = spPrimaryNewCreator(new PrimaryNewCreator());
+    primary->newCreator = spPrimaryNewCreator(new PrimaryNewCreator);
     parsePrimaryNewCreator(primary->newCreator);
     return;
   }
@@ -1678,7 +1723,7 @@ void Parser::parsePrimary(spPrimary &primary) {
   // (7) Identifier { . Identifier } [IdentifierSuffix]
   if (lexer->getCurToken() == TOK_IDENTIFIER) {
     primary->opt = Primary::OPT_IDENTIFIER;
-    primary->primaryId = spPrimaryIdentifier(new PrimaryIdentifier());
+    primary->primaryId = spPrimaryIdentifier(new PrimaryIdentifier);
     parsePrimaryIdentifier(primary->primaryId);
     return;
   }
@@ -1694,13 +1739,13 @@ void Parser::parsePrimary(spPrimary &primary) {
   // (9) void . class
   if (lexer->getCurToken() == TOK_KEY_VOID) {
     primary->opt = Primary::OPT_VOID_CLASS;
-    primary->primaryVoidClass = spPrimaryVoidClass(new PrimaryVoidClass());
+    primary->primaryVoidClass = spPrimaryVoidClass(new PrimaryVoidClass);
     parsePrimaryVoidClass(primary->primaryVoidClass);
     return;
   }
 
   // (1) Literal
-  spLiteral literal = spLiteral(new Literal());
+  spLiteral literal = spLiteral(new Literal);
   parseLiteral(literal);
   if (literal->isEmpty() == false) {
     primary->opt = Primary::OPT_LITERAL;
