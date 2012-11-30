@@ -960,7 +960,7 @@ void Parser::parseExpression3(spExpression3 &expr3) {
         expr3->expr3 = expr3FromOpt2;
         // Unlock recursion!
         expr3ExprLock = false;
-	return;
+        return;
       }
 
       // Expression3 failed
@@ -1009,21 +1009,24 @@ void Parser::parseExpression3(spExpression3 &expr3) {
       expr3->primary = primary;
 
       // { Selector }
-      if (lexer->getCurToken() == TOK_PERIOD
+      while (lexer->getCurToken() == TOK_PERIOD
         || lexer->getCurToken() == TOK_LBRACKET) {
-        expr3->selector = spSelector(new Selector);
-        parseSelector(expr3->selector);
-        if (expr3->selector->err) {
+        spSelector selector = spSelector(new Selector);
+        parseSelector(selector);
+        if (selector->err) {
           expr3->addErr(-1);
           return;
         }
+
+        expr3->selectors.push_back(selector);
       }
 
       // { PostfixOp }
-      if (lexer->getCurToken() == TOK_OP_PLUS_PLUS
+      while (lexer->getCurToken() == TOK_OP_PLUS_PLUS
         || lexer->getCurToken() == TOK_OP_MINUS_MINUS) {
-        expr3->postfixOp = spPostfixOp(new PostfixOp());
-        parsePostfixOp(expr3->postfixOp);
+        spPostfixOp postfixOp = spPostfixOp(new PostfixOp);
+        parsePostfixOp(postfixOp);
+        expr3->postfixOps.push_back(postfixOp);
       }
 
       return;

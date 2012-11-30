@@ -1045,8 +1045,8 @@ struct Expression3 : ASTError {
 
   // (3) Primary { Selector } { PostfixOp }
   spPrimary primary;
-  spSelector selector;
-  spPostfixOp postfixOp;
+  std::vector<spSelector> selectors;
+  std::vector<spPostfixOp> postfixOps;
 
   Expression3() : opt(OPT_UNDEFINED) {}
   bool isEmpty() { return opt == OPT_UNDEFINED; }
