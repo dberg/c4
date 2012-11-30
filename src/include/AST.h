@@ -594,7 +594,7 @@ struct Statement : ASTError {
   // shared 1,16
   spBlock block;
 
-  // shared 2,4, 13
+  // shared 2,4,13,14
   unsigned posSemiColon;
 
   // (1) Block
@@ -619,6 +619,10 @@ struct Statement : ASTError {
   // (13) return [Expression] ;
   spTokenExp tokReturn;
   spExpression exprReturn;
+
+  // (14) throw Expression ;
+  spTokenExp tokThrow;
+  spExpression throwExpr;
 
   // (16) try Block ( Catches | [Catches] Finally )
   spTokenExp tokTry;

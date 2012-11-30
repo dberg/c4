@@ -1085,7 +1085,18 @@ void Output::setStatement(const spStatement &stmt) {
   }
 
   if (stmt->opt == Statement::OPT_THROW) {
-    // TODO:
+    if (stmt->tokThrow) {
+      setKeyword(stmt->tokThrow);
+    }
+
+    if (stmt->throwExpr) {
+      setExpression(stmt->throwExpr);
+    }
+
+    if (stmt->posSemiColon) {
+      setOp(stmt->posSemiColon);
+    }
+
     return;
   }
 

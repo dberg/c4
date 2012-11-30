@@ -2278,7 +2278,26 @@ void Parser::parseStatement(spStatement &stmt) {
 
   // (14) throw Expression ;
   if (lexer->getCurToken() == TOK_KEY_THROW) {
-    // TODO:
+    stmt->opt = Statement::OPT_THROW;
+    stmt->tokThrow = spTokenExp(new TokenExp(
+      lexer->getCursor() - tokenUtil.getTokenLength(
+      lexer->getCurToken()), lexer->getCurToken()));
+    lexer->getNextToken(); // consume 'throw'
+
+    stmt->throwExpr = spExpression(new Expression);
+    parseExpression(stmt->throwExpr);
+    if (stmt->throwExpr->isEmpty()) {
+      stmt->addErr(-1);
+      return;
+    }
+
+    if (lexer->getCurToken() == TOK_SEMICOLON) {
+      stmt->posSemiColon = lexer->getCursor() - 1;
+      lexer->getNextToken(); // consume ';'
+      return;
+    }
+
+    stmt->addErr(diag->addErr(ERR_EXP_SEMICOLON, lexer->getCursor() - 1));
     return;
   }
 
