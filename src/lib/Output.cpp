@@ -476,16 +476,13 @@ void Output::setExpression3(const spExpression3 &expr3) {
       setPrimary(expr3->primary);
     }
 
-    // TODO:
-    /*
-    if (expr3->selector) {
-      setSelector(expr3->selector);
+    for (unsigned i = 0; i < expr3->selectors.size(); i++) {
+      setSelector(expr3->selectors[i]);
     }
 
-    if (expr3->postfixOp) {
-      setPostfixOp(expr3->postfixOp)
+    for (unsigned i = 0; i < expr3->postfixOps.size(); i++) {
+      setOp(expr3->postfixOps[i]->pos, 2);
     }
-    */
   }
 }
 
@@ -979,6 +976,60 @@ void Output::setReferenceType(const spReferenceType &refType) {
   if (refType->typeArgs) { setTypeArguments(refType->typeArgs); }
   for (unsigned int i = 0; i < refType->refTypes.size(); i++) {
     setReferenceType(refType->refTypes[i]);
+  }
+}
+
+void Output::setSelector(const spSelector &selector) {
+  if (selector->opt == Selector::OPT_IDENTIFIER_ARGUMENTS) {
+    if (selector->posPeriod) { setOp(selector->posPeriod); }
+    if (selector->id) { setIdentifier(selector->id); }
+    if (selector->args) { setArguments(selector->args); }
+  }
+
+  if (selector->opt == Selector::OPT_EXPLICIT_GENERIC_INVOCATION) {
+    if (selector->posPeriod) { setOp(selector->posPeriod); }
+    // TODO:
+    //if (selector->explGenInvocation) {
+    //  setExplicitGenericInvocation(selector->explGenInvocation);
+    //}
+  }
+
+  if (selector->opt == Selector::OPT_THIS) {
+    if (selector->posPeriod) { setOp(selector->posPeriod); }
+    if (selector->tokThis) { setKeyword(selector->tokThis); }
+  }
+
+  if (selector->opt == Selector::OPT_SUPER_SUPER_SUFFIX) {
+    if (selector->posPeriod) { setOp(selector->posPeriod); }
+    if (selector->tokSuper) { setKeyword(selector->tokSuper); }
+    // TODO:
+    //if (selector->superSuffix) { setSuperSuffix(selector->superSuffix); }
+  }
+
+  if (selector->opt == Selector::OPT_NEW) {
+    if (selector->posPeriod) { setOp(selector->posPeriod); }
+    if (selector->tokNew) { setKeyword(selector->tokNew); }
+    if (selector->nonWildcardTypeArguments) {
+      setNonWildcardTypeArguments(selector->nonWildcardTypeArguments);
+    }
+    // TODO:
+    //if (selector->innerCreator) {
+    //  setInnerCreator(selector->innerCreator);
+    //}
+  }
+
+  if (selector->opt == Selector::OPT_EXPRESSION) {
+    if (selector->arrayPair.first) {
+      setOp(selector->arrayPair.first);
+    }
+
+    if (selector->expr) {
+      setExpression(selector->expr);
+    }
+
+    if (selector->arrayPair.second) {
+      setOp(selector->arrayPair.second);
+    }
   }
 }
 

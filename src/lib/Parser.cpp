@@ -2117,13 +2117,27 @@ void Parser::parseSelector(spSelector &selector) {
   /// '[' Expression ']'
   if (lexer->getCurToken() == TOK_LBRACKET) {
     selector->opt = Selector::OPT_EXPRESSION;
+
+    // '['
     selector->arrayPair.first = lexer->getCursor() - 1;
+    selector->arrayPair.second = 0;
     lexer->getNextToken(); // consume '['
-    selector->expr = spExpression(new Expression());
+
+    // Expression
+    selector->expr = spExpression(new Expression);
     parseExpression(selector->expr);
-    selector->arrayPair.second = lexer->getCursor() - 1;
-    // TODO: check error
-    lexer->getNextToken(); // consume ']'
+    if (selector->expr->isEmpty()) {
+      selector->addErr(-1);
+    }
+
+    // ']'
+    if (lexer->getCurToken() == TOK_RBRACKET) {
+      selector->arrayPair.second = lexer->getCursor() - 1;
+      lexer->getNextToken(); // consume ']'
+      return;
+    }
+
+    selector->addErr(diag->addErr(ERR_EXP_RBRACKET, lexer->getCursor() - 1));
     return;
   }
 
