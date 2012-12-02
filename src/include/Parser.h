@@ -73,6 +73,13 @@ class Parser {
   spImportDeclarations parseImportDeclarations();
   void parseInnerCreator(spInnerCreator &innerCreator);
   void parseFieldDeclaratorsRest(spFieldDeclaratorsRest &fieldDeclsRest);
+  void parseForControl(spForControl &forCtrl);
+  void parseForInit(spForInit &forInit);
+  void parseForUpdate(spForUpdate &forUpdate);
+  void parseForVarControl(spForVarControl &forVarCtrl);
+  void parseForVarControlRest(spForVarControlRest &forVarCtrlRest);
+  void parseForVariableDeclaratorsRest(
+    spForVariableDeclaratorsRest &forVarDeclsRest);
   void parseFormalParameters(spFormalParameters &formParams);
   void parseFormalParameterDecls(spFormalParameterDecls &formParamDecls);
   void parseFormalParameterDeclsRest(

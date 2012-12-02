@@ -58,6 +58,14 @@ typedef boost::shared_ptr<struct ExpressionInBrackets> spExpressionInBrackets;
 typedef boost::shared_ptr<struct FieldDeclaratorsRest> spFieldDeclaratorsRest;
 typedef boost::shared_ptr<struct Finally> spFinally;
 typedef boost::shared_ptr<struct FloatingPointLiteral> spFloatingPointLiteral;
+typedef boost::shared_ptr<struct ForControl> spForControl;
+typedef boost::shared_ptr<struct ForInit> spForInit;
+typedef ForInit ForUpdate;
+typedef boost::shared_ptr<struct ForInit> spForUpdate;
+typedef boost::shared_ptr<struct ForVarControl> spForVarControl;
+typedef boost::shared_ptr<struct ForVarControlRest> spForVarControlRest;
+typedef boost::shared_ptr<struct ForVariableDeclaratorsRest>
+  spForVariableDeclaratorsRest;
 typedef boost::shared_ptr<struct FormalParameters> spFormalParameters;
 typedef boost::shared_ptr<struct FormalParameterDecls> spFormalParameterDecls;
 typedef boost::shared_ptr<struct FormalParameterDeclsRest>
@@ -616,6 +624,13 @@ struct Statement : ASTError {
   spTokenExp tokElse;
   spStatement stmtElse;
 
+  // (10) for '(' ForControl ')' Statement
+  spTokenExp tokFor;
+  unsigned posLParen;
+  unsigned posRParen;
+  spForControl forCtrl;
+  spStatement stmtFor;
+
   // (13) return [Expression] ;
   spTokenExp tokReturn;
   spExpression exprReturn;
@@ -629,7 +644,8 @@ struct Statement : ASTError {
   spCatches catches;
   spFinally finally;
 
-  Statement() : opt(OPT_UNDEFINED) {}
+  Statement()
+    : opt(OPT_UNDEFINED), posSemiColon(0), posLParen(0), posRParen(0) {}
 };
 
 /// StatementExpression: Expression
@@ -1235,6 +1251,77 @@ struct FloatingPointLiteral {
   std::string value;
 
   FloatingPointLiteral() : opt(OPT_UNDEFINED), pos(-1) {}
+};
+
+/// ForControl
+///   (1) ForVarControl
+///   (2) ForInit ; [Expression] ; [ForUpdate]
+struct ForControl : ASTError {
+  enum ForControlOpt {
+    OPT_UNDEFINED,
+    OPT_FOR_VAR_CTRL,
+    OPT_FOR_INIT,
+  };
+
+  ForControlOpt opt;
+
+  // (1) ForVarControl
+  spForVarControl varCtrl;
+
+  // (2) ForInit ; [Expression] ; [ForUpdate]
+  spForInit forInit;
+  unsigned posSemiColon1;
+  unsigned posSemiColon2;
+  spExpression expr;
+  spForUpdate forUpdate;
+
+  ForControl() : opt(OPT_UNDEFINED), posSemiColon1(0), posSemiColon2(0) {}
+};
+
+/// ForInit:
+/// ForUpdate:
+///   StatementExpression { , StatementExpression }
+struct ForInit : ASTError {
+  spStatementExpression stmtExpr;
+  std::vector<std::pair<unsigned, spStatementExpression> > pairs;
+};
+
+/// ForVarControl
+///   {VariableModifier} Type VariableDeclaratorId ForVarControlRest
+struct ForVarControl : ASTError {
+  spVariableModifier varMod;
+  spType type;
+  spVariableDeclaratorId varDeclId;
+  spForVarControlRest forVarCtrlRest;
+};
+
+/// ForVarControlRest
+///   (1) ForVariableDeclaratorsRest ; [Expression] ; [ForUpdate]
+///   (2) : Expression
+struct ForVarControlRest : ASTError {
+  enum ForVarControlRestOpt {
+    OPT_UNDEFINED,
+    OPT_FOR_VAR_DECLS_REST,
+    OPT_COLON_EXPR,
+  };
+
+  ForVarControlRestOpt opt;
+
+  spForVariableDeclaratorsRest forVarDeclsRest;
+  unsigned posSemiColon1;
+  unsigned posSemiColon2;
+  spExpression expr;
+  spForUpdate forUpdate;
+
+  ForVarControlRest() : opt(OPT_UNDEFINED) {}
+};
+
+/// ForVariableDeclaratorsRest
+///   [ = VariableInitializer ] { , VariableDeclarator }
+struct ForVariableDeclaratorsRest : ASTError {
+  unsigned posEquals;
+  spVariableInitializer varInit;
+  std::vector<std::pair<unsigned, spVariableDeclarator> > pairs;
 };
 
 struct BooleanLiteral {

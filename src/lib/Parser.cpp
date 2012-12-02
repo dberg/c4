@@ -1072,6 +1072,213 @@ void Parser::parseFieldDeclaratorsRest(spFieldDeclaratorsRest &fieldDeclsRest) {
   // { , VariableDeclarator }
 }
 
+/// ForControl
+///   (1) ForVarControl
+///   (2) ForInit ; [Expression] ; [ForUpdate]
+void Parser::parseForControl(spForControl &forCtrl) {
+  // TODO:
+  // (1) ForVarControl
+
+  // (2) ForInit ; [Expression] ; [ForUpdate]
+  forCtrl->forInit = spForInit(new ForInit);
+  parseForInit(forCtrl->forInit);
+
+  // ';'
+  if (lexer->getCurToken() != TOK_SEMICOLON) {
+    forCtrl->addErr(diag->addErr(ERR_EXP_SEMICOLON, lexer->getCursor() - 1));
+    return;
+  }
+
+  forCtrl->posSemiColon1 = lexer->getCursor() - 1;
+  lexer->getNextToken(); // consume ';'
+
+  // [Expression]
+  if (lexer->getCurToken() != TOK_SEMICOLON) {
+    forCtrl->expr = spExpression(new Expression);
+    parseExpression(forCtrl->expr);
+    if (forCtrl->expr->isEmpty()) {
+      forCtrl->addErr(-1);
+    }
+  }
+
+  // ';'
+  if (lexer->getCurToken() != TOK_SEMICOLON) {
+    forCtrl->addErr(diag->addErr(ERR_EXP_SEMICOLON, lexer->getCursor() - 1));
+    return;
+  }
+
+  forCtrl->posSemiColon2 = lexer->getCursor() - 1;
+  lexer->getNextToken(); // consume ';'
+
+  // [ForUpdate]
+  forCtrl->forUpdate = spForUpdate(new ForUpdate);
+  parseForUpdate(forCtrl->forUpdate);
+  if (forCtrl->forUpdate->err) {
+    forCtrl->addErr(-1);
+  }
+}
+
+/// ForInit:
+/// ForUpdate:
+///   StatementExpression { , StatementExpression }
+void Parser::parseForInit(spForInit &forInit) {
+  forInit->stmtExpr = spStatementExpression(new StatementExpression);
+  parseStatementExpression(forInit->stmtExpr);
+  if (forInit->stmtExpr->err) {
+    forInit->addErr(-1);
+    return;
+  }
+
+  // { , StatementExpression }
+  while (lexer->getCurToken() == TOK_COMMA) {
+    unsigned pos = lexer->getCursor();
+    lexer->getNextToken(); // consume ';'
+
+    spStatementExpression stmtExpr
+      = spStatementExpression(new StatementExpression);
+    parseStatementExpression(stmtExpr);
+    if (stmtExpr->err) { return; }
+
+    std::pair<unsigned, spStatementExpression> pair;
+    pair.first = pos;
+    pair.second = stmtExpr;
+
+    forInit->pairs.push_back(pair);
+  }
+}
+
+/// ForInit:
+/// ForUpdate:
+///   StatementExpression { , StatementExpression }
+void Parser::parseForUpdate(spForUpdate &forUpdate) {
+  parseForInit(forUpdate);
+}
+
+/// ForVarControl
+///   {VariableModifier} Type VariableDeclaratorId ForVarControlRest
+void Parser::parseForVarControl(spForVarControl &forVarCtrl) {
+  // {VariableModifier}
+  forVarCtrl->varMod = spVariableModifier(new VariableModifier);
+  parseVariableModifier(forVarCtrl->varMod);
+
+  // Type
+  forVarCtrl->type = spType(new Type);
+  parseType(forVarCtrl->type);
+  if (forVarCtrl->type->err) {
+    forVarCtrl->addErr(-1);
+    return;
+  }
+
+  // VariableDeclaratorId
+  // TODO: check for errors
+  forVarCtrl->varDeclId = spVariableDeclaratorId(new VariableDeclaratorId);
+  parseVariableDeclaratorId(forVarCtrl->varDeclId);
+
+  // ForVarControlRest
+  forVarCtrl->forVarCtrlRest = spForVarControlRest(new ForVarControlRest);
+  parseForVarControlRest(forVarCtrl->forVarCtrlRest);
+  if (forVarCtrl->forVarCtrlRest->err) {
+    forVarCtrl->addErr(-1);
+
+  }
+}
+
+/// ForVarControlRest
+///   (1) ForVariableDeclaratorsRest ; [Expression] ; [ForUpdate]
+///   (2) : Expression
+void Parser::parseForVarControlRest(spForVarControlRest &forVarCtrlRest) {
+  // (2) : Expression
+  if (lexer->getCurToken() == TOK_OP_COLON) {
+    // TODO:
+    forVarCtrlRest->opt = ForVarControlRest::OPT_COLON_EXPR;
+    return;
+  }
+
+  // (1) ForVariableDeclaratorsRest ; [Expression] ; [ForUpdate]
+  forVarCtrlRest->opt = ForVarControlRest::OPT_FOR_VAR_DECLS_REST;
+
+  // ForVariableDeclaratorsRest
+  forVarCtrlRest->forVarDeclsRest
+    = spForVariableDeclaratorsRest(new ForVariableDeclaratorsRest);
+  parseForVariableDeclaratorsRest(forVarCtrlRest->forVarDeclsRest);
+  if (forVarCtrlRest->forVarDeclsRest->err) {
+    forVarCtrlRest->addErr(-1);
+  }
+
+  // ;
+  if (lexer->getCurToken() != TOK_SEMICOLON) {
+    forVarCtrlRest->addErr(diag->addErr(ERR_EXP_SEMICOLON, lexer->getCursor() - 1));
+    return;
+  }
+
+  forVarCtrlRest->posSemiColon1 = lexer->getCursor() - 1;
+  lexer->getNextToken(); // consume ;
+
+  // [Expression]
+  if (lexer->getCurToken() != TOK_SEMICOLON) {
+    forVarCtrlRest->expr = spExpression(new Expression);
+    parseExpression(forVarCtrlRest->expr);
+    if (forVarCtrlRest->expr->isEmpty()) {
+      forVarCtrlRest->addErr(-1);
+    }
+  }
+
+  // ;
+  if (lexer->getCurToken() != TOK_SEMICOLON) {
+    forVarCtrlRest->addErr(diag->addErr(ERR_EXP_SEMICOLON, lexer->getCursor() - 1));
+    return;
+  }
+
+  forVarCtrlRest->posSemiColon1 = lexer->getCursor() - 1;
+  lexer->getNextToken(); // consume ;
+
+  // [ForUpdate]
+  if (lexer->getCurToken() != TOK_RPAREN) {
+    forVarCtrlRest->forUpdate = spForUpdate(new ForUpdate);
+    parseForUpdate(forVarCtrlRest->forUpdate);
+    if (forVarCtrlRest->forUpdate->err) {
+      forVarCtrlRest->addErr(-1);
+    }
+  }
+}
+
+/// ForVariableDeclaratorsRest
+///   [ = VariableInitializer ] { , VariableDeclarator }
+void Parser::parseForVariableDeclaratorsRest(
+  spForVariableDeclaratorsRest &forVarDeclsRest) {
+
+  // [ = VariableInitializer ]
+  if (lexer->getCurToken() == TOK_OP_EQUALS) {
+    forVarDeclsRest->posEquals = lexer->getCursor() - 1;
+    lexer->getNextToken(); // consume '='
+
+    forVarDeclsRest->varInit = spVariableInitializer(new VariableInitializer);
+    parseVariableInitializer(forVarDeclsRest->varInit);
+    if (forVarDeclsRest->varInit->err) {
+      forVarDeclsRest->addErr(-1);
+    }
+  }
+
+  while (lexer->getCurToken() == TOK_COMMA) {
+    State state;
+    saveState(state);
+
+    unsigned pos = lexer->getCursor() - 1;
+    lexer->getNextToken(); // consume ','
+    spVariableDeclarator varDecl = spVariableDeclarator(new VariableDeclarator);
+    parseVariableDeclarator(varDecl);
+    if (varDecl->err) {
+      restoreState(state);
+      return;
+    }
+
+    std::pair<unsigned, spVariableDeclarator> pair;
+    pair.first = pos;
+    pair.second = varDecl;
+    forVarDeclsRest->pairs.push_back(pair);
+  }
+}
+
 /// IdentifierSuffix:
 ///   '[' ( {'[' ']'} . class | Expression ) ']'
 ///   Arguments
@@ -2247,7 +2454,45 @@ void Parser::parseStatement(spStatement &stmt) {
 
   // (10) for '(' ForControl ')' Statement
   if (lexer->getCurToken() == TOK_KEY_FOR) {
-    // TODO:
+    // for
+    spTokenExp tokFor = spTokenExp(new TokenExp(
+      lexer->getCursor() - tokenUtil.getTokenLength(
+      lexer->getCurToken()), lexer->getCurToken()));
+    lexer->getNextToken(); // consume 'for'
+
+    // '('
+    if (lexer->getCurToken() != TOK_LPAREN) {
+      stmt->addErr(diag->addErr(ERR_EXP_LPAREN, lexer->getCurTokenIni() - 1));
+      return;
+    }
+
+    stmt->posLParen = lexer->getCursor() - 1;
+    lexer->getNextToken(); // consume '('
+
+    // ForControl
+    stmt->forCtrl = spForControl(new ForControl);
+    parseForControl(stmt->forCtrl);
+    if (stmt->forCtrl->err) {
+      // We don't exit and try to parse the next token.
+      stmt->addErr(-1);
+    }
+
+    // ')'
+    if (lexer->getCurToken() != TOK_RPAREN) {
+      stmt->addErr(diag->addErr(ERR_EXP_RPAREN, lexer->getCurTokenIni() - 1));
+      return;
+    }
+
+    stmt->posLParen = lexer->getCursor() - 1;
+    lexer->getNextToken(); // consume '('
+
+    // Statement
+    stmt->stmtFor = spStatement(new Statement);
+    parseStatement(stmt->stmtFor);
+    if (stmt->stmtFor->err) {
+      stmt->addErr(-1);
+    }
+
     return;
   }
 
