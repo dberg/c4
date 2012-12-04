@@ -991,8 +991,13 @@ struct Expression1 {
 };
 
 /// Expression1Rest: ? Expression : Expression1
-struct Expression1Rest {
-  // TODO:
+struct Expression1Rest : ASTError {
+  unsigned posQuestionMark;
+  unsigned posColon;
+  spExpression expr;
+  spExpression1 expr1;
+
+  Expression1Rest() : posQuestionMark(0), posColon(0) {}
 };
 
 /// Expression2: Expression3 [ Expression2Rest ]
