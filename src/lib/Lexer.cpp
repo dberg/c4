@@ -69,6 +69,7 @@ int Lexer::getToken() {
   if (')' == c) return TOK_RPAREN;
   if ('[' == c) return TOK_LBRACKET;
   if (']' == c) return TOK_RBRACKET;
+  if ('?' == c) return TOK_OP_QUESTION_MARK;
 
   if (isdigit(c)) return getNumberToken(c);
 

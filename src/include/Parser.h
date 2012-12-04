@@ -63,6 +63,7 @@ class Parser {
     spExplicitGenericInvocationSuffix &explGen);
   void parseExpression(spExpression &expr);
   void parseExpression1(spExpression1 &expr1);
+  void parseExpression1Rest(spExpression1Rest &expr1Rest);
   void parseExpression2(spExpression2 &expr2);
   void parseExpression2Rest(spExpression2Rest &expr2Rest);
   void parseExpression3(spExpression3 &expr3);

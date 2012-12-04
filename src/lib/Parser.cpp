@@ -497,7 +497,7 @@ void Parser::parseElementValue(spElementValue &value) {
   }
 
   // Expression1
-  spExpression1 expr1 = spExpression1(new Expression1());
+  spExpression1 expr1 = spExpression1(new Expression1);
   parseExpression1(expr1);
   if (expr1->isEmpty() == false) {
     value->opt = ElementValue::OPT_EXPRESSION1;
@@ -843,8 +843,50 @@ void Parser::parseExpression1(spExpression1 &expr1) {
 
   expr1->expr2 = expr2;
 
-  // TODO:
   // Expression1Rest
+  if (lexer->getCurToken() == TOK_OP_QUESTION_MARK) {
+    State state;
+    saveState(state);
+    spExpression1Rest expr1Rest = spExpression1Rest(new Expression1Rest);
+    parseExpression1Rest(expr1Rest);
+    if (expr1Rest->err) {
+      restoreState(state);
+      return;
+    }
+
+    expr1->expr1Rest = expr1Rest;
+  }
+}
+
+/// Expression1Rest:
+///   ? Expression : Expression1
+void Parser::parseExpression1Rest(spExpression1Rest &expr1Rest) {
+  // '?'
+  expr1Rest->posQuestionMark = lexer->getCursor() - 1;
+  lexer->getNextToken(); // consume '?'
+
+  // Expression
+  expr1Rest->expr = spExpression(new Expression);
+  parseExpression(expr1Rest->expr);
+  if (expr1Rest->expr->isEmpty()) {
+    expr1Rest->addErr(-1);
+    return;
+  }
+
+  // ':'
+  if (lexer->getCurToken() != TOK_OP_COLON) {
+    expr1Rest->addErr(diag->addErr(ERR_EXP_OP_COLON, lexer->getCursor() - 1));
+    return;
+  }
+
+  expr1Rest->posColon = lexer->getCursor() - 1;
+  lexer->getNextToken(); // consume ':'
+
+  expr1Rest->expr1 = spExpression1(new Expression1);
+  parseExpression1(expr1Rest->expr1);
+  if (expr1Rest->expr1->isEmpty()) {
+    expr1Rest->addErr(-1);
+  }
 }
 
 /// Expression2: Expression3 [ Expression2Rest ]
