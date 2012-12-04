@@ -28,6 +28,7 @@ enum ErrorCode {
   ERR_EXP_IDENTIFIER,
   ERR_EXP_LCURLY_BRACKET,
   ERR_EXP_LPAREN,
+  ERR_EXP_OP_COLON,
   ERR_EXP_OP_LT,
   ERR_EXP_OP_GT,
   ERR_EXP_QID,
@@ -67,6 +68,7 @@ public:
     msgs[ERR_EXP_IDENTIFIER] = "Expected identifier";
     msgs[ERR_EXP_LCURLY_BRACKET] = "Expected opening curly brackets";
     msgs[ERR_EXP_LPAREN] = "Expected opening parenthesis";
+    msgs[ERR_EXP_OP_COLON] = "Expected colon";
     msgs[ERR_EXP_OP_LT] = "Expected operator <";
     msgs[ERR_EXP_OP_GT] = "Expected operator >";
     msgs[ERR_EXP_QID] = "Expected qualified id";
