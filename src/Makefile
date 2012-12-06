@@ -19,9 +19,9 @@ BUILDTYPE ?= Debug
 
 # Release type
 ifeq ($(BUILDTYPE),Release)
-    CFLAGS = -Wall -O3
+    CFLAGS = -Wall -Wextra -O3
 else
-    CFLAGS = -Wall -g
+    CFLAGS = -Wall -Wextra -g3
 endif
 
 builddir_name = out
@@ -140,7 +140,7 @@ $(bin)/tests: $(test_libdir)/ParserTest.cpp \
               $(obj)/SymbolTable.o \
               $(gtest_obj)/libgtest.a
 
-	$(CXX) $(INC) -I$(gtest_inc) $(obj)/Lexer.o \
+	$(CXX) -g3 $(INC) -I$(gtest_inc) $(obj)/Lexer.o \
                                      $(obj)/LiteralSupport.o \
                                      $(obj)/Parser.o \
                                      $(obj)/Output.o \
@@ -157,5 +157,5 @@ $(gtest_obj)/libgtest.a: $(gtest_obj)/gtest-all.o
 	ar -rv $@ $<
 
 $(gtest_obj)/gtest-all.o: $(gtest_dir)/src/gtest-all.cc
-	$(CXX) -I$(gtest_dir)/include -I$(gtest_dir) \
+	$(CXX) -g3 -I$(gtest_dir)/include -I$(gtest_dir) \
                -c $< -o $@
