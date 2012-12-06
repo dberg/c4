@@ -17,10 +17,10 @@ class SourceCodeStream {
   unsigned int cursorMark;
 
 public:
-  const char getChar();
-  const char getChar(int offset);
-  const char ungetChar(int count);
-  const char peekChar(int offset = 0);
+  char getChar();
+  char getChar(int offset);
+  char ungetChar(int count);
+  char peekChar(int offset = 0);
 
   unsigned int getCursor();
   void setCursor(unsigned int _cursor);

@@ -3,7 +3,7 @@
 namespace djp {
 
 /// Return the next char in the buffer or '\0' if we hit the end of the buffer.
-const char SourceCodeStream::getChar() {
+char SourceCodeStream::getChar() {
   if (cursor > buffer.length()) {
     return '\0';
   }
@@ -15,12 +15,12 @@ const char SourceCodeStream::getChar() {
   return buffer[cursor++];
 }
 
-const char SourceCodeStream::getChar(int offset) {
+char SourceCodeStream::getChar(int offset) {
   for (int i = 0; i < offset; i++) getChar();
   return buffer[cursor];
 }
 
-const char SourceCodeStream::ungetChar(int count) {
+char SourceCodeStream::ungetChar(int count) {
   for (int i = count; i > 0; i--) {
     if (buffer[--cursor] == '\n') {
       line--;
@@ -30,7 +30,7 @@ const char SourceCodeStream::ungetChar(int count) {
   return buffer[cursor];
 }
 
-const char SourceCodeStream::peekChar(int offset) {
+char SourceCodeStream::peekChar(int offset) {
   return buffer[cursor + offset];
 }
 
