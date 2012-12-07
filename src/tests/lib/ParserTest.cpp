@@ -633,6 +633,70 @@ TEST(Parser, Errors) {
   ASSERT_EQ(1, diag->errors.size());
 }
 
+// -----------------------------------------------------------------------------
+// public class A { public void m() { M.p("a" + b + "c"); }}
+// -----------------------------------------------------------------------------
+// BlockStatement(3)
+//   Statement(4)
+//     StatementExpression
+//       Expression
+//         Expression1
+//           Expression2
+//             Expression3(3)
+//               Primary(7)
+//                 Identifier <-- 'M'
+//                 { . Identifier } <-- 'p'
+//                 IdentifierSuffix
+//                   Arguments*
+//     ';'
+//
+// Arguments*
+//   '('
+//   Expression
+//     Expression1
+//       Expression2
+//         Expression3(3)
+//           Primary
+//             Literal
+//               StringLiteral <-- "a"
+//         Expression2Rest
+//           InfixOp <-- '+'
+//           Expression3(2)
+//             Type <-- b
+//             Expression3(1)
+//               PrefixOp <-- '+'
+//               Expression3
+//                 Primary
+//                   Literal
+//                     StringLiteral <-- "b"
+//   ')'
+TEST(Parser, ExpressionInfixOp) {
+  std::string filename = "Test.java";
+  std::string buffer
+    = "public class A { public void m() { M.p(\"a\" + b + \"c\"); }}";
+  spDiagnosis diag = spDiagnosis(new Diagnosis());
+  Parser parser(filename, buffer, diag);
+  parser.parse();
+
+  spStatement stmt = parser.compilationUnit->typeDecls[0]->decl->classDecl
+    ->nClassDecl->classBody->decls[0]->memberDecl->voidMethDeclRest->block
+    ->blockStmts[0]->stmt;
+  ASSERT_EQ(53, stmt->posSemiColon);
+
+  spArguments args = stmt->stmtExpr->expr->expr1->expr2->expr3
+    ->primary->primaryId->idSuffix->args;
+  ASSERT_EQ(38, args->posLParen);
+  ASSERT_EQ(52, args->posRParen);
+
+  spExpression2Rest expr2Rest = args->expr->expr1->expr2->expr2Rest;
+  ASSERT_EQ(Expression2Rest::OPT_INFIXOP_EXPR3, expr2Rest->opt);
+  ASSERT_EQ(43, expr2Rest->pairs[0].first->pos);
+
+  spExpression3 expr3 = expr2Rest->pairs[0].second;
+  ASSERT_EQ(Expression3::OPT_EXPRESSION_TYPE_EXPRESSION3, expr3->opt);
+  ASSERT_EQ(47, expr3->expr3->prefixOp->pos);
+}
+
 TEST(Parser, Expression2Rest) {
   std::string filename = "Test.java";
   std::string buffer = "class C { void m() { if (x == null) { return; }}}";
