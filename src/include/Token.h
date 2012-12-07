@@ -252,7 +252,7 @@ public:
     tokensLen[TOK_KEY_VOLATILE] = 8;
     tokensLen[TOK_KEY_WHILE] = 5;
 
-    // InfixOp, PrefixOp
+    // InfixOp, PrefixOp, AssignmentOperator
     tokensLen[TOK_OP_AMPERSAND_AMPERSAND] = 2;
     tokensLen[TOK_OP_PIPE] = 1;
     tokensLen[TOK_OP_CARRET] = 1;
@@ -275,6 +275,19 @@ public:
     tokensLen[TOK_OP_MINUS_MINUS] = 2;
     tokensLen[TOK_OP_EXCLAMATION] = 1;
     tokensLen[TOK_OP_TILDE] = 1;
+    tokensLen[TOK_OP_EQUALS] = 1;
+    tokensLen[TOK_OP_PLUS_EQUALS] = 2;
+    tokensLen[TOK_OP_MINUS_EQUALS] = 2;
+    tokensLen[TOK_OP_MUL_EQUALS] = 2;
+    tokensLen[TOK_OP_DIV_EQUALS] = 2;
+    tokensLen[TOK_OP_AMPERSAND_EQUALS] = 2;
+    tokensLen[TOK_OP_PIPE_EQUALS] = 2;
+    tokensLen[TOK_OP_CARRET_EQUALS] = 2;
+    tokensLen[TOK_OP_REM_EQUALS] = 2;
+    tokensLen[TOK_OP_LSHIFT_EQUALS] = 2;
+    tokensLen[TOK_OP_RSHIFT_EQUALS] = 2;
+    tokensLen[TOK_OP_TRIPLE_RSHIFT_EQUALS] = 3;
+
   }
 
   int getKeywordToken(std::string identifier) {
