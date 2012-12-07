@@ -2067,7 +2067,7 @@ void Parser::parsePrimaryIdentifier(spPrimaryIdentifier &primaryId) {
     || lexer->getCurToken() == TOK_LPAREN
     || lexer->getCurToken() == TOK_PERIOD) {
 
-    primaryId->idSuffix = spIdentifierSuffix(new IdentifierSuffix());
+    primaryId->idSuffix = spIdentifierSuffix(new IdentifierSuffix);
     parseIdentifierSuffix(primaryId->idSuffix);
   }
 }

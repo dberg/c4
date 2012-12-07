@@ -662,6 +662,83 @@ TEST(Parser, Expression2Rest) {
   ASSERT_EQ(TOK_NULL_LITERAL, expr3->primary->literal->nullLiteral->type);
 }
 
+// -----------------------------------------------------------------------------
+// class A { void m() { u = (U) e.get(); }}
+// -----------------------------------------------------------------------------
+// Block
+//   '{'
+//   BlockStatement(3)
+//     Statement(4)
+//       StatementExpression
+//         Expression*
+//       ';'
+//   '}'
+// 
+// Expression*
+//   Expression1
+//     Expression2
+//       Expression3(2)
+//         Expression
+//           Expression1
+//             Expression2
+//               Expression3(3)
+//                 Primary(7) <-- 'u'
+//           AssignmentOperator <-- '='
+//           Expression1
+//             Expression2
+//               Expression3(3)
+//                 Primary(2)
+//                   ParExpression
+//                     '('
+//                     Expression
+//                       Expression1
+//                         Expression2
+//                           Expression3
+//                             Primary(7) <-- U
+//                     ')'
+//         Expression3(3)
+//           Primary(7) <-- 'u.get'
+//             Identifier { . Identifier } <-- 'u.get'
+//             [IdentifierSuffix](3)
+//               Arguments <-- '(' ')'
+TEST(Parser, Expression3Opt2) {
+  std::string filename = "Test.java";
+  std::string buffer = "class A { void m() { u = (U) e.get(); }}";
+  spDiagnosis diag = spDiagnosis(new Diagnosis);
+  Parser parser(filename, buffer, diag);
+  parser.parse();
+
+  spStatement stmt = parser.compilationUnit->typeDecls[0]->decl->classDecl
+    ->nClassDecl->classBody->decls[0]->memberDecl->voidMethDeclRest->block
+    ->blockStmts[0]->stmt;
+
+  ASSERT_EQ(Statement::OPT_STMT_EXPR, stmt->opt);
+  ASSERT_EQ(36, stmt->posSemiColon);
+
+  // 'u' '='
+  spExpression3 expr3 = stmt->stmtExpr->expr->expr1->expr2->expr3;
+  ASSERT_EQ(Expression3::OPT_EXPRESSION_TYPE_EXPRESSION3, expr3->opt);
+  ASSERT_EQ(Primary::OPT_IDENTIFIER,
+    expr3->expr->expr1->expr2->expr3->primary->opt);
+  ASSERT_EQ(23, expr3->expr->assignOp->tok->pos);
+
+  // '(U)'
+  ASSERT_EQ(Expression3::OPT_PRIMARY_SELECTOR_POSTFIXOP,
+    expr3->expr->expr1->expr2->expr3->opt);
+  ASSERT_EQ(Primary::OPT_PAR_EXPRESSION,
+    expr3->expr->assignExpr1->expr2->expr3->primary->opt);
+  ASSERT_EQ(25,
+    expr3->expr->assignExpr1->expr2->expr3->primary->parExpr->posLParen);
+  ASSERT_EQ(27,
+    expr3->expr->assignExpr1->expr2->expr3->primary->parExpr->posRParen);
+
+  // 'u.get()'
+  ASSERT_EQ(Expression3::OPT_PRIMARY_SELECTOR_POSTFIXOP, expr3->expr3->opt);
+  ASSERT_EQ(Primary::OPT_IDENTIFIER, expr3->expr3->primary->opt);
+  ASSERT_EQ(2, expr3->expr3->primary->primaryId->ids.size());
+  ASSERT_EQ(34, expr3->expr3->primary->primaryId->idSuffix->args->posLParen);
+  ASSERT_EQ(35, expr3->expr3->primary->primaryId->idSuffix->args->posRParen);
+}
 
 TEST(Parser, ImportDeclarations) {
   std::string filename = "Test.java";
