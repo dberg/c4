@@ -798,6 +798,29 @@ TEST(Parser, ImportDeclarations) {
     parser.compilationUnit->impDecls->imports[3]->type);
 }
 
+// -----------------------------------------------------------------------------
+// class A { void test() { Exec exe = createExec(); }}
+// -----------------------------------------------------------------------------
+// BlockStatement
+//   LocalVariableDeclarationStatement
+//     Type <-- 'Exec'
+//     VariableDeclarators
+//       VariableDeclarator
+//         Identifier <-- 'exe'
+//         VariableDeclaratorRest
+//           '='
+//           VariableInitializer
+//             Expression
+//               Expression1
+//                 Expression2
+//                   Expression3(3)
+//                     Primary(7)
+//                       Identifier <-- createExec
+//                       IdentifierSuffix
+//                         Arguments
+//                           '('
+//                           ')'
+//     ';'
 TEST(Parser, LocalVariableDeclarationStatement) {
   std::string filename = "Test.java";
   std::string buffer = "class A { void test() { Exec exe = createExec(); }}";
