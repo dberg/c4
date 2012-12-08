@@ -418,8 +418,7 @@ void Parser::parseArrayCreatorRestOpt2(spArrayCreatorRestOpt2 &opt2) {
   State openBracketState;
 
   // Expression in brackets
-  while (true) {
-    if (lexer->getCurToken() != TOK_LBRACKET) { return; }
+  while (lexer->getCurToken() == TOK_LBRACKET) {
     saveState(openBracketState);
 
     spExpressionInBrackets exprInBrackets
@@ -1931,7 +1930,7 @@ void Parser::parsePrimary(spPrimary &primary) {
   if (lexer->getCurToken() == TOK_OP_LT) {
     primary->opt = Primary::OPT_NON_WILDCARD_TYPE_ARGUMENTS;
     primary->nonWildcardTypeArguments = spPrimaryNonWildcardTypeArguments(
-      new PrimaryNonWildcardTypeArguments());
+      new PrimaryNonWildcardTypeArguments);
     parsePrimaryNonWildcardTypeArguments(primary->nonWildcardTypeArguments);
     return;
   }
@@ -2711,7 +2710,7 @@ void Parser::parseTypeArgument(spTypeArgument &typeArg) {
   // option 1
   if (lexer->getCurToken() == TOK_IDENTIFIER) {
     typeArg->opt = TypeArgument::OPT_REFERENCE_TYPE;
-    typeArg->refType = spReferenceType(new ReferenceType());
+    typeArg->refType = spReferenceType(new ReferenceType);
     parseReferenceType(typeArg->refType);
     return;
   }
@@ -2719,7 +2718,7 @@ void Parser::parseTypeArgument(spTypeArgument &typeArg) {
   // option 2
   if (lexer->getCurToken() == TOK_OP_QUESTION_MARK) {
     typeArg->opt = TypeArgument::OPT_QUESTION_MARK;
-    typeArg->opt2 = spTypeArgumentOpt2(new TypeArgumentOpt2());
+    typeArg->opt2 = spTypeArgumentOpt2(new TypeArgumentOpt2);
     parseTypeArgumentOpt2(typeArg->opt2);
     return;
   }
@@ -2751,7 +2750,7 @@ void Parser::parseTypeArgumentOpt2(spTypeArgumentOpt2 &opt2) {
   }
 
   // ReferenceType
-  opt2->refType = spReferenceType(new ReferenceType());
+  opt2->refType = spReferenceType(new ReferenceType);
   parseReferenceType(opt2->refType);
 }
 
@@ -2760,7 +2759,7 @@ void Parser::parseTypeArguments(spTypeArguments &typeArgs) {
   typeArgs->posLt = lexer->getCursor() - 1;
   lexer->getNextToken(); // consume '<'
 
-  spTypeArgument typeArg = spTypeArgument(new TypeArgument());
+  spTypeArgument typeArg = spTypeArgument(new TypeArgument);
   typeArgs->typeArg = typeArg;
   parseTypeArgument(typeArgs->typeArg);
   if (typeArg->err) {
@@ -2769,11 +2768,7 @@ void Parser::parseTypeArguments(spTypeArguments &typeArgs) {
   }
 
   // Additional TypeArgument list
-  while (true) {
-    if (lexer->getCurToken() != TOK_COMMA) {
-      break;
-    }
-
+  while (lexer->getCurToken() == TOK_COMMA) {
     lexer->getNextToken(); // consume ','
 
     spTypeArgument typeArgTmp = spTypeArgument(new TypeArgument());
@@ -2788,6 +2783,22 @@ void Parser::parseTypeArguments(spTypeArguments &typeArgs) {
 
   if (lexer->getCurToken() == TOK_OP_GT) {
     typeArgs->posGt = lexer->getCursor() - 1;
+    lexer->getNextToken();
+    return;
+  }
+
+  // We also check for '>>' and '>>>' before flagging an error.
+  // Ex.: A<B<T>>
+  if (lexer->getCurToken() == TOK_OP_RSHIFT) {
+    typeArgs->posGt = lexer->getCursor() - 2;
+    src->ungetChar(1);
+    lexer->getNextToken();
+    return;
+  }
+
+  if (lexer->getCurToken() == TOK_OP_TRIPLE_RSHIFT) {
+    typeArgs->posGt = lexer->getCursor() - 2;
+    src->ungetChar(2);
     lexer->getNextToken();
     return;
   }
@@ -2830,7 +2841,7 @@ void Parser::parseTypeArgumentsOrDiamond(
   // GCC(4.6.3). If we don't create typeArgs separately and then assign
   // it to typeArgsOrDiam things get weird with the last 'if' condition.
   // Clang is fine either way.
-  spTypeArguments typeArgs = spTypeArguments(new TypeArguments());
+  spTypeArguments typeArgs = spTypeArguments(new TypeArguments);
   typeArgsOrDiam->typeArgs = typeArgs;
   parseTypeArguments(typeArgsOrDiam->typeArgs);
 
@@ -3403,12 +3414,11 @@ void Parser::parseCreatedName(spCreatedName &createdName) {
   }
 
   // { . Identifier [TypeArgumentsOrDiamond] }
-  while (true) {
+  while (lexer->getCurToken() == TOK_COMMA) {
     // Comma
-    if (lexer->getCurToken() != TOK_COMMA) { return; }
     lexer->getNextToken(); // consume '.'
 
-    spCreatedName createdNameTmp = spCreatedName(new CreatedName());
+    spCreatedName createdNameTmp = spCreatedName(new CreatedName);
     parseCreatedNameHelper(createdNameTmp);
     createdName->createdNames.push_back(createdNameTmp);
 
@@ -3644,11 +3654,7 @@ void Parser::parseTypeList(spTypeList &typeList) {
   typeList->refType = spReferenceType(new ReferenceType());
   parseReferenceType(typeList->refType);
 
-  while (true) {
-    if (lexer->getCurToken() != TOK_COMMA) {
-      return;
-    }
-
+  while (lexer->getCurToken() == TOK_COMMA) {
     lexer->getNextToken(); // consume ','
 
     if (lexer->getCurToken() != TOK_IDENTIFIER) {

@@ -804,6 +804,99 @@ TEST(Parser, Expression3Opt2) {
   ASSERT_EQ(35, expr3->expr3->primary->primaryId->idSuffix->args->posRParen);
 }
 
+// -----------------------------------------------------------------------------
+// u = m.r(j, new A<B<T>>() {});
+// -----------------------------------------------------------------------------
+// Block
+//   '{'
+//   BlockStatement(3)
+//     Statement(4)
+//       StatementExpression
+//         Expression*
+//       ';'
+//   '}'
+//
+// Expression1*
+//   Expression2
+//     Expression3(3)
+//       Primary(7)
+//         Identifier <-- 'u'
+// AssignmentOperator <-- '='
+// Expression1
+//   Expression2
+//     Expression3(3)
+//       Primary(7)
+//         Identifier { . Identifier } <-- m.r
+//         IdentifierSuffix
+//           Arguments
+//             '('
+//             Expression <-- 'j' *
+//             ','
+//             Expression
+//               Expression1
+//                 Expression2
+//                  Expression3
+//                    Primary(5)
+//                      'new'
+//                      Creator**
+//             ')'
+//
+// Expression*
+//   Expression2
+//     Expression3(3)
+//       Primary(7)
+//
+// Creator**(2)
+//   CreatedName
+//     Identifier <-- 'A'
+//     TypeArgumentsOrDiamond(2)
+//       TypeArguments
+//         '<'
+//         TypeArgument(1)
+//           ReferenceType
+//             Identifier <-- 'B'
+//             TypeArguments
+//               '<'
+//               TypeArgument(1)
+//                 ReferenceType
+//                   Identifier <-- 'T'
+//               '>'
+//         '>'
+//   ClassCreatorRest
+//     Arguments '()'
+//     ClassBody '{}'
+TEST(Parser, Generics) {
+  std::string filename = "Test.java";
+  std::string buffer = "class A { void m() { u = m.r(j, new T<L<G>>() {}); }}";
+  spDiagnosis diag = spDiagnosis(new Diagnosis);
+  Parser parser(filename, buffer, diag);
+  parser.parse();
+
+  spExpression expr = parser.compilationUnit->typeDecls[0]->decl->classDecl
+    ->nClassDecl->classBody->decls[0]->memberDecl->voidMethDeclRest->block
+    ->blockStmts[0]->stmt->stmtExpr->expr;
+  ASSERT_EQ(23, expr->assignOp->tok->pos);
+
+  spArguments args = expr->assignExpr1->expr2->expr3->primary->primaryId
+    ->idSuffix->args;
+  ASSERT_EQ(28, args->posLParen);
+  ASSERT_EQ(48, args->posRParen);
+  ASSERT_EQ(30, args->exprs[0].first);
+
+  spCreator creator = args->exprs[0].second->expr1->expr2->expr3->primary
+    ->newCreator->creator;
+  spTypeArguments typeArgs
+    = creator->opt2->createdName->typeArgsOrDiam->typeArgs;
+  ASSERT_EQ(37, typeArgs->posLt);
+  ASSERT_EQ(42, typeArgs->posGt);
+
+  ASSERT_EQ(39, typeArgs->typeArg->refType->typeArgs->posLt);
+  ASSERT_EQ(41, typeArgs->typeArg->refType->typeArgs->posGt);
+
+  ASSERT_EQ(43, creator->opt2->classCreatorRest->args->posLParen);
+  ASSERT_EQ(44, creator->opt2->classCreatorRest->args->posRParen);
+}
+
 TEST(Parser, ImportDeclarations) {
   std::string filename = "Test.java";
   std::string buffer =
