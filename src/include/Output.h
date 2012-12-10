@@ -56,6 +56,13 @@ class Output {
   void setExpression3(const spExpression3 &expr3);
   void setFieldDeclsRest(const spFieldDeclaratorsRest &fieldDeclsRest);
   void setFinally(const spFinally &finally);
+  void setForControl(const spForControl &forCtrl);
+  void setForInit(const spForInit &forInit);
+  void setForUpdate(const spForUpdate &forUpdate);
+  void setForVarControl(const spForVarControl &varCtrl);
+  void setForVarControlRest(const spForVarControlRest &forVarCtrlRest);
+  void setForVariableDeclaratorsRest(
+    const spForVariableDeclaratorsRest &forVarDeclsRest);
   void setFormalParameters(const spFormalParameters &formParams);
   void setFormalParameterDecls(const spFormalParameterDecls &formParamDecls);
   void setFormalParameterDeclsRest(

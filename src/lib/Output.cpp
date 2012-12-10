@@ -500,6 +500,123 @@ void Output::setFinally(const spFinally &finally) {
   if (finally->block) { setBlock(finally->block); }
 }
 
+void Output::setForControl(const spForControl &forCtrl) {
+  if (forCtrl->opt == ForControl::OPT_FOR_VAR_CTRL) {
+    if (forCtrl->varCtrl) {
+      setForVarControl(forCtrl->varCtrl);
+    }
+    return;
+  }
+
+  if (forCtrl->opt == ForControl::OPT_FOR_INIT) {
+    if (forCtrl->forInit) {
+      setForInit(forCtrl->forInit);
+    }
+
+    if (forCtrl->posSemiColon1) {
+      setOp(forCtrl->posSemiColon1);
+    }
+
+    if (forCtrl->expr) {
+      setExpression(forCtrl->expr);
+    }
+
+    if (forCtrl->posSemiColon2) {
+      setOp(forCtrl->posSemiColon2);
+    }
+
+    if (forCtrl->forUpdate) {
+      setForUpdate(forCtrl->forUpdate);
+    }
+  }
+}
+
+void Output::setForInit(const spForInit &forInit) {
+  if (forInit->stmtExpr) {
+    setStatementExpression(forInit->stmtExpr);
+  }
+
+  for (unsigned i = 0; i < forInit->pairs.size(); i++) {
+    setOp(forInit->pairs[i].first);
+    setStatementExpression(forInit->pairs[i].second);
+  }
+}
+
+void Output::setForUpdate(const spForUpdate &forUpdate) {
+  setForInit(forUpdate);
+}
+
+void Output::setForVarControl(const spForVarControl &varCtrl) {
+  if (varCtrl->varMod) {
+    setVariableModifier(varCtrl->varMod);
+  }
+
+  if (varCtrl->type) {
+    setType(varCtrl->type);
+  }
+
+  if (varCtrl->varDeclId) {
+    setVariableDeclaratorId(varCtrl->varDeclId);
+  }
+
+  if (varCtrl->forVarCtrlRest) {
+    setForVarControlRest(varCtrl->forVarCtrlRest);
+  }
+}
+
+void Output::setForVarControlRest(const spForVarControlRest &forVarCtrlRest) {
+  if (forVarCtrlRest->opt == ForVarControlRest::OPT_FOR_VAR_DECLS_REST) {
+    if (forVarCtrlRest->forVarDeclsRest) {
+      setForVariableDeclaratorsRest(forVarCtrlRest->forVarDeclsRest);
+    }
+
+    if (forVarCtrlRest->posSemiColon1) {
+      setOp(forVarCtrlRest->posSemiColon1);
+    }
+
+    if (forVarCtrlRest->expr) {
+      setExpression(forVarCtrlRest->expr);
+    }
+
+    if (forVarCtrlRest->posSemiColon2) {
+      setOp(forVarCtrlRest->posSemiColon2);
+    }
+
+    if (forVarCtrlRest->forUpdate) {
+      setForUpdate(forVarCtrlRest->forUpdate);
+    }
+
+    return;
+  }
+
+  if (forVarCtrlRest->opt == ForVarControlRest::OPT_COLON_EXPR) {
+    if (forVarCtrlRest->posColon) {
+      setOp(forVarCtrlRest->posColon);
+    }
+
+    if (forVarCtrlRest->expr) {
+      setExpression(forVarCtrlRest->expr);
+    }
+  }
+}
+
+void Output::setForVariableDeclaratorsRest(
+  const spForVariableDeclaratorsRest &forVarDeclsRest) {
+
+  if (forVarDeclsRest->posEquals) {
+    setOp(forVarDeclsRest->posEquals);
+
+    if (forVarDeclsRest->varInit) {
+      setVariableInitializer(forVarDeclsRest->varInit);
+    }
+  }
+
+  for (unsigned i = 0; i < forVarDeclsRest->pairs.size(); i++) {
+    setOp(forVarDeclsRest->pairs[i].first);
+    setVariableDeclarator(forVarDeclsRest->pairs[i].second);
+  }
+}
+
 void Output::setFormalParameters(const spFormalParameters &formParams) {
   if (formParams->posLParen) {
     setOp(formParams->posLParen);
@@ -1106,6 +1223,30 @@ void Output::setStatement(const spStatement &stmt) {
 
   if (stmt->opt == Statement::OPT_DO) {
     // TODO:
+    return;
+  }
+
+  if (stmt->opt == Statement::OPT_FOR) {
+    if (stmt->tokFor) {
+      setKeyword(stmt->tokFor);
+    }
+
+    if (stmt->posLParen) {
+      setOp(stmt->posLParen);
+    }
+
+    if (stmt->forCtrl) {
+      setForControl(stmt->forCtrl);
+    }
+
+    if (stmt->posRParen) {
+      setOp(stmt->posRParen);
+    }
+
+    if (stmt->stmtFor) {
+      setStatement(stmt->stmtFor);
+    }
+
     return;
   }
 
