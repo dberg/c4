@@ -1327,6 +1327,53 @@ TEST(Parser, Statement) {
   ASSERT_EQ("e", stmt->catches->catchClause->id->value);
 }
 
+// -----------------------------------------------------------------------------
+// class A { void m() { throw new E(R.Err, "m"); }}
+// -----------------------------------------------------------------------------
+// BlockStatement
+//   Statement(14)
+//     'throw'
+//     Expression
+//       Expression1
+//         Expression2
+//           Expression3
+//             Primary(5)
+//               'new'
+//               Creator(2)
+//                 CreatedName
+//                   Identifier <-- 'E'
+//                 ClassCreatorRest
+//                   Arguments
+//                   '('
+//                   Expression
+//                   ','
+//                   Expression
+//                   ')'
+//     ';'
+TEST(Parser, Throw) {
+  std::string filename = "Test.java";
+  std::string buffer = "class A { void m() { throw new E(R.Err, \"m\"); }}";
+
+  spDiagnosis diag = spDiagnosis(new Diagnosis());
+  Parser parser(filename, buffer, diag);
+  parser.parse();
+
+  spStatement stmt = parser.compilationUnit->typeDecls[0]->decl->classDecl
+    ->nClassDecl->classBody->decls[0]->memberDecl->voidMethDeclRest->block
+    ->blockStmts[0]->stmt;
+
+  ASSERT_EQ(Statement::OPT_THROW, stmt->opt);
+  ASSERT_EQ(44, stmt->posSemiColon);
+
+  spPrimary primary = stmt->throwExpr->expr1->expr2->expr3->primary;
+  ASSERT_EQ(Primary::OPT_NEW_CREATOR, primary->opt);
+
+  ASSERT_EQ(Creator::OPT_CREATED_NAME, primary->newCreator->creator->opt);
+  ASSERT_EQ(32,
+    primary->newCreator->creator->opt2->classCreatorRest->args->posLParen);
+  ASSERT_EQ(43,
+    primary->newCreator->creator->opt2->classCreatorRest->args->posRParen);
+}
 
 int main(int argc, char **argv) {
   ::testing::InitGoogleTest(&argc, argv);
