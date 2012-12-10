@@ -2495,6 +2495,8 @@ void Parser::parseStatement(spStatement &stmt) {
 
   // (10) for '(' ForControl ')' Statement
   if (lexer->getCurToken() == TOK_KEY_FOR) {
+    stmt->opt = Statement::OPT_FOR;
+
     // for
     spTokenExp tokFor = spTokenExp(new TokenExp(
       lexer->getCursor() - tokenUtil.getTokenLength(
