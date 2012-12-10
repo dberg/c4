@@ -1328,6 +1328,60 @@ TEST(Parser, Statement) {
 }
 
 // -----------------------------------------------------------------------------
+// class A { void m() { int a = x == 0 ? 1 : 2; }}
+// -----------------------------------------------------------------------------
+// BlockStatement(1)
+//   LocalVariableDeclarationStatement
+//     Type <-- 'int'
+//     VariableDeclarators
+//       VariableDeclarator
+//         Identifier <-- a
+//         VariableDeclaratorRest
+//           '='
+//           VariableInitializer
+//             Expression
+//               Expression1
+//                 Expression2
+//                   Expression3
+//                     Primary <-- 'x'
+//                   Expression2Rest
+//                     InfixOp <-- '=='
+//                     Expression3(3)
+//                       Primary <-- '0'
+//                 Expression1Rest
+//                   '?'
+//                   Expression <-- '1'
+//                   ':'
+//                   Expression1 <-- '2'
+//     ';'
+TEST(Parser, TernaryCond) {
+  std::string filename = "Test.java";
+  std::string buffer = "class A { void m() { int a = x == 0 ? 1 : 2; }}";
+
+  spDiagnosis diag = spDiagnosis(new Diagnosis());
+  Parser parser(filename, buffer, diag);
+  parser.parse();
+
+  spBlockStatement blockStmt = parser.compilationUnit->typeDecls[0]->decl->classDecl
+    ->nClassDecl->classBody->decls[0]->memberDecl->voidMethDeclRest->block
+    ->blockStmts[0];
+  ASSERT_EQ(BlockStatement::OPT_LOCAL_VAR, blockStmt->opt);
+  ASSERT_EQ(43, blockStmt->localVar->posSemiColon);
+  ASSERT_EQ(27, blockStmt->localVar->varDecls->varDecl->varDeclRest->posEquals);
+
+  spVariableInitializer varInit
+    = blockStmt->localVar->varDecls->varDecl->varDeclRest->varInit;
+  ASSERT_EQ(VariableInitializer::OPT_EXPRESSION, varInit->opt);
+
+  spPrimary primary = varInit->expr->expr1->expr2->expr3->primary;
+  ASSERT_EQ(Primary::OPT_IDENTIFIER, primary->opt);
+
+  spExpression1Rest expr1Rest = varInit->expr->expr1->expr1Rest;
+  ASSERT_EQ(36, expr1Rest->posQuestionMark);
+  ASSERT_EQ(40, expr1Rest->posColon);
+}
+
+// -----------------------------------------------------------------------------
 // class A { void m() { throw new E(R.Err, "m"); }}
 // -----------------------------------------------------------------------------
 // BlockStatement
