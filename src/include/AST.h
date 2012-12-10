@@ -589,6 +589,7 @@ struct Statement : ASTError {
     OPT_SWITCH,
     OPT_WHILE,
     OPT_DO,
+    OPT_FOR,
     OPT_BREAK,
     OPT_CONTINUE,
     OPT_RETURN,
@@ -1313,13 +1314,20 @@ struct ForVarControlRest : ASTError {
 
   ForVarControlRestOpt opt;
 
+  // Shared 1,2
+  spExpression expr;
+
+  // (1) ForVariableDeclaratorsRest ; [Expression] ; [ForUpdate]
   spForVariableDeclaratorsRest forVarDeclsRest;
   unsigned posSemiColon1;
   unsigned posSemiColon2;
-  spExpression expr;
   spForUpdate forUpdate;
 
-  ForVarControlRest() : opt(OPT_UNDEFINED) {}
+  // (2) : Expression
+  unsigned posColon;
+
+  ForVarControlRest()
+    : opt(OPT_UNDEFINED), posSemiColon1(0), posSemiColon2(0), posColon(0) {}
 };
 
 /// ForVariableDeclaratorsRest
@@ -1328,6 +1336,8 @@ struct ForVariableDeclaratorsRest : ASTError {
   unsigned posEquals;
   spVariableInitializer varInit;
   std::vector<std::pair<unsigned, spVariableDeclarator> > pairs;
+
+  ForVariableDeclaratorsRest() : posEquals(0) {}
 };
 
 struct BooleanLiteral {
