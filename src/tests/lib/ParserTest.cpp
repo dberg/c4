@@ -805,6 +805,50 @@ TEST(Parser, Expression3Opt2) {
 }
 
 // -----------------------------------------------------------------------------
+// class A { void m() { for (int i = 0; i < max; i++) { ; }}}
+// -----------------------------------------------------------------------------
+// BlockStatement(3)
+//   Statement(10)
+//     'for'
+//     '('
+//     ForControl(1)
+//       ForVarControl
+//         Type <-- 'int'
+//         VariableDeclaratorId
+//           Identifier <-- 'i'
+//         ForVarControlRest(1)
+//           ForVariableDeclaratorsRest
+//             '='
+//             VariableInitializer(2)
+//               Expression* <-- '0'
+//           ';'
+//           Expression** <-- 'i < max'
+//           ';'
+//           ForUpdate
+//             StatementExpression
+//               Expression*** <-- 'i++'
+//     ')'
+//     Statement
+TEST(Parser, For) {
+  std::string filename = "Test.java";
+  std::string buffer
+    = "class A { void m() { for (int i = 0; i < max; i++) { ; }}}";
+  spDiagnosis diag = spDiagnosis(new Diagnosis);
+  Parser parser(filename, buffer, diag);
+  parser.parse();
+
+  spStatement stmt = parser.compilationUnit->typeDecls[0]->decl->classDecl
+    ->nClassDecl->classBody->decls[0]->memberDecl->voidMethDeclRest->block
+    ->blockStmts[0]->stmt;
+  ASSERT_EQ(Statement::OPT_FOR, stmt->opt);
+  ASSERT_EQ(25, stmt->posLParen);
+  ASSERT_EQ(49, stmt->posRParen);
+
+  ASSERT_EQ(35, stmt->forCtrl->posSemiColon1);
+  ASSERT_EQ(44, stmt->forCtrl->posSemiColon2);
+}
+
+// -----------------------------------------------------------------------------
 // u = m.r(j, new A<B<T>>() {});
 // -----------------------------------------------------------------------------
 // Block

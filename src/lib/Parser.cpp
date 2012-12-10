@@ -2526,8 +2526,8 @@ void Parser::parseStatement(spStatement &stmt) {
       return;
     }
 
-    stmt->posLParen = lexer->getCursor() - 1;
-    lexer->getNextToken(); // consume '('
+    stmt->posRParen = lexer->getCursor() - 1;
+    lexer->getNextToken(); // consume ')'
 
     // Statement
     stmt->stmtFor = spStatement(new Statement);
