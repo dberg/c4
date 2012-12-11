@@ -611,7 +611,7 @@ TEST(Parser, Comments) {
     "import org.test; // a single line comment\n"
     "/** a class comment */\n"
     "class A {}";
-  spDiagnosis diag = spDiagnosis(new Diagnosis());
+  spDiagnosis diag = spDiagnosis(new Diagnosis);
   Parser parser(filename, buffer, diag);
   parser.parse();
 
@@ -957,10 +957,8 @@ TEST(Parser, ImportDeclarations) {
   // import 1
   ASSERT_EQ(0, parser.compilationUnit->impDecls->imports[0]->posTokImport);
   ASSERT_EQ(-1, parser.compilationUnit->impDecls->imports[0]->posTokStatic);
-  ASSERT_EQ(-1, parser.compilationUnit->impDecls->imports[0]->iniOnDemand);
-  ASSERT_EQ(-1, parser.compilationUnit->impDecls->imports[0]->endOnDemand);
-  ASSERT_EQ("com.test1.Test1",
-    parser.compilationUnit->impDecls->imports[0]->getImport());
+  ASSERT_EQ(0, parser.compilationUnit->impDecls->imports[0]->iniOnDemand);
+  ASSERT_EQ(0, parser.compilationUnit->impDecls->imports[0]->endOnDemand);
   ASSERT_FALSE(parser.compilationUnit->impDecls->imports[0]->err);
   ASSERT_EQ(SINGLE_TYPE_IMPORT_DECLARATION,
     parser.compilationUnit->impDecls->imports[0]->type);
@@ -970,8 +968,6 @@ TEST(Parser, ImportDeclarations) {
   ASSERT_EQ(-1, parser.compilationUnit->impDecls->imports[1]->posTokStatic);
   ASSERT_EQ(40, parser.compilationUnit->impDecls->imports[1]->iniOnDemand);
   ASSERT_EQ(41, parser.compilationUnit->impDecls->imports[1]->endOnDemand);
-  ASSERT_EQ("com.test2.*",
-    parser.compilationUnit->impDecls->imports[1]->getImport());
   ASSERT_FALSE(parser.compilationUnit->impDecls->imports[0]->err);
   ASSERT_EQ(TYPE_IMPORT_ON_DEMAND_DECLARATION,
     parser.compilationUnit->impDecls->imports[1]->type);
@@ -979,10 +975,8 @@ TEST(Parser, ImportDeclarations) {
   // import 3
   ASSERT_EQ(44, parser.compilationUnit->impDecls->imports[2]->posTokImport);
   ASSERT_EQ(51, parser.compilationUnit->impDecls->imports[2]->posTokStatic);
-  ASSERT_EQ(-1, parser.compilationUnit->impDecls->imports[2]->iniOnDemand);
-  ASSERT_EQ(-1, parser.compilationUnit->impDecls->imports[2]->endOnDemand);
-  ASSERT_EQ("com.test3.Test3",
-    parser.compilationUnit->impDecls->imports[2]->getImport());
+  ASSERT_EQ(0, parser.compilationUnit->impDecls->imports[2]->iniOnDemand);
+  ASSERT_EQ(0, parser.compilationUnit->impDecls->imports[2]->endOnDemand);
   ASSERT_FALSE(parser.compilationUnit->impDecls->imports[2]->err);
   ASSERT_EQ(SINGLE_STATIC_IMPORT_DECLARATION,
     parser.compilationUnit->impDecls->imports[2]->type);
@@ -992,8 +986,6 @@ TEST(Parser, ImportDeclarations) {
   ASSERT_EQ(82, parser.compilationUnit->impDecls->imports[3]->posTokStatic);
   ASSERT_EQ(98, parser.compilationUnit->impDecls->imports[3]->iniOnDemand);
   ASSERT_EQ(99, parser.compilationUnit->impDecls->imports[3]->endOnDemand);
-  ASSERT_EQ("com.test4.*",
-    parser.compilationUnit->impDecls->imports[3]->getImport());
   ASSERT_FALSE(parser.compilationUnit->impDecls->imports[3]->err);
   ASSERT_EQ(STATIC_IMPORT_ON_DEMAND_DECLARATION,
     parser.compilationUnit->impDecls->imports[3]->type);
@@ -1138,16 +1130,7 @@ TEST(Parser, PackageDeclaration) {
   ASSERT_EQ(1, parser.compilationUnit->pkgDecl->annotations.size());
   ASSERT_EQ(0, parser.compilationUnit->pkgDecl->annotations[0]->posTokAt);
   ASSERT_EQ(1,
-    parser.compilationUnit->pkgDecl->annotations[0]->qualifiedId->ini);
-  ASSERT_EQ(11,
-    parser.compilationUnit->pkgDecl->annotations[0]->qualifiedId->end);
-  ASSERT_EQ(1,
-    parser.compilationUnit->pkgDecl->annotations[0]->qualifiedId
-    ->identifiers[0]->pos);
-  ASSERT_EQ(21,
-    parser.compilationUnit->pkgDecl->qualifiedId->ini);
-  ASSERT_EQ(28,
-    parser.compilationUnit->pkgDecl->qualifiedId->end);
+    parser.compilationUnit->pkgDecl->annotations[0]->qualifiedId->id->pos);
 }
 
 TEST(Parser, ParExpression) {

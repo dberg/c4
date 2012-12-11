@@ -248,7 +248,9 @@ spAnnotation Parser::parseAnnotation() {
     return annotation;
   }
 
-  annotation->qualifiedId = parseQualifiedIdentifier();
+
+  annotation->qualifiedId = spQualifiedIdentifier(new QualifiedIdentifier);
+  parseQualifiedIdentifier(annotation->qualifiedId);
 
   // If the current token is '(' we consume the token and expect
   // an optional AnnotaionElement followed by ')'
@@ -1622,7 +1624,8 @@ spPackageDeclaration Parser::parsePackageDeclaration(
     return pkgDecl;
   }
 
-  pkgDecl->qualifiedId = parseQualifiedIdentifier();
+  pkgDecl->qualifiedId = spQualifiedIdentifier(new QualifiedIdentifier);
+  parseQualifiedIdentifier(pkgDecl->qualifiedId);
   if (lexer->getCurToken() != TOK_SEMICOLON) {
     pkgDecl->err = true;
     return pkgDecl;
@@ -1650,13 +1653,12 @@ void Parser::parsePostfixOp(spPostfixOp &postfixOp) {
 /// ImportDeclarations:
 ///   ImportDeclaration
 ///   ImportDeclarations ImportDeclaration
-/// ImportDeclaration: import [static] QualifiedId [.*];
+/// ImportDeclaration: import [static] QualifiedId [.*] ';'
 spImportDeclarations Parser::parseImportDeclarations() {
   std::vector<spImportDeclaration> imports;
   while (lexer->getCurToken() == TOK_KEY_IMPORT) {
     spImportDeclaration import = parseImportDeclaration();
     imports.push_back(import);
-    lexer->getNextToken(); // consume ';'
   }
 
   spImportDeclarations impDecls = spImportDeclarations(
@@ -1665,7 +1667,7 @@ spImportDeclarations Parser::parseImportDeclarations() {
 }
 
 spImportDeclaration Parser::parseImportDeclaration() {
-  spImportDeclaration import = spImportDeclaration(new ImportDeclaration());
+  spImportDeclaration import = spImportDeclaration(new ImportDeclaration);
   import->type = SINGLE_TYPE_IMPORT_DECLARATION;
   import->posTokImport = lexer->getCursor()
     - tokenUtil.getTokenLength(TOK_KEY_IMPORT);
@@ -1683,7 +1685,8 @@ spImportDeclaration Parser::parseImportDeclaration() {
     return import;
   }
 
-  import->qualifiedId = parseQualifiedIdentifier();
+  import->qualifiedId = spQualifiedIdentifier(new QualifiedIdentifier);
+  parseQualifiedIdentifier(import->qualifiedId);
 
   // Check [.*]
   if (lexer->getCurToken() == TOK_PERIOD) {
@@ -1709,6 +1712,7 @@ spImportDeclaration Parser::parseImportDeclaration() {
     return import;
   }
 
+  lexer->getNextToken(); // consume ';'
   return import;
 }
 
@@ -2218,39 +2222,75 @@ void Parser::parsePrimaryVoidClass(spPrimaryVoidClass &primaryVoidClass) {
 }
 
 /// QualifiedIdentifier: Identifer { . Identifier }
-spQualifiedIdentifier Parser::parseQualifiedIdentifier() {
-  std::vector<spIdentifier> identifiers;
-  // Save current identifier
-  spIdentifier id = spIdentifier(
-    new Identifier(lexer->getCurTokenIni(), lexer->getCurTokenStr()));
-  identifiers.push_back(id);
+void Parser::parseQualifiedIdentifier(
+  spQualifiedIdentifier &qualifiedId) {
 
-  State backup;
-  while (true) {
-    lexer->getNextToken();
-    if (lexer->getCurToken() != TOK_PERIOD) {
-      break;
-    }
-
-    // We have a period, if the next token is not an identifier we restore
-    // the period token state and exit the while loop
-    saveState(backup);
-    lexer->getNextToken();
-    if (lexer->getCurToken() != TOK_IDENTIFIER) {
-      restoreState(backup);
-      break;
-    }
-
-    // Save the identifier
-    spIdentifier id = spIdentifier(
-      new Identifier(lexer->getCurTokenIni(), lexer->getCurTokenStr()));
-    identifiers.push_back(id);
+  if (lexer->getCurToken() != TOK_IDENTIFIER) {
+    qualifiedId->addErr(diag->addErr(
+      ERR_EXP_IDENTIFIER, lexer->getCursor() - 1));
+    return;
   }
 
-  // We have at least one identifier to build the QualifiedIdentifier
-  spQualifiedIdentifier qualifiedId = spQualifiedIdentifier(
-    new QualifiedIdentifier(identifiers));
-  return qualifiedId;
+  // QualifiedIdentifier
+  qualifiedId->id = spIdentifier(new Identifier(
+    lexer->getCurTokenIni(), lexer->getCurTokenStr()));
+  lexer->getNextToken(); // consume identifier
+
+  // { . Identifier }
+  while (lexer->getCurToken() == TOK_PERIOD) {
+    State state;
+    saveState(state);
+
+    unsigned pos = lexer->getCursor() - 1;
+    lexer->getNextToken(); // consume '.'
+
+    if (lexer->getCurToken() != TOK_IDENTIFIER) {
+      restoreState(state);
+      return;
+    }
+
+    spIdentifier id = spIdentifier(new Identifier(
+      lexer->getCurTokenIni(), lexer->getCurTokenStr()));
+    lexer->getNextToken(); // consume identifier
+
+    qualifiedId->pairs.push_back(std::make_pair(pos, id));
+  }
+}
+
+/// QualifiedIdentifierList:
+///   QualifiedIdentifier { , QualifiedIdentifier }
+void Parser::parseQualifiedIdentifierList(
+  spQualifiedIdentifierList &qualifiedIdList) {
+
+  // QualifiedIdentifier
+  if (lexer->getCurToken() != TOK_IDENTIFIER) {
+    qualifiedIdList->addErr(diag->addErr(
+      ERR_EXP_IDENTIFIER, lexer->getCursor() - 1));
+    return;
+  }
+
+  qualifiedIdList->qualifiedId = spQualifiedIdentifier(new QualifiedIdentifier);
+  parseQualifiedIdentifier(qualifiedIdList->qualifiedId);
+
+  // { , QualifiedIdentifier }
+  while (lexer->getCurToken() == TOK_COMMA) {
+    State state;
+    saveState(state);
+
+    unsigned pos = lexer->getCursor() - 1;
+    lexer->getNextToken(); // consume ','
+
+    if (lexer->getCurToken() != TOK_IDENTIFIER) {
+      restoreState(state);
+      return;
+    }
+
+    spQualifiedIdentifier qualifiedId
+      = spQualifiedIdentifier(new QualifiedIdentifier);
+    parseQualifiedIdentifier(qualifiedId);
+
+    qualifiedIdList->pairs.push_back(std::make_pair(pos, qualifiedId));
+  }
 }
 
 /// ReferenceType:
@@ -3214,7 +3254,21 @@ void Parser::parseMethodDeclaratorRest(spMethodDeclaratorRest &methodDeclRest) {
   }
 
   // [throws QualifiedIdentifierList]
-  // TODO:
+  if (lexer->getCurToken() == TOK_KEY_THROWS) {
+    // 'throws'
+    methodDeclRest->tokThrows = spTokenExp(new TokenExp(
+      lexer->getCursor() - tokenUtil.getTokenLength(
+        lexer->getCurToken()), lexer->getCurToken()));
+    lexer->getNextToken(); // consume 'throws'
+
+    // QualifiedIdentifierList
+    methodDeclRest->qualifiedIdList = spQualifiedIdentifierList(
+      new QualifiedIdentifierList);
+    parseQualifiedIdentifierList(methodDeclRest->qualifiedIdList);
+    if (methodDeclRest->qualifiedIdList->err) {
+      methodDeclRest->addErr(-1);
+    }
+  }
 
   // (Block | ;)
   // (1) ';'
@@ -3400,9 +3454,29 @@ void Parser::parseConstructorDeclaratorRest(
   constDeclRest->formParams = spFormalParameters(new FormalParameters());
   parseFormalParameters(constDeclRest->formParams);
 
-  // TODO:
   // [throws QualifiedIdentifierList] Block
-  lexer->getNextToken();
+  if (lexer->getCurToken() == TOK_KEY_THROWS) {
+    // 'throws'
+    constDeclRest->tokThrows = spTokenExp(new TokenExp(
+      lexer->getCursor() - tokenUtil.getTokenLength(
+        lexer->getCurToken()), lexer->getCurToken()));
+    lexer->getNextToken(); // consume 'throws'
+
+    // QualifiedIdentifierList
+    constDeclRest->qualifiedIdList = spQualifiedIdentifierList(
+      new QualifiedIdentifierList);
+    parseQualifiedIdentifierList(constDeclRest->qualifiedIdList);
+    if (constDeclRest->qualifiedIdList->err) {
+      constDeclRest->addErr(-1);
+    }
+  }
+
+  // Block
+  constDeclRest->block = spBlock(new Block);
+  parseBlock(constDeclRest->block);
+  if (constDeclRest->block->err) {
+    constDeclRest->addErr(-1);
+  }
 }
 
 /// CreatedName:
@@ -3566,8 +3640,22 @@ void Parser::parseVoidMethodDeclaratorRest(
     return;
   }
 
-  // TODO:
   // [throws QualifiedIdentifierList]
+  if (lexer->getCurToken() == TOK_KEY_THROWS) {
+    // 'throws'
+    voidMethDeclRest->tokThrows = spTokenExp(new TokenExp(
+      lexer->getCursor() - tokenUtil.getTokenLength(
+        lexer->getCurToken()), lexer->getCurToken()));
+    lexer->getNextToken(); // consume 'throws'
+
+    // QualifiedIdentifierList
+    voidMethDeclRest->qualifiedIdList = spQualifiedIdentifierList(
+      new QualifiedIdentifierList);
+    parseQualifiedIdentifierList(voidMethDeclRest->qualifiedIdList);
+    if (voidMethDeclRest->qualifiedIdList->err) {
+      voidMethDeclRest->addErr(-1);
+    }
+  }
 
   // (Block | ;)
   // (1) ';'

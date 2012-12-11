@@ -44,11 +44,7 @@ void Output::setAnnotation(const spAnnotation &annotation) {
     // '@'
     output += "(djp-node-annotation-tok-at "
       + itos(annotation->posTokAt + 1) + ")";
-
-    // QualifiedId
-    int ini = annotation->qualifiedId->ini + 1;
-    int end = annotation->qualifiedId->end + 2;
-    setQualifiedId(ini, end);
+    setQualifiedId(annotation->qualifiedId);
   }
 
   if (annotation->elem) {
@@ -733,12 +729,11 @@ void Output::setImportDeclaration(const spImportDeclaration &import) {
     }
 
   if (import->qualifiedId) {
-    int ini = import->qualifiedId->ini + 1;
-    int end = import->qualifiedId->end + 2;
-    if (import->iniOnDemand > 0) {
-      end = import->endOnDemand + 2;
-    }
-    setQualifiedId(ini, end);
+    setQualifiedId(import->qualifiedId);
+  }
+
+  if (import->iniOnDemand && import->endOnDemand) {
+    setOp(import->iniOnDemand, 1 + import->endOnDemand - import->iniOnDemand);
   }
 
   output += ")";
@@ -997,8 +992,7 @@ void Output::setPackageDeclaration(const spPackageDeclaration &pkgDecl) {
 
   // package qualified identifier
   if (pkgDecl->qualifiedId) {
-    setQualifiedId(pkgDecl->qualifiedId->ini + 1,
-      pkgDecl->qualifiedId->end + 2);
+    setQualifiedId(pkgDecl->qualifiedId);
   }
 
   output += ")";
@@ -1080,9 +1074,15 @@ void Output::setPrimaryIdentifier(const spPrimaryIdentifier &primaryId) {
   }
 }
 
-void Output::setQualifiedId(int ini, int end) {
-  output += "(djp-node-qualified-id "
-    + itos(ini) + " " + itos(end) + ")";
+void Output::setQualifiedId(const spQualifiedIdentifier &qualifiedId) {
+  if (qualifiedId->id) {
+    setIdentifier(qualifiedId->id);
+  }
+
+  for (unsigned i = 0; i < qualifiedId->pairs.size(); i++) {
+    setOp(qualifiedId->pairs[i].first);
+    setIdentifier(qualifiedId->pairs[i].second);
+  }
 }
 
 void Output::setReferenceType(const spReferenceType &refType) {

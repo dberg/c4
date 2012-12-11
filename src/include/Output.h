@@ -90,7 +90,7 @@ class Output {
   void setParExpression(const spParExpression &parExpr);
   void setPrimary(const spPrimary &primary);
   void setPrimaryIdentifier(const spPrimaryIdentifier &primaryId);
-  void setQualifiedId(int ini, int end);
+  void setQualifiedId(const spQualifiedIdentifier &qualifiedId);
   void setReferenceType(const spReferenceType &refType);
   void setSelector(const spSelector &selector);
   void setStatement(const spStatement &stmt);

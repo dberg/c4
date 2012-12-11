@@ -18,9 +18,11 @@ TEST(EmacsOutput, PackageDeclaration) {
   std::string expected =
     "((djp-package-declaration "
     "(djp-node-annotation-tok-at 1)"
-    "(djp-node-qualified-id 2 13)"
+    "(djp-node-identifier 2 13)"
     "(djp-node-keyword 14 21)"
-    "(djp-node-qualified-id 22 30)))";
+    "(djp-node-identifier 22 25)"
+    "(djp-node-op 25 26)"
+    "(djp-node-identifier 26 30)))";
   ASSERT_EQ(expected, output.output);
 }
 
@@ -39,18 +41,32 @@ TEST(EmacsOutput, ImportDeclaration) {
   std::string expected = "((djp-import-declarations "
     "(djp-import-declaration "
     "(djp-node-keyword 1 7)"
-    "(djp-node-qualified-id 8 23))"
+    "(djp-node-identifier 8 11)"
+    "(djp-node-op 11 12)"
+    "(djp-node-identifier 12 17)"
+    "(djp-node-op 17 18)"
+    "(djp-node-identifier 18 23))"
     "(djp-import-declaration "
     "(djp-node-keyword 25 31)"
-    "(djp-node-qualified-id 32 43))"
+    "(djp-node-identifier 32 35)"
+    "(djp-node-op 35 36)"
+    "(djp-node-identifier 36 41)"
+    "(djp-node-op 41 43))"
     "(djp-import-declaration "
     "(djp-node-keyword 45 51)"
     "(djp-node-keyword 52 58)"
-    "(djp-node-qualified-id 59 74))"
+    "(djp-node-identifier 59 62)"
+    "(djp-node-op 62 63)"
+    "(djp-node-identifier 63 68)"
+    "(djp-node-op 68 69)"
+    "(djp-node-identifier 69 74))"
     "(djp-import-declaration "
     "(djp-node-keyword 76 82)"
     "(djp-node-keyword 83 89)"
-    "(djp-node-qualified-id 90 101))))";
+    "(djp-node-identifier 90 93)"
+    "(djp-node-op 93 94)"
+    "(djp-node-identifier 94 99)"
+    "(djp-node-op 99 101))))";
   ASSERT_EQ(expected, output.output);
 }
 
@@ -89,7 +105,9 @@ TEST(EmacsOutput, ClassConstructor) {
     "(djp-node-reference-type-id 7 10)"
     "(djp-member-decl-modifier-member-decl "
     "(djp-node-identifier 13 16)"
-    "(djp-constructor-declarator-rest )))))";
+    "(djp-constructor-declarator-rest "
+    "(djp-node-op 19 20)"
+    "(djp-node-op 20 21))))))";
   ASSERT_EQ(expected, output.output);
 }
 
@@ -112,7 +130,9 @@ TEST(EmacsOutput, ClassConstructorParameters) {
     "(djp-node-keyword 17 20)"
     "(djp-node-identifier 21 22)"
     "(djp-node-keyword 24 30)"
-    "(djp-node-identifier 31 32))))))";
+    "(djp-node-identifier 31 32)"
+    "(djp-node-op 34 35)"
+    "(djp-node-op 35 36))))))";
   ASSERT_EQ(expected, output.output);
 }
 

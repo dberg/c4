@@ -106,6 +106,8 @@ typedef boost::shared_ptr<struct PrimaryNonWildcardTypeArguments>
   spPrimaryNonWildcardTypeArguments;
 typedef boost::shared_ptr<struct PrimaryVoidClass> spPrimaryVoidClass;
 typedef boost::shared_ptr<struct QualifiedIdentifier> spQualifiedIdentifier;
+typedef boost::shared_ptr<struct QualifiedIdentifierList>
+  spQualifiedIdentifierList;
 typedef boost::shared_ptr<struct ReferenceType> spReferenceType;
 typedef boost::shared_ptr<struct Selector> spSelector;
 typedef boost::shared_ptr<struct Statement> spStatement;
@@ -339,9 +341,7 @@ struct MethodDeclaratorRest : ASTError {
   ArrayDepth arrayDepth;
 
   spTokenExp tokThrows;
-
-  // TODO:
-  //spQualifiedIdentifierList qualifiedIdList;
+  spQualifiedIdentifierList qualifiedIdList;
 
   spBlock block;
   unsigned posSemiColon;
@@ -380,10 +380,10 @@ struct MethodOrFieldRest : ASTError {
 
 /// ConstructorDeclaratorRest:
 ///   FormalParameters [throws QualifiedIdentifierList] Block
-struct ConstructorDeclaratorRest {
+struct ConstructorDeclaratorRest : ASTError {
   spFormalParameters formParams;
-  // spIdentifier throws;
-  // spQualifiedIdentifierList
+  spTokenExp tokThrows;
+  spQualifiedIdentifierList qualifiedIdList;
   spBlock block;
 };
 
@@ -425,8 +425,7 @@ struct VoidMethodDeclaratorRest : ASTError {
   spFormalParameters formParams;
 
   spTokenExp tokThrows;
-  // TODO:
-  //spQualifiedIdentifierList qualifiedIdList;
+  spQualifiedIdentifierList qualifiedIdList;
 
   spBlock block;
   unsigned posSemiColon;
@@ -835,29 +834,16 @@ struct IdentifierSuffix : ASTError {
 };
 
 /// QualifiedIdentifier: Identifier { . Identifier }
-struct QualifiedIdentifier {
-  std::vector<spIdentifier> identifiers;
-  int ini, end;
-  QualifiedIdentifier(std::vector<spIdentifier> identifiers)
-    : identifiers(identifiers) {
-    ini = (identifiers[0])->pos;
-    spIdentifier last = identifiers[identifiers.size() - 1];
-    end = last->pos + last->value.length() - 1;
-  }
+struct QualifiedIdentifier : ASTError {
+  spIdentifier id;
+  std::vector<std::pair<unsigned, spIdentifier> > pairs;
+};
 
-  // We currently use this for test purposes only
-  std::string getQualifiedIdentifier() {
-    std::string qualifiedId = "";
-    int last_key = identifiers.size() - 1;
-    for (int i = 0; i <= last_key ; i++) {
-      qualifiedId += identifiers[i]->value;
-      if (i != last_key) {
-        qualifiedId += ".";
-      }
-    }
-
-    return qualifiedId;
-  }
+/// QualifiedIdentifierList:
+///   QualifiedIdentifier { , QualifiedIdentifier }
+struct QualifiedIdentifierList : ASTError {
+  spQualifiedIdentifier qualifiedId;
+  std::vector<std::pair<unsigned, spQualifiedIdentifier> > pairs;
 };
 
 /// For simplicity we adopt the following rule
@@ -873,25 +859,16 @@ struct ImportDeclaration {
   int posTokStatic;
 
   // [.*]
-  int iniOnDemand;
-  int endOnDemand;
+  unsigned iniOnDemand;
+  unsigned endOnDemand;
 
   bool err;
   spQualifiedIdentifier qualifiedId;
   ImportType type;
 
   ImportDeclaration()
-    : posTokImport(-1), posTokStatic(-1), iniOnDemand(-1), endOnDemand(-1),
+    : posTokImport(-1), posTokStatic(-1), iniOnDemand(0), endOnDemand(0),
       err(false), type(SINGLE_TYPE_IMPORT_DECLARATION) {}
-
-  // We currently use this for test purposes only
-  std::string getImport() {
-    std::string import = qualifiedId->getQualifiedIdentifier();
-    if (iniOnDemand > 0) {
-      import += ".*";
-    }
-    return import;
-  }
 };
 
 /// AnnotationElement: ElementValuePairs | ElementValue
