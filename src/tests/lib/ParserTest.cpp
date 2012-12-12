@@ -1412,6 +1412,34 @@ TEST(Parser, Throw) {
     primary->newCreator->creator->opt2->classCreatorRest->args->posRParen);
 }
 
+// -----------------------------------------------------------------------------
+// class A { void m() throws E { ; }}
+// -----------------------------------------------------------------------------
+// MemberDecl(1)
+//   'void'
+//   Identifier
+//   VoidMethodDeclaratorRest
+//     FormalParameters
+//     'throws'
+//     QualifiedIdentifierList
+//       QualifiedIdentifier <-- 'E'
+//     Block
+TEST(Parser, Throws) {
+  std::string filename = "Test.java";
+  std::string buffer = "class A { void m() throws E { ; }}";
+
+  spDiagnosis diag = spDiagnosis(new Diagnosis());
+  Parser parser(filename, buffer, diag);
+  parser.parse();
+
+  spVoidMethodDeclaratorRest voidMethDeclRest = parser.compilationUnit
+    ->typeDecls[0]->decl->classDecl->nClassDecl->classBody->decls[0]->memberDecl
+    ->voidMethDeclRest;
+
+  ASSERT_EQ(19, voidMethDeclRest->tokThrows->pos);
+  ASSERT_EQ(26, voidMethDeclRest->qualifiedIdList->qualifiedId->id->pos);
+}
+
 int main(int argc, char **argv) {
   ::testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();
