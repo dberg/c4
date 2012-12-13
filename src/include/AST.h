@@ -1529,6 +1529,7 @@ struct ArrayCreatorRestOpt1 : ASTError {
 /// ArrayCreatorRestOpt2:
 ///   '[' Expression ']' { '[' Expression ']' } { '[]' }
 struct ArrayCreatorRestOpt2 : ASTError {
+  spExpressionInBrackets exprInBrackets;
   std::vector<spExpressionInBrackets> exprInBracketsList;
   ArrayDepth arrayDepth;
 };
@@ -1536,10 +1537,10 @@ struct ArrayCreatorRestOpt2 : ASTError {
 /// Helper structure
 /// ExpressionInBrackets: '[' Expression ']'
 struct ExpressionInBrackets : ASTError {
-  unsigned int posOpenBracket;
-  unsigned int posCloseBracket;
+  unsigned posLBracket;
+  unsigned posRBracket;
   spExpression expr;
-  ExpressionInBrackets() : posOpenBracket(0), posCloseBracket(0) {}
+  ExpressionInBrackets() : posLBracket(0), posRBracket(0) {}
 };
 
 /// FieldDeclaratorsRest: VariableDeclaratorRest { , VariableDeclarator }

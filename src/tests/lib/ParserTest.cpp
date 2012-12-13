@@ -439,6 +439,70 @@ TEST(Parser, AnnotationElementValuePairsStringLiteral) {
   ASSERT_EQ("\"Hello, I'm a String!\"", strLiteralPair1->val);
 }
 
+// -----------------------------------------------------------------------------
+// class A { void m() { String[] a = new String[0]; }}
+// -----------------------------------------------------------------------------
+// BlockStatement(1)
+//   LocalVariableDeclarationStatement
+//     Type
+//       ReferenceType <--  'String'
+//       '[]'
+//     VariableDeclarators
+//       VariableDeclarator
+//         Identifier <-- 'a'
+//         VariableDeclaratorRest
+//           '='
+//           VariableInitializer(2)
+//             Expression
+//               Expression1
+//                 Expression2
+//                   Expression3(3)
+//                     Primary(5)
+//                       'new'
+//                       Creator(2)
+//                         CreatedName
+//                           Identifier <-- 'String'
+//                         ArrayCreatorRest
+//                           '['
+//                           Expression
+//                             Expression1
+//                               Expression2
+//                                 Expression3
+//                                   Primary
+//                                     Literal <-- '0'
+//                           ']'
+//     ';'
+TEST(Parser, ArrayCreatorRest) {
+  std::string filename = "Test.java";
+  std::string buffer = "class A { void m() { String[] a = new String[0]; }}";
+  spDiagnosis diag = spDiagnosis(new Diagnosis);
+  Parser parser(filename, buffer, diag);
+  parser.parse();
+
+  spBlockStatement blockStmt = parser.compilationUnit->typeDecls[0]->decl
+    ->classDecl->nClassDecl->classBody->decls[0]->memberDecl->voidMethDeclRest
+    ->block->blockStmts[0];
+  ASSERT_EQ(BlockStatement::OPT_LOCAL_VAR, blockStmt->opt);
+
+  ASSERT_EQ(47, blockStmt->localVar->posSemiColon);
+
+  spVariableDeclaratorRest varDeclRest = blockStmt->localVar->varDecls->varDecl
+    ->varDeclRest;
+  ASSERT_EQ(32, varDeclRest->posEquals);
+
+  ASSERT_EQ(VariableInitializer::OPT_EXPRESSION, varDeclRest->varInit->opt);
+  spPrimary primary = varDeclRest->varInit->expr->expr1->expr2->expr3->primary;
+  ASSERT_EQ(Primary::OPT_NEW_CREATOR, primary->opt);
+
+  ASSERT_EQ(Creator::OPT_CREATED_NAME, primary->newCreator->creator->opt);
+  spArrayCreatorRest arrayCreatorRest = primary->newCreator->creator->opt2
+    ->arrayCreatorRest;
+  ASSERT_EQ(ArrayCreatorRest::OPT_EXPRESSION, arrayCreatorRest->opt);
+
+  ASSERT_EQ(44, arrayCreatorRest->opt2->exprInBrackets->posLBracket);
+  ASSERT_EQ(46, arrayCreatorRest->opt2->exprInBrackets->posRBracket);
+}
+
 TEST(Parser, Block) {
   std::string filename = "Test.java";
   std::string buffer =
@@ -1415,7 +1479,7 @@ TEST(Parser, Throw) {
 // -----------------------------------------------------------------------------
 // class A { void m() throws E { ; }}
 // -----------------------------------------------------------------------------
-// MemberDecl(1)
+// MemberDecl(2)
 //   'void'
 //   Identifier
 //   VoidMethodDeclaratorRest

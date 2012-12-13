@@ -93,12 +93,12 @@ void Output::setArrayCreatorRest(
       spExpressionInBrackets exprInBr
         = arrayCreatorRest->opt2->exprInBracketsList[i];
 
-      if (exprInBr->posOpenBracket) {
-        setOp(exprInBr->posOpenBracket);
+      if (exprInBr->posLBracket) {
+        setOp(exprInBr->posLBracket);
       }
 
-      if (exprInBr->posCloseBracket) {
-        setOp(exprInBr->posCloseBracket);
+      if (exprInBr->posRBracket) {
+        setOp(exprInBr->posRBracket);
       }
 
       if (exprInBr->expr) {

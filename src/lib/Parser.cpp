@@ -384,7 +384,7 @@ void Parser::parseArrayCreatorRest(spArrayCreatorRest &arrayCreatorRest) {
 
   // Option 2
   arrayCreatorRest->opt = ArrayCreatorRest::OPT_EXPRESSION;
-  arrayCreatorRest->opt2 = spArrayCreatorRestOpt2(new ArrayCreatorRestOpt2());
+  arrayCreatorRest->opt2 = spArrayCreatorRestOpt2(new ArrayCreatorRestOpt2);
   parseArrayCreatorRestOpt2(arrayCreatorRest->opt2);
   if (arrayCreatorRest->opt2->err) {
     arrayCreatorRest->addErr(-1);
@@ -417,16 +417,42 @@ void Parser::parseArrayCreatorRestOpt1(spArrayCreatorRestOpt1 &opt1) {
 /// ArrayCreatorRestOpt2:
 ///   '[' Expression ']' { '[' Expression ']' } { '[]' }
 void Parser::parseArrayCreatorRestOpt2(spArrayCreatorRestOpt2 &opt2) {
-  State openBracketState;
+  // '[' Expression ']'
+  opt2->exprInBrackets = spExpressionInBrackets(new ExpressionInBrackets);
 
-  // Expression in brackets
+  if (lexer->getCurToken() != TOK_LBRACKET) {
+    opt2->addErr(diag->addErr(ERR_EXP_LBRACKET, lexer->getCursor() - 1));
+    return;
+  }
+
+  opt2->exprInBrackets->posLBracket = lexer->getCursor() - 1;
+  lexer->getNextToken(); // consume '['
+
+  opt2->exprInBrackets->expr = spExpression(new Expression);
+  parseExpression(opt2->exprInBrackets->expr);
+  if (opt2->exprInBrackets->expr->isEmpty()) {
+    opt2->addErr(-1);
+    return;
+  }
+
+  if (lexer->getCurToken() != TOK_RBRACKET) {
+    opt2->addErr(diag->addErr(ERR_EXP_RBRACKET, lexer->getCursor() - 1));
+    return;
+  }
+
+  opt2->exprInBrackets->posRBracket = lexer->getCursor() - 1;
+  lexer->getNextToken(); // consume ']'
+
+  // Expression in brackets list
+  State openBracketState;
   while (lexer->getCurToken() == TOK_LBRACKET) {
     saveState(openBracketState);
 
-    spExpressionInBrackets exprInBrackets
-      = spExpressionInBrackets(new ExpressionInBrackets());
-    exprInBrackets->posOpenBracket = lexer->getCurTokenIni();
+    spExpressionInBrackets exprInBr
+      = spExpressionInBrackets(new ExpressionInBrackets);
+    exprInBr->posLBracket = lexer->getCurTokenIni();
     lexer->getNextToken(); // consume '['
+
     if (lexer->getCurToken() == TOK_RBRACKET) {
       // We have an empty array so we restore the state and break out.
       restoreState(openBracketState);
@@ -434,27 +460,22 @@ void Parser::parseArrayCreatorRestOpt2(spArrayCreatorRestOpt2 &opt2) {
     }
 
     // Our only option is an expression in brackets.
-    opt2->exprInBracketsList.push_back(exprInBrackets);
-
-    spExpression expr = spExpression(new Expression());
-    exprInBrackets->expr = expr;
-    parseExpression(exprInBrackets->expr);
-
-    // TODO: check for errors in the expression.
-
-    if (lexer->getCurToken() != TOK_RBRACKET) {
-      exprInBrackets->addErr(diag->addErr(
-        ERR_EXP_RBRACKET, lexer->getCursor() - 1));
+    exprInBr->expr = spExpression(new Expression);
+    parseExpression(exprInBr->expr);
+    if (exprInBr->expr->isEmpty()) {
       opt2->addErr(-1);
       return;
     }
-  }
 
-  // Check if we have at least one expression in brackets.
-  if (opt2->exprInBracketsList.size() == 0) {
-    opt2->addErr(diag->addErr(
-      ERR_EXP_EXPRESSION_IN_BRACKETS, lexer->getCursor() - 1));
-    return;
+    if (lexer->getCurToken() != TOK_RBRACKET) {
+      opt2->addErr(diag->addErr(ERR_EXP_RBRACKET, lexer->getCursor() - 1));
+      return;
+    }
+
+    exprInBr->posRBracket = lexer->getCursor() - 1;
+    lexer->getNextToken(); // consume ']'
+
+    opt2->exprInBracketsList.push_back(exprInBr);
   }
 
   // Array Depth
@@ -3727,6 +3748,7 @@ void Parser::parseType(spType &type) {
     type->opt = Type::OPT_REFERENCE_TYPE;
     type->refType = spReferenceType(new ReferenceType);
     parseReferenceType(type->refType);
+    parseArrayDepth(type->arrayDepth);
     return;
   }
 
