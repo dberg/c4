@@ -487,13 +487,16 @@ void Parser::parseArrayCreatorRestOpt2(spArrayCreatorRestOpt2 &opt2) {
 /// {[]}
 void Parser::parseArrayDepth(ArrayDepth &arrayDepth) {
   while (lexer->getCurToken() == TOK_LBRACKET) {
+    State state;
+    saveState(state);
+
     ArrayPair pair;
     pair.first = lexer->getCursor() - 1;
-
     lexer->getNextToken(); // consume '['
 
     if (lexer->getCurToken() != TOK_RBRACKET) {
-      diag->addErr(ERR_EXP_RBRACKET, lexer->getCurTokenIni());
+      // We only consume valid pair of brackets
+      restoreState(state);
       return;
     }
 
@@ -1365,7 +1368,7 @@ void Parser::parseIdentifierSuffix(spIdentifierSuffix &idSuffix) {
       // opt2
       // '[' Expression ']'
       idSuffix->opt = IdentifierSuffix::OPT_ARRAY_EXPRESSION;
-      idSuffix->expr = spExpression(new Expression());
+      idSuffix->expr = spExpression(new Expression);
       parseExpression(idSuffix->expr);
       // TODO: check if expression is valid
     }

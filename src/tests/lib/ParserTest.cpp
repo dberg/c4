@@ -1005,6 +1005,62 @@ TEST(Parser, Generics) {
   ASSERT_EQ(44, creator->opt2->classCreatorRest->args->posRParen);
 }
 
+// -----------------------------------------------------------------------------
+// class A { void m() { p = s[i]; }}
+// -----------------------------------------------------------------------------
+// BlockStatement(3)
+//   Statement(4)
+//     StatementExpression
+//       Expression
+//         Expression1
+//           Expression2
+//             Expression3(3)
+//               Primary(7)
+//                 Identifier <-- 'p'
+//         AssignmentOperator <-- '='
+//         Expression1
+//           Expression2
+//             Expression3(3)
+//               Primary(7)
+//                 Identifier <-- 's'
+//                 IdentifierSuffix(2)
+//                   '['
+//                   Expression
+//                     Expression1
+//                       Expression2
+//                         Expression3(3)
+//                           Primary(7)
+//                             Identifier <-- 'i'
+//                   ']'
+//     ';'
+TEST(Parser, IdentifierSuffix) {
+  std::string filename = "Test.java";
+  std::string buffer = "class A { void m() { p = s[i]; }}";
+
+  spDiagnosis diag = spDiagnosis(new Diagnosis());
+  Parser parser(filename, buffer, diag);
+  parser.parse();
+
+  spBlockStatement blockStmt = parser.compilationUnit->typeDecls[0]->decl
+    ->classDecl->nClassDecl->classBody->decls[0]->memberDecl->voidMethDeclRest
+    ->block->blockStmts[0];
+
+  ASSERT_EQ(BlockStatement::OPT_ID_STMT, blockStmt->opt);
+  ASSERT_EQ(Statement::OPT_STMT_EXPR, blockStmt->stmt->opt);
+  ASSERT_EQ(29, blockStmt->stmt->posSemiColon);
+
+  spExpression expr = blockStmt->stmt->stmtExpr->expr;
+  ASSERT_EQ(23, expr->assignOp->tok->pos);
+
+  spPrimary primary = expr->assignExpr1->expr2->expr3->primary;
+  ASSERT_EQ(Primary::OPT_IDENTIFIER, primary->opt);
+
+  spIdentifierSuffix idSuffix = primary->primaryId->idSuffix;
+  ASSERT_EQ(IdentifierSuffix::OPT_ARRAY_EXPRESSION, idSuffix->opt);
+  ASSERT_EQ(26, idSuffix->arrayPair.first);
+  ASSERT_EQ(28, idSuffix->arrayPair.second);
+}
+
 TEST(Parser, ImportDeclarations) {
   std::string filename = "Test.java";
   std::string buffer =
