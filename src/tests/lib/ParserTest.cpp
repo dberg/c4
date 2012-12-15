@@ -706,7 +706,7 @@ TEST(Parser, Errors) {
 //       Expression
 //         Expression1
 //           Expression2
-//             Expression3(3)
+//             Expression3(4)
 //               Primary(7)
 //                 Identifier <-- 'M'
 //                 { . Identifier } <-- 'p'
@@ -719,20 +719,19 @@ TEST(Parser, Errors) {
 //   Expression
 //     Expression1
 //       Expression2
-//         Expression3(3)
-//           Primary
+//         Expression3(4)
+//           Primary(1)
 //             Literal
 //               StringLiteral <-- "a"
 //         Expression2Rest
 //           InfixOp <-- '+'
-//           Expression3(2)
-//             Type <-- b
-//             Expression3(1)
-//               PrefixOp <-- '+'
-//               Expression3
-//                 Primary
-//                   Literal
-//                     StringLiteral <-- "b"
+//           Expression3(4)
+//             Primary(7)
+//               Identifier <-- b
+//           InfixOp <-- '+'
+//           Expression3(4)
+//             Primary(1)
+//               Literal <-- "c"
 //   ')'
 TEST(Parser, ExpressionInfixOp) {
   std::string filename = "Test.java";
@@ -755,10 +754,7 @@ TEST(Parser, ExpressionInfixOp) {
   spExpression2Rest expr2Rest = args->expr->expr1->expr2->expr2Rest;
   ASSERT_EQ(Expression2Rest::OPT_INFIXOP_EXPR3, expr2Rest->opt);
   ASSERT_EQ(43, expr2Rest->pairs[0].first->pos);
-
-  spExpression3 expr3 = expr2Rest->pairs[0].second;
-  ASSERT_EQ(Expression3::OPT_EXPRESSION_TYPE_EXPRESSION3, expr3->opt);
-  ASSERT_EQ(47, expr3->expr3->prefixOp->pos);
+  ASSERT_EQ(47, expr2Rest->pairs[1].first->pos);
 }
 
 TEST(Parser, Expression2Rest) {
@@ -805,30 +801,21 @@ TEST(Parser, Expression2Rest) {
 // Expression*
 //   Expression1
 //     Expression2
-//       Expression3(2)
-//         Expression
-//           Expression1
-//             Expression2
-//               Expression3(3)
-//                 Primary(7) <-- 'u'
-//           AssignmentOperator <-- '='
-//           Expression1
-//             Expression2
-//               Expression3(3)
-//                 Primary(2)
-//                   ParExpression
-//                     '('
-//                     Expression
-//                       Expression1
-//                         Expression2
-//                           Expression3
-//                             Primary(7) <-- U
-//                     ')'
-//         Expression3(3)
-//           Primary(7) <-- 'u.get'
-//             Identifier { . Identifier } <-- 'u.get'
-//             [IdentifierSuffix](3)
-//               Arguments <-- '(' ')'
+//       Expression3
+//         Primary(7)
+//           Identifier <-- 'u'
+//     AssignmentOperator '='
+//     Expression1
+//       Expression2
+//         Expression3(2)
+//           '('
+//           Type <-- 'U'
+//           Expression3(4)
+//             Primary(7)
+//               Identifier { . Identifier } <-- 'u.get'
+//               [IdentifierSuffix](3)
+//                 Arguments <-- '(' ')'
+//           ')'
 TEST(Parser, Expression3Opt2) {
   std::string filename = "Test.java";
   std::string buffer = "class A { void m() { u = (U) e.get(); }}";
@@ -843,29 +830,22 @@ TEST(Parser, Expression3Opt2) {
   ASSERT_EQ(Statement::OPT_STMT_EXPR, stmt->opt);
   ASSERT_EQ(36, stmt->posSemiColon);
 
-  // 'u' '='
-  spExpression3 expr3 = stmt->stmtExpr->expr->expr1->expr2->expr3;
-  ASSERT_EQ(Expression3::OPT_EXPRESSION_TYPE_EXPRESSION3, expr3->opt);
-  ASSERT_EQ(Primary::OPT_IDENTIFIER,
-    expr3->expr->expr1->expr2->expr3->primary->opt);
-  ASSERT_EQ(23, expr3->expr->assignOp->tok->pos);
+  // '='
+  ASSERT_EQ(23, stmt->stmtExpr->expr->assignOp->tok->pos);
 
   // '(U)'
-  ASSERT_EQ(Expression3::OPT_PRIMARY_SELECTOR_POSTFIXOP,
-    expr3->expr->expr1->expr2->expr3->opt);
-  ASSERT_EQ(Primary::OPT_PAR_EXPRESSION,
-    expr3->expr->assignExpr1->expr2->expr3->primary->opt);
-  ASSERT_EQ(25,
-    expr3->expr->assignExpr1->expr2->expr3->primary->parExpr->posLParen);
-  ASSERT_EQ(27,
-    expr3->expr->assignExpr1->expr2->expr3->primary->parExpr->posRParen);
+  spExpression3 expr3 = stmt->stmtExpr->expr->assignExpr1->expr2->expr3;
+  ASSERT_EQ(Expression3::OPT_TYPE_EXPRESSION3, expr3->opt);
+  ASSERT_EQ(25, expr3->opt2->posLParen);
+  ASSERT_EQ(27, expr3->opt2->posRParen);
 
   // 'u.get()'
-  ASSERT_EQ(Expression3::OPT_PRIMARY_SELECTOR_POSTFIXOP, expr3->expr3->opt);
-  ASSERT_EQ(Primary::OPT_IDENTIFIER, expr3->expr3->primary->opt);
-  ASSERT_EQ(2, expr3->expr3->primary->primaryId->ids.size());
-  ASSERT_EQ(34, expr3->expr3->primary->primaryId->idSuffix->args->posLParen);
-  ASSERT_EQ(35, expr3->expr3->primary->primaryId->idSuffix->args->posRParen);
+  ASSERT_EQ(Primary::OPT_IDENTIFIER, expr3->opt2->expr3->primary->opt);
+  ASSERT_EQ(2, expr3->opt2->expr3->primary->primaryId->ids.size());
+  ASSERT_EQ(34,
+    expr3->opt2->expr3->primary->primaryId->idSuffix->args->posLParen);
+  ASSERT_EQ(35,
+    expr3->opt2->expr3->primary->primaryId->idSuffix->args->posRParen);
 }
 
 // -----------------------------------------------------------------------------
@@ -884,15 +864,39 @@ TEST(Parser, Expression3Opt2) {
 //           ForVariableDeclaratorsRest
 //             '='
 //             VariableInitializer(2)
-//               Expression* <-- '0'
+//               Expression <-- '0'
 //           ';'
-//           Expression** <-- 'i < max'
+//           Expression* <-- 'i < max'
 //           ';'
 //           ForUpdate
 //             StatementExpression
-//               Expression*** <-- 'i++'
+//               Expression** <-- 'i++'
 //     ')'
-//     Statement
+//     Statement(1)
+//       Block
+//         '{'
+//         BlockStattements
+//           BlockStatement
+//             Statement(2)
+//               ';'
+//         '}'
+//
+// Expression*
+//   Expression1
+//     Expression2
+//       Expression3
+//         Primary
+//           Identifier <-- 'i'
+//     Expression2Rest
+//       InfixOp <-- '<'
+//       Expression3 <-- 'max'
+//
+// Expression**
+//   Expression1
+//     Expression2
+//       Expression3
+//         Primary <-- 'i'
+//         PostfixOp <-- '++'
 TEST(Parser, For) {
   std::string filename = "Test.java";
   std::string buffer
@@ -908,8 +912,11 @@ TEST(Parser, For) {
   ASSERT_EQ(25, stmt->posLParen);
   ASSERT_EQ(49, stmt->posRParen);
 
-  ASSERT_EQ(35, stmt->forCtrl->posSemiColon1);
-  ASSERT_EQ(44, stmt->forCtrl->posSemiColon2);
+  ASSERT_EQ(ForControl::OPT_FOR_VAR_CTRL, stmt->forCtrl->opt);
+  spForVarControlRest forVarCtrlRest = stmt->forCtrl->varCtrl->forVarCtrlRest;
+  ASSERT_EQ(ForVarControlRest::OPT_FOR_VAR_DECLS_REST, forVarCtrlRest->opt);
+  ASSERT_EQ(35, forVarCtrlRest->posSemiColon1);
+  ASSERT_EQ(44, forVarCtrlRest->posSemiColon2);
 }
 
 // -----------------------------------------------------------------------------
@@ -1531,6 +1538,41 @@ TEST(Parser, Throw) {
   ASSERT_EQ(43,
     primary->newCreator->creator->opt2->classCreatorRest->args->posRParen);
 }
+
+// -----------------------------------------------------------------------------
+// class A { void m() { n = (Integer[]) r(); }}
+// -----------------------------------------------------------------------------
+// BlockStatement(3)
+//   Statement(4)
+//   StatementExpression
+//     Expression
+//       Expression1
+//         Expression2
+//           Expression3(2?)
+//             Expression
+//               Expression1
+//                 Expression2
+//                   Expression3
+//                     Primary(7)
+//                       Identifier <-- 'n'
+//               AssignmentOperator <-- '='
+//               Expression1
+//                 Expression2
+//                   Expression3(3)
+//                     Primary(2)
+//                       ParExpression
+//                         '('
+//                         Expression
+//                           Expression1
+//                             Expression2
+//                               Expression3
+//                                 Primary
+//                                   Identifier <-- Integer
+//                                   IdentifierSuffix
+//                                     '[' ERR missing '. class' or Expression
+//                         ')'
+//             Expression3(?)
+//   ';'
 
 // -----------------------------------------------------------------------------
 // class A { void m() throws E { ; }}

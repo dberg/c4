@@ -985,8 +985,9 @@ void Parser::parseExpression2Rest(spExpression2Rest &expr2Rest) {
 
 /// Expression3:
 ///   (1) PrefixOp Expression3
-///   (2) ( Expression | Type ) Expression3
-///   (3) Primary { Selector } { PostfixOp }
+///   (2) '(' Type ')' Expression3
+///   (3) '(' Expression ')' Expression3
+///   (4) Primary { Selector } { PostfixOp }
 ///
 /// The first option is recursive only if the prefixes are '!' and '~'.
 /// For example: !!a; ~~b; are legal expressions but ++++a; is invalid
@@ -1004,74 +1005,42 @@ void Parser::parseExpression3(spExpression3 &expr3) {
     return;
   }
 
-  // (2) ( Expression | Type ) Expression3
+  // (2,3) '(' Expression | Type ')' Expression3
   // We use a lock in case Expression lead us back to Expression3.
   // This won't be pretty.
-  if (expr3ExprLock == false) {
-    expr3ExprLock = true;
-
+  if (lexer->getCurToken() == TOK_LPAREN) {
     State state;
     saveState(state);
 
     // Let's try Type first
-    spType type = spType(new Type);
-    parseType(type);
-    if (type->err == false) {
-      // We have Type so we check for Expression3
-      spExpression3 expr3FromOpt2 = spExpression3(new Expression3);
-      parseExpression3(expr3FromOpt2);
-      if (expr3FromOpt2->err == false) {
-        // We have Type and Expression3 and our work is done here.
-        expr3->opt = Expression3::OPT_EXPRESSION_TYPE_EXPRESSION3;
-        expr3->type = type;
-        expr3->expr3 = expr3FromOpt2;
-        // Unlock recursion!
-        expr3ExprLock = false;
-        return;
-      }
-
-      // Expression3 failed
-      restoreState(state);
-    }
-
-    // We're now looking for: Expression Expression3
-    // Expression
-    spExpression expr = spExpression(new Expression);
-    parseExpression(expr);
-    if (expr->isEmpty()) {
-      // This means that the final production rule from Expression3 will fail
-      // so we can resume our work here.
-      restoreState(state);
-      // Unlock recursion!
-      expr3ExprLock = false;
+    // Option 2
+    spExpression3Opt2 opt2 = spExpression3Opt2(new Expression3Opt2);
+    parseExpression3Opt2(opt2);
+    if (opt2->err == false) {
+      expr3->opt = Expression3::OPT_TYPE_EXPRESSION3;
+      expr3->opt2 = opt2;
       return;
     }
 
-    // Expression3
-    spExpression3 expr3FromOpt2 = spExpression3(new Expression3);
-    parseExpression3(expr3FromOpt2);
-    if (expr3FromOpt2->err) {
-      // Expression3 failed, our next option is the 3rd production rule from
-      // Expression3.
-      restoreState(state);
-      // Unlock recursion!
-      expr3ExprLock = false;
-    } else {
-      // We have Expression and Expression3 and our work is done here.
-      expr3->opt = Expression3::OPT_EXPRESSION_TYPE_EXPRESSION3;
-      expr3->expr = expr;
-      expr3->expr3 = expr3FromOpt2;
-      // Unlock recursion!
-      expr3ExprLock = false;
-      return;
+    // Recover and try option 3
+    restoreState(state);
+
+    // Option 3
+    expr3->opt = Expression3::OPT_EXPRESSION_EXPRESSION3;
+    expr3->opt3 = spExpression3Opt3(new Expression3Opt3);
+    parseExpression3Opt3(expr3->opt3);
+    if (expr3->opt3->err) {
+      expr3->addErr(-1);
     }
-  } // expr3ExprLock
+
+    return;
+  }
 
   // (3) Primary { Selector } { PostfixOp }
   if (isPrimary(lexer->getCurToken())) {
     spPrimary primary = spPrimary(new Primary);
     parsePrimary(primary);
-    if (primary->isEmpty() == false) {
+    if (primary->isEmpty() == false && primary->err == false) {
       expr3->opt = Expression3::OPT_PRIMARY_SELECTOR_POSTFIXOP;
       expr3->primary = primary;
 
@@ -1101,6 +1070,67 @@ void Parser::parseExpression3(spExpression3 &expr3) {
   }
 
   expr3->addErr(-1);
+}
+
+void Parser::parseExpression3Opt2(spExpression3Opt2 &opt2) {
+  // '('
+  opt2->posLParen = lexer->getCursor() - 1;
+  lexer->getNextToken(); // consue '('
+
+  // Type
+  opt2->type = spType(new Type);
+  parseType(opt2->type);
+  if (opt2->type->err) {
+    opt2->addErr(-1);
+    return;
+  }
+
+  // ')'
+  if (lexer->getCurToken() != TOK_RPAREN) {
+    opt2->addErr(-1);
+    return;
+  }
+
+  opt2->posRParen = lexer->getCursor() - 1;
+  lexer->getNextToken(); // consume ')'
+
+  // Expression3
+  opt2->expr3 = spExpression3(new Expression3);
+  parseExpression3(opt2->expr3);
+  if (opt2->expr3->err) {
+    opt2->addErr(-1);
+    return;
+  }
+}
+
+void Parser::parseExpression3Opt3(spExpression3Opt3 &opt3) {
+  // '('
+  opt3->posLParen = lexer->getCursor() - 1;
+  lexer->getNextToken(); // consue '('
+
+  // Expression
+  opt3->expr = spExpression(new Expression);
+  parseExpression(opt3->expr);
+  if (opt3->expr->isEmpty()) {
+    opt3->addErr(-1);
+  }
+
+  // ')'
+  if (lexer->getCurToken() != TOK_RPAREN) {
+    opt3->addErr(-1);
+    return;
+  }
+
+  opt3->posRParen = lexer->getCursor() - 1;
+  lexer->getNextToken(); // consume ')'
+
+  // Expression3
+  opt3->expr3 = spExpression3(new Expression3);
+  parseExpression3(opt3->expr3);
+  if (opt3->expr3->err) {
+    opt3->addErr(-1);
+    return;
+  }
 }
 
 /// Finally: finally Block
@@ -1143,8 +1173,20 @@ void Parser::parseFieldDeclaratorsRest(spFieldDeclaratorsRest &fieldDeclsRest) {
 ///   (1) ForVarControl
 ///   (2) ForInit ; [Expression] ; [ForUpdate]
 void Parser::parseForControl(spForControl &forCtrl) {
-  // TODO:
+  State state;
+  saveState(state);
+
   // (1) ForVarControl
+  spForVarControl varCtrl = spForVarControl(new ForVarControl);
+  parseForVarControl(varCtrl);
+  if (varCtrl->err == false) {
+    forCtrl->opt = ForControl::OPT_FOR_VAR_CTRL;
+    forCtrl->varCtrl = varCtrl;
+    return;
+  }
+
+  restoreState(state);
+  forCtrl->opt = ForControl::OPT_FOR_INIT;
 
   // (2) ForInit ; [Expression] ; [ForUpdate]
   forCtrl->forInit = spForInit(new ForInit);
@@ -1296,7 +1338,7 @@ void Parser::parseForVarControlRest(spForVarControlRest &forVarCtrlRest) {
     return;
   }
 
-  forVarCtrlRest->posSemiColon1 = lexer->getCursor() - 1;
+  forVarCtrlRest->posSemiColon2 = lexer->getCursor() - 1;
   lexer->getNextToken(); // consume ;
 
   // [ForUpdate]
@@ -1354,6 +1396,9 @@ void Parser::parseForVariableDeclaratorsRest(
 void Parser::parseIdentifierSuffix(spIdentifierSuffix &idSuffix) {
   // opt1-2
   if (lexer->getCurToken() == TOK_LBRACKET) {
+    State state;
+    saveState(state);
+
     idSuffix->arrayPair.first = lexer->getCursor() - 1;
     lexer->getNextToken(); // consume '['
 
@@ -1370,7 +1415,11 @@ void Parser::parseIdentifierSuffix(spIdentifierSuffix &idSuffix) {
       idSuffix->opt = IdentifierSuffix::OPT_ARRAY_EXPRESSION;
       idSuffix->expr = spExpression(new Expression);
       parseExpression(idSuffix->expr);
-      // TODO: check if expression is valid
+      if (idSuffix->expr->isEmpty()) {
+	idSuffix->addErr(-1);
+	restoreState(state);
+	return;
+      }
     }
 
     // Error: ']' expected
@@ -1664,12 +1713,14 @@ void Parser::parsePostfixOp(spPostfixOp &postfixOp) {
   if (lexer->getCurToken() == TOK_OP_MINUS_MINUS) {
     postfixOp->opt = PostfixOp::OPT_MINUS_MINUS;
     postfixOp->pos = lexer->getCursor() - 1;
+    lexer->getNextToken(); // consume '--'
     return;
   }
 
   if (lexer->getCurToken() == TOK_OP_PLUS_PLUS) {
     postfixOp->opt = PostfixOp::OPT_PLUS_PLUS;
     postfixOp->pos = lexer->getCursor() - 1;
+    lexer->getNextToken(); // consume '++'
     return;
   }
 }
@@ -2004,6 +2055,9 @@ void Parser::parsePrimary(spPrimary &primary) {
     primary->opt = Primary::OPT_IDENTIFIER;
     primary->primaryId = spPrimaryIdentifier(new PrimaryIdentifier);
     parsePrimaryIdentifier(primary->primaryId);
+    if (primary->primaryId->err) {
+      primary->addErr(-1);
+    }
     return;
   }
 
@@ -2096,6 +2150,9 @@ void Parser::parsePrimaryIdentifier(spPrimaryIdentifier &primaryId) {
 
     primaryId->idSuffix = spIdentifierSuffix(new IdentifierSuffix);
     parseIdentifierSuffix(primaryId->idSuffix);
+    if (primaryId->idSuffix->err) {
+      primaryId->addErr(-1);
+    }
   }
 }
 
@@ -3944,7 +4001,7 @@ void Parser::parseVariableInitializer(spVariableInitializer &varInit) {
   // Expression
   varInit->opt = VariableInitializer::OPT_EXPRESSION;
   varInit->expr = spExpression(new Expression);
-  parseExpression(varInit->expr);
+  parseExpression(varInit->expr); // TODO: check for invalid expr
 }
 
 void Parser::parse() {

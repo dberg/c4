@@ -52,6 +52,8 @@ typedef boost::shared_ptr<struct Expression> spExpression;
 typedef boost::shared_ptr<struct Expression1> spExpression1;
 typedef boost::shared_ptr<struct Expression2> spExpression2;
 typedef boost::shared_ptr<struct Expression3> spExpression3;
+typedef boost::shared_ptr<struct Expression3Opt2> spExpression3Opt2;
+typedef boost::shared_ptr<struct Expression3Opt3> spExpression3Opt3;
 typedef boost::shared_ptr<struct Expression1Rest> spExpression1Rest;
 typedef boost::shared_ptr<struct Expression2Rest> spExpression2Rest;
 typedef boost::shared_ptr<struct ExpressionInBrackets> spExpressionInBrackets;
@@ -1023,13 +1025,17 @@ struct Arguments : ASTError {
 
 /// Expression3:
 ///   (1) PrefixOp Expression3
-///   (2) ( Expression | Type ) Expression3
+///   (2) '(' Type ')' Expression3
+///   (3) '(' Expression ')' Expression3
 ///   (3) Primary { Selector } { PostfixOp }
+/// The italicized parenthesis are probably a typo in the grammar.
+/// We treat them as terminals.
 struct Expression3 : ASTError {
   enum Expression3Opt {
     OPT_UNDEFINED,
     OPT_PREFIXOP_EXPRESSION3,
-    OPT_EXPRESSION_TYPE_EXPRESSION3,
+    OPT_TYPE_EXPRESSION3,
+    OPT_EXPRESSION_EXPRESSION3,
     OPT_PRIMARY_SELECTOR_POSTFIXOP,
   };
 
@@ -1039,9 +1045,9 @@ struct Expression3 : ASTError {
   spPrefixOp prefixOp;
   spExpression3 expr3;
 
-  // (2) ( Expression | Type ) Expression3
-  spExpression expr;
-  spType type;
+  // 2,3
+  spExpression3Opt2 opt2;
+  spExpression3Opt3 opt3;
 
   // (3) Primary { Selector } { PostfixOp }
   spPrimary primary;
@@ -1050,6 +1056,28 @@ struct Expression3 : ASTError {
 
   Expression3() : opt(OPT_UNDEFINED) {}
   bool isEmpty() { return opt == OPT_UNDEFINED; }
+};
+
+/// Expression3:
+/// (2) '(' Type ')' Expression3
+struct Expression3Opt2 : ASTError {
+  unsigned posLParen;
+  unsigned posRParen;
+  spType type;
+  spExpression3 expr3;
+
+  Expression3Opt2() : posLParen(0), posRParen(0) {}
+};
+
+/// Expression3:
+///   (3) '(' Expression ')' Expression3
+struct Expression3Opt3 : ASTError {
+  unsigned posLParen;
+  unsigned posRParen;
+  spExpression expr;
+  spExpression3 expr3;
+
+  Expression3Opt3() : posLParen(0), posRParen(0) {}
 };
 
 /// Primary: 
@@ -1063,7 +1091,7 @@ struct Expression3 : ASTError {
 ///   (7) Identifier { . Identifier } [IdentifierSuffix]
 ///   (8) BasicType {[]} . class
 ///   (9) void . class
-struct Primary {
+struct Primary : ASTError {
   enum PrimaryEnum {
     OPT_UNDEFINED,
     OPT_LITERAL,

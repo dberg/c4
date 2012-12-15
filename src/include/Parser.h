@@ -67,6 +67,8 @@ class Parser {
   void parseExpression2(spExpression2 &expr2);
   void parseExpression2Rest(spExpression2Rest &expr2Rest);
   void parseExpression3(spExpression3 &expr3);
+  void parseExpression3Opt2(spExpression3Opt2 &opt2);
+  void parseExpression3Opt3(spExpression3Opt3 &opt3);
   void parseFinally(spFinally &finally);
   void parseIdentifierSuffix(spIdentifierSuffix &idSuffix);
   void parseIdentifierSuffixOpt1Helper(spIdentifierSuffix &idSuffix);

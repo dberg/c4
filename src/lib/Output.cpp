@@ -451,17 +451,41 @@ void Output::setExpression3(const spExpression3 &expr3) {
     return;
   }
 
-  if (expr3->opt == Expression3::OPT_EXPRESSION_TYPE_EXPRESSION3) {
-    if (expr3->expr) {
-      setExpression(expr3->expr);
+  if (expr3->opt == Expression3::OPT_TYPE_EXPRESSION3) {
+    if (expr3->opt2->posLParen) {
+      setOp(expr3->opt2->posLParen);
     }
 
-    if (expr3->type) {
-      setType(expr3->type);
+    if (expr3->opt2->type) {
+      setType(expr3->opt2->type);
     }
 
-    if (expr3->expr3) {
-      setExpression3(expr3->expr3);
+    if (expr3->opt2->expr3) {
+      setExpression3(expr3->opt2->expr3);
+    }
+
+    if (expr3->opt2->posRParen) {
+      setOp(expr3->opt2->posRParen);
+    }
+
+    return;
+  }
+
+  if (expr3->opt == Expression3::OPT_TYPE_EXPRESSION3) {
+    if (expr3->opt3->posLParen) {
+      setOp(expr3->opt3->posLParen);
+    }
+
+    if (expr3->opt3->expr) {
+      setExpression(expr3->opt3->expr);
+    }
+
+    if (expr3->opt3->expr3) {
+      setExpression3(expr3->opt3->expr3);
+    }
+
+    if (expr3->opt3->posRParen) {
+      setOp(expr3->opt3->posRParen);
     }
 
     return;
