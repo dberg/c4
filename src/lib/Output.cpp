@@ -120,16 +120,25 @@ void Output::setArrayDepth(ArrayDepth &arrayDepth) {
 }
 
 void Output::setArrayInitializer(const spArrayInitializer arrayInit) {
-  if (arrayInit->posOpenCBrace) {
-    setOp(arrayInit->posOpenCBrace);
+  if (arrayInit->posLCBrace) {
+    setOp(arrayInit->posLCBrace);
   }
 
-  if (arrayInit->posOpenCBrace) {
-    setOp(arrayInit->posOpenCBrace);
+  if (arrayInit->varInit) {
+    setVariableInitializer(arrayInit->varInit);
   }
 
-  for (unsigned i = 0; i < arrayInit->varInitList.size(); i++) {
-    setVariableInitializer(arrayInit->varInitList[i]);
+  for (unsigned i = 0; i < arrayInit->pairs.size(); i++) {
+    setOp(arrayInit->pairs[i].first);
+    setVariableInitializer(arrayInit->pairs[i].second);
+  }
+
+  if (arrayInit->posComma) {
+    setOp(arrayInit->posComma);
+  }
+
+  if (arrayInit->posRCBrace) {
+    setOp(arrayInit->posRCBrace);
   }
 }
 

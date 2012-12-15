@@ -1586,11 +1586,14 @@ struct Finally : ASTError {
 /// ArrayInitializer:
 ///   '{' [ VariableInitializer { , VariableInitializer } [,] ] '}'
 struct ArrayInitializer : ASTError {
-  unsigned posOpenCBrace;
-  unsigned posCloseCBrace;
-  std::vector<spVariableInitializer> varInitList;
+  unsigned posLCBrace;
+  unsigned posRCBrace;
+  unsigned posComma;
+  spVariableInitializer varInit;
+  // { , VariableInitializer }
+  std::vector<std::pair<unsigned, spVariableInitializer> > pairs;
 
-  ArrayInitializer() : posOpenCBrace(0), posCloseCBrace(0) {}
+  ArrayInitializer() : posLCBrace(0), posRCBrace(0), posComma(0) {}
 };
 
 /// AssignmentOperator:
