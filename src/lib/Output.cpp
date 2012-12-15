@@ -965,9 +965,19 @@ void Output::setModifier(const spModifier &modifier) {
 
 void Output::setNonWildcardTypeArguments(
   const spNonWildcardTypeArguments &nonWildcardTypeArguments) {
-  // TODO:
-}
 
+  if (nonWildcardTypeArguments->posLt) {
+    setOp(nonWildcardTypeArguments->posLt);
+  }
+
+  if (nonWildcardTypeArguments->typeList) {
+    setTypeList(nonWildcardTypeArguments->typeList);
+  }
+
+  if (nonWildcardTypeArguments->posGt) {
+    setOp(nonWildcardTypeArguments->posGt);
+  }
+}
 
 void Output::setNormalClassDeclaration(
   const spNormalClassDeclaration &nClassDecl) {
@@ -1403,8 +1413,18 @@ void Output::setTypeDeclarations(
   }
 }
 
+void Output::setTypeList(const spTypeList &typeList) {
+  if (typeList->refType) {
+    setReferenceType(typeList->refType);
+  }
+
+  for (unsigned i = 0; i < typeList->refTypes.size(); i++) {
+    setReferenceType(typeList->refTypes[i]);
+  }
+}
+
 void Output::setTypeArgumentsOrDiamond(
-  const spTypeArgumentsOrDiamond typeArgsOrDiam) {
+  const spTypeArgumentsOrDiamond &typeArgsOrDiam) {
   // TODO:
 }
 

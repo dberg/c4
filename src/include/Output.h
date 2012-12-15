@@ -99,8 +99,9 @@ class Output {
   void setType(const spType &type);
   void setTypeArgument(const spTypeArgument &typeArg);
   void setTypeArguments(const spTypeArguments &typeArgs);
-  void setTypeArgumentsOrDiamond(const spTypeArgumentsOrDiamond typeArgsOrDiam);
+  void setTypeArgumentsOrDiamond(const spTypeArgumentsOrDiamond &typeArgsOrDiam);
   void setTypeDeclarations(const std::vector<spTypeDeclaration> &typeDecls);
+  void setTypeList(const spTypeList &typeList);
   void setVariableDeclarator(const spVariableDeclarator &varDecl);
   void setVariableDeclaratorId(const spVariableDeclaratorId &varDeclId);
   void setVariableDeclaratorRest(const spVariableDeclaratorRest &varDeclRest);
