@@ -1029,14 +1029,15 @@ void Parser::parseExpression3(spExpression3 &expr3) {
     expr3->opt = Expression3::OPT_EXPRESSION_EXPRESSION3;
     expr3->opt3 = spExpression3Opt3(new Expression3Opt3);
     parseExpression3Opt3(expr3->opt3);
-    if (expr3->opt3->err) {
-      expr3->addErr(-1);
+    if (expr3->opt3->err == false) {
+      return;
     }
 
-    return;
+    // We restore the state and try option 4. It might be a primary expression.
+    restoreState(state);
   }
 
-  // (3) Primary { Selector } { PostfixOp }
+  // (4) Primary { Selector } { PostfixOp }
   if (isPrimary(lexer->getCurToken())) {
     spPrimary primary = spPrimary(new Primary);
     parsePrimary(primary);
