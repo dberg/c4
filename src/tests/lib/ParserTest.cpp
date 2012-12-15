@@ -1395,6 +1395,79 @@ TEST(Parser, PrimaryNewCreator) {
   ASSERT_EQ(1, creator4->opt2->arrayCreatorRest->opt1->arrayDepth.size());
 }
 
+// -----------------------------------------------------------------------------
+// class A { void m() { long l = (new Long(i)).longValue(); }}
+// -----------------------------------------------------------------------------
+// BlockStatement(1)
+//   LocalVariableDeclarationStatement
+//     Type <-- 'long'
+//     VariableDeclarators
+//       VariableDeclarator
+//         Identifier <-- 'l'
+//         VariableDeclaratorRest
+//           '='
+//           VariableInitializer
+//             Expression
+//               Expression1
+//                 Expression2
+//                   Expression3(3)
+//                     Primary
+//                       ParExpression
+//                         '('
+//                         Expression*
+//                         ')'
+//                     Selector(1)
+//                       '.'
+//                       Identifier <-- 'longValue'
+//                       Arguments
+//                         '('
+//                         ')'
+//     ';'
+//
+// Expression*
+//   Expression1
+//     Expression2
+//       Expression3
+//         Primary(5)
+//           'new'
+//           Creator(1)
+//             CreatedName
+//               Identifier <-- 'Long'
+//             ClassCreatorRest
+//               Arguments
+//                 '('
+//                 Expression <-- 'i'
+//                 ')'
+TEST(Parser, Selector) {
+  std::string filename = "Test.java";
+  std::string buffer
+    = "class A { void m() { long l = (new Long(i)).longValue(); }}";
+
+  spDiagnosis diag = spDiagnosis(new Diagnosis());
+  Parser parser(filename, buffer, diag);
+  parser.parse();
+
+  spBlockStatement blockStmt = parser.compilationUnit->typeDecls[0]->decl
+    ->classDecl->nClassDecl->classBody->decls[0]->memberDecl->voidMethDeclRest
+    ->block->blockStmts[0];
+  ASSERT_EQ(BlockStatement::OPT_LOCAL_VAR, blockStmt->opt);
+  ASSERT_EQ(55, blockStmt->localVar->posSemiColon);
+
+  spVariableDeclaratorRest varDeclRest
+    = blockStmt->localVar->varDecls->varDecl->varDeclRest;
+  ASSERT_EQ(28, varDeclRest->posEquals);
+
+  spExpression3 expr3 = varDeclRest->varInit->expr->expr1->expr2->expr3;
+  ASSERT_EQ(Primary::OPT_PAR_EXPRESSION, expr3->primary->opt);
+  ASSERT_EQ(30, expr3->primary->parExpr->posLParen);
+  ASSERT_EQ(42, expr3->primary->parExpr->posRParen);
+
+  spSelector selector = expr3->selectors[0];
+  ASSERT_EQ(Selector::OPT_IDENTIFIER_ARGUMENTS, selector->opt);
+  ASSERT_EQ(53, selector->args->posLParen);
+  ASSERT_EQ(54, selector->args->posRParen);
+}
+
 /// Primary:
 ///   NonWildcardTypeArguments
 ///     ( ExplicitGenericInvocationSuffix | this Arguments )
