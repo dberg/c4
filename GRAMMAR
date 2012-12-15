@@ -387,7 +387,7 @@ InfixOp:
 
 Expression3:
   PrefixOp Expression3
-  ( Expression | Type ) Expression3
+  '(' Expression | Type ')' Expression3
   Primary { Selector } { PostfixOp }
 
 PrefixOp:
