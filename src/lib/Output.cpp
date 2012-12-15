@@ -1425,7 +1425,24 @@ void Output::setTypeList(const spTypeList &typeList) {
 
 void Output::setTypeArgumentsOrDiamond(
   const spTypeArgumentsOrDiamond &typeArgsOrDiam) {
-  // TODO:
+
+  if (typeArgsOrDiam->opt == TypeArgumentsOrDiamond::OPT_DIAMOND) {
+    if (typeArgsOrDiam->posLt) {
+      setOp(typeArgsOrDiam->posLt);
+    }
+
+    if (typeArgsOrDiam->posGt) {
+      setOp(typeArgsOrDiam->posGt);
+    }
+
+    return;
+  }
+
+  if (typeArgsOrDiam->opt == TypeArgumentsOrDiamond::OPT_TYPE_ARGUMENTS) {
+    if (typeArgsOrDiam->typeArgs) {
+      setTypeArguments(typeArgsOrDiam->typeArgs);
+    }
+  }
 }
 
 void Output::setVariableDeclarator(const spVariableDeclarator &varDecl) {
