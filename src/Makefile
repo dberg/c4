@@ -130,6 +130,7 @@ $(obj)/djp.o: $(libdir)/djp.cpp
 
 # tests
 $(bin)/tests: $(test_libdir)/ParserTest.cpp \
+              $(test_libdir)/SymbolTableTest.cpp \
               $(test_libdir)/EmacsOutputTest.cpp \
               $(obj)/Lexer.o \
               $(obj)/LiteralSupport.o \
@@ -148,6 +149,7 @@ $(bin)/tests: $(test_libdir)/ParserTest.cpp \
                                      $(obj)/SourceCodeStream.o \
                                      $(obj)/SymbolTable.o \
                                      $(test_libdir)/ParserTest.cpp \
+                                     $(test_libdir)/SymbolTableTest.cpp \
                                      $(test_libdir)/EmacsOutputTest.cpp \
                                      -o $@ \
                                      $(gtest_obj)/libgtest.a \
