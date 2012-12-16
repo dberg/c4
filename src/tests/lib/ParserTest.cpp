@@ -662,11 +662,6 @@ TEST(Parser, ClassDeclaration) {
   ASSERT_EQ(Type::OPT_REFERENCE_TYPE, decl->classDecl->nClassDecl->type->opt);
   ASSERT_EQ(38, decl->classDecl->nClassDecl->type->refType->id->pos);
   ASSERT_EQ("Def", decl->classDecl->nClassDecl->type->refType->id->value);
-
-  ASSERT_EQ(2, parser.st.symbols.size());
-  spSymbol sym = parser.st.scopePeek();
-  ASSERT_EQ(ST_CLASS, sym->type);
-  ASSERT_EQ(0, sym->scope);
 }
 
 TEST(Parser, Comments) {

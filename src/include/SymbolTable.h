@@ -10,9 +10,12 @@ namespace djp {
 enum SymbolType {
   ST_COMPILATION_UNIT,
   ST_CLASS,
+  ST_INNER_CLASS,
+  ST_INNER_INTERFACE,
   ST_INTERFACE,
   ST_METHOD,
   ST_TYPE,
+  ST_VARIABLE,
 };
 
 struct Symbol {
@@ -40,7 +43,7 @@ public:
   void addSym(int type, int token, int pos, int line, const std::string name);
   bool isConstructor(const std::string identifier);
   spSymbol scopePeek();
-  void scopePop();
+  void scopePop(unsigned type);
   void scopePush(std::size_t idx);
 
 };

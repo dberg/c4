@@ -3,7 +3,9 @@
 
 namespace djp {
 
-void ST::addSym(int type, int token, int pos, int line, const std::string name) {
+void ST::addSym(int type, int token, int pos, int line,
+  const std::string name) {
+
   spSymbol sym = spSymbol(new Symbol(
     type, scopes.back(), token, pos, line, name));
   symbols.push_back(sym);
@@ -24,7 +26,7 @@ bool ST::isConstructor(const std::string identifier) {
 }
 
 bool ST::isNewScope(int type) {
-  if (ST_CLASS == type || ST_METHOD) {
+  if (ST_CLASS == type || ST_METHOD == type) {
     return true;
   }
 
@@ -37,8 +39,13 @@ spSymbol ST::scopePeek() {
   return symbols[scopes.back()];
 }
 
-void ST::scopePop() {
+void ST::scopePop(unsigned type) {
+  if (type == scopes.back()) {
     scopes.pop_back();
+    return;
+  }
+
+  // TODO: scope stack is messed up.
 }
 
 void ST::scopePush(std::size_t idx) {

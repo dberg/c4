@@ -3094,6 +3094,7 @@ void Parser::parseNormalClassDeclaration(spNormalClassDeclaration &nClassDecl) {
   int pos = lexer->getCurTokenIni();
   nClassDecl->identifier = spIdentifier(new Identifier(
     pos, lexer->getCurTokenStr()));
+
   st.addSym(ST_CLASS, lexer->getCurToken(), pos, src->getLine(),
     lexer->getCurTokenStr());
   lexer->getNextToken(); // consume Identifier
@@ -3110,6 +3111,7 @@ void Parser::parseNormalClassDeclaration(spNormalClassDeclaration &nClassDecl) {
     if (lexer->getCurToken() != TOK_IDENTIFIER) {
       nClassDecl->addErr(diag->addErr(
         ERR_EXP_IDENTIFIER, lexer->getCursor() - 1));
+      st.scopePop(ST_CLASS);
       return;
     }
 
@@ -3123,6 +3125,7 @@ void Parser::parseNormalClassDeclaration(spNormalClassDeclaration &nClassDecl) {
 
   nClassDecl->classBody = spClassBody(new ClassBody);
   parseClassBody(nClassDecl->classBody);
+  st.scopePop(ST_CLASS);
 }
 
 void Parser::parseNullLiteral(spTokenExp &nullLiteral) {
@@ -3257,17 +3260,18 @@ void Parser::parseMemberDecl(spMemberDecl &memberDecl) {
       memberDecl->opt = MemberDecl::OPT_IDENTIFIER_CONSTRUCTOR_DECLARATOR_REST;
 
       // Identifier
-      int pos = lexer->getCurTokenIni();
-      memberDecl->id
-        = spIdentifier(new Identifier(pos, lexer->getCurTokenStr()));
-      st.addSym(ST_CLASS, lexer->getCurToken(), pos, src->getLine(),
-        lexer->getCurTokenStr());
+      memberDecl->id = spIdentifier(new Identifier(lexer->getCurTokenIni(),
+        lexer->getCurTokenStr()));
+      st.addSym(ST_METHOD, lexer->getCurToken(), lexer->getCurTokenIni(),
+        src->getLine(), lexer->getCurTokenStr());
       lexer->getNextToken(); // consume Identifier
 
       // ConstructorDeclaratorRest
       memberDecl->constDeclRest = spConstructorDeclaratorRest(
         new ConstructorDeclaratorRest());
       parseConstructorDeclaratorRest(memberDecl->constDeclRest);
+
+      st.scopePop(ST_METHOD);
       return;
     }
   }
@@ -3287,11 +3291,13 @@ void Parser::parseMemberDecl(spMemberDecl &memberDecl) {
     memberDecl->opt
       = MemberDecl::OPT_VOID_IDENTIFIER_VOID_METHOD_DECLARATOR_REST;
 
+    // void
     memberDecl->tokVoid = spTokenExp(new TokenExp(
       lexer->getCursor() - tokenUtil.getTokenLength(
       lexer->getCurToken()), lexer->getCurToken()));
     lexer->getNextToken(); // consume 'void'
 
+    // Identifier
     if (lexer->getCurToken() != TOK_IDENTIFIER) {
       memberDecl->addErr(diag->addErr(ERR_EXP_IDENTIFIER,
         lexer->getCurTokenIni(), lexer->getCursor()));
@@ -3300,23 +3306,25 @@ void Parser::parseMemberDecl(spMemberDecl &memberDecl) {
 
     memberDecl->id = spIdentifier(new Identifier(
       lexer->getCurTokenIni(), lexer->getCurTokenStr()));
+    st.addSym(ST_METHOD, lexer->getCurToken(), lexer->getCurTokenIni(),
+      src->getLine(), lexer->getCurTokenStr());
     lexer->getNextToken(); // consume Identifier
 
+    // VoidMethodDeclaratorRest
     memberDecl->voidMethDeclRest = spVoidMethodDeclaratorRest(
       new VoidMethodDeclaratorRest);
     parseVoidMethodDeclaratorRest(memberDecl->voidMethDeclRest);
     if (memberDecl->voidMethDeclRest->err) {
       memberDecl->addErr(-1);
-      return;
     }
+
+    st.scopePop(ST_METHOD);
+    return;
   }
 
   // TODO: GenericMethodOrConstructorDecl
   // TODO: ClassDeclaration
   // TODO: InterfaceDeclaration
-
-  // TODO:
-  //lexer->getNextToken();
 }
 
 /// MethodDeclaratorRest:
@@ -3387,6 +3395,8 @@ void Parser::parseMethodOrFieldDecl(spMethodOrFieldDecl &methodOrFieldDecl) {
 
   methodOrFieldDecl->id = spIdentifier(new Identifier(
     lexer->getCurTokenIni(), lexer->getCurTokenStr()));
+  st.addSym(ST_METHOD, lexer->getCurToken(), lexer->getCurTokenIni(),
+    src->getLine(), lexer->getCurTokenStr());
   lexer->getNextToken(); // consume identifier
 
   // MethodOrFieldRest
@@ -3396,6 +3406,8 @@ void Parser::parseMethodOrFieldDecl(spMethodOrFieldDecl &methodOrFieldDecl) {
   if (methodOrFieldDecl->methodOrFieldRest->err) {
     methodOrFieldDecl->addErr(-1);
   }
+
+  st.scopePop(ST_METHOD);
 }
 
 /// MethodOrFieldRest:
