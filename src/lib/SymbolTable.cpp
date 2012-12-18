@@ -40,7 +40,7 @@ spSymbol ST::scopePeek() {
 }
 
 void ST::scopePop(unsigned type) {
-  if (type == scopes.back()) {
+  if (type == (unsigned) symbols[scopes.back()]->type) {
     scopes.pop_back();
     return;
   }
