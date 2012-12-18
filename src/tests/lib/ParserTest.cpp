@@ -1162,6 +1162,46 @@ TEST(Parser, LocalVariableDeclarationStatement) {
   ASSERT_EQ(46, primary->primaryId->idSuffix->args->posRParen);
 }
 
+// -----------------------------------------------------------------------------
+// class A { int m1() { return 1; }};
+// -----------------------------------------------------------------------------
+// ClassBody
+//   '{'
+//   ClassBodyDeclaration(2)
+//     MemberDecl(1)
+//       MethodOrFieldDecl
+//         Type <-- 'int'
+//         Identifier <-- 'm1'
+//         MethodOrFieldRest(2)
+//           MethodDeclaratorRest
+//             FormalParameters <-- '()'
+//             Block <-- '{ return 1; }
+//   '}'
+TEST(Parser, MemberDeclOpt1) {
+  std::string filename = "Test.java";
+  std::string buffer = "class A { int m1() { return 1; }}";
+  spDiagnosis diag = spDiagnosis(new Diagnosis());
+  Parser parser(filename, buffer, diag);
+  parser.parse();
+
+  spClassBody classBody = parser.compilationUnit->typeDecls[0]->decl->classDecl
+    ->nClassDecl->classBody;
+  ASSERT_EQ(8, classBody->posLCBrace);
+  ASSERT_EQ(32, classBody->posRCBrace);
+
+  ASSERT_EQ(ClassBodyDeclaration::OPT_MODIFIER_MEMBER_DECL,
+    classBody->decls[0]->opt);
+  ASSERT_EQ(MemberDecl::OPT_METHOD_OR_FIELD_DECL,
+    classBody->decls[0]->memberDecl->opt);
+
+  spMethodOrFieldRest methodOrFieldRest = classBody->decls[0]->memberDecl
+    ->methodOrFieldDecl->methodOrFieldRest;
+  ASSERT_EQ(MethodOrFieldRest::OPT_METHOD, methodOrFieldRest->opt);
+
+  ASSERT_EQ(16, methodOrFieldRest->methodDeclRest->formParams->posLParen);
+  ASSERT_EQ(17, methodOrFieldRest->methodDeclRest->formParams->posRParen);
+}
+
 TEST(Parser, MethodOrFieldRestOptField) {
   std::string filename = "Test.java";
   std::string buffer =

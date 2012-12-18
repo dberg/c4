@@ -2982,12 +2982,12 @@ std::vector<spTypeDeclaration> Parser::parseTypeDeclarations(
   std::vector<spTypeDeclaration> typeDecls = std::vector<spTypeDeclaration>();
 
   if (annotations.size() > 0) {
-    spModifier modifier = spModifier(new Modifier());
+    spModifier modifier = spModifier(new Modifier);
     modifier->annotations = annotations;
 
-    spTypeDeclaration typeDecl = spTypeDeclaration(new TypeDeclaration());
+    spTypeDeclaration typeDecl = spTypeDeclaration(new TypeDeclaration);
     typeDecl->decl = spClassOrInterfaceDeclaration(
-      new ClassOrInterfaceDeclaration());
+      new ClassOrInterfaceDeclaration);
     typeDecl->decl->modifier = modifier;
 
     parseClassOrInterfaceDeclaration(typeDecl->decl);
@@ -3171,10 +3171,15 @@ void Parser::parseClassBody(spClassBody &classBody) {
     return;
   }
 
+  classBody->posLCBrace = lexer->getCursor() - 1;
   lexer->getNextToken(); // consume '{'
 
   // ClassBodyDeclaration
-  while (isValidInitTokenOfClassBodyDeclaration(lexer->getCurToken())) {
+  unsigned pos = 0;
+  while (isValidInitTokenOfClassBodyDeclaration(lexer->getCurToken())
+    && pos != lexer->getCursor()) {
+
+    pos = lexer->getCursor();
     if (lexer->getCurToken() == TOK_SEMICOLON) {
       lexer->getNextToken(); // consume ';'
       continue;
@@ -3192,6 +3197,7 @@ void Parser::parseClassBody(spClassBody &classBody) {
     return;
   }
 
+  classBody->posRCBrace = lexer->getCursor() - 1;
   lexer->getNextToken(); // consume '}'
 }
 
@@ -3202,7 +3208,8 @@ void Parser::parseClassBody(spClassBody &classBody) {
 void Parser::parseClassBodyDeclaration(spClassBodyDeclaration &decl) {
   if (isModifierToken(lexer->getCurToken())
       || lexer->getCurToken() == TOK_IDENTIFIER
-      || lexer->getCurToken() == TOK_KEY_VOID) {
+      || lexer->getCurToken() == TOK_KEY_VOID
+      || isBasicType(lexer->getCurToken())) {
 
     decl->opt = ClassBodyDeclaration::OPT_MODIFIER_MEMBER_DECL;
     decl->modifier = spModifier(new Modifier);

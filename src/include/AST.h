@@ -253,8 +253,11 @@ struct NormalClassDeclaration : ASTError {
 
 /// ClassBody: '{' {ClassBodyDeclaration} '}'
 struct ClassBody : ASTError {
-  // TODO: pos of left and right curly brackets.
+  unsigned posLCBrace;
+  unsigned posRCBrace;
   std::vector<spClassBodyDeclaration> decls;
+
+  ClassBody() : posLCBrace(0), posRCBrace(0) {}
 };
 
 /// ClassBodyDeclaration:
