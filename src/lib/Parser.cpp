@@ -510,7 +510,77 @@ void Parser::parseArrayDepth(ArrayDepth &arrayDepth) {
 /// ArrayInitializer:
 ///   '{' [ VariableInitializer { , VariableInitializer } [,] ] '}'
 void Parser::parseArrayInitializer(spArrayInitializer &arrayInit) {
-  // TODO:
+  // '{'
+  if (lexer->getCurToken() != TOK_LCURLY_BRACKET) {
+    arrayInit->addErr(diag->addErr(
+      ERR_EXP_LCURLY_BRACKET, lexer->getCursor() - 1));
+    return;
+  }
+
+  arrayInit->posLCBrace = lexer->getCursor() - 1;
+  lexer->getNextToken(); // consume '{'
+
+  // ',}'
+  if (lexer->getCurToken() == TOK_COMMA) {
+    arrayInit->posComma = lexer->getCursor() - 1;
+    lexer->getNextToken(); // consume ','
+
+    if (lexer->getCurToken() != TOK_RCURLY_BRACKET) {
+      arrayInit->addErr(diag->addErr(
+        ERR_EXP_RCURLY_BRACKET, lexer->getCursor() - 1));
+      return;
+    }
+
+    arrayInit->posRCBrace = lexer->getCursor() - 1;
+    lexer->getNextToken(); // consume '}'
+    return;
+  }
+
+  // '}'
+  if (lexer->getCurToken() == TOK_RCURLY_BRACKET) {
+    arrayInit->posRCBrace = lexer->getCursor() - 1;
+    lexer->getNextToken(); // consume '}'
+    return;
+  }
+
+  // VariableInitializer { , VariableInitializer } [,] '}'
+  arrayInit->varInit = spVariableInitializer(new VariableInitializer);
+  parseVariableInitializer(arrayInit->varInit);
+  if (arrayInit->varInit->err) { arrayInit->addErr(-1); }
+
+  while (lexer->getCurToken() == TOK_COMMA) {
+    unsigned posComma = lexer->getCursor() - 1;
+    lexer->getNextToken(); // consume ','
+
+    // ',}'
+    if (lexer->getCurToken() == TOK_RCURLY_BRACKET) {
+      arrayInit->posComma = posComma;
+      arrayInit->posRCBrace = lexer->getCursor() - 1;
+      lexer->getNextToken(); // consume '}'
+      return;
+    }
+
+    // pair: comma and variable initializer
+    spVariableInitializer varInit
+      = spVariableInitializer(new VariableInitializer);
+    parseVariableInitializer(varInit);
+    if (varInit->err) {
+      arrayInit->addErr(-1);
+      return;
+    }
+
+    arrayInit->pairs.push_back(std::make_pair(posComma, varInit));
+  }
+
+  // '}'
+  if (lexer->getCurToken() != TOK_RCURLY_BRACKET) {
+    arrayInit->addErr(diag->addErr(
+      ERR_EXP_RCURLY_BRACKET, lexer->getCursor() - 1));
+    return;
+  }
+
+  arrayInit->posRCBrace = lexer->getCursor() - 1;
+  lexer->getNextToken(); // consume '}'
 }
 
 /// ElementValue: Annotation | Expression1 | ElementValueArrayInitializer
@@ -4041,7 +4111,7 @@ void Parser::parseVariableInitializer(spVariableInitializer &varInit) {
   // ArrayInitializer
   if (lexer->getCurToken() == TOK_LCURLY_BRACKET) {
     varInit->opt = VariableInitializer::OPT_ARRAY_INITIALIZER;
-    varInit->arrayInit = spArrayInitializer(new ArrayInitializer());
+    varInit->arrayInit = spArrayInitializer(new ArrayInitializer);
     parseArrayInitializer(varInit->arrayInit);
     if (varInit->arrayInit->err) { varInit->addErr(-1); }
     return;
@@ -4050,7 +4120,10 @@ void Parser::parseVariableInitializer(spVariableInitializer &varInit) {
   // Expression
   varInit->opt = VariableInitializer::OPT_EXPRESSION;
   varInit->expr = spExpression(new Expression);
-  parseExpression(varInit->expr); // TODO: check for invalid expr
+  parseExpression(varInit->expr);
+  if (varInit->expr->isEmpty()) {
+    varInit->addErr(-1);
+  }
 }
 
 void Parser::parse() {
