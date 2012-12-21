@@ -3010,6 +3010,9 @@ std::vector<spTypeDeclaration> Parser::parseTypeDeclarations(
 void Parser::parseClassOrInterfaceDeclaration(
   spClassOrInterfaceDeclaration& decl) {
 
+  st.addSym(ST_CLASS_OR_INTERFACE,
+    lexer->getCurTokenIni(), 0, src->getLine(), "");
+
   // Modifier
   if (!decl->modifier) {
     decl->modifier = spModifier(new Modifier);
@@ -3017,21 +3020,34 @@ void Parser::parseClassOrInterfaceDeclaration(
 
   parseModifier(decl->modifier);
 
-  if (lexer->getCurToken() == TOK_KEY_CLASS
-    || lexer->getCurToken() == TOK_KEY_ENUM) {
-
+  // Class
+  if (lexer->getCurToken() == TOK_KEY_CLASS) {
+    st.updateScopeType(ST_CLASS);
     decl->classDecl = spClassDeclaration(new ClassDeclaration);
     parseClassDeclaration(decl->classDecl);
+    st.scopePop();
+    return;
+  }
+
+  // Enum
+  if (lexer->getCurToken() == TOK_KEY_ENUM) {
+    st.updateScopeType(ST_ENUM);
+    decl->classDecl = spClassDeclaration(new ClassDeclaration);
+    parseClassDeclaration(decl->classDecl);
+    st.scopePop();
     return;
   }
 
   // TODO:
   if (lexer->getCurToken() == TOK_KEY_INTERFACE) {
+    st.updateScopeType(ST_INTERFACE);
     lexer->getNextToken();
+    st.scopePop();
     return;
   }
 
   // TODO: handle error
+  st.scopePop();
 }
 
 void Parser::parseModifier(spModifier &modifier) {
@@ -3080,6 +3096,7 @@ void Parser::parseNormalClassDeclaration(spNormalClassDeclaration &nClassDecl) {
     return;
   }
 
+  // 'class'
   nClassDecl->classTok = spTokenExp(new TokenExp(lexer->getCursor()
     - tokenUtil.getTokenLength(TOK_KEY_CLASS), lexer->getCurToken()));
   lexer->getNextToken(); // consume 'class'
@@ -3091,12 +3108,12 @@ void Parser::parseNormalClassDeclaration(spNormalClassDeclaration &nClassDecl) {
     return;
   }
 
-  int pos = lexer->getCurTokenIni();
   nClassDecl->identifier = spIdentifier(new Identifier(
-    pos, lexer->getCurTokenStr()));
+    lexer->getCurTokenIni(), lexer->getCurTokenStr()));
 
-  st.addSym(ST_CLASS, lexer->getCurToken(), pos, src->getLine(),
-    lexer->getCurTokenStr());
+  st.addSym(ST_IDENTIFIER, lexer->getCurTokenIni(), lexer->getCursor(),
+    src->getLine(), lexer->getCurTokenStr());
+
   lexer->getNextToken(); // consume Identifier
 
   // TODO: [TypeParameters]
@@ -3111,11 +3128,11 @@ void Parser::parseNormalClassDeclaration(spNormalClassDeclaration &nClassDecl) {
     if (lexer->getCurToken() != TOK_IDENTIFIER) {
       nClassDecl->addErr(diag->addErr(
         ERR_EXP_IDENTIFIER, lexer->getCursor() - 1));
-      st.scopePop(ST_CLASS);
+      st.scopePop();
       return;
     }
 
-    nClassDecl->type = spType(new Type());
+    nClassDecl->type = spType(new Type);
     nClassDecl->type->opt = Type::OPT_REFERENCE_TYPE;
     nClassDecl->type->refType = spReferenceType(new ReferenceType);
     parseReferenceType(nClassDecl->type->refType);
@@ -3125,7 +3142,6 @@ void Parser::parseNormalClassDeclaration(spNormalClassDeclaration &nClassDecl) {
 
   nClassDecl->classBody = spClassBody(new ClassBody);
   parseClassBody(nClassDecl->classBody);
-  st.scopePop(ST_CLASS);
 }
 
 void Parser::parseNullLiteral(spTokenExp &nullLiteral) {
@@ -3198,6 +3214,7 @@ void Parser::parseClassBody(spClassBody &classBody) {
   }
 
   classBody->posRCBrace = lexer->getCursor() - 1;
+  st.updateScopeEnd(lexer->getCursor());
   lexer->getNextToken(); // consume '}'
 }
 
@@ -3211,11 +3228,13 @@ void Parser::parseClassBodyDeclaration(spClassBodyDeclaration &decl) {
       || lexer->getCurToken() == TOK_KEY_VOID
       || isBasicType(lexer->getCurToken())) {
 
+    st.addSym(ST_MEMBER_DECL, lexer->getCurTokenIni(), 0, src->getLine(), "");
     decl->opt = ClassBodyDeclaration::OPT_MODIFIER_MEMBER_DECL;
     decl->modifier = spModifier(new Modifier);
     parseModifier(decl->modifier);
     decl->memberDecl = spMemberDecl(new MemberDecl);
     parseMemberDecl(decl->memberDecl);
+    st.scopePop();
     return;
   }
 
@@ -3265,20 +3284,19 @@ void Parser::parseMemberDecl(spMemberDecl &memberDecl) {
     // (3) Identifier ConstructorDeclaratorRest
     if (st.isConstructor(lexer->getCurTokenStr())) {
       memberDecl->opt = MemberDecl::OPT_IDENTIFIER_CONSTRUCTOR_DECLARATOR_REST;
+      st.updateScopeType(ST_METHOD);
 
       // Identifier
       memberDecl->id = spIdentifier(new Identifier(lexer->getCurTokenIni(),
         lexer->getCurTokenStr()));
-      st.addSym(ST_METHOD, lexer->getCurToken(), lexer->getCurTokenIni(),
+      st.addSym(ST_IDENTIFIER, lexer->getCurTokenIni(), lexer->getCursor(),
         src->getLine(), lexer->getCurTokenStr());
       lexer->getNextToken(); // consume Identifier
 
       // ConstructorDeclaratorRest
       memberDecl->constDeclRest = spConstructorDeclaratorRest(
-        new ConstructorDeclaratorRest());
+        new ConstructorDeclaratorRest);
       parseConstructorDeclaratorRest(memberDecl->constDeclRest);
-
-      st.scopePop(ST_METHOD);
       return;
     }
   }
@@ -3288,7 +3306,7 @@ void Parser::parseMemberDecl(spMemberDecl &memberDecl) {
     || isBasicType(lexer->getCurToken())) {
     memberDecl->opt = MemberDecl::OPT_METHOD_OR_FIELD_DECL;
     memberDecl->methodOrFieldDecl
-      = spMethodOrFieldDecl(new MethodOrFieldDecl());
+      = spMethodOrFieldDecl(new MethodOrFieldDecl);
     parseMethodOrFieldDecl(memberDecl->methodOrFieldDecl);
     return;
   }
@@ -3297,6 +3315,7 @@ void Parser::parseMemberDecl(spMemberDecl &memberDecl) {
   if (lexer->getCurToken() == TOK_KEY_VOID) {
     memberDecl->opt
       = MemberDecl::OPT_VOID_IDENTIFIER_VOID_METHOD_DECLARATOR_REST;
+    st.updateScopeType(ST_METHOD);
 
     // void
     memberDecl->tokVoid = spTokenExp(new TokenExp(
@@ -3313,7 +3332,7 @@ void Parser::parseMemberDecl(spMemberDecl &memberDecl) {
 
     memberDecl->id = spIdentifier(new Identifier(
       lexer->getCurTokenIni(), lexer->getCurTokenStr()));
-    st.addSym(ST_METHOD, lexer->getCurToken(), lexer->getCurTokenIni(),
+    st.addSym(ST_IDENTIFIER, lexer->getCurTokenIni(), lexer->getCursor(),
       src->getLine(), lexer->getCurTokenStr());
     lexer->getNextToken(); // consume Identifier
 
@@ -3325,7 +3344,6 @@ void Parser::parseMemberDecl(spMemberDecl &memberDecl) {
       memberDecl->addErr(-1);
     }
 
-    st.scopePop(ST_METHOD);
     return;
   }
 
@@ -3371,6 +3389,7 @@ void Parser::parseMethodDeclaratorRest(spMethodDeclaratorRest &methodDeclRest) {
   // (1) ';'
   // This should be an abstract method.
   if (lexer->getCurToken() == TOK_SEMICOLON) {
+    st.updateScopeEnd(lexer->getCursor());
     methodDeclRest->posSemiColon = lexer->getCursor() - 1;
     return;
   }
@@ -3381,12 +3400,14 @@ void Parser::parseMethodDeclaratorRest(spMethodDeclaratorRest &methodDeclRest) {
   if (methodDeclRest->block->err) {
     methodDeclRest->addErr(-1);
   }
+
+  st.updateScopeEnd(methodDeclRest->block->posRCBracket + 1);
 }
 
 /// MethodOrFieldDecl: Type Identifier MethodOrFieldRest
 void Parser::parseMethodOrFieldDecl(spMethodOrFieldDecl &methodOrFieldDecl) {
   // Type
-  methodOrFieldDecl->type = spType(new Type());
+  methodOrFieldDecl->type = spType(new Type);
   parseType(methodOrFieldDecl->type);
   if (methodOrFieldDecl->type->err) {
     methodOrFieldDecl->addErr(-1);
@@ -3402,19 +3423,17 @@ void Parser::parseMethodOrFieldDecl(spMethodOrFieldDecl &methodOrFieldDecl) {
 
   methodOrFieldDecl->id = spIdentifier(new Identifier(
     lexer->getCurTokenIni(), lexer->getCurTokenStr()));
-  st.addSym(ST_METHOD, lexer->getCurToken(), lexer->getCurTokenIni(),
+  st.addSym(ST_IDENTIFIER, lexer->getCurTokenIni(), lexer->getCursor(),
     src->getLine(), lexer->getCurTokenStr());
   lexer->getNextToken(); // consume identifier
 
   // MethodOrFieldRest
   methodOrFieldDecl->methodOrFieldRest
-    = spMethodOrFieldRest(new MethodOrFieldRest());
+    = spMethodOrFieldRest(new MethodOrFieldRest);
   parseMethodOrFieldRest(methodOrFieldDecl->methodOrFieldRest);
   if (methodOrFieldDecl->methodOrFieldRest->err) {
     methodOrFieldDecl->addErr(-1);
   }
-
-  st.scopePop(ST_METHOD);
 }
 
 /// MethodOrFieldRest:
@@ -3424,6 +3443,8 @@ void Parser::parseMethodOrFieldRest(spMethodOrFieldRest &methodOrFieldRest) {
   // (2) MethodDeclaratorRest
   if (lexer->getCurToken() == TOK_LPAREN) {
     methodOrFieldRest->opt = MethodOrFieldRest::OPT_METHOD;
+    st.updateScopeType(ST_METHOD);
+
     methodOrFieldRest->methodDeclRest = spMethodDeclaratorRest(
       new MethodDeclaratorRest);
     parseMethodDeclaratorRest(methodOrFieldRest->methodDeclRest);
@@ -3435,6 +3456,8 @@ void Parser::parseMethodOrFieldRest(spMethodOrFieldRest &methodOrFieldRest) {
 
   // (1) FieldDeclaratorsRest ;
   methodOrFieldRest->opt = MethodOrFieldRest::OPT_FIELD;
+  st.updateScopeType(ST_FIELD);
+
   methodOrFieldRest->fieldDeclsRest
     = spFieldDeclaratorsRest(new FieldDeclaratorsRest());
   parseFieldDeclaratorsRest(methodOrFieldRest->fieldDeclsRest);
@@ -3450,6 +3473,7 @@ void Parser::parseMethodOrFieldRest(spMethodOrFieldRest &methodOrFieldRest) {
   }
 
   methodOrFieldRest->posSemiColon = lexer->getCursor() - 1;
+  st.updateScopeEnd(lexer->getCursor());
   lexer->getNextToken(); // consume ';'
 }
 
@@ -3578,6 +3602,8 @@ void Parser::parseConstructorDeclaratorRest(
   if (constDeclRest->block->err) {
     constDeclRest->addErr(-1);
   }
+
+  st.updateScopeEnd(constDeclRest->block->posRCBracket + 1);
 }
 
 /// CreatedName:
@@ -3761,6 +3787,7 @@ void Parser::parseVoidMethodDeclaratorRest(
   // (Block | ;)
   // (1) ';'
   if (lexer->getCurToken() == TOK_SEMICOLON) {
+    st.updateScopeEnd(lexer->getCursor());
     voidMethDeclRest->posSemiColon = lexer->getCursor() - 1;
     return;
   }
@@ -3771,6 +3798,8 @@ void Parser::parseVoidMethodDeclaratorRest(
   if (voidMethDeclRest->block->err) {
     voidMethDeclRest->addErr(-1);
   }
+
+  st.updateScopeEnd(voidMethDeclRest->block->posRCBracket + 1);
 }
 
 /// SuperSuffix:

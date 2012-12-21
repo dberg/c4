@@ -8,22 +8,34 @@
 namespace djp {
 
 enum SymbolType {
+  // Logical units
   ST_COMPILATION_UNIT,
+  // overwritten by ST_CLASS, ST_INTERFACE or ST_ENUM
+  ST_CLASS_OR_INTERFACE,
+  // overwritten by ST_METHOD or ST_FIELD
+  ST_MEMBER_DECL,
+
   ST_CLASS,
-  ST_INNER_CLASS,
-  ST_INNER_INTERFACE,
+  ST_ENUM,
   ST_INTERFACE,
   ST_METHOD,
+  ST_FIELD,
+  ST_INNER_CLASS,
+  ST_INNER_INTERFACE,
+
+  // Symbols
+  ST_IDENTIFIER,
   ST_TYPE,
-  ST_VARIABLE,
 };
 
 struct Symbol {
-  int type, scope, token, pos, line;
-  const std::string name;
-  Symbol(int type, int scope, int token, int pos, int line,
-    const std::string name) : type(type), scope(scope), token(token),
-    pos(pos), line(line), name(name) {}
+  int type;
+  unsigned scope, pos, end, line;
+  const std::string metadata;
+  Symbol(int type, unsigned scope, unsigned pos, unsigned end, unsigned line,
+    const std::string metadata)
+    : type(type), scope(scope), pos(pos), end(end), line(line),
+      metadata(metadata) {}
 };
 
 typedef boost::shared_ptr<struct Symbol> spSymbol;
@@ -40,11 +52,13 @@ public:
     addSym(ST_COMPILATION_UNIT, 0, 0, 0, "");
   }
 
-  void addSym(int type, int token, int pos, int line, const std::string name);
+  void addSym(int type, unsigned pos, unsigned end, unsigned line,
+    const std::string metadata);
   bool isConstructor(const std::string identifier);
-  spSymbol scopePeek();
-  void scopePop(unsigned type);
+  void scopePop();
   void scopePush(std::size_t idx);
+  void updateScopeType(int type);
+  void updateScopeEnd(unsigned end);
 
 };
 } // namespace
