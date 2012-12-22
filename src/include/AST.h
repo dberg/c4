@@ -605,11 +605,14 @@ struct Statement : ASTError {
 
   StatementOpt opt;
 
-  // shared 1,16
+  // shared 1,15,16
   spBlock block;
 
   // shared 2,4,13,14
   unsigned posSemiColon;
+
+  // shared 5,15
+  spParExpression parExpr;
 
   // (1) Block
 
@@ -625,7 +628,6 @@ struct Statement : ASTError {
 
   // (5) if ParExpression Statement [else Statement]
   spTokenExp tokIf;
-  spParExpression parExpr;
   spStatement stmtIf;
   spTokenExp tokElse;
   spStatement stmtElse;
@@ -644,6 +646,9 @@ struct Statement : ASTError {
   // (14) throw Expression ;
   spTokenExp tokThrow;
   spExpression throwExpr;
+
+  // (15) synchronized ParExpression Block
+  spTokenExp tokSync;
 
   // (16) try Block ( Catches | [Catches] Finally )
   spTokenExp tokTry;

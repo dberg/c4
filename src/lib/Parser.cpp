@@ -2800,7 +2800,28 @@ void Parser::parseStatement(spStatement &stmt) {
 
   // (15) synchronized ParExpression Block
   if (lexer->getCurToken() == TOK_KEY_SYNCHRONIZED) {
-    // TODO:
+    // synchronized
+    stmt->opt = Statement::OPT_SYNC;
+    stmt->tokSync = spTokenExp(new TokenExp(
+      lexer->getCursor() - tokenUtil.getTokenLength(
+      lexer->getCurToken()), lexer->getCurToken()));
+    lexer->getNextToken(); // consume 'synchronized'
+
+    // ParExpression
+    stmt->parExpr = spParExpression(new ParExpression);
+    parseParExpression(stmt->parExpr);
+    if (stmt->parExpr->err) {
+      stmt->addErr(-1);
+      return;
+    }
+
+    // Block
+    stmt->block = spBlock(new Block);
+    parseBlock(stmt->block);
+    if (stmt->block->err) {
+      stmt->addErr(-1);
+    }
+
     return;
   }
 

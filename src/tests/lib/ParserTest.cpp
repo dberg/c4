@@ -1572,6 +1572,31 @@ TEST(Parser, Statement) {
 }
 
 // -----------------------------------------------------------------------------
+// class A { void m() { synchronized(x) { }}}
+// -----------------------------------------------------------------------------
+// BlockStatement(3)
+//   Statement(15)
+//     'synchronized'
+//     ParExpression
+//     Block
+TEST(Parser, StatementSynchronized) {
+  std::string filename = "Test.java";
+  std::string buffer = "class A { void m() { synchronized(x) { }}}";
+
+  spDiagnosis diag = spDiagnosis(new Diagnosis);
+  Parser parser(filename, buffer, diag);
+  parser.parse();
+
+  spStatement stmt = parser.compilationUnit->typeDecls[0]->decl->classDecl
+    ->nClassDecl->classBody->decls[0]->memberDecl->voidMethDeclRest->block
+    ->blockStmts[0]->stmt;
+
+  ASSERT_EQ(stmt->opt, Statement::OPT_SYNC);
+  ASSERT_EQ(33, stmt->parExpr->posLParen);
+  ASSERT_EQ(35, stmt->parExpr->posRParen);
+}
+
+// -----------------------------------------------------------------------------
 // class A { void m() { int a = x == 0 ? 1 : 2; }}
 // -----------------------------------------------------------------------------
 // BlockStatement(1)
