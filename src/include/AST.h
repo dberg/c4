@@ -1415,7 +1415,7 @@ struct PostfixOp {
 /// SuperSuffix:
 ///   Arguments
 ///   . Identifier [Arguments]
-struct SuperSuffix {
+struct SuperSuffix : ASTError {
   enum SuperSuffixEnum {
     OPT_UNDEFINED,
     OPT_ARGUMENTS,
@@ -1423,11 +1423,11 @@ struct SuperSuffix {
   };
 
   SuperSuffixEnum opt;
-  int err;
+  unsigned posPeriod;
   spIdentifier id;
   spArguments args;
 
-  SuperSuffix() : opt(OPT_UNDEFINED), err(0) {}
+  SuperSuffix() : opt(OPT_UNDEFINED), posPeriod(0) {}
 };
 
 /// Creator:

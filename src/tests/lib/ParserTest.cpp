@@ -1421,6 +1421,42 @@ TEST(Parser, PrimaryNewCreator) {
 }
 
 // -----------------------------------------------------------------------------
+// class A { public void m() { super.m(); }}
+// -----------------------------------------------------------------------------
+// Statement(4)
+//   StatementExpression
+//     Expression
+//       Expression1
+//         Expression2
+//           Expression3
+//             Primary(4)
+//               'super'
+//               SuperSuffix
+//                 '.'
+//                 Identifier <-- 'm'
+//                 Arguments '()'
+//   ';'
+TEST(Parser, PrimarySuper) {
+  std::string filename = "Test.java";
+  std::string buffer = "class A { void m() { super.m(); }}";
+
+  spDiagnosis diag = spDiagnosis(new Diagnosis);
+  Parser parser(filename, buffer, diag);
+  parser.parse();
+
+  spStatement stmt = parser.compilationUnit->typeDecls[0]->decl->classDecl
+    ->nClassDecl->classBody->decls[0]->memberDecl->voidMethDeclRest->block
+    ->blockStmts[0]->stmt;
+
+  ASSERT_EQ(Statement::OPT_STMT_EXPR, stmt->opt);
+  spPrimary primary = stmt->stmtExpr->expr->expr1->expr2->expr3->primary;
+  ASSERT_EQ(Primary::OPT_SUPER_SUPER_SUFFIX, primary->opt);
+  ASSERT_EQ(26, primary->superSuperSuffix->superSuffix->posPeriod);
+  ASSERT_EQ(28, primary->superSuperSuffix->superSuffix->args->posLParen);
+  ASSERT_EQ(29, primary->superSuperSuffix->superSuffix->args->posRParen);
+}
+
+// -----------------------------------------------------------------------------
 // class A { void m() { long l = (new Long(i)).longValue(); }}
 // -----------------------------------------------------------------------------
 // BlockStatement(1)

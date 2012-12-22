@@ -2257,7 +2257,7 @@ void Parser::parsePrimarySuperSuperSuffix(
   // SuperSuffix
   if (lexer->getCurToken() == TOK_LPAREN
     || lexer->getCurToken() == TOK_PERIOD) {
-    primarySuperSuperSuffix->superSuffix = spSuperSuffix(new SuperSuffix());
+    primarySuperSuperSuffix->superSuffix = spSuperSuffix(new SuperSuffix);
     parseSuperSuffix(primarySuperSuperSuffix->superSuffix);
   }
 }
@@ -3887,6 +3887,7 @@ void Parser::parseSuperSuffix(spSuperSuffix &superSuffix) {
   // 2nd - . Identifier [Arguments]
   if (lexer->getCurToken() == TOK_PERIOD) {
     superSuffix->opt = SuperSuffix::OPT_IDENTIFIER_ARGUMENTS;
+    superSuffix->posPeriod = lexer->getCursor() - 1;
     lexer->getNextToken(); // consume '.'
 
     // Error
@@ -3901,8 +3902,8 @@ void Parser::parseSuperSuffix(spSuperSuffix &superSuffix) {
       lexer->getCurTokenIni(), lexer->getCurTokenStr()));
     lexer->getNextToken(); // consume Identifier
 
-    if (lexer->getCurToken() == TOK_RPAREN) {
-      superSuffix->args = spArguments(new Arguments());
+    if (lexer->getCurToken() == TOK_LPAREN) {
+      superSuffix->args = spArguments(new Arguments);
       parseArguments(superSuffix->args);
     }
   }
