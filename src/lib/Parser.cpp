@@ -2690,7 +2690,28 @@ void Parser::parseStatement(spStatement &stmt) {
 
   // (8) while ParExpression Statement
   if (lexer->getCurToken() == TOK_KEY_WHILE) {
-    // TODO:
+    // while
+    stmt->opt = Statement::OPT_WHILE;
+    stmt->tokSync = spTokenExp(new TokenExp(
+      lexer->getCursor() - tokenUtil.getTokenLength(
+      lexer->getCurToken()), lexer->getCurToken()));
+    lexer->getNextToken(); // consume 'while'
+
+    // ParExpression
+    stmt->parExpr = spParExpression(new ParExpression);
+    parseParExpression(stmt->parExpr);
+    if (stmt->parExpr->err) {
+      stmt->addErr(-1);
+      return;
+    }
+
+    // Statement
+    stmt->stmtWhile = spStatement(new Statement);
+    parseStatement(stmt->stmtWhile);
+    if (stmt->stmtWhile->err) {
+      stmt->addErr(-1);
+    }
+
     return;
   }
 
