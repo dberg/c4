@@ -1336,7 +1336,9 @@ void Output::setStatement(const spStatement &stmt) {
   }
 
   if (stmt->opt == Statement::OPT_SYNC) {
-    // TODO:
+    if (stmt->tokSync) { setKeyword(stmt->tokSync); }
+    if (stmt->parExpr) { setParExpression(stmt->parExpr); }
+    if (stmt->block) { setBlock(stmt->block); }
     return;
   }
 
