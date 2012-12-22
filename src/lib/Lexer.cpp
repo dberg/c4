@@ -136,38 +136,44 @@ int Lexer::getCarretToken() {
   return TOK_OP_CARRET;
 }
 
+/// CharacterLiteral:
+///   ' SingleCharacter '
+///   ' EscapeSequence '
+/// SingleCharacter:
+///   InputCharacter but not ' or \.
+///
+/// Returns TOK_ERROR or TOK_CHARACTER_LITERAL
 int Lexer::getCharacterLiteral() {
   std::stringstream ss;
+  curTokenStr = "";
   ss << '\''; // opening single quote
 
-  // Check for SingleCharacter:
-  // InputCharacter but not ' or \.
   char c = src->peekChar();
-  if (c != '\'' && c != '\\') {
-    ss << src->getChar(); // consume SingleCharacter
-    if (src->peekChar() == '\'') {
-      ss << src->getChar(); // consume single quote char
-      curTokenStr = ss.str();
-      return TOK_CHARACTER_LITERAL;
-    } else {
-      curTokenStr = ss.str();
+  if (c == '\n' || c == '\r' || c == '\'') {
+    return TOK_ERROR;
+  }
+
+  // EscapeSequence
+  if (c == '\\') {
+    if (getEscapeSequence(ss) != TOK_ESCAPE_SEQUENCE
+      || src->peekChar() != '\'') {
       return TOK_ERROR;
     }
+
+    ss << src->getChar(); // consume closing single quote
+    curTokenStr = ss.str();
+    return TOK_CHARACTER_LITERAL;
   }
 
-  // Escape Sequence
-  if (c == '\\') {
-    int tok = getEscapeSequence(ss);
-    if (tok == TOK_ESCAPE_SEQUENCE) {
-      curTokenStr = ss.str();
-      return TOK_CHARACTER_LITERAL;
-    }
-
-    return tok;
+  // SingleCharacter
+  ss << src->getChar(); // consume SingleCharacter
+  if (src->peekChar() != '\'') {
+    return TOK_ERROR;
   }
 
+  ss << src->getChar(); // consume closing single quote
   curTokenStr = ss.str();
-  return TOK_ERROR;
+  return TOK_CHARACTER_LITERAL;
 }
 
 /// A forward slash character indicates a comment, divisor or an assignment
@@ -177,7 +183,7 @@ int Lexer::getCommentOrDivToken() {
   // We peek 1 char ahead to confirm it's a comment,
   // and which type of comment this is.
   if (src->peekChar() == '/') {
-    spComment comment = spComment(new Comment());
+    spComment comment = spComment(new Comment);
     comment->opt = Comment::OPT_ONE_LINE;
     comment->posIni = getCursor() - 1;
     char c = src->getChar(); // consume 2nd '/'
@@ -188,7 +194,7 @@ int Lexer::getCommentOrDivToken() {
   }
 
   if (src->peekChar() == '*') {
-    spComment comment = spComment(new Comment());
+    spComment comment = spComment(new Comment);
     comment->opt = Comment::OPT_MULTIPLE_LINES;
     comment->posIni = getCursor() - 1;
     char c = src->getChar(); // consume '*'
@@ -224,10 +230,30 @@ int Lexer::getEqualsToken() {
   return TOK_OP_EQUALS;
 }
 
+/// EscapeSequence:
+///   \b
+///   \t
+///   \n
+///   \f
+///   \r
+///   \"
+///   \'
+///   \\
+///   OctalEscape /* \u0000 to \u00ff: from octal value */
+///
+/// OctalEscape:
+///   \ OctalDigit
+///   \ OctalDigit OctalDigit
+///   \ ZeroToThree OctalDigit OctalDigit
+/// OctalDigit: one of
+///   0 1 2 3 4 5 6 7
+/// ZeroToThree: one of
+///   0 1 2 3
+///
 /// Returns TOK_ESCAPE_SEQUENCE | TOK_ERROR
 int Lexer::getEscapeSequence(std::stringstream &ss) {
   ss << src->getChar(); // consume '\'
-  switch(src->peekChar()) {
+  switch (src->peekChar()) {
     case 'b': // backspace BS
     case 't': // horizontal tab HT
     case 'n': // linefeed LF
@@ -237,11 +263,7 @@ int Lexer::getEscapeSequence(std::stringstream &ss) {
     case '\'': // single quote
     case '\\': // backslash
       ss << src->getChar(); // consume special char
-      if (src->peekChar() == '\'') {
-        ss << src->getChar(); // consume ending single quote
-        return TOK_ESCAPE_SEQUENCE;
-      }
-      return TOK_ERROR;
+      return TOK_ESCAPE_SEQUENCE;
   }
 
   // Octal Escape:
@@ -261,11 +283,7 @@ int Lexer::getEscapeSequence(std::stringstream &ss) {
           return TOK_ERROR;
         }
       }
-      if (src->peekChar() == '\'') {
-        ss << src->getChar(); // consume closing single quote
-        return TOK_ESCAPE_SEQUENCE;
-      }
-      return TOK_ERROR;
+      return TOK_ESCAPE_SEQUENCE;
     }
   }
 
@@ -274,6 +292,8 @@ int Lexer::getEscapeSequence(std::stringstream &ss) {
   // we build the AST in one pass.
   // UnicodeEscape:
   //  \ UnicodeMarker HexDigit HexDigit HexDigit HexDigit
+  // TODO: check for LINE TERMINATOR since it's invalid inside strings or char
+  //       literals
   if (src->peekChar() == 'u') {
     // Finish consuming UnicodeMarker:
     //   UnicodeMarker:
@@ -292,11 +312,6 @@ int Lexer::getEscapeSequence(std::stringstream &ss) {
       }
     }
 
-    if (src->peekChar() != '\'') {
-      return TOK_ERROR;
-    }
-
-    ss << src->getChar(); // consume closing single quote
     return TOK_ESCAPE_SEQUENCE;
   }
 
@@ -419,13 +434,18 @@ int Lexer::getRemToken() {
   return TOK_OP_REM;
 }
 
+/// StringLiteral:
+///  " StringCharacters(opt) "
+/// StringCharacter:
+///   InputCharacter but not " or \.
+///   EscapeSequence
+/// CR (\u000d) and LF (\u000a) are never an InputCharacter
+///
+/// Returns TOK_STRING_LITERAL or TOK_ERROR
 int Lexer::getStringLiteral() {
   std::stringstream ss;
   ss << '"'; // opening double quotes
 
-  // StringCharacter:
-  // InputCharacter but not " or \.
-  // EscapeSequence
   char c;
   int tok;
   while ((c = src->peekChar())) {
@@ -434,9 +454,13 @@ int Lexer::getStringLiteral() {
         tok = getEscapeSequence(ss);
         if (tok != TOK_ESCAPE_SEQUENCE) {
           curTokenStr = ss.str();
-          return tok; // error
+          return TOK_ERROR;
         }
         break;
+      case '\n':
+      case '\r':
+	curTokenStr = ss.str();
+	return TOK_ERROR;
       case '"':
         ss << src->getChar(); // consume closing double quotes
         curTokenStr = ss.str();
@@ -446,6 +470,7 @@ int Lexer::getStringLiteral() {
     }
   }
 
+  curTokenStr = ss.str();
   return TOK_ERROR;
 }
 

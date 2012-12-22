@@ -89,8 +89,8 @@ TEST(Parser, AnnotationElementValuePairsCharacterLiteral) {
   // INFO: We escape the universal character name \uAa89
   // so it's not pre-processed by the c++ compiler.
   std::string buffer =
-    "@myinterface(v1='A', v2='\n', v3='\034', v4='\\uAa89')"
-    //               16      24       33         44
+    "@myinterface(v1='A', v2='\034', v3='\\uAa89')"
+    //               16      24      32
     "package com.test;";
   spDiagnosis diag = spDiagnosis(new Diagnosis());
   Parser parser(filename, buffer, diag);
@@ -117,7 +117,7 @@ TEST(Parser, AnnotationElementValuePairsCharacterLiteral) {
   ASSERT_EQ(Primary::OPT_LITERAL, expr3Pair2->primary->opt);
   ASSERT_EQ(Literal::OPT_CHAR, expr3Pair2->primary->literal->opt);
   ASSERT_EQ(24, charLiteralPair2->pos);
-  ASSERT_EQ("'\n'", charLiteralPair2->val);
+  ASSERT_EQ("'\034'", charLiteralPair2->val);
 
   // Pair 3
   spElementValuePair pair3 = pairs[2];
@@ -127,17 +127,7 @@ TEST(Parser, AnnotationElementValuePairsCharacterLiteral) {
   ASSERT_EQ(Primary::OPT_LITERAL, expr3Pair3->primary->opt);
   ASSERT_EQ(Literal::OPT_CHAR, expr3Pair3->primary->literal->opt);
   ASSERT_EQ(32, charLiteralPair3->pos);
-  ASSERT_EQ("'\034'", charLiteralPair3->val);
-
-  // Pair 4
-  spElementValuePair pair4 = pairs[3];
-  spExpression3 expr3Pair4 = pair4->value->expr1->expr2->expr3;
-  spCharacterLiteral charLiteralPair4
-    = expr3Pair4->primary->literal->charLiteral;
-  ASSERT_EQ(Primary::OPT_LITERAL, expr3Pair4->primary->opt);
-  ASSERT_EQ(Literal::OPT_CHAR, expr3Pair4->primary->literal->opt);
-  ASSERT_EQ(40, charLiteralPair4->pos);
-  ASSERT_EQ("'\\uAa89'", charLiteralPair4->val);
+  ASSERT_EQ("'\\uAa89'", charLiteralPair3->val);
 }
 
 TEST(Parser, AnnotationElementValuePairsDecimalFloatingPointLiterals) {
