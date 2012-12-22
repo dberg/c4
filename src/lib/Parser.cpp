@@ -113,6 +113,20 @@ bool isPrimary(int token) {
 ///   abstract static final strictfp
 /// ConstructorModifier: one of
 ///   Annotation public protected private
+///
+/// Modifier:
+///   Annotation
+///   public
+///   protected
+///   private
+///   static
+///   abstract
+///   final
+///   native
+///   synchronized
+///   transient
+///   volatile
+///   strictfp
 bool isModifierToken(int token) {
   if (TOK_KEY_PUBLIC == token
     || TOK_KEY_PROTECTED == token
@@ -120,11 +134,12 @@ bool isModifierToken(int token) {
     || TOK_KEY_ABSTRACT == token
     || TOK_KEY_STATIC == token
     || TOK_KEY_FINAL == token
-    || TOK_KEY_STRICTFP == token) {
-    return true;
-  }
-
-  if (TOK_ANNOTATION == token) {
+    || TOK_KEY_STRICTFP == token
+    || TOK_ANNOTATION == token
+    || TOK_KEY_NATIVE == token
+    || TOK_KEY_SYNCHRONIZED == token
+    || TOK_KEY_TRANSIENT == token
+    || TOK_KEY_VOLATILE == token) {
     return true;
   }
 
