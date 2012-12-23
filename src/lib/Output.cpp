@@ -1260,7 +1260,9 @@ void Output::setStatement(const spStatement &stmt) {
   }
 
   if (stmt->opt == Statement::OPT_WHILE) {
-    // TODO:
+    if (stmt->tokWhile) { setKeyword(stmt->tokWhile); }
+    if (stmt->parExpr) { setParExpression(stmt->parExpr); }
+    if (stmt->stmtWhile) { setStatement(stmt->stmtWhile); }
     return;
   }
 
@@ -1299,7 +1301,9 @@ void Output::setStatement(const spStatement &stmt) {
   }
 
   if (stmt->opt == Statement::OPT_CONTINUE) {
-    // TODO:
+    if (stmt->tokContinue) { setKeyword(stmt->tokContinue); }
+    if (stmt->id) { setIdentifier(stmt->id); }
+    if (stmt->posSemiColon) { setOp(stmt->posSemiColon); }
     return;
   }
 
