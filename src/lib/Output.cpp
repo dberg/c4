@@ -1014,7 +1014,14 @@ void Output::setNormalClassDeclaration(
   }
 
   // TODO: [TypeParameters]
-  // TODO: [implements TypeList]
+
+  // [implements TypeList]
+  if (nClassDecl->implementsTok) {
+    setKeyword(nClassDecl->implementsTok);
+    if (nClassDecl->typeList) {
+      setTypeList(nClassDecl->typeList);
+    }
+  }
 
   output += ")";
 }
@@ -1133,9 +1140,19 @@ void Output::setReferenceType(const spReferenceType &refType) {
     setIdentifier(refType->id, Output::OPT_IDENTIFIER_REFERENCE_TYPE);
   }
 
-  if (refType->typeArgs) { setTypeArguments(refType->typeArgs); }
-  for (unsigned int i = 0; i < refType->refTypes.size(); i++) {
-    setReferenceType(refType->refTypes[i]);
+  if (refType->typeArgs) {
+    setTypeArguments(refType->typeArgs);
+  }
+
+  for (unsigned i = 0; i < refType->triplets.size(); i++) {
+    setOp(refType->triplets[i]->posPeriod);
+
+    setIdentifier(refType->triplets[i]->id,
+      Output::OPT_IDENTIFIER_REFERENCE_TYPE);
+
+    if (refType->triplets[i]->typeArgs) {
+      setTypeArguments(refType->triplets[i]->typeArgs);
+    }
   }
 }
 

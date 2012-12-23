@@ -2475,7 +2475,38 @@ void Parser::parseReferenceType(spReferenceType &refType) {
   }
 
   // { . Identifier [TypeArguments] }
-  // TODO:
+  State state;
+  while (lexer->getCurToken() == TOK_PERIOD) {
+    saveState(state);
+    spReferenceTypeTriplet tri
+      = spReferenceTypeTriplet(new ReferenceTypeTriplet);
+
+    // '.'
+    tri->posPeriod = lexer->getCursor() - 1;
+    lexer->getNextToken();
+
+    // Identifier
+    if (lexer->getCurToken() != TOK_IDENTIFIER) {
+      restoreState(state);
+      return;
+    }
+
+    tri->id = spIdentifier(new Identifier(
+      lexer->getCurTokenIni(), lexer->getCurTokenStr()));
+    lexer->getNextToken(); // consume Identifier
+
+    // [TypeArguments]
+    if (lexer->getCurToken() == TOK_OP_LT) {
+      tri->typeArgs = spTypeArguments(new TypeArguments);
+      parseTypeArguments(tri->typeArgs);
+      if (tri->typeArgs->err) {
+	restoreState(state);
+	return;
+      }
+    }
+
+    refType->triplets.push_back(tri);
+  }
 }
 
 /// Selector:
@@ -3287,10 +3318,25 @@ void Parser::parseNormalClassDeclaration(spNormalClassDeclaration &nClassDecl) {
     parseReferenceType(nClassDecl->type->refType);
   }
 
-  // TODO: [implements TypeList]
+  // [implements TypeList]
+  if (lexer->getCurToken() == TOK_KEY_IMPLEMENTS) {
+    nClassDecl->implementsTok = spTokenExp(new TokenExp(
+      lexer->getCursor() - tokenUtil.getTokenLength(TOK_KEY_IMPLEMENTS),
+      lexer->getCurToken()));
+    lexer->getNextToken(); // consume 'implements'
+
+    nClassDecl->typeList = spTypeList(new TypeList);
+    parseTypeList(nClassDecl->typeList);
+    if (nClassDecl->typeList->err) {
+      nClassDecl->addErr(-1);
+      st.scopePop();
+      return;
+    }
+  }
 
   nClassDecl->classBody = spClassBody(new ClassBody);
   parseClassBody(nClassDecl->classBody);
+  st.scopePop();
 }
 
 void Parser::parseNullLiteral(spTokenExp &nullLiteral) {
@@ -3640,7 +3686,7 @@ void Parser::parseNonWildcardTypeArguments(
   nonWildcardTypeArguments->posLt = lexer->getCursor() - 1;
   lexer->getNextToken(); // consume '<'
 
-  nonWildcardTypeArguments->typeList = spTypeList(new TypeList());
+  nonWildcardTypeArguments->typeList = spTypeList(new TypeList);
   parseTypeList(nonWildcardTypeArguments->typeList);
   if (nonWildcardTypeArguments->typeList->err) {
     nonWildcardTypeArguments->addErr(-1);
@@ -4022,7 +4068,7 @@ void Parser::parseTypeList(spTypeList &typeList) {
     return;
   }
 
-  typeList->refType = spReferenceType(new ReferenceType());
+  typeList->refType = spReferenceType(new ReferenceType);
   parseReferenceType(typeList->refType);
 
   while (lexer->getCurToken() == TOK_COMMA) {
@@ -4034,7 +4080,7 @@ void Parser::parseTypeList(spTypeList &typeList) {
       return;
     }
 
-    spReferenceType refType = spReferenceType(new ReferenceType());
+    spReferenceType refType = spReferenceType(new ReferenceType);
     parseReferenceType(refType);
 
     if (refType->err) {

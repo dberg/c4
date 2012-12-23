@@ -111,6 +111,7 @@ typedef boost::shared_ptr<struct QualifiedIdentifier> spQualifiedIdentifier;
 typedef boost::shared_ptr<struct QualifiedIdentifierList>
   spQualifiedIdentifierList;
 typedef boost::shared_ptr<struct ReferenceType> spReferenceType;
+typedef boost::shared_ptr<struct ReferenceTypeTriplet> spReferenceTypeTriplet;
 typedef boost::shared_ptr<struct Selector> spSelector;
 typedef boost::shared_ptr<struct Statement> spStatement;
 typedef boost::shared_ptr<struct StatementExpression> spStatementExpression;
@@ -246,8 +247,8 @@ struct NormalClassDeclaration : ASTError {
   //std::vector<spTypeParameters>
   spTokenExp extendsTok;
   spType type;
-  //spTokenExp implements
-  //spTypeList
+  spTokenExp implementsTok;
+  spTypeList typeList;
   spClassBody classBody;
 };
 
@@ -511,7 +512,18 @@ struct BasicType {
 struct ReferenceType : ASTError {
   spIdentifier id;
   spTypeArguments typeArgs;
-  std::vector<spReferenceType> refTypes;
+  // { . Identifier [TypeArguments] }
+  std::vector<spReferenceTypeTriplet> triplets;
+};
+
+/// ReferenceType helper
+///   { . Identifier [TypeArguments] }
+struct ReferenceTypeTriplet {
+  unsigned posPeriod;
+  spIdentifier id;
+  spTypeArguments typeArgs;
+
+  ReferenceTypeTriplet() : posPeriod(0) {}
 };
 
 /// Selector:
