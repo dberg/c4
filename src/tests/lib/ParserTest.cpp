@@ -1572,6 +1572,45 @@ TEST(Parser, Statement) {
 }
 
 // -----------------------------------------------------------------------------
+// class A { void m() { while (true) { continue; }}}
+// -----------------------------------------------------------------------------
+// BlockStatement(3)
+//   Statement(8)
+//     'while'
+//     ParExpression <-- '(true)'
+//     Statement(1)
+//       Block
+//         '{'
+//         BlockStatement[0](3)
+//           Statement(12)
+//             'continue'
+//             ';'
+//         '}'
+TEST(Parser, StatementContinue) {
+  std::string filename = "Test.java";
+  std::string buffer = "class A { void m() { while (true) { continue; }}}";
+
+  spDiagnosis diag = spDiagnosis(new Diagnosis);
+  Parser parser(filename, buffer, diag);
+  parser.parse();
+
+  spStatement stmt = parser.compilationUnit->typeDecls[0]->decl->classDecl
+    ->nClassDecl->classBody->decls[0]->memberDecl->voidMethDeclRest->block
+    ->blockStmts[0]->stmt;
+
+  ASSERT_EQ(Statement::OPT_WHILE, stmt->opt);
+  ASSERT_EQ(27, stmt->parExpr->posLParen);
+  ASSERT_EQ(32, stmt->parExpr->posRParen);
+  ASSERT_EQ(Statement::OPT_BLOCK, stmt->stmtWhile->opt);
+  ASSERT_EQ(34, stmt->stmtWhile->block->posLCBracket);
+  ASSERT_EQ(46, stmt->stmtWhile->block->posRCBracket);
+  spBlockStatement blockStmt = stmt->stmtWhile->block->blockStmts[0];
+  ASSERT_EQ(BlockStatement::OPT_ID_STMT, blockStmt->opt);
+  ASSERT_EQ(Statement::OPT_CONTINUE, blockStmt->stmt->opt);
+  ASSERT_EQ(44, blockStmt->stmt->posSemiColon);
+}
+
+// -----------------------------------------------------------------------------
 // class A { void m() { synchronized(x) { }}}
 // -----------------------------------------------------------------------------
 // BlockStatement(3)
