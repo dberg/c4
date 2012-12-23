@@ -49,8 +49,11 @@ bool isSign(char c) {
 /// LiteralSupport Class
 ///-----------------------------------------------------------------------------
 int LiteralSupport::getLiteralNumber(char c, std::stringstream &ss) {
+  if (c == '0') {
+    return getTokWithLeadingZero(ss);
+  }
+
   ss << c;
-  if (c == '0') { return getTokWithLeadingZero(ss); }
   return getDecimalNumeralOrDecimalFloatingPoint(c, ss);
 }
 
@@ -355,30 +358,45 @@ int LiteralSupport::getTokWithLeadingZero(std::stringstream &ss) {
   // Decimal numeral
   char lookahead = src->getChar();
   if (lookahead == 'l' || lookahead == 'L') {
-    ss << lookahead;
+    ss << '0'; ss << lookahead;
     return TOK_DECIMAL_NUMERAL_WITH_INT_TYPE_SUFFIX;
   }
 
   // Hex numeral
   if (lookahead == 'x' || lookahead == 'X') {
-    ss << lookahead;
+    ss << '0'; ss << lookahead;
     return getHexNumeral(ss);
   }
 
   // Binary numeral
   if (lookahead == 'b' || lookahead == 'B') {
-    ss << lookahead;
+    ss << '0'; ss << lookahead;
     return getBinaryNumeral(ss);
   }
 
   // Octal
   if (isdigit(lookahead) || lookahead == '_') {
-    ss << lookahead;
+    ss << '0'; ss << lookahead;
     return getOctalNumeral(ss);
   }
 
+  // Float and Double
+  if (isFloatTypeSuffix(lookahead)) {
+    ss << '0'; ss << lookahead;
+    return TOK_DECIMAL_FLOATING_POINT_LITERAL;
+  }
+
   // Decimal numeral, stand alone zero
-  src->ungetChar(1);
-  return TOK_DECIMAL_NUMERAL;
+  if (!isDecimalDigit(lookahead) && lookahead != '.') {
+    src->ungetChar(1);
+    ss << '0';
+    return TOK_DECIMAL_NUMERAL;
+  }
+
+  // We might have a floating point number or a series of zeros so we let
+  // getDecimalNumberalOrDecimalFloatingPoint resolve it after we backtrack to
+  // the initial zero char.
+  src->ungetChar(2);
+  return getDecimalNumeralOrDecimalFloatingPoint('0', ss);
 }
 } // namespace
