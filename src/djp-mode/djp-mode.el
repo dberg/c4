@@ -40,6 +40,14 @@
 (defun djp-reset-parser ()
   (setq djp-parse-tree nil))
 
+;; indentation
+(defun djp-indent-line ()
+  "TODO: we currently just insert 4 spaces."
+  (interactive)
+  ;; for tabs use
+  ;; (insert ?\t))
+  (insert "    "))
+
 ;; djp-mode
 (defvar djp-mode-syntax-table
   (let ((table (make-syntax-table)))
@@ -71,6 +79,8 @@
 	comment-start "//"
 	comment-end "")
   (setq local-abbrev-table djp-mode-abbrev-table)
+  (set (make-local-variable 'indent-line-function) #'djp-indent-line)
+  ;;(set (make-local-variable 'indent-region-function) #'djp-indent-region)
 
   ;; We do our own syntax highlighting based on the parse tree.
   ;; However, we want minor modes that add keywords to highlight properly
@@ -87,8 +97,7 @@
 
   (add-hook 'after-change-functions #'djp-mode-edit nil t)
 
-  (djp-reparse)
-  (message "baby steps"))
+  (djp-reparse))
 
 (defun djp-mode-reset-timer ()
   (if djp-mode-parser-timer
@@ -136,7 +145,7 @@ The output of the compiler is used to build djp-parse-tree."
   "Traverse djp-parse-tree applying font-lock face for each node)"
   (loop for node in djp-parse-tree do (eval node)))
 
-;;; Ignored
+;;; Functions from EmacsOutput that are ignored
 (defun djp-package-declaration (&rest ignore) nil)
 (defun djp-import-declarations (&rest ignore) nil)
 (defun djp-import-declaration (&rest ignore) nil)
