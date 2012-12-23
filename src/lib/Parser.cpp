@@ -2692,7 +2692,7 @@ void Parser::parseStatement(spStatement &stmt) {
   if (lexer->getCurToken() == TOK_KEY_WHILE) {
     // while
     stmt->opt = Statement::OPT_WHILE;
-    stmt->tokSync = spTokenExp(new TokenExp(
+    stmt->tokWhile = spTokenExp(new TokenExp(
       lexer->getCursor() - tokenUtil.getTokenLength(
       lexer->getCurToken()), lexer->getCurToken()));
     lexer->getNextToken(); // consume 'while'
