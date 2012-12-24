@@ -727,6 +727,31 @@ void Parser::parseBooleanLiteral(spBooleanLiteral &boolLit) {
   lexer->getNextToken(); // consume 'true' or 'false'
 }
 
+/// Bound:
+///   ReferenceType { & ReferenceType }
+void Parser::parseBound(spBound &bound) {
+  bound->refType = spReferenceType(new ReferenceType);
+  parseReferenceType(bound->refType);
+  if (bound->refType->err) {
+    bound->addErr(-1);
+    return;
+  }
+
+  while (lexer->getCurToken() == TOK_OP_AMPERSAND) {
+    unsigned pos = lexer->getCursor() - 1;
+    lexer->getNextToken(); // consume '&'
+
+    spReferenceType refType = spReferenceType(new ReferenceType);
+    parseReferenceType(refType);
+    if (refType->err) {
+      bound->addErr(-1);
+      return;
+    }
+
+    bound->pairs.push_back(std::make_pair(pos, refType));
+  }
+}
+
 /// CatchClause:
 ///   catch '(' {VariableModifier} CatchType Identifier ')' Block
 void Parser::parseCatchClause(spCatchClause &catchClause) {
@@ -3296,7 +3321,16 @@ void Parser::parseNormalClassDeclaration(spNormalClassDeclaration &nClassDecl) {
 
   lexer->getNextToken(); // consume Identifier
 
-  // TODO: [TypeParameters]
+  // [TypeParameters]
+  if (lexer->getCurToken() == TOK_OP_LT) {
+    nClassDecl->typeParams = spTypeParameters(new TypeParameters);
+    parseTypeParameters(nClassDecl->typeParams);
+    if (nClassDecl->typeParams->err) {
+      nClassDecl->addErr(-1);
+      st.scopePop();
+      return;
+    }
+  }
 
   // [extends Type]
   if (lexer->getCurToken() == TOK_KEY_EXTENDS) {
@@ -4089,6 +4123,81 @@ void Parser::parseTypeList(spTypeList &typeList) {
 
     typeList->refTypes.push_back(refType);
   }
+}
+
+/// TypeParameter:
+///   Identifier [extends Bound]
+void Parser::parseTypeParameter(spTypeParameter &typeParam) {
+  // Identifier
+  if (lexer->getCurToken() != TOK_IDENTIFIER) {
+    typeParam->addErr(diag->addErr(ERR_EXP_IDENTIFIER, lexer->getCursor() - 1));
+    return;
+  }
+
+  typeParam->id = spIdentifier(new Identifier(
+    lexer->getCurTokenIni(), lexer->getCurTokenStr()));
+  lexer->getNextToken(); // consume Identifier
+
+  if (lexer->getCurToken() != TOK_KEY_EXTENDS) {
+    return;
+  }
+
+  // 'extends'
+  typeParam->tokExtends = spTokenExp(new TokenExp(
+    lexer->getCursor() - tokenUtil.getTokenLength(
+      lexer->getCurToken()), lexer->getCurToken()));
+  lexer->getNextToken(); // consume 'extends'
+
+  // Bound
+  typeParam->bound = spBound(new Bound);
+  parseBound(typeParam->bound);
+  if (typeParam->bound->err) {
+    typeParam->addErr(-1);
+  }
+}
+
+/// TypeParameters:
+///   < TypeParameter { , TypeParameter } >
+void Parser::parseTypeParameters(spTypeParameters &typeParams) {
+  if (lexer->getCurToken() != TOK_OP_LT) {
+    typeParams->addErr(diag->addErr(ERR_EXP_OP_LT, lexer->getCursor() - 1));
+    return;
+  }
+
+  typeParams->posLt = lexer->getCursor() - 1;
+  lexer->getNextToken(); // consume '<'
+
+  typeParams->typeParam = spTypeParameter(new TypeParameter);
+  parseTypeParameter(typeParams->typeParam);
+  if (typeParams->typeParam->err) {
+    typeParams->addErr(-1);
+  }
+
+  // { , TypeParameter }
+  State state;
+  while (lexer->getCurToken() == TOK_COMMA) {
+    saveState(state);
+    unsigned pos = lexer->getCursor() - 1;
+    lexer->getNextToken();
+
+    spTypeParameter typeParam = spTypeParameter(new TypeParameter);
+    parseTypeParameter(typeParam);
+    if (typeParam->err) {
+      restoreState(state);
+      typeParams->addErr(-1);
+      return;
+    }
+
+    typeParams->pairs.push_back(std::make_pair(pos, typeParam));
+  }
+
+  if (lexer->getCurToken() == TOK_OP_GT) {
+    typeParams->addErr(diag->addErr(ERR_EXP_OP_GT, lexer->getCursor() - 1));
+    return;
+  }
+
+  typeParams->posGt = lexer->getCursor() - 1;
+  lexer->getNextToken(); // consume '>'
 }
 
 void Parser::parseStringLiteral(spStringLiteral &strLit) {

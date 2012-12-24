@@ -38,6 +38,7 @@ class Parser {
   void parseBlockStatement(spBlockStatement &blockStmt);
   void parseBlockStatements(std::vector<spBlockStatement> &blockStmts);
   void parseBooleanLiteral(spBooleanLiteral &boolLit);
+  void parseBound(spBound &bound);
   void parseCatches(spCatches &catches);
   void parseCatchClause(spCatchClause &catchClause);
   void parseCatchType(spCatchType &catchType);
@@ -133,6 +134,8 @@ class Parser {
   std::vector<spTypeDeclaration> parseTypeDeclarations(
     std::vector<spAnnotation> &annotations);
   void parseTypeList(spTypeList &typeList);
+  void parseTypeParameter(spTypeParameter &typeParam);
+  void parseTypeParameters(spTypeParameters &typeParams);
   void parseVariableDeclaratorId(spVariableDeclaratorId &varDeclId);
   void parseVariableDeclaratorRest(spVariableDeclaratorRest &varDeclRest);
   void parseVariableDeclarator(spVariableDeclarator &varDecl);
