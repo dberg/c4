@@ -14,7 +14,6 @@ enum SymbolType {
   ST_CLASS_OR_INTERFACE,
   // overwritten by ST_METHOD or ST_FIELD
   ST_MEMBER_DECL,
-
   ST_CLASS,
   ST_ENUM,
   ST_INTERFACE,

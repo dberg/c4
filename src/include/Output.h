@@ -4,8 +4,10 @@
 #include "AST.h"
 #include "Diagnosis.h"
 #include "ErrorCodes.h"
+#include "SymbolTable.h"
 #include "Token.h"
 #include <iostream>
+#include <map>
 #include <sstream>
 
 namespace djp {
@@ -15,15 +17,19 @@ namespace djp {
 class Output {
   spCompilationUnit compilationUnit;
   std::vector<spComment> comments;
+  ST st;
   spDiagnosis diag;
   TokenUtil tokenUtil;
   ErrorUtil errUtil;
+  typedef std::map<int, std::string> STTypes;
+  STTypes stTypes;
 
   enum IdentifierOpt {
     OPT_UNDEFINED,
     OPT_IDENTIFIER_REFERENCE_TYPE,
   };
 
+  const std::string getSymbolTableType(int type);
   void setAnnotationElement(const spAnnotationElement elem);
   void setAnnotation(const spAnnotation &annotation);
   void setAnnotations(const std::vector<spAnnotation> &annotations);
@@ -96,6 +102,7 @@ class Output {
   void setStatement(const spStatement &stmt);
   void setStatementExpression(const spStatementExpression &stmtExpr);
   void setStringLiteral(const spStringLiteral &strLiteral);
+  void setSymbolTable();
   void setType(const spType &type);
   void setTypeArgument(const spTypeArgument &typeArg);
   void setTypeArguments(const spTypeArguments &typeArgs);
@@ -115,11 +122,28 @@ class Output {
   const std::string itos(int i);
 
 public:
-  std::string output;
+  std::string output; // syntax highlight
+  std::string outST; // symbol table
 
   Output(const spCompilationUnit &_compilationUnit,
-    std::vector<spComment> &_comments, spDiagnosis &_diag)
-    : compilationUnit(_compilationUnit), comments(_comments), diag(_diag) {}
+    std::vector<spComment> &_comments, const ST &_st, spDiagnosis &_diag)
+    : compilationUnit(_compilationUnit), comments(_comments), st(_st),
+      diag(_diag) {
+
+    // Symbol table types representation in elisp
+    stTypes[ST_COMPILATION_UNIT] = "_comp_unit";
+    stTypes[ST_CLASS_OR_INTERFACE] = "_class_or_interface";
+    stTypes[ST_MEMBER_DECL] = "_member_decl";
+    stTypes[ST_CLASS] = "_class";
+    stTypes[ST_ENUM] = "_enum";
+    stTypes[ST_INTERFACE] = "_interface";
+    stTypes[ST_METHOD] = "_method";
+    stTypes[ST_FIELD] = "_field";
+    stTypes[ST_INNER_CLASS] = "_inner_class";
+    stTypes[ST_INNER_INTERFACE] = "_inner_interface";
+    stTypes[ST_IDENTIFIER] = "id";
+    stTypes[ST_TYPE] = "type";
+  }
 
   void build();
 };

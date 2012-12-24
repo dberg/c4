@@ -17,11 +17,22 @@ void Output::build() {
 
   setComments();
 
+  setSymbolTable();
+
   if (diag->errors.size()) {
     setErrors(diag->errors);
   }
 
   output += ")";
+}
+
+const std::string Output::getSymbolTableType(int type) {
+  STTypes::iterator it = stTypes.find(type);
+  if (it == stTypes.end()) {
+    return "unknown";
+  }
+
+  return it->second;
 }
 
 void Output::setAnnotationElement(const spAnnotationElement elem) {
@@ -1389,6 +1400,23 @@ void Output::setStringLiteral(const spStringLiteral &strLiteral) {
   unsigned end = ini + strLiteral->val.length();
   output += "(djp-node-string-literal "
     + itos(ini) + " " + itos(end) + ")";
+}
+
+void Output::setSymbolTable() {
+  outST = "[";
+  for (unsigned i = 0; i < st.symbols.size(); i++) {
+    outST += "'("
+      + getSymbolTableType(st.symbols[i]->type) + " "
+      + itos(st.symbols[i]->scope) + " "
+      + itos(st.symbols[i]->pos) + " "
+      + itos(st.symbols[i]->end) + " "
+      + itos(st.symbols[i]->line);
+    if (st.symbols[i]->metadata.size()) {
+      outST += " " + st.symbols[i]->metadata;
+    }
+    outST += ")";
+  }
+  outST += "]";
 }
 
 void Output::setType(const spType &type) {

@@ -13,7 +13,7 @@ TEST(EmacsOutput, PackageDeclaration) {
   spDiagnosis diag = spDiagnosis(new Diagnosis());
   Parser parser(filename, buffer, diag);
   parser.parse();
-  Output output(parser.compilationUnit, parser.comments, diag);
+  Output output(parser.compilationUnit, parser.comments, parser.st, diag);
   output.build();
   std::string expected =
     "((djp-package-declaration "
@@ -36,7 +36,7 @@ TEST(EmacsOutput, ImportDeclaration) {
   spDiagnosis diag = spDiagnosis(new Diagnosis());
   Parser parser(filename, buffer, diag);
   parser.parse();
-  Output output(parser.compilationUnit, parser.comments, diag);
+  Output output(parser.compilationUnit, parser.comments, parser.st, diag);
   output.build();
   std::string expected = "((djp-import-declarations "
     "(djp-import-declaration "
@@ -77,7 +77,7 @@ TEST(EmacsOutput, NormalClassDeclaration) {
   spDiagnosis diag = spDiagnosis(new Diagnosis());
   Parser parser(filename, buffer, diag);
   parser.parse();
-  Output output(parser.compilationUnit, parser.comments, diag);
+  Output output(parser.compilationUnit, parser.comments, parser.st, diag);
   output.build();
   std::string expected =
     "((djp-class-or-interface-declaration "
@@ -96,7 +96,7 @@ TEST(EmacsOutput, ClassConstructor) {
   spDiagnosis diag = spDiagnosis(new Diagnosis());
   Parser parser(filename, buffer, diag);
   parser.parse();
-  Output output(parser.compilationUnit, parser.comments, diag);
+  Output output(parser.compilationUnit, parser.comments, parser.st, diag);
   output.build();
   std::string expected =
     "((djp-class-or-interface-declaration "
@@ -117,7 +117,7 @@ TEST(EmacsOutput, ClassConstructorParameters) {
   spDiagnosis diag = spDiagnosis(new Diagnosis());
   Parser parser(filename, buffer, diag);
   parser.parse();
-  Output output(parser.compilationUnit, parser.comments, diag);
+  Output output(parser.compilationUnit, parser.comments, parser.st, diag);
   output.build();
   std::string expected =
     "((djp-class-or-interface-declaration "
@@ -142,7 +142,7 @@ TEST(EmacsOutput, Expression2Rest) {
   spDiagnosis diag = spDiagnosis(new Diagnosis());
   Parser parser(filename, buffer, diag);
   parser.parse();
-  Output output(parser.compilationUnit, parser.comments, diag);
+  Output output(parser.compilationUnit, parser.comments, parser.st, diag);
   output.build();
   std::string expected =
     "((djp-class-or-interface-declaration "
