@@ -384,9 +384,39 @@ void Output::setElementValue(const spElementValue &value) {
 
   if (value->opt == ElementValue::OPT_ELEMENT_VALUE_ARRAY_INITIALIZER) {
     if (value->elemValArrayInit) {
-      // TODO:
-      //setElementValueArrayInitializer(value->elemValArrayInit);
+      setElementValueArrayInitializer(value->elemValArrayInit);
     }
+  }
+}
+
+void Output::setElementValues(const spElementValues &values) {
+  if (values->elemVal) {
+    setElementValue(values->elemVal);
+  }
+
+  for (unsigned i = 0; i < values->pairs.size(); i++) {
+    setOp(values->pairs[i].first);
+    setElementValue(values->pairs[i].second);
+  }
+}
+
+void Output::setElementValueArrayInitializer(
+  const spElementValueArrayInitializer &elemValArrayInit) {
+
+  if (elemValArrayInit->posLCBrace) {
+    setOp(elemValArrayInit->posLCBrace);
+  }
+
+  if (elemValArrayInit->elemVals) {
+    setElementValues(elemValArrayInit->elemVals);
+  }
+
+  if (elemValArrayInit->posComma) {
+    setOp(elemValArrayInit->posComma);
+  }
+
+  if (elemValArrayInit->posRCBrace) {
+    setOp(elemValArrayInit->posRCBrace);
   }
 }
 

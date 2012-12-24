@@ -54,6 +54,9 @@ class Output {
   void setCreatedName(const spCreatedName &createdName);
   void setCreator(const spCreator &creator);
   void setElementValue(const spElementValue &value);
+  void setElementValues(const spElementValues &values);
+  void setElementValueArrayInitializer(
+    const spElementValueArrayInitializer &elemValArrayInit);
   void setElementValuePair(const spElementValuePair &pair);
   void setErrors(const std::vector<spError> &errors);
   void setExpression(const spExpression &expr);
