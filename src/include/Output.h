@@ -39,6 +39,7 @@ class Output {
   void setArrayInitializer(const spArrayInitializer arrayInit);
   void setBlock(const spBlock &block);
   void setBlockStatement(const spBlockStatement &blockStmt);
+  void setBound(const spBound &bound);
   void setCatches(const spCatches &catches);
   void setCatchClause(const spCatchClause &catchClause);
   void setCatchType(const spCatchType &catchType);
@@ -109,6 +110,8 @@ class Output {
   void setTypeArgumentsOrDiamond(const spTypeArgumentsOrDiamond &typeArgsOrDiam);
   void setTypeDeclarations(const std::vector<spTypeDeclaration> &typeDecls);
   void setTypeList(const spTypeList &typeList);
+  void setTypeParameter(const spTypeParameter &typeParam);
+  void setTypeParameters(const spTypeParameters &typeParams);
   void setVariableDeclarator(const spVariableDeclarator &varDecl);
   void setVariableDeclaratorId(const spVariableDeclaratorId &varDeclId);
   void setVariableDeclaratorRest(const spVariableDeclaratorRest &varDeclRest);

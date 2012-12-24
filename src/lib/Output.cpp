@@ -190,6 +190,17 @@ void Output::setBlockStatement(const spBlockStatement &blockStmt) {
   }
 }
 
+void Output::setBound(const spBound &bound) {
+  if (bound->refType) {
+    setReferenceType(bound->refType);
+  }
+
+  for (unsigned i = 0; i < bound->pairs.size(); i++) {
+    setOp(bound->pairs[i].first);
+    setReferenceType(bound->pairs[i].second);
+  }
+}
+
 void Output::setCatches(const spCatches &catches) {
   if (catches->catchClause) { setCatchClause(catches->catchClause); }
   for (unsigned int i = 0; i < catches->catchClauses.size(); i++) {
@@ -1024,9 +1035,10 @@ void Output::setNormalClassDeclaration(
     }
   }
 
-  // TODO: [TypeParameters]
+  if (nClassDecl->typeParams) {
+    setTypeParameters(nClassDecl->typeParams);
+  }
 
-  // [implements TypeList]
   if (nClassDecl->implementsTok) {
     setKeyword(nClassDecl->implementsTok);
     if (nClassDecl->typeList) {
@@ -1480,6 +1492,39 @@ void Output::setTypeList(const spTypeList &typeList) {
 
   for (unsigned i = 0; i < typeList->refTypes.size(); i++) {
     setReferenceType(typeList->refTypes[i]);
+  }
+}
+
+void Output::setTypeParameter(const spTypeParameter &typeParam) {
+  if (typeParam->id) {
+    setIdentifier(typeParam->id);
+  }
+
+  if (typeParam->tokExtends) {
+    setKeyword(typeParam->tokExtends);
+  }
+
+  if (typeParam->bound) {
+    setBound(typeParam->bound);
+  }
+}
+
+void Output::setTypeParameters(const spTypeParameters &typeParams) {
+  if (typeParams->posLt) {
+    setOp(typeParams->posLt);
+  }
+
+  if (typeParams->typeParam) {
+    setTypeParameter(typeParams->typeParam);
+  }
+
+  for (unsigned i = 0; i < typeParams->pairs.size(); i++) {
+    setOp(typeParams->pairs[i].first);
+    setTypeParameter(typeParams->pairs[i].second);
+  }
+
+  if (typeParams->posGt) {
+    setOp(typeParams->posGt);
   }
 }
 
