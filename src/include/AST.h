@@ -21,6 +21,7 @@ typedef boost::shared_ptr<struct BasicType> spBasicType;
 typedef boost::shared_ptr<struct Block> spBlock;
 typedef boost::shared_ptr<struct BlockStatement> spBlockStatement;
 typedef boost::shared_ptr<struct BooleanLiteral> spBooleanLiteral;
+typedef boost::shared_ptr<struct Bound> spBound;
 typedef boost::shared_ptr<struct Catches> spCatches;
 typedef boost::shared_ptr<struct CatchClause> spCatchClause;
 typedef boost::shared_ptr<struct CatchType> spCatchType;
@@ -127,6 +128,8 @@ typedef boost::shared_ptr<struct TypeArgumentsOrDiamond>
   spTypeArgumentsOrDiamond;
 typedef boost::shared_ptr<struct TypeDeclaration> spTypeDeclaration;
 typedef boost::shared_ptr<struct TypeList> spTypeList;
+typedef boost::shared_ptr<struct TypeParameter> spTypeParameter;
+typedef boost::shared_ptr<struct TypeParameters> spTypeParameters;
 typedef boost::shared_ptr<struct VariableDeclarator> spVariableDeclarator;
 typedef boost::shared_ptr<struct VariableDeclarators> spVariableDeclarators;
 typedef boost::shared_ptr<struct VariableDeclaratorId> spVariableDeclaratorId;
@@ -244,7 +247,7 @@ struct ClassDeclaration {
 struct NormalClassDeclaration : ASTError {
   spTokenExp classTok;
   spIdentifier identifier;
-  //std::vector<spTypeParameters>
+  spTypeParameters typeParams;
   spTokenExp extendsTok;
   spType type;
   spTokenExp implementsTok;
@@ -1379,6 +1382,13 @@ struct BooleanLiteral {
   bool val;
 };
 
+/// Bound:
+///   ReferenceType { & ReferenceType }
+struct Bound : ASTError {
+  spReferenceType refType;
+  std::vector<std::pair<unsigned, spReferenceType> > pairs;
+};
+
 /// Catches: CatchClause { CatchClause }
 struct Catches : ASTError {
   spCatchClause catchClause;
@@ -1516,6 +1526,25 @@ struct NonWildcardTypeArgumentsOrDiamond : ASTError {
 struct TypeList : ASTError {
   spReferenceType refType;
   std::vector<spReferenceType> refTypes;
+};
+
+/// TypeParameter:
+///   Identifier [extends Bound]
+struct TypeParameter : ASTError {
+  spIdentifier id;
+  spTokenExp tokExtends;
+  spBound bound;
+};
+
+/// TypeParameters:
+///   < TypeParameter { , TypeParameter } >
+struct TypeParameters : ASTError {
+  unsigned posLt;
+  unsigned posGt;
+  spTypeParameter typeParam;
+  std::vector<std::pair<unsigned, spTypeParameter> > pairs;
+
+  TypeParameters() : posLt(0), posGt(0) {}
 };
 
 /// CreatedName:
