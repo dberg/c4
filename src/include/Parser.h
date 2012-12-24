@@ -57,6 +57,9 @@ class Parser {
   void parseCreatorOpt1(spCreatorOpt1 &opt1);
   void parseCreatorOpt2(spCreatorOpt2 &opt2);
   void parseElementValue(spElementValue &value);
+  void parseElementValues(spElementValues &values);
+  void parseElementValueArrayInitializer(
+    spElementValueArrayInitializer &elemValArrayInit);
   void parseElementValuePairs(std::vector<spElementValuePair> &pairs);
   void parseExplicitGenericInvocation(
     spExplicitGenericInvocation &explGenInvocation);

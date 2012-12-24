@@ -40,6 +40,7 @@ typedef boost::shared_ptr<struct Creator> spCreator;
 typedef boost::shared_ptr<struct CreatorOpt1> spCreatorOpt1;
 typedef boost::shared_ptr<struct CreatorOpt2> spCreatorOpt2;
 typedef boost::shared_ptr<struct ElementValue> spElementValue;
+typedef boost::shared_ptr<struct ElementValues> spElementValues;
 typedef boost::shared_ptr<struct ElementValueArrayInitializer>
   spElementValueArrayInitializer;
 typedef boost::shared_ptr<struct ElementValuePair> spElementValuePair;
@@ -930,7 +931,7 @@ struct ElementValuePair {
 };
 
 /// ElementValue: Annotation | Expression1 | ElementValueArrayInitializer
-struct ElementValue {
+struct ElementValue : ASTError {
   enum ElementValueOpt {
     OPT_UNDEFINED,
     OPT_ANNOTATION,
@@ -946,9 +947,21 @@ struct ElementValue {
   ElementValue() : opt(OPT_UNDEFINED) {}
 };
 
-/// ElementValueArrayInitializer: { [ElementValues] [,] }
-struct ElementValueArrayInitializer {
-  std::vector<spElementValue> elemValues;
+/// ElementValues:
+///   ElementValue { , ElementValue }
+struct ElementValues : ASTError {
+  spElementValue elemVal;
+  std::vector<std::pair<unsigned, spElementValue> > pairs;
+};
+
+/// ElementValueArrayInitializer: '{' [ElementValues] [,] '}'
+struct ElementValueArrayInitializer : ASTError {
+  unsigned posLCBrace;
+  unsigned posRCBrace;
+  unsigned posComma;
+  spElementValues elemVals;
+
+  ElementValueArrayInitializer() : posLCBrace(0), posRCBrace(0), posComma(0) {}
 };
 
 /// ExplicitGenericInvocation:

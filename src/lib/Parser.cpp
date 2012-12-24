@@ -210,8 +210,6 @@ bool isValidInitTokenOfClassBodyDeclaration(int token) {
     return true;
   }
 
-  // TODO: Block?
-
   // A happy and lost semicolon
   if (TOK_SEMICOLON == token) {
     return true;
@@ -236,13 +234,11 @@ bool isValidInitTokenOfTypeDeclaration(int token) {
 
 // Helper methods
 void Parser::saveState(State &state) {
-  // TODO: symbol table
   state.diagErrorsSize = diag->errors.size();
   lexer->saveState(state);
 }
 
 void Parser::restoreState(State &state) {
-  // TODO: symbol table
   while (diag->errors.size() > state.diagErrorsSize) {
     diag->errors.pop_back();
   }
@@ -306,10 +302,8 @@ void Parser::parseAnnotationElement(spAnnotationElement &elem) {
   }
 
   // ElementValue
-  // TODO: handle errors.
-  // TODO: assure that there's only one element value
   elem->opt = AnnotationElement::OPT_ELEMENT_VALUE;
-  elem->value = spElementValue(new ElementValue());
+  elem->value = spElementValue(new ElementValue);
   parseElementValue(elem->value);
 }
 
@@ -606,6 +600,18 @@ void Parser::parseElementValue(spElementValue &value) {
     return;
   }
 
+  // ElementValueArrayInitializer
+  if (lexer->getCurToken() == TOK_LCURLY_BRACKET) {
+    value->opt = ElementValue::OPT_ELEMENT_VALUE_ARRAY_INITIALIZER;
+    value->elemValArrayInit = spElementValueArrayInitializer(
+      new ElementValueArrayInitializer);
+    parseElementValueArrayInitializer(value->elemValArrayInit);
+    if (value->elemValArrayInit->err) {
+      value->addErr(-1);
+    }
+    return;
+  }
+
   // Expression1
   spExpression1 expr1 = spExpression1(new Expression1);
   parseExpression1(expr1);
@@ -615,7 +621,74 @@ void Parser::parseElementValue(spElementValue &value) {
     return;
   }
 
-  // TODO: ElementValueArrayInitializer
+  value->addErr(-1);
+}
+
+/// ElementValues:
+///   ElementValue { , ElementValue }
+void Parser::parseElementValues(spElementValues &values) {
+  values->elemVal = spElementValue(new ElementValue);
+  parseElementValue(values->elemVal);
+  if (values->elemVal->err) {
+    values->addErr(-1);
+    return;
+  }
+
+  State state;
+  while (lexer->getCurToken() == TOK_COMMA) {
+    saveState(state);
+    unsigned pos = lexer->getCursor() - 1;
+    spElementValue val = spElementValue(new ElementValue);
+    parseElementValue(val);
+    if (val->err) {
+      restoreState(state);
+      values->addErr(-1);
+      return;
+    }
+
+    values->pairs.push_back(std::make_pair(pos, val));
+  }
+}
+
+/// ElementValueArrayInitializer: '{' [ElementValues] [,] '}'
+void Parser::parseElementValueArrayInitializer(
+  spElementValueArrayInitializer &elemValArrayInit) {
+
+  // '{'
+  if (lexer->getCurToken() != TOK_LCURLY_BRACKET) {
+    elemValArrayInit->addErr(diag->addErr(
+      ERR_EXP_LCURLY_BRACKET, lexer->getCursor() - 1));
+    return;
+  }
+
+  elemValArrayInit->posLCBrace = lexer->getCursor() - 1;
+  lexer->getNextToken(); // consume '{'
+
+  // [ ElementValues ]
+  if (lexer->getCurToken() != TOK_COMMA
+    && lexer->getCurToken() != TOK_RCURLY_BRACKET) {
+    elemValArrayInit->elemVals = spElementValues(new ElementValues);
+    parseElementValues(elemValArrayInit->elemVals);
+    if (elemValArrayInit->elemVals->err) {
+      elemValArrayInit->addErr(-1);
+    }
+  }
+
+  // [,]
+  if (lexer->getCurToken() == TOK_COMMA) {
+    elemValArrayInit->posComma = lexer->getCursor() - 1;
+    lexer->getNextToken(); // consume ','
+  }
+
+  // '}'
+  if (lexer->getCurToken() != TOK_RCURLY_BRACKET) {
+    elemValArrayInit->addErr(diag->addErr(
+      ERR_EXP_RCURLY_BRACKET, lexer->getCursor() - 1));
+    return;
+  }
+
+  elemValArrayInit->posRCBrace = lexer->getCursor() - 1;
+  lexer->getNextToken(); // consume '}'
 }
 
 /// Block: '{' BlockStatements '}'
