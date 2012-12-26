@@ -108,9 +108,39 @@ bool isPrimary(int token) {
     || token == TOK_LPAREN);
 }
 
+bool isClassOrInterfaceDeclarationCandidate(int token) {
+  if (isClassOrInterfaceModifier(token)) {
+    return true;
+  }
+
+  if (TOK_KEY_CLASS == token
+    || TOK_KEY_ENUM == token
+    || TOK_KEY_INTERFACE == token
+    || TOK_ANNOTATION_TYPE_DECLARATION == token) {
+    return true;
+  }
+
+  return false;
+}
+
 /// ClassModifier: one of
 ///   Annotation public protected private
 ///   abstract static final strictfp
+bool isClassOrInterfaceModifier(int token) {
+  if (TOK_ANNOTATION == token
+    || TOK_KEY_PUBLIC == token
+    || TOK_KEY_PROTECTED == token
+    || TOK_KEY_PRIVATE == token
+    || TOK_KEY_ABSTRACT == token
+    || TOK_KEY_STATIC == token
+    || TOK_KEY_FINAL == token
+    || TOK_KEY_STRICTFP == token) {
+    return true;
+  }
+
+  return false;
+}
+
 /// ConstructorModifier: one of
 ///   Annotation public protected private
 ///
@@ -742,7 +772,20 @@ void Parser::parseBlockStatement(spBlockStatement &blockStmt) {
     return;
   }
 
-  // TODO: ClassOrInterfaceDeclaration
+  // ClassOrInterfaceDeclaration
+  saveState(state);
+  if (isClassOrInterfaceDeclarationCandidate(lexer->getCurToken())) {
+    spClassOrInterfaceDeclaration decl = spClassOrInterfaceDeclaration(
+      new ClassOrInterfaceDeclaration);
+    parseClassOrInterfaceDeclaration(decl);
+    if (decl->err == false) {
+      blockStmt->opt = BlockStatement::OPT_CLASS_OR_INTERFACE_DECL;
+      blockStmt->decl = decl;
+      return;
+    }
+
+    restoreState(state);
+  }
 
   // [Identifier :] Statement
   blockStmt->opt = BlockStatement::OPT_ID_STMT;

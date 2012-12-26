@@ -194,7 +194,7 @@ struct TypeDeclaration {
 
 /// ClassOrInterfaceDeclaration:
 ///   {Modifier} (ClassDeclaration | InterfaceDeclaration)
-struct ClassOrInterfaceDeclaration {
+struct ClassOrInterfaceDeclaration : ASTError {
   spModifier modifier;
   spClassDeclaration classDecl;
   spInterfaceDeclaration interfaceDecl;

@@ -14,6 +14,27 @@
 #include "Token.h"
 
 namespace djp {
+
+// Helper functions
+bool isAssignmentOperator(int token);
+bool isBasicType(int token);
+bool isDecimalIntegerLiteral(int token);
+bool isHexIntegerLiteral(int token);
+bool isOctalIntegerLiteral(int token);
+bool isBinaryIntegerLiteral(int token);
+bool isIntegerLiteral(int token);
+bool isFloatingPointLiteral(int token);
+bool isLiteral(int token);
+bool isPrimary(int token);
+bool isClassOrInterfaceDeclarationCandidate(int token);
+bool isClassOrInterfaceModifier(int token);
+bool isModifierToken(int token);
+bool isInfixOp(int token);
+bool isPrefixOp(int token);
+bool isPostfixOp(int token);
+bool isValidInitTokenOfClassBodyDeclaration(int token);
+bool isValidInitTokenOfTypeDeclaration(int token);
+
 class Parser {
   const std::string filename;
   spSourceCodeStream src;
