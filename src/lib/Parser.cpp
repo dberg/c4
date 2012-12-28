@@ -817,7 +817,6 @@ void Parser::parseBlockStatement(spBlockStatement &blockStmt) {
 
 /// BlockStatements: { BlockStatement }
 void Parser::parseBlockStatements(std::vector<spBlockStatement> &blockStmts) {
-  // TODO: can we check which tokens are candidates for a block stmt?
   unsigned pos = 0;
   while (lexer->getCurToken() != TOK_RCURLY_BRACKET
     && pos != lexer->getCursor()) {
