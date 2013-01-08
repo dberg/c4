@@ -1414,7 +1414,7 @@ struct CatchClause : ASTError {
   unsigned posLParen;
   unsigned posRParen;
   spTokenExp tokCatch;
-  std::vector<spVariableModifier> varMods;
+  spVariableModifier varMod;
   spCatchType catchType;
   spIdentifier id;
   spBlock block;

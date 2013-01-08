@@ -34,6 +34,7 @@ bool isPrefixOp(int token);
 bool isPostfixOp(int token);
 bool isValidInitTokenOfClassBodyDeclaration(int token);
 bool isValidInitTokenOfTypeDeclaration(int token);
+bool isVariableModifier(int token);
 
 class Parser {
   const std::string filename;

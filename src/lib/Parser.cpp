@@ -262,6 +262,14 @@ bool isValidInitTokenOfTypeDeclaration(int token) {
   return false;
 }
 
+bool isVariableModifier(int token) {
+  if (TOK_KEY_FINAL == token || TOK_ANNOTATION == token) {
+    return true;
+  }
+
+  return false;
+}
+
 // Helper methods
 void Parser::saveState(State &state) {
   state.diagErrorsSize = diag->errors.size();
@@ -891,8 +899,14 @@ void Parser::parseCatchClause(spCatchClause &catchClause) {
   catchClause->posLParen = lexer->getCursor() - 1;
   lexer->getNextToken(); // consume '('
 
-  // TODO:
   // {VariableModifier}
+  if (isVariableModifier(lexer->getCurToken())) {
+    catchClause->varMod = spVariableModifier(new VariableModifier);
+    parseVariableModifier(catchClause->varMod);
+    if (catchClause->varMod->err) {
+      catchClause->addErr(-1);
+    }
+  }
 
   // CatchType
   catchClause->catchType = spCatchType(new CatchType);
@@ -4072,10 +4086,7 @@ void Parser::parseFormalParameterDecls(spFormalParameterDecls &formParamDecls) {
 ///   Annotation
 /// One 'final' keyword is allowed, while we can have zero or more annotations.
 void Parser::parseVariableModifier(spVariableModifier &varModifier) {
-
-  while (lexer->getCurToken() == TOK_KEY_FINAL
-    || lexer->getCurToken() == TOK_ANNOTATION) {
-
+  while (isVariableModifier(lexer->getCurToken())) {
     if (lexer->getCurToken() == TOK_KEY_FINAL) {
       if (varModifier->tokFinal) {
         // Error. We already have a 'final' token.
