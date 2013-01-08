@@ -1419,8 +1419,21 @@ void Parser::parseFieldDeclaratorsRest(spFieldDeclaratorsRest &fieldDeclsRest) {
     return;
   }
 
-  // TODO:
   // { , VariableDeclarator }
+  State state;
+  while (lexer->getCurToken() == TOK_COMMA) {
+    saveState(state);
+    unsigned pos = lexer->getCursor() - 1;
+    lexer->getNextToken(); // consume ','
+    spVariableDeclarator varDecl = spVariableDeclarator(new VariableDeclarator);
+    parseVariableDeclarator(varDecl);
+    if (varDecl->err) {
+      restoreState(state);
+      return; // let upper levels deal with error
+    }
+
+    fieldDeclsRest->pairs.push_back(std::make_pair(pos, varDecl));
+  }
 }
 
 /// ForControl

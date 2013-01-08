@@ -1645,7 +1645,7 @@ struct ExpressionInBrackets : ASTError {
 /// FieldDeclaratorsRest: VariableDeclaratorRest { , VariableDeclarator }
 struct FieldDeclaratorsRest : ASTError {
   spVariableDeclaratorRest varDeclRest;
-  std::vector<std::pair<unsigned int, spVariableDeclarator> > pairsCommaVarDecl;
+  std::vector<std::pair<unsigned int, spVariableDeclarator> > pairs;
 };
 
 /// Finally: finally Block
