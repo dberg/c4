@@ -5,4 +5,4 @@
     Check Primary option 6. The same expression is valid in a different context:
     class X { public <T> X() {} }
     class Y extends X { public Y() { <Integer> super(); } }
-- [X] Parse AnnotationElement : ElementValuePairs
+
