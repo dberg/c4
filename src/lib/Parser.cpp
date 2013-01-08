@@ -1566,8 +1566,14 @@ void Parser::parseForVarControl(spForVarControl &forVarCtrl) {
 void Parser::parseForVarControlRest(spForVarControlRest &forVarCtrlRest) {
   // (2) : Expression
   if (lexer->getCurToken() == TOK_OP_COLON) {
-    // TODO:
     forVarCtrlRest->opt = ForVarControlRest::OPT_COLON_EXPR;
+    forVarCtrlRest->posColon = lexer->getCursor() - 1;
+    lexer->getNextToken(); // consume ':'
+    forVarCtrlRest->expr = spExpression(new Expression);
+    parseExpression(forVarCtrlRest->expr);
+    if (forVarCtrlRest->expr->isEmpty()) {
+      forVarCtrlRest->addErr(-1);
+    }
     return;
   }
 
