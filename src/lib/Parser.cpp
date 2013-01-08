@@ -972,8 +972,22 @@ void Parser::parseCatchType(spCatchType &catchType) {
     lexer->getCurTokenIni(), lexer->getCurTokenStr()));
   lexer->getNextToken(); // consume Identifier
 
-  // TODO:
   // { '|' Identifier }
+  State state;
+  while (lexer->getCurToken() == TOK_OP_PIPE) {
+    saveState(state);
+    unsigned pos = lexer->getCursor() - 1;
+    lexer->getNextToken(); // consume '|'
+    if (lexer->getCurToken() != TOK_IDENTIFIER) {
+      restoreState(state);
+      return; // let upper levels deal with the error
+    }
+    spIdentifier id = spIdentifier(new Identifier(
+      lexer->getCurTokenIni(), lexer->getCurTokenStr()));
+    lexer->getNextToken(); // consume Identifier
+
+    catchType->pipeAndId.push_back(std::make_pair(pos, id));
+  }
 }
 
 void Parser::parseCharacterLiteral(spCharacterLiteral &charLit) {
