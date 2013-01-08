@@ -493,7 +493,7 @@ struct VariableDeclarators : ASTError {
 };
 
 /// VariableDeclaratorId: Identifier {[]}
-struct VariableDeclaratorId {
+struct VariableDeclaratorId : ASTError {
   spIdentifier identifier;
   ArrayDepth arrayDepth;
 };

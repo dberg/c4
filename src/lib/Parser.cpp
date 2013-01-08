@@ -1546,16 +1546,17 @@ void Parser::parseForVarControl(spForVarControl &forVarCtrl) {
   }
 
   // VariableDeclaratorId
-  // TODO: check for errors
   forVarCtrl->varDeclId = spVariableDeclaratorId(new VariableDeclaratorId);
   parseVariableDeclaratorId(forVarCtrl->varDeclId);
+  if (forVarCtrl->varDeclId->err) {
+    forVarCtrl->addErr(-1);
+  }
 
   // ForVarControlRest
   forVarCtrl->forVarCtrlRest = spForVarControlRest(new ForVarControlRest);
   parseForVarControlRest(forVarCtrl->forVarCtrlRest);
   if (forVarCtrl->forVarCtrlRest->err) {
     forVarCtrl->addErr(-1);
-
   }
 }
 
@@ -4413,12 +4414,15 @@ void Parser::parseFormalParameterDeclsRest(
 
 /// VariableDeclaratorId: Identifier {[]}
 void Parser::parseVariableDeclaratorId(spVariableDeclaratorId &varDeclId) {
-  if (lexer->getCurToken() == TOK_IDENTIFIER) {
-    varDeclId->identifier = spIdentifier(new Identifier(
-      lexer->getCurTokenIni(), lexer->getCurTokenStr()));
-    lexer->getNextToken(); // consume Identifier
-    parseArrayDepth(varDeclId->arrayDepth);
+  if (lexer->getCurToken() != TOK_IDENTIFIER) {
+    varDeclId->addErr(diag->addErr(ERR_EXP_IDENTIFIER, lexer->getCursor() - 1));
+    return;
   }
+
+  varDeclId->identifier = spIdentifier(new Identifier(
+    lexer->getCurTokenIni(), lexer->getCurTokenStr()));
+  lexer->getNextToken(); // consume Identifier
+  parseArrayDepth(varDeclId->arrayDepth);
 }
 
 ///  VariableDeclaratorRest: {'[' ']'} [ = VariableInitializer ]
