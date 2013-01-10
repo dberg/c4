@@ -4,7 +4,7 @@
 #include "Diagnosis.h"
 #include "File.h"
 #include "Parser.h"
-#include "Output.h"
+#include "EmacsOutput.h"
 using namespace djp;
 
 int main(int argc, const char **argv) {
@@ -22,7 +22,7 @@ int main(int argc, const char **argv) {
     return 1;
   }
 
-  spDiagnosis diag = spDiagnosis(new Diagnosis());
+  spDiagnosis diag = spDiagnosis(new Diagnosis);
 
   Parser parser(ci.filename, buffer, diag);
   parser.parse();
@@ -32,7 +32,7 @@ int main(int argc, const char **argv) {
     return 1;
   }
 
-  Output output(parser.compilationUnit, parser.comments, parser.st, diag);
+  EmacsOutput output(parser.compilationUnit, parser.comments, parser.st, diag);
   output.build();
   std::cout << output.output << "\n" << output.outST;
 

@@ -1,7 +1,7 @@
-#include "Output.h"
+#include "EmacsOutput.h"
 
 namespace djp {
-void Output::build() {
+void EmacsOutput::build() {
   output = "(";
   if (compilationUnit->pkgDecl) {
     setPackageDeclaration(compilationUnit->pkgDecl);
@@ -26,7 +26,7 @@ void Output::build() {
   output += ")";
 }
 
-const std::string Output::getSymbolTableType(int type) {
+const std::string EmacsOutput::getSymbolTableType(int type) {
   STTypes::iterator it = stTypes.find(type);
   if (it == stTypes.end()) {
     return "unknown";
@@ -35,7 +35,7 @@ const std::string Output::getSymbolTableType(int type) {
   return it->second;
 }
 
-void Output::setAnnotationElement(const spAnnotationElement elem) {
+void EmacsOutput::setAnnotationElement(const spAnnotationElement elem) {
   if (elem->opt == AnnotationElement::OPT_ELEMENT_VALUE_PAIRS) {
     for (unsigned i = 0; i < elem->pairs.size(); i++) {
       setElementValuePair(elem->pairs[i]);
@@ -50,7 +50,7 @@ void Output::setAnnotationElement(const spAnnotationElement elem) {
   }
 }
 
-void Output::setAnnotation(const spAnnotation &annotation) {
+void EmacsOutput::setAnnotation(const spAnnotation &annotation) {
   if (annotation->qualifiedId) {
     // '@'
     output += "(djp-node-annotation-tok-at "
@@ -63,7 +63,7 @@ void Output::setAnnotation(const spAnnotation &annotation) {
   }
 }
 
-void Output::setAnnotations(
+void EmacsOutput::setAnnotations(
   const std::vector<spAnnotation> &annotations) {
 
   for (std::size_t i = 0; i < annotations.size(); i++) {
@@ -71,7 +71,7 @@ void Output::setAnnotations(
   }
 }
 
-void Output::setArguments(const spArguments &args) {
+void EmacsOutput::setArguments(const spArguments &args) {
   if (args->posLParen) { setOp(args->posLParen); }
   if (args->posRParen) { setOp(args->posRParen); }
   if (args->expr) { setExpression(args->expr); }
@@ -82,7 +82,7 @@ void Output::setArguments(const spArguments &args) {
   }
 }
 
-void Output::setArrayCreatorRest(
+void EmacsOutput::setArrayCreatorRest(
   const spArrayCreatorRest &arrayCreatorRest) {
 
   if (arrayCreatorRest->opt == ArrayCreatorRest::OPT_ARRAY_INITIALIZER) {
@@ -121,7 +121,7 @@ void Output::setArrayCreatorRest(
   }
 }
 
-void Output::setArrayDepth(ArrayDepth &arrayDepth) {
+void EmacsOutput::setArrayDepth(ArrayDepth &arrayDepth) {
   for (unsigned int i = 0; i < arrayDepth.size(); i++) {
     unsigned posOpen = arrayDepth[i].first;
     unsigned posClose = arrayDepth[i].second;
@@ -130,7 +130,7 @@ void Output::setArrayDepth(ArrayDepth &arrayDepth) {
   }
 }
 
-void Output::setArrayInitializer(const spArrayInitializer arrayInit) {
+void EmacsOutput::setArrayInitializer(const spArrayInitializer arrayInit) {
   if (arrayInit->posLCBrace) {
     setOp(arrayInit->posLCBrace);
   }
@@ -153,7 +153,7 @@ void Output::setArrayInitializer(const spArrayInitializer arrayInit) {
   }
 }
 
-void Output::setBlock(const spBlock &block) {
+void EmacsOutput::setBlock(const spBlock &block) {
   if (block->posLCBracket) { setOp(block->posLCBracket); }
 
   for (unsigned int i = 0; i < block->blockStmts.size(); i++) {
@@ -163,7 +163,7 @@ void Output::setBlock(const spBlock &block) {
   if (block->posRCBracket) { setOp(block->posRCBracket); }
 }
 
-void Output::setBlockStatement(const spBlockStatement &blockStmt) {
+void EmacsOutput::setBlockStatement(const spBlockStatement &blockStmt) {
   if (blockStmt->opt == BlockStatement::OPT_LOCAL_VAR) {
     if (blockStmt->localVar) {
       setLocalVariableDeclarationStatement(blockStmt->localVar);
@@ -190,7 +190,7 @@ void Output::setBlockStatement(const spBlockStatement &blockStmt) {
   }
 }
 
-void Output::setBound(const spBound &bound) {
+void EmacsOutput::setBound(const spBound &bound) {
   if (bound->refType) {
     setReferenceType(bound->refType);
   }
@@ -201,14 +201,14 @@ void Output::setBound(const spBound &bound) {
   }
 }
 
-void Output::setCatches(const spCatches &catches) {
+void EmacsOutput::setCatches(const spCatches &catches) {
   if (catches->catchClause) { setCatchClause(catches->catchClause); }
   for (unsigned int i = 0; i < catches->catchClauses.size(); i++) {
     setCatchClause(catches->catchClauses[0]);
   }
 }
 
-void Output::setCatchClause(const spCatchClause &catchClause) {
+void EmacsOutput::setCatchClause(const spCatchClause &catchClause) {
   if (catchClause->tokCatch) { setKeyword(catchClause->tokCatch); }
   if (catchClause->posLParen) { setOp(catchClause->posLParen); }
   // TODO: {VariableModifier}
@@ -218,19 +218,19 @@ void Output::setCatchClause(const spCatchClause &catchClause) {
   if (catchClause->block) { setBlock(catchClause->block); }
 }
 
-void Output::setCatchType(const spCatchType &catchType) {
+void EmacsOutput::setCatchType(const spCatchType &catchType) {
   if (catchType->id) {
-    setIdentifier(catchType->id, Output::OPT_IDENTIFIER_REFERENCE_TYPE);
+    setIdentifier(catchType->id, EmacsOutput::OPT_IDENTIFIER_REFERENCE_TYPE);
   }
 
   for (unsigned i = 0; i < catchType->pipeAndId.size(); i++) {
     std::pair<unsigned, spIdentifier> pair = catchType->pipeAndId[i];
     setOp(pair.first);
-    setIdentifier(pair.second, Output::OPT_IDENTIFIER_REFERENCE_TYPE);
+    setIdentifier(pair.second, EmacsOutput::OPT_IDENTIFIER_REFERENCE_TYPE);
   }
 }
 
-void Output::setClassBody(const spClassBody &classBody) {
+void EmacsOutput::setClassBody(const spClassBody &classBody) {
   for (std::size_t i = 0; i < classBody->decls.size(); i++) {
     setClassBodyDeclaration(classBody->decls[i]);
   }
@@ -239,7 +239,7 @@ void Output::setClassBody(const spClassBody &classBody) {
 /// We have 2 options export:
 ///   (djp-member-decl-modifier-member-decl ...) -> {Modifier} MemberDecl
 ///   (djp-member-decl-modifier-static-block ...) -> [static] Block
-void Output::setClassBodyDeclaration(const spClassBodyDeclaration &decl) {
+void EmacsOutput::setClassBodyDeclaration(const spClassBodyDeclaration &decl) {
   if (decl->opt == ClassBodyDeclaration::OPT_MODIFIER_MEMBER_DECL) {
     output += "(djp-member-decl-modifier-member-decl ";
     if (decl->modifier) {
@@ -261,7 +261,7 @@ void Output::setClassBodyDeclaration(const spClassBodyDeclaration &decl) {
   }
 }
 
-void Output::setClassCreatorRest(const spClassCreatorRest &classCreatorRest) {
+void EmacsOutput::setClassCreatorRest(const spClassCreatorRest &classCreatorRest) {
   if (classCreatorRest->args) {
     setArguments(classCreatorRest->args);
   }
@@ -271,7 +271,7 @@ void Output::setClassCreatorRest(const spClassCreatorRest &classCreatorRest) {
   }
 }
 
-void Output::setClassOrInterfaceDeclaration(
+void EmacsOutput::setClassOrInterfaceDeclaration(
   const spClassOrInterfaceDeclaration &decl) {
 
   output += "(djp-class-or-interface-declaration ";
@@ -292,7 +292,7 @@ void Output::setClassOrInterfaceDeclaration(
   output += ")";
 }
 
-void Output::setComments() {
+void EmacsOutput::setComments() {
   if (comments.size() == 0) { return; }
 
   output += "(djp-comments ";
@@ -304,7 +304,7 @@ void Output::setComments() {
   output += ")";
 }
 
-void Output::setConstructorDeclaratorRest(
+void EmacsOutput::setConstructorDeclaratorRest(
   const spConstructorDeclaratorRest &constDeclRest) {
   output += "(djp-constructor-declarator-rest ";
 
@@ -319,9 +319,9 @@ void Output::setConstructorDeclaratorRest(
   output += ")";
 }
 
-void Output::setCreatedName(const spCreatedName &createdName) {
+void EmacsOutput::setCreatedName(const spCreatedName &createdName) {
   if (createdName->id) {
-    setIdentifier(createdName->id, Output::OPT_IDENTIFIER_REFERENCE_TYPE);
+    setIdentifier(createdName->id, EmacsOutput::OPT_IDENTIFIER_REFERENCE_TYPE);
   }
 
   if (createdName->typeArgsOrDiam) {
@@ -333,7 +333,7 @@ void Output::setCreatedName(const spCreatedName &createdName) {
   }
 }
 
-void Output::setCreator(const spCreator &creator) {
+void EmacsOutput::setCreator(const spCreator &creator) {
   if (creator->opt == Creator::OPT_NON_WILDCARD_TYPE_ARGUMENTS) {
     if (creator->opt1->nonWildcardTypeArguments) {
       setNonWildcardTypeArguments(creator->opt1->nonWildcardTypeArguments);
@@ -367,7 +367,7 @@ void Output::setCreator(const spCreator &creator) {
   }
 }
 
-void Output::setElementValue(const spElementValue &value) {
+void EmacsOutput::setElementValue(const spElementValue &value) {
   if (value->opt == ElementValue::OPT_ANNOTATION) {
     if (value->annotation) {
       setAnnotation(value->annotation);
@@ -389,7 +389,7 @@ void Output::setElementValue(const spElementValue &value) {
   }
 }
 
-void Output::setElementValues(const spElementValues &values) {
+void EmacsOutput::setElementValues(const spElementValues &values) {
   if (values->elemVal) {
     setElementValue(values->elemVal);
   }
@@ -400,7 +400,7 @@ void Output::setElementValues(const spElementValues &values) {
   }
 }
 
-void Output::setElementValueArrayInitializer(
+void EmacsOutput::setElementValueArrayInitializer(
   const spElementValueArrayInitializer &elemValArrayInit) {
 
   if (elemValArrayInit->posLCBrace) {
@@ -420,7 +420,7 @@ void Output::setElementValueArrayInitializer(
   }
 }
 
-void Output::setElementValuePair(const spElementValuePair &pair) {
+void EmacsOutput::setElementValuePair(const spElementValuePair &pair) {
   if (pair->id) {
     setIdentifier(pair->id);
   }
@@ -430,7 +430,7 @@ void Output::setElementValuePair(const spElementValuePair &pair) {
   }
 }
 
-void Output::setErrors(const std::vector<spError> &errors) {
+void EmacsOutput::setErrors(const std::vector<spError> &errors) {
   for (std::size_t i = 0; i < errors.size(); i++) {
     output += "(djp-error "
       + itos(errors[i]->ini + 1) + " "
@@ -440,7 +440,7 @@ void Output::setErrors(const std::vector<spError> &errors) {
   }
 }
 
-void Output::setExpression(const spExpression &expr) {
+void EmacsOutput::setExpression(const spExpression &expr) {
   if (expr->expr1) {
     setExpression1(expr->expr1);
   }
@@ -455,7 +455,7 @@ void Output::setExpression(const spExpression &expr) {
   }
 }
 
-void Output::setExpression1(const spExpression1 &expr1) {
+void EmacsOutput::setExpression1(const spExpression1 &expr1) {
   if (expr1->expr2) {
     setExpression2(expr1->expr2);
   }
@@ -466,7 +466,7 @@ void Output::setExpression1(const spExpression1 &expr1) {
   }
 }
 
-void Output::setExpression2(const spExpression2 &expr2) {
+void EmacsOutput::setExpression2(const spExpression2 &expr2) {
   if (expr2->expr3) {
     setExpression3(expr2->expr3);
   }
@@ -476,7 +476,7 @@ void Output::setExpression2(const spExpression2 &expr2) {
   }
 }
 
-void Output::setExpression2Rest(const spExpression2Rest &expr2Rest) {
+void EmacsOutput::setExpression2Rest(const spExpression2Rest &expr2Rest) {
   if (expr2Rest->opt == Expression2Rest::OPT_INFIXOP_EXPR3) {
     for (unsigned i = 0; i < expr2Rest->pairs.size(); i++) {
       spTokenExp op = expr2Rest->pairs[0].first;
@@ -498,7 +498,7 @@ void Output::setExpression2Rest(const spExpression2Rest &expr2Rest) {
   }
 }
 
-void Output::setExpression3(const spExpression3 &expr3) {
+void EmacsOutput::setExpression3(const spExpression3 &expr3) {
   if (expr3->opt == Expression3::OPT_PREFIXOP_EXPRESSION3) {
     if (expr3->prefixOp && expr3->prefixOp->pos) {
       setOp(expr3->prefixOp->pos,
@@ -567,7 +567,7 @@ void Output::setExpression3(const spExpression3 &expr3) {
   }
 }
 
-void Output::setFieldDeclsRest(const spFieldDeclaratorsRest &fieldDeclsRest) {
+void EmacsOutput::setFieldDeclsRest(const spFieldDeclaratorsRest &fieldDeclsRest) {
   if (fieldDeclsRest->varDeclRest) {
     setVariableDeclaratorRest(fieldDeclsRest->varDeclRest);
   }
@@ -576,12 +576,12 @@ void Output::setFieldDeclsRest(const spFieldDeclaratorsRest &fieldDeclsRest) {
   //std::vector<std::pair<unsigned int, spVariableDeclarator> > pairsCommaVarDecl;
 }
 
-void Output::setFinally(const spFinally &finally) {
+void EmacsOutput::setFinally(const spFinally &finally) {
   if (finally->tokFinally) { setKeyword(finally->tokFinally); }
   if (finally->block) { setBlock(finally->block); }
 }
 
-void Output::setForControl(const spForControl &forCtrl) {
+void EmacsOutput::setForControl(const spForControl &forCtrl) {
   if (forCtrl->opt == ForControl::OPT_FOR_VAR_CTRL) {
     if (forCtrl->varCtrl) {
       setForVarControl(forCtrl->varCtrl);
@@ -612,7 +612,7 @@ void Output::setForControl(const spForControl &forCtrl) {
   }
 }
 
-void Output::setForInit(const spForInit &forInit) {
+void EmacsOutput::setForInit(const spForInit &forInit) {
   if (forInit->stmtExpr) {
     setStatementExpression(forInit->stmtExpr);
   }
@@ -623,11 +623,11 @@ void Output::setForInit(const spForInit &forInit) {
   }
 }
 
-void Output::setForUpdate(const spForUpdate &forUpdate) {
+void EmacsOutput::setForUpdate(const spForUpdate &forUpdate) {
   setForInit(forUpdate);
 }
 
-void Output::setForVarControl(const spForVarControl &varCtrl) {
+void EmacsOutput::setForVarControl(const spForVarControl &varCtrl) {
   if (varCtrl->varMod) {
     setVariableModifier(varCtrl->varMod);
   }
@@ -645,7 +645,7 @@ void Output::setForVarControl(const spForVarControl &varCtrl) {
   }
 }
 
-void Output::setForVarControlRest(const spForVarControlRest &forVarCtrlRest) {
+void EmacsOutput::setForVarControlRest(const spForVarControlRest &forVarCtrlRest) {
   if (forVarCtrlRest->opt == ForVarControlRest::OPT_FOR_VAR_DECLS_REST) {
     if (forVarCtrlRest->forVarDeclsRest) {
       setForVariableDeclaratorsRest(forVarCtrlRest->forVarDeclsRest);
@@ -681,7 +681,7 @@ void Output::setForVarControlRest(const spForVarControlRest &forVarCtrlRest) {
   }
 }
 
-void Output::setForVariableDeclaratorsRest(
+void EmacsOutput::setForVariableDeclaratorsRest(
   const spForVariableDeclaratorsRest &forVarDeclsRest) {
 
   if (forVarDeclsRest->posEquals) {
@@ -698,7 +698,7 @@ void Output::setForVariableDeclaratorsRest(
   }
 }
 
-void Output::setFormalParameters(const spFormalParameters &formParams) {
+void EmacsOutput::setFormalParameters(const spFormalParameters &formParams) {
   if (formParams->posLParen) {
     setOp(formParams->posLParen);
   }
@@ -712,7 +712,7 @@ void Output::setFormalParameters(const spFormalParameters &formParams) {
   }
 }
 
-void Output::setFormalParameterDecls(
+void EmacsOutput::setFormalParameterDecls(
   const spFormalParameterDecls &formParamDecls) {
   if (formParamDecls->varModifier) {
     setVariableModifier(formParamDecls->varModifier);
@@ -727,7 +727,7 @@ void Output::setFormalParameterDecls(
   }
 }
 
-void Output::setFormalParameterDeclsRest(
+void EmacsOutput::setFormalParameterDeclsRest(
   const spFormalParameterDeclsRest &formParamDeclsRest) {
 
   if (formParamDeclsRest->opt ==
@@ -745,11 +745,11 @@ void Output::setFormalParameterDeclsRest(
   }
 }
 
-void Output::setIdentifier(const spIdentifier &identifier, IdentifierOpt opt) {
+void EmacsOutput::setIdentifier(const spIdentifier &identifier, IdentifierOpt opt) {
   int ini = identifier->pos + 1;
   int end = ini + identifier->value.length();
 
-  if (opt == Output::OPT_IDENTIFIER_REFERENCE_TYPE) {
+  if (opt == EmacsOutput::OPT_IDENTIFIER_REFERENCE_TYPE) {
     output += "(djp-node-reference-type-id "
       + itos(ini) + " " + itos(end) + ")";
     return;
@@ -758,7 +758,7 @@ void Output::setIdentifier(const spIdentifier &identifier, IdentifierOpt opt) {
   output += "(djp-node-identifier " + itos(ini) + " " + itos(end) + ")";
 }
 
-void Output::setIdentifierSuffix(const spIdentifierSuffix &idSuffix) {
+void EmacsOutput::setIdentifierSuffix(const spIdentifierSuffix &idSuffix) {
   if (idSuffix->opt == IdentifierSuffix::OPT_ARRAY_ARRAY_DEPTH_CLASS) {
     // TODO:
     return;
@@ -803,7 +803,7 @@ void Output::setIdentifierSuffix(const spIdentifierSuffix &idSuffix) {
   }
 }
 
-void Output::setImportDeclaration(const spImportDeclaration &import) {
+void EmacsOutput::setImportDeclaration(const spImportDeclaration &import) {
   output += "(djp-import-declaration ";
   setKeyword(import->posTokImport + 1,
     import->posTokImport + tokenUtil.getTokenLength(TOK_KEY_IMPORT) + 1);
@@ -824,7 +824,7 @@ void Output::setImportDeclaration(const spImportDeclaration &import) {
   output += ")";
 }
 
-void Output::setImportDeclarations(const spImportDeclarations &impDecls) {
+void EmacsOutput::setImportDeclarations(const spImportDeclarations &impDecls) {
   output += "(djp-import-declarations ";
   for (std::string::size_type i = 0; i < impDecls->imports.size(); i++) {
     setImportDeclaration(impDecls->imports[i]);
@@ -832,16 +832,16 @@ void Output::setImportDeclarations(const spImportDeclarations &impDecls) {
   output += ")";
 }
 
-void Output::setKeyword(const spTokenExp &token) {
+void EmacsOutput::setKeyword(const spTokenExp &token) {
   setKeyword(token->pos + 1, token->pos + 1
     + tokenUtil.getTokenLength(token->type));
 }
 
-void Output::setKeyword(int ini, int end) {
+void EmacsOutput::setKeyword(int ini, int end) {
   output += "(djp-node-keyword " + itos(ini) + " " + itos(end) + ")";
 }
 
-void Output::setLiteral(const spLiteral &literal) {
+void EmacsOutput::setLiteral(const spLiteral &literal) {
   if (literal->opt == Literal::OPT_INTEGER) {
     // TODO:
     return;
@@ -877,7 +877,7 @@ void Output::setLiteral(const spLiteral &literal) {
   }
 }
 
-void Output::setLocalVariableDeclarationStatement(
+void EmacsOutput::setLocalVariableDeclarationStatement(
   const spLocalVariableDeclarationStatement &localVar) {
 
   if (localVar->varModifier) {
@@ -898,7 +898,7 @@ void Output::setLocalVariableDeclarationStatement(
 }
 
 
-void Output::setMemberDecl(const spMemberDecl &memberDecl) {
+void EmacsOutput::setMemberDecl(const spMemberDecl &memberDecl) {
   if (memberDecl->opt == MemberDecl::OPT_METHOD_OR_FIELD_DECL) {
     if (memberDecl->methodOrFieldDecl) {
       setMethodOrFieldDecl(memberDecl->methodOrFieldDecl);
@@ -951,7 +951,7 @@ void Output::setMemberDecl(const spMemberDecl &memberDecl) {
   }
 }
 
-void Output::setMethodDeclaratorRest(
+void EmacsOutput::setMethodDeclaratorRest(
   const spMethodDeclaratorRest &methodDeclRest) {
 
   if (methodDeclRest->formParams) {
@@ -976,7 +976,7 @@ void Output::setMethodDeclaratorRest(
   }
 }
 
-void Output::setMethodOrFieldDecl(
+void EmacsOutput::setMethodOrFieldDecl(
   const spMethodOrFieldDecl &methodOrFieldDecl) {
 
   if (methodOrFieldDecl->type) {
@@ -992,7 +992,7 @@ void Output::setMethodOrFieldDecl(
   }
 }
 
-void Output::setMethodOrFieldRest(
+void EmacsOutput::setMethodOrFieldRest(
   const spMethodOrFieldRest &methodOrFieldRest) {
 
   if (methodOrFieldRest->opt == MethodOrFieldRest::OPT_FIELD) {
@@ -1014,7 +1014,7 @@ void Output::setMethodOrFieldRest(
   }
 }
 
-void Output::setModifier(const spModifier &modifier) {
+void EmacsOutput::setModifier(const spModifier &modifier) {
   if (modifier->annotations.size()) {
     setAnnotations(modifier->annotations);
   }
@@ -1024,7 +1024,7 @@ void Output::setModifier(const spModifier &modifier) {
   }
 }
 
-void Output::setNonWildcardTypeArguments(
+void EmacsOutput::setNonWildcardTypeArguments(
   const spNonWildcardTypeArguments &nonWildcardTypeArguments) {
 
   if (nonWildcardTypeArguments->posLt) {
@@ -1040,7 +1040,7 @@ void Output::setNonWildcardTypeArguments(
   }
 }
 
-void Output::setNormalClassDeclaration(
+void EmacsOutput::setNormalClassDeclaration(
   const spNormalClassDeclaration &nClassDecl) {
 
   output += "(djp-normal-class-declaration ";
@@ -1051,7 +1051,7 @@ void Output::setNormalClassDeclaration(
 
   if (nClassDecl->identifier) {
     setIdentifier(nClassDecl->identifier,
-      Output::OPT_IDENTIFIER_REFERENCE_TYPE);
+      EmacsOutput::OPT_IDENTIFIER_REFERENCE_TYPE);
   }
 
   if (nClassDecl->classBody) {
@@ -1079,13 +1079,13 @@ void Output::setNormalClassDeclaration(
   output += ")";
 }
 
-void Output::setOp(unsigned int ini, int len) {
+void EmacsOutput::setOp(unsigned int ini, int len) {
   ini++;
   unsigned int end = ini + len;
   output += "(djp-node-op " + itos(ini) + " " + itos(end) + ")";
 }
 
-void Output::setPackageDeclaration(const spPackageDeclaration &pkgDecl) {
+void EmacsOutput::setPackageDeclaration(const spPackageDeclaration &pkgDecl) {
   output += "(djp-package-declaration ";
   setAnnotations(pkgDecl->annotations);
 
@@ -1101,13 +1101,13 @@ void Output::setPackageDeclaration(const spPackageDeclaration &pkgDecl) {
   output += ")";
 }
 
-void Output::setParExpression(const spParExpression &parExpr) {
+void EmacsOutput::setParExpression(const spParExpression &parExpr) {
   if (parExpr->posLParen) { setOp(parExpr->posLParen); }
   if (parExpr->expr) { setExpression(parExpr->expr); }
   if (parExpr->posRParen) { setOp(parExpr->posRParen); }
 }
 
-void Output::setPrimary(const spPrimary &primary) {
+void EmacsOutput::setPrimary(const spPrimary &primary) {
   if (primary->opt == Primary::OPT_LITERAL) {
     if (primary->literal) {
       setLiteral(primary->literal);
@@ -1167,7 +1167,7 @@ void Output::setPrimary(const spPrimary &primary) {
   }
 }
 
-void Output::setPrimaryIdentifier(const spPrimaryIdentifier &primaryId) {
+void EmacsOutput::setPrimaryIdentifier(const spPrimaryIdentifier &primaryId) {
   for (unsigned int i = 0; i < primaryId->ids.size(); i++) {
     setIdentifier(primaryId->ids[i]);
   }
@@ -1177,7 +1177,7 @@ void Output::setPrimaryIdentifier(const spPrimaryIdentifier &primaryId) {
   }
 }
 
-void Output::setQualifiedId(const spQualifiedIdentifier &qualifiedId) {
+void EmacsOutput::setQualifiedId(const spQualifiedIdentifier &qualifiedId) {
   if (qualifiedId->id) {
     setIdentifier(qualifiedId->id);
   }
@@ -1188,9 +1188,9 @@ void Output::setQualifiedId(const spQualifiedIdentifier &qualifiedId) {
   }
 }
 
-void Output::setReferenceType(const spReferenceType &refType) {
+void EmacsOutput::setReferenceType(const spReferenceType &refType) {
   if (refType->id) {
-    setIdentifier(refType->id, Output::OPT_IDENTIFIER_REFERENCE_TYPE);
+    setIdentifier(refType->id, EmacsOutput::OPT_IDENTIFIER_REFERENCE_TYPE);
   }
 
   if (refType->typeArgs) {
@@ -1201,7 +1201,7 @@ void Output::setReferenceType(const spReferenceType &refType) {
     setOp(refType->triplets[i]->posPeriod);
 
     setIdentifier(refType->triplets[i]->id,
-      Output::OPT_IDENTIFIER_REFERENCE_TYPE);
+      EmacsOutput::OPT_IDENTIFIER_REFERENCE_TYPE);
 
     if (refType->triplets[i]->typeArgs) {
       setTypeArguments(refType->triplets[i]->typeArgs);
@@ -1209,7 +1209,7 @@ void Output::setReferenceType(const spReferenceType &refType) {
   }
 }
 
-void Output::setSelector(const spSelector &selector) {
+void EmacsOutput::setSelector(const spSelector &selector) {
   if (selector->opt == Selector::OPT_IDENTIFIER_ARGUMENTS) {
     if (selector->posPeriod) { setOp(selector->posPeriod); }
     if (selector->id) { setIdentifier(selector->id); }
@@ -1263,7 +1263,7 @@ void Output::setSelector(const spSelector &selector) {
   }
 }
 
-void Output::setStatement(const spStatement &stmt) {
+void EmacsOutput::setStatement(const spStatement &stmt) {
   if (stmt->opt == Statement::OPT_BLOCK) {
     if (stmt->block) {
       setBlock(stmt->block);
@@ -1431,20 +1431,20 @@ void Output::setStatement(const spStatement &stmt) {
   }
 }
 
-void Output::setStatementExpression(const spStatementExpression &stmtExpr) {
+void EmacsOutput::setStatementExpression(const spStatementExpression &stmtExpr) {
   if (stmtExpr->expr) {
     setExpression(stmtExpr->expr);
   }
 }
 
-void Output::setStringLiteral(const spStringLiteral &strLiteral) {
+void EmacsOutput::setStringLiteral(const spStringLiteral &strLiteral) {
   unsigned ini = strLiteral->pos + 1;
   unsigned end = ini + strLiteral->val.length();
   output += "(djp-node-string-literal "
     + itos(ini) + " " + itos(end) + ")";
 }
 
-void Output::setSymbolTable() {
+void EmacsOutput::setSymbolTable() {
   outST = "[";
   for (unsigned i = 0; i < st.symbols.size(); i++) {
     outST += "'("
@@ -1461,7 +1461,7 @@ void Output::setSymbolTable() {
   outST += "]";
 }
 
-void Output::setType(const spType &type) {
+void EmacsOutput::setType(const spType &type) {
   if (type->opt == Type::OPT_BASIC_TYPE) {
     if (type->basicType->token) {
       setKeyword(type->basicType->token);
@@ -1476,7 +1476,7 @@ void Output::setType(const spType &type) {
   }
 }
 
-void Output::setTypeArgument(const spTypeArgument &typeArg) {
+void EmacsOutput::setTypeArgument(const spTypeArgument &typeArg) {
   if (typeArg->opt == TypeArgument::OPT_REFERENCE_TYPE) {
     if (typeArg->refType) { setReferenceType(typeArg->refType); }
   }
@@ -1496,7 +1496,7 @@ void Output::setTypeArgument(const spTypeArgument &typeArg) {
   }
 }
 
-void Output::setTypeArguments(const spTypeArguments &typeArgs) {
+void EmacsOutput::setTypeArguments(const spTypeArguments &typeArgs) {
   if (typeArgs->posLt) { setOp(typeArgs->posLt, 1); }
   if (typeArgs->posGt) { setOp(typeArgs->posGt, 1); }
   if (typeArgs->typeArg) { setTypeArgument(typeArgs->typeArg); }
@@ -1505,7 +1505,7 @@ void Output::setTypeArguments(const spTypeArguments &typeArgs) {
   }
 }
 
-void Output::setTypeDeclarations(
+void EmacsOutput::setTypeDeclarations(
   const std::vector<spTypeDeclaration> &typeDecls) {
 
   for (std::size_t i = 0; i < typeDecls.size(); i++) {
@@ -1515,7 +1515,7 @@ void Output::setTypeDeclarations(
   }
 }
 
-void Output::setTypeList(const spTypeList &typeList) {
+void EmacsOutput::setTypeList(const spTypeList &typeList) {
   if (typeList->refType) {
     setReferenceType(typeList->refType);
   }
@@ -1525,7 +1525,7 @@ void Output::setTypeList(const spTypeList &typeList) {
   }
 }
 
-void Output::setTypeParameter(const spTypeParameter &typeParam) {
+void EmacsOutput::setTypeParameter(const spTypeParameter &typeParam) {
   if (typeParam->id) {
     setIdentifier(typeParam->id);
   }
@@ -1539,7 +1539,7 @@ void Output::setTypeParameter(const spTypeParameter &typeParam) {
   }
 }
 
-void Output::setTypeParameters(const spTypeParameters &typeParams) {
+void EmacsOutput::setTypeParameters(const spTypeParameters &typeParams) {
   if (typeParams->posLt) {
     setOp(typeParams->posLt);
   }
@@ -1558,7 +1558,7 @@ void Output::setTypeParameters(const spTypeParameters &typeParams) {
   }
 }
 
-void Output::setTypeArgumentsOrDiamond(
+void EmacsOutput::setTypeArgumentsOrDiamond(
   const spTypeArgumentsOrDiamond &typeArgsOrDiam) {
 
   if (typeArgsOrDiam->opt == TypeArgumentsOrDiamond::OPT_DIAMOND) {
@@ -1580,7 +1580,7 @@ void Output::setTypeArgumentsOrDiamond(
   }
 }
 
-void Output::setVariableDeclarator(const spVariableDeclarator &varDecl) {
+void EmacsOutput::setVariableDeclarator(const spVariableDeclarator &varDecl) {
   if (varDecl->id) {
     setIdentifier(varDecl->id);
   }
@@ -1590,14 +1590,14 @@ void Output::setVariableDeclarator(const spVariableDeclarator &varDecl) {
   }
 }
 
-void Output::setVariableDeclaratorId(
+void EmacsOutput::setVariableDeclaratorId(
   const spVariableDeclaratorId &varDeclId) {
   if (varDeclId->identifier) {
     setIdentifier(varDeclId->identifier);
   }
 }
 
-void Output::setVariableDeclaratorRest(
+void EmacsOutput::setVariableDeclaratorRest(
   const spVariableDeclaratorRest &varDeclRest) {
 
   setArrayDepth(varDeclRest->arrayDepth);
@@ -1611,7 +1611,7 @@ void Output::setVariableDeclaratorRest(
   }
 }
 
-void Output::setVariableDeclarators(const spVariableDeclarators &varDecls) {
+void EmacsOutput::setVariableDeclarators(const spVariableDeclarators &varDecls) {
   if (varDecls->varDecl) {
     setVariableDeclarator(varDecls->varDecl);
   }
@@ -1624,7 +1624,7 @@ void Output::setVariableDeclarators(const spVariableDeclarators &varDecls) {
   }
 }
 
-void Output::setVariableInitializer(const spVariableInitializer &varInit) {
+void EmacsOutput::setVariableInitializer(const spVariableInitializer &varInit) {
   if (varInit->opt == VariableInitializer::OPT_ARRAY_INITIALIZER) {
     if (varInit->arrayInit) {
       setArrayInitializer(varInit->arrayInit);
@@ -1640,7 +1640,7 @@ void Output::setVariableInitializer(const spVariableInitializer &varInit) {
   }
 }
 
-void Output::setVariableModifier(const spVariableModifier &varModifier) {
+void EmacsOutput::setVariableModifier(const spVariableModifier &varModifier) {
   if (varModifier->tokFinal) {
     setKeyword(varModifier->tokFinal);
   }
@@ -1648,7 +1648,7 @@ void Output::setVariableModifier(const spVariableModifier &varModifier) {
   setAnnotations(varModifier->annotations);
 }
 
-void Output::setVoidMethodDeclaratorRest(
+void EmacsOutput::setVoidMethodDeclaratorRest(
   const spVoidMethodDeclaratorRest &voidMethDeclRest) {
 
   if (voidMethDeclRest->formParams) {
@@ -1669,7 +1669,7 @@ void Output::setVoidMethodDeclaratorRest(
 }
 
 // Helper methods
-const std::string Output::itos(int i) {
+const std::string EmacsOutput::itos(int i) {
   std::stringstream s;
   s << i;
   return s.str();

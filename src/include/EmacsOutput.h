@@ -14,7 +14,7 @@ namespace djp {
 
 /// Emacs output for syntax highlighing.
 /// The first position in the buffer is 1.
-class Output {
+class EmacsOutput {
   spCompilationUnit compilationUnit;
   std::vector<spComment> comments;
   ST st;
@@ -78,7 +78,7 @@ class Output {
   void setFormalParameterDeclsRest(
     const spFormalParameterDeclsRest &formParamDeclsRest);
   void setIdentifier(const spIdentifier &identifier,
-    IdentifierOpt opt = Output::OPT_UNDEFINED);
+    IdentifierOpt opt = EmacsOutput::OPT_UNDEFINED);
   void setIdentifierSuffix(const spIdentifierSuffix &idSuffix);
   void setImportDeclaration(const spImportDeclaration &import);
   void setImportDeclarations(const spImportDeclarations &impDecls);
@@ -131,7 +131,7 @@ public:
   std::string output; // syntax highlight
   std::string outST; // symbol table
 
-  Output(const spCompilationUnit &_compilationUnit,
+  EmacsOutput(const spCompilationUnit &_compilationUnit,
     std::vector<spComment> &_comments, const ST &_st, spDiagnosis &_diag)
     : compilationUnit(_compilationUnit), comments(_comments), st(_st),
       diag(_diag) {

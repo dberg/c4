@@ -1,6 +1,6 @@
 #include <iostream>
 #include "Diagnosis.h"
-#include "Output.h"
+#include "EmacsOutput.h"
 #include "Parser.h"
 #include "SymbolTable.h"
 #include "gtest/gtest.h"

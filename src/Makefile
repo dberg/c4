@@ -63,7 +63,7 @@ $(bin)/djp: $(obj)/CmdInput.o \
             $(obj)/Lexer.o \
             $(obj)/LiteralSupport.o \
             $(obj)/Parser.o \
-            $(obj)/Output.o \
+            $(obj)/EmacsOutput.o \
             $(obj)/SourceCodeStream.o \
             $(obj)/SymbolTable.o \
             $(obj)/djp.o
@@ -73,7 +73,7 @@ $(bin)/djp: $(obj)/CmdInput.o \
                $(obj)/Lexer.o \
                $(obj)/LiteralSupport.o \
                $(obj)/Parser.o \
-               $(obj)/Output.o \
+               $(obj)/EmacsOutput.o \
                $(obj)/SourceCodeStream.o \
                $(obj)/SymbolTable.o \
                $(CFLAGS) $(INC) $(obj)/djp.o -o $@
@@ -110,11 +110,11 @@ $(obj)/Parser.o: $(libdir)/Parser.cpp \
                  $(incdir)/Token.h
 	$(CXX) $(CFLAGS) $(INC) -c $< -o $@
 
-$(obj)/Output.o: $(libdir)/Output.cpp \
-                 $(incdir)/Output.h \
-                 $(incdir)/AST.h \
-                 $(incdir)/ErrorCodes.h \
-                 $(incdir)/Token.h
+$(obj)/EmacsOutput.o: $(libdir)/EmacsOutput.cpp \
+                      $(incdir)/EmacsOutput.h \
+                      $(incdir)/AST.h \
+                      $(incdir)/ErrorCodes.h \
+                      $(incdir)/Token.h
 	$(CXX) $(CFLAGS) $(INC) -c $< -o $@
 
 $(obj)/SourceCodeStream.o: $(libdir)/SourceCodeStream.cpp \
@@ -135,7 +135,7 @@ $(bin)/tests: $(test_libdir)/ParserTest.cpp \
               $(obj)/Lexer.o \
               $(obj)/LiteralSupport.o \
               $(obj)/Parser.o \
-              $(obj)/Output.o \
+              $(obj)/EmacsOutput.o \
               $(obj)/Diagnosis.o \
               $(obj)/SourceCodeStream.o \
               $(obj)/SymbolTable.o \
@@ -144,7 +144,7 @@ $(bin)/tests: $(test_libdir)/ParserTest.cpp \
 	$(CXX) -g3 $(INC) -I$(gtest_inc) $(obj)/Lexer.o \
                                      $(obj)/LiteralSupport.o \
                                      $(obj)/Parser.o \
-                                     $(obj)/Output.o \
+                                     $(obj)/EmacsOutput.o \
                                      $(obj)/Diagnosis.o \
                                      $(obj)/SourceCodeStream.o \
                                      $(obj)/SymbolTable.o \
