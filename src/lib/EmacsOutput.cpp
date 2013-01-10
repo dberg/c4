@@ -2,7 +2,12 @@
 
 namespace djp {
 void EmacsOutput::build() {
-  output = "(";
+  buildSH();
+  buildST();
+}
+
+void EmacsOutput::buildSH() {
+  outSH = "(";
   if (compilationUnit->pkgDecl) {
     setPackageDeclaration(compilationUnit->pkgDecl);
   }
@@ -17,13 +22,28 @@ void EmacsOutput::build() {
 
   setComments();
 
-  setSymbolTable();
-
   if (diag->errors.size()) {
     setErrors(diag->errors);
   }
 
-  output += ")";
+  outSH += ")";
+}
+
+void EmacsOutput::buildST() {
+  outST = "[";
+  for (unsigned i = 0; i < st.symbols.size(); i++) {
+    outST += "'("
+      + getSymbolTableType(st.symbols[i]->type) + " "
+      + itos(st.symbols[i]->scope) + " "
+      + itos(st.symbols[i]->pos) + " "
+      + itos(st.symbols[i]->end) + " "
+      + itos(st.symbols[i]->line);
+    if (st.symbols[i]->metadata.size()) {
+      outST += " " + st.symbols[i]->metadata;
+    }
+    outST += ")";
+  }
+  outST += "]";
 }
 
 const std::string EmacsOutput::getSymbolTableType(int type) {
@@ -53,7 +73,7 @@ void EmacsOutput::setAnnotationElement(const spAnnotationElement elem) {
 void EmacsOutput::setAnnotation(const spAnnotation &annotation) {
   if (annotation->qualifiedId) {
     // '@'
-    output += "(djp-node-annotation-tok-at "
+    outSH += "(djp-node-annotation-tok-at "
       + itos(annotation->posTokAt + 1) + ")";
     setQualifiedId(annotation->qualifiedId);
   }
@@ -241,7 +261,7 @@ void EmacsOutput::setClassBody(const spClassBody &classBody) {
 ///   (djp-member-decl-modifier-static-block ...) -> [static] Block
 void EmacsOutput::setClassBodyDeclaration(const spClassBodyDeclaration &decl) {
   if (decl->opt == ClassBodyDeclaration::OPT_MODIFIER_MEMBER_DECL) {
-    output += "(djp-member-decl-modifier-member-decl ";
+    outSH += "(djp-member-decl-modifier-member-decl ";
     if (decl->modifier) {
       setModifier(decl->modifier);
     }
@@ -250,13 +270,13 @@ void EmacsOutput::setClassBodyDeclaration(const spClassBodyDeclaration &decl) {
       setMemberDecl(decl->memberDecl);
     }
 
-    output += ")";
+    outSH += ")";
     return;
   }
 
   // TODO:
   if (decl->opt == ClassBodyDeclaration::OPT_STATIC_BLOCK) {
-    //output += "(djp-member-decl-modifier-static-block ";
+    //outSH += "(djp-member-decl-modifier-static-block ";
     return;
   }
 }
@@ -274,7 +294,7 @@ void EmacsOutput::setClassCreatorRest(const spClassCreatorRest &classCreatorRest
 void EmacsOutput::setClassOrInterfaceDeclaration(
   const spClassOrInterfaceDeclaration &decl) {
 
-  output += "(djp-class-or-interface-declaration ";
+  outSH += "(djp-class-or-interface-declaration ";
 
   if (decl->modifier) {
     setModifier(decl->modifier);
@@ -289,24 +309,24 @@ void EmacsOutput::setClassOrInterfaceDeclaration(
     }
   }
 
-  output += ")";
+  outSH += ")";
 }
 
 void EmacsOutput::setComments() {
   if (comments.size() == 0) { return; }
 
-  output += "(djp-comments ";
+  outSH += "(djp-comments ";
   for (unsigned int i = 0; i < comments.size(); i++) {
-    output += "(djp-comment " + itos(comments[i]->posIni + 1)
+    outSH += "(djp-comment " + itos(comments[i]->posIni + 1)
       + " " + itos(comments[i]->posEnd + 2) + ")";
   }
 
-  output += ")";
+  outSH += ")";
 }
 
 void EmacsOutput::setConstructorDeclaratorRest(
   const spConstructorDeclaratorRest &constDeclRest) {
-  output += "(djp-constructor-declarator-rest ";
+  outSH += "(djp-constructor-declarator-rest ";
 
   if (constDeclRest->formParams && constDeclRest->formParams->formParamDecls) {
     setFormalParameterDecls(constDeclRest->formParams->formParamDecls);
@@ -316,7 +336,7 @@ void EmacsOutput::setConstructorDeclaratorRest(
     setBlock(constDeclRest->block);
   }
 
-  output += ")";
+  outSH += ")";
 }
 
 void EmacsOutput::setCreatedName(const spCreatedName &createdName) {
@@ -432,7 +452,7 @@ void EmacsOutput::setElementValuePair(const spElementValuePair &pair) {
 
 void EmacsOutput::setErrors(const std::vector<spError> &errors) {
   for (std::size_t i = 0; i < errors.size(); i++) {
-    output += "(djp-error "
+    outSH += "(djp-error "
       + itos(errors[i]->ini + 1) + " "
       + itos(errors[i]->end + 1) + " \""
       + errUtil.getMessage(errors[i]->type) + "\")";
@@ -750,12 +770,12 @@ void EmacsOutput::setIdentifier(const spIdentifier &identifier, IdentifierOpt op
   int end = ini + identifier->value.length();
 
   if (opt == EmacsOutput::OPT_IDENTIFIER_REFERENCE_TYPE) {
-    output += "(djp-node-reference-type-id "
+    outSH += "(djp-node-reference-type-id "
       + itos(ini) + " " + itos(end) + ")";
     return;
   }
 
-  output += "(djp-node-identifier " + itos(ini) + " " + itos(end) + ")";
+  outSH += "(djp-node-identifier " + itos(ini) + " " + itos(end) + ")";
 }
 
 void EmacsOutput::setIdentifierSuffix(const spIdentifierSuffix &idSuffix) {
@@ -804,7 +824,7 @@ void EmacsOutput::setIdentifierSuffix(const spIdentifierSuffix &idSuffix) {
 }
 
 void EmacsOutput::setImportDeclaration(const spImportDeclaration &import) {
-  output += "(djp-import-declaration ";
+  outSH += "(djp-import-declaration ";
   setKeyword(import->posTokImport + 1,
     import->posTokImport + tokenUtil.getTokenLength(TOK_KEY_IMPORT) + 1);
 
@@ -821,15 +841,15 @@ void EmacsOutput::setImportDeclaration(const spImportDeclaration &import) {
     setOp(import->iniOnDemand, 1 + import->endOnDemand - import->iniOnDemand);
   }
 
-  output += ")";
+  outSH += ")";
 }
 
 void EmacsOutput::setImportDeclarations(const spImportDeclarations &impDecls) {
-  output += "(djp-import-declarations ";
+  outSH += "(djp-import-declarations ";
   for (std::string::size_type i = 0; i < impDecls->imports.size(); i++) {
     setImportDeclaration(impDecls->imports[i]);
   }
-  output += ")";
+  outSH += ")";
 }
 
 void EmacsOutput::setKeyword(const spTokenExp &token) {
@@ -838,7 +858,7 @@ void EmacsOutput::setKeyword(const spTokenExp &token) {
 }
 
 void EmacsOutput::setKeyword(int ini, int end) {
-  output += "(djp-node-keyword " + itos(ini) + " " + itos(end) + ")";
+  outSH += "(djp-node-keyword " + itos(ini) + " " + itos(end) + ")";
 }
 
 void EmacsOutput::setLiteral(const spLiteral &literal) {
@@ -1043,7 +1063,7 @@ void EmacsOutput::setNonWildcardTypeArguments(
 void EmacsOutput::setNormalClassDeclaration(
   const spNormalClassDeclaration &nClassDecl) {
 
-  output += "(djp-normal-class-declaration ";
+  outSH += "(djp-normal-class-declaration ";
 
   if (nClassDecl->classTok) {
     setKeyword(nClassDecl->classTok);
@@ -1076,17 +1096,17 @@ void EmacsOutput::setNormalClassDeclaration(
     }
   }
 
-  output += ")";
+  outSH += ")";
 }
 
 void EmacsOutput::setOp(unsigned int ini, int len) {
   ini++;
   unsigned int end = ini + len;
-  output += "(djp-node-op " + itos(ini) + " " + itos(end) + ")";
+  outSH += "(djp-node-op " + itos(ini) + " " + itos(end) + ")";
 }
 
 void EmacsOutput::setPackageDeclaration(const spPackageDeclaration &pkgDecl) {
-  output += "(djp-package-declaration ";
+  outSH += "(djp-package-declaration ";
   setAnnotations(pkgDecl->annotations);
 
   // package keyword
@@ -1098,7 +1118,7 @@ void EmacsOutput::setPackageDeclaration(const spPackageDeclaration &pkgDecl) {
     setQualifiedId(pkgDecl->qualifiedId);
   }
 
-  output += ")";
+  outSH += ")";
 }
 
 void EmacsOutput::setParExpression(const spParExpression &parExpr) {
@@ -1440,25 +1460,8 @@ void EmacsOutput::setStatementExpression(const spStatementExpression &stmtExpr) 
 void EmacsOutput::setStringLiteral(const spStringLiteral &strLiteral) {
   unsigned ini = strLiteral->pos + 1;
   unsigned end = ini + strLiteral->val.length();
-  output += "(djp-node-string-literal "
+  outSH += "(djp-node-string-literal "
     + itos(ini) + " " + itos(end) + ")";
-}
-
-void EmacsOutput::setSymbolTable() {
-  outST = "[";
-  for (unsigned i = 0; i < st.symbols.size(); i++) {
-    outST += "'("
-      + getSymbolTableType(st.symbols[i]->type) + " "
-      + itos(st.symbols[i]->scope) + " "
-      + itos(st.symbols[i]->pos) + " "
-      + itos(st.symbols[i]->end) + " "
-      + itos(st.symbols[i]->line);
-    if (st.symbols[i]->metadata.size()) {
-      outST += " " + st.symbols[i]->metadata;
-    }
-    outST += ")";
-  }
-  outST += "]";
 }
 
 void EmacsOutput::setType(const spType &type) {

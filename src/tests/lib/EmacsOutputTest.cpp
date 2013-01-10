@@ -23,7 +23,7 @@ TEST(EmacsOutput, PackageDeclaration) {
     "(djp-node-identifier 22 25)"
     "(djp-node-op 25 26)"
     "(djp-node-identifier 26 30)))";
-  ASSERT_EQ(expected, output.output);
+  ASSERT_EQ(expected, output.outSH);
 }
 
 TEST(EmacsOutput, ImportDeclaration) {
@@ -67,7 +67,7 @@ TEST(EmacsOutput, ImportDeclaration) {
     "(djp-node-op 93 94)"
     "(djp-node-identifier 94 99)"
     "(djp-node-op 99 101))))";
-  ASSERT_EQ(expected, output.output);
+  ASSERT_EQ(expected, output.outSH);
 }
 
 TEST(EmacsOutput, NormalClassDeclaration) {
@@ -87,7 +87,7 @@ TEST(EmacsOutput, NormalClassDeclaration) {
     "(djp-node-reference-type-id 14 18)"
     "(djp-node-keyword 19 26)"
     "(djp-node-reference-type-id 27 31))))";
-  ASSERT_EQ(expected, output.output);
+  ASSERT_EQ(expected, output.outSH);
 }
 
 TEST(EmacsOutput, ClassConstructor) {
@@ -108,7 +108,7 @@ TEST(EmacsOutput, ClassConstructor) {
     "(djp-constructor-declarator-rest "
     "(djp-node-op 19 20)"
     "(djp-node-op 20 21))))))";
-  ASSERT_EQ(expected, output.output);
+  ASSERT_EQ(expected, output.outSH);
 }
 
 TEST(EmacsOutput, ClassConstructorParameters) {
@@ -133,7 +133,7 @@ TEST(EmacsOutput, ClassConstructorParameters) {
     "(djp-node-identifier 31 32)"
     "(djp-node-op 34 35)"
     "(djp-node-op 35 36))))))";
-  ASSERT_EQ(expected, output.output);
+  ASSERT_EQ(expected, output.outSH);
 }
 
 TEST(EmacsOutput, Expression2Rest) {
@@ -167,6 +167,6 @@ TEST(EmacsOutput, Expression2Rest) {
     "(djp-node-op 47 48)" // }
     "(djp-node-op 48 49)))))"; // }
 
-  ASSERT_EQ(expected, output.output);
+  ASSERT_EQ(expected, output.outSH);
 }
 

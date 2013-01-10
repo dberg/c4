@@ -34,7 +34,7 @@ int main(int argc, const char **argv) {
 
   EmacsOutput output(parser.compilationUnit, parser.comments, parser.st, diag);
   output.build();
-  std::cout << output.output << "\n" << output.outST;
+  std::cout << output.outSH << "\n" << output.outST;
 
   return 0;
 }

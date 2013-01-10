@@ -29,6 +29,9 @@ class EmacsOutput {
     OPT_IDENTIFIER_REFERENCE_TYPE,
   };
 
+  void buildSH();
+  void buildST();
+
   const std::string getSymbolTableType(int type);
   void setAnnotationElement(const spAnnotationElement elem);
   void setAnnotation(const spAnnotation &annotation);
@@ -106,7 +109,6 @@ class EmacsOutput {
   void setStatement(const spStatement &stmt);
   void setStatementExpression(const spStatementExpression &stmtExpr);
   void setStringLiteral(const spStringLiteral &strLiteral);
-  void setSymbolTable();
   void setType(const spType &type);
   void setTypeArgument(const spTypeArgument &typeArg);
   void setTypeArguments(const spTypeArguments &typeArgs);
@@ -128,7 +130,7 @@ class EmacsOutput {
   const std::string itos(int i);
 
 public:
-  std::string output; // syntax highlight
+  std::string outSH; // syntax highlighting
   std::string outST; // symbol table
 
   EmacsOutput(const spCompilationUnit &_compilationUnit,
