@@ -1565,8 +1565,6 @@ TEST(Parser, Statement) {
   ASSERT_EQ(TOK_KEY_CATCH, stmt->catches->catchClause->tokCatch->type);
   ASSERT_EQ(34, stmt->catches->catchClause->posLParen);
   ASSERT_EQ(46, stmt->catches->catchClause->posRParen);
-  ASSERT_EQ(35, stmt->catches->catchClause->catchType->id->pos);
-  ASSERT_EQ("Exception", stmt->catches->catchClause->catchType->id->value);
   ASSERT_EQ(45, stmt->catches->catchClause->id->pos);
   ASSERT_EQ("e", stmt->catches->catchClause->id->value);
 }

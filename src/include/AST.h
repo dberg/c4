@@ -1422,10 +1422,13 @@ struct CatchClause : ASTError {
   CatchClause() : posLParen(0), posRParen(0) {}
 };
 
+/// The grammar defines CatchType as
 /// CatchType: Identifier { '|' Identifier }
+/// which is probably a typo. We use this version instead
+/// CatchType: QualifiedIdentifier { '|' QualifiedIdentifier }
 struct CatchType : ASTError {
-  spIdentifier id;
-  std::vector<std::pair<unsigned, spIdentifier> > pipeAndId;
+  spQualifiedIdentifier qualifiedId;
+  std::vector<std::pair<unsigned, spQualifiedIdentifier> > pairs;
 };
 
 struct CharacterLiteral {

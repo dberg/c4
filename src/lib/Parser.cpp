@@ -959,20 +959,19 @@ void Parser::parseCatches(spCatches &catches) {
   }
 }
 
-/// CatchType: Identifier { '|' Identifier }
+/// CatchType: QualifiedIdentifier { '|' QualifiedIdentifier }
 void Parser::parseCatchType(spCatchType &catchType) {
-  // Identifier
+  // QualifiedIdentifier
   if (lexer->getCurToken() != TOK_IDENTIFIER) {
     catchType->addErr(diag->addErr(
       ERR_EXP_IDENTIFIER, lexer->getCursor() - 1));
     return;
   }
 
-  catchType->id = spIdentifier(new Identifier(
-    lexer->getCurTokenIni(), lexer->getCurTokenStr()));
-  lexer->getNextToken(); // consume Identifier
+  catchType->qualifiedId = spQualifiedIdentifier(new QualifiedIdentifier);
+  parseQualifiedIdentifier(catchType->qualifiedId);
 
-  // { '|' Identifier }
+  // { '|' QualifiedIdentifier }
   State state;
   while (lexer->getCurToken() == TOK_OP_PIPE) {
     saveState(state);
@@ -982,11 +981,12 @@ void Parser::parseCatchType(spCatchType &catchType) {
       restoreState(state);
       return; // let upper levels deal with the error
     }
-    spIdentifier id = spIdentifier(new Identifier(
-      lexer->getCurTokenIni(), lexer->getCurTokenStr()));
-    lexer->getNextToken(); // consume Identifier
 
-    catchType->pipeAndId.push_back(std::make_pair(pos, id));
+    spQualifiedIdentifier qualifiedId
+      = spQualifiedIdentifier(new QualifiedIdentifier);
+    parseQualifiedIdentifier(qualifiedId);
+
+    catchType->pairs.push_back(std::make_pair(pos, qualifiedId));
   }
 }
 

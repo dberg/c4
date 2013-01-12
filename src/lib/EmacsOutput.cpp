@@ -32,7 +32,7 @@ void EmacsOutput::buildSH() {
 void EmacsOutput::buildST() {
   outST = "[";
   for (unsigned i = 0; i < st.symbols.size(); i++) {
-    outST += "'("
+    outST += "("
       + getSymbolTableType(st.symbols[i]->type) + " "
       + itos(st.symbols[i]->scope) + " "
       + itos(st.symbols[i]->pos) + " "
@@ -239,14 +239,14 @@ void EmacsOutput::setCatchClause(const spCatchClause &catchClause) {
 }
 
 void EmacsOutput::setCatchType(const spCatchType &catchType) {
-  if (catchType->id) {
-    setIdentifier(catchType->id, EmacsOutput::OPT_IDENTIFIER_REFERENCE_TYPE);
+  if (catchType->qualifiedId) {
+    setQualifiedId(catchType->qualifiedId);
   }
 
-  for (unsigned i = 0; i < catchType->pipeAndId.size(); i++) {
-    std::pair<unsigned, spIdentifier> pair = catchType->pipeAndId[i];
+  for (unsigned i = 0; i < catchType->pairs.size(); i++) {
+    std::pair<unsigned, spQualifiedIdentifier> pair = catchType->pairs[i];
     setOp(pair.first);
-    setIdentifier(pair.second, EmacsOutput::OPT_IDENTIFIER_REFERENCE_TYPE);
+    setQualifiedId(pair.second);
   }
 }
 
