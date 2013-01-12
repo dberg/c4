@@ -283,8 +283,8 @@ int Lexer::getEscapeSequence(std::stringstream &ss) {
           return TOK_ERROR;
         }
       }
-      return TOK_ESCAPE_SEQUENCE;
     }
+    return TOK_ESCAPE_SEQUENCE;
   }
 
   // Special case.
