@@ -497,24 +497,20 @@ void EmacsOutput::setExpression2(const spExpression2 &expr2) {
 }
 
 void EmacsOutput::setExpression2Rest(const spExpression2Rest &expr2Rest) {
-  if (expr2Rest->opt == Expression2Rest::OPT_INFIXOP_EXPR3) {
-    for (unsigned i = 0; i < expr2Rest->pairs.size(); i++) {
-      spTokenExp op = expr2Rest->pairs[0].first;
-      setOp(op->pos, tokenUtil.getTokenLength(op->type));
-      setExpression3(expr2Rest->pairs[0].second);
-    }
-    return;
-  }
-
-  if (expr2Rest->opt == Expression2Rest::OPT_INSTANCEOF_TYPE) {
-    if (expr2Rest->tokInstanceOf) {
-      setKeyword(expr2Rest->tokInstanceOf);
+  for (unsigned int i = 0; i < expr2Rest->pairs.size(); i++) {
+    if (expr2Rest->pairs[i]->opt == Expression2RestHelper::OPT_INFIXOP_EXPR3) {
+      setOp(expr2Rest->pairs[i]->tokInfixOp->pos,
+        tokenUtil.getTokenLength(expr2Rest->pairs[i]->tokInfixOp->type));
+      setExpression3(expr2Rest->pairs[i]->expr3);
+      continue;
     }
 
-    if (expr2Rest->type) {
-      setType(expr2Rest->type);
+    if (expr2Rest->pairs[i]->opt
+      == Expression2RestHelper::OPT_INSTANCEOF_TYPE) {
+
+      setKeyword(expr2Rest->pairs[i]->tokInstanceOf);
+      setType(expr2Rest->pairs[i]->type);
     }
-    return;
   }
 }
 

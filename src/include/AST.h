@@ -58,6 +58,7 @@ typedef boost::shared_ptr<struct Expression3Opt2> spExpression3Opt2;
 typedef boost::shared_ptr<struct Expression3Opt3> spExpression3Opt3;
 typedef boost::shared_ptr<struct Expression1Rest> spExpression1Rest;
 typedef boost::shared_ptr<struct Expression2Rest> spExpression2Rest;
+typedef boost::shared_ptr<struct Expression2RestHelper> spExpression2RestHelper;
 typedef boost::shared_ptr<struct ExpressionInBrackets> spExpressionInBrackets;
 typedef boost::shared_ptr<struct FieldDeclaratorsRest> spFieldDeclaratorsRest;
 typedef boost::shared_ptr<struct Finally> spFinally;
@@ -1036,26 +1037,37 @@ struct Expression2 {
   }
 };
 
+/// The grammar defines Expression2Rest as follows
 /// Expression2Rest:
 ///   (1) { InfixOp Expression3 }
 ///   (2) instanceof Type
+/// but this doesn't take into account cases like
+///   if (x == 1 && y instanceof String) { ... }
+/// We use a modified production rule
+/// Expression2Rest:
+///   { InfixOp Expression3 | instanceof Type }
 struct Expression2Rest : ASTError {
-  enum Expression2RestOpt {
+  std::vector<spExpression2RestHelper> pairs;
+};
+
+struct Expression2RestHelper {
+  enum Expression2RestHelperOpt {
     OPT_UNDEFINED,
     OPT_INFIXOP_EXPR3,
     OPT_INSTANCEOF_TYPE,
   };
 
-  Expression2RestOpt opt;
+  Expression2RestHelperOpt opt;
 
-  // (1)
-  std::vector<std::pair<spTokenExp, spExpression3> > pairs;
+  // OPT_INFIXOP_EXPR3
+  spTokenExp tokInfixOp;
+  spExpression3 expr3;
 
-  // (2)
+  // OPT_INSTANCEOF_TYPE
   spTokenExp tokInstanceOf;
   spType type;
 
-  Expression2Rest() : opt(OPT_UNDEFINED) {}
+  Expression2RestHelper() : opt(OPT_UNDEFINED) {}
 };
 
 /// Arguments: '(' [ Expression { , Expression }] ')'

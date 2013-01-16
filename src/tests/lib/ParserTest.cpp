@@ -737,9 +737,9 @@ TEST(Parser, ExpressionInfixOp) {
   ASSERT_EQ(52, args->posRParen);
 
   spExpression2Rest expr2Rest = args->expr->expr1->expr2->expr2Rest;
-  ASSERT_EQ(Expression2Rest::OPT_INFIXOP_EXPR3, expr2Rest->opt);
-  ASSERT_EQ(43, expr2Rest->pairs[0].first->pos);
-  ASSERT_EQ(47, expr2Rest->pairs[1].first->pos);
+  ASSERT_EQ(Expression2RestHelper::OPT_INFIXOP_EXPR3, expr2Rest->pairs[0]->opt);
+  ASSERT_EQ(43, expr2Rest->pairs[0]->tokInfixOp->pos);
+  ASSERT_EQ(47, expr2Rest->pairs[1]->tokInfixOp->pos);
 }
 
 TEST(Parser, Expression2Rest) {
@@ -759,12 +759,11 @@ TEST(Parser, Expression2Rest) {
   spExpression2Rest expr2Rest
     = blockStmt->stmt->parExpr->expr->expr1->expr2->expr2Rest;
 
-  ASSERT_EQ(Expression2Rest::OPT_INFIXOP_EXPR3, expr2Rest->opt);
-  std::pair<spTokenExp, spExpression3> pair = expr2Rest->pairs[0];
-  ASSERT_EQ(27, pair.first->pos);
-  ASSERT_EQ(TOK_OP_EQUALS_EQUALS, pair.first->type);
+  ASSERT_EQ(Expression2RestHelper::OPT_INFIXOP_EXPR3, expr2Rest->pairs[0]->opt);
+  ASSERT_EQ(27, expr2Rest->pairs[0]->tokInfixOp->pos);
+  ASSERT_EQ(TOK_OP_EQUALS_EQUALS, expr2Rest->pairs[0]->tokInfixOp->type);
 
-  spExpression3 expr3 = pair.second;
+  spExpression3 expr3 = expr2Rest->pairs[0]->expr3;
   ASSERT_EQ(Expression3::OPT_PRIMARY_SELECTOR_POSTFIXOP, expr3->opt);
   ASSERT_EQ(Literal::OPT_NULL, expr3->primary->literal->opt);
   ASSERT_EQ(30, expr3->primary->literal->nullLiteral->pos);
