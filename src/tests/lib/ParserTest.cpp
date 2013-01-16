@@ -6,6 +6,46 @@
 #include "gtest/gtest.h"
 using namespace djp;
 
+// -----------------------------------------------------------------------------
+// @Ann({"1", "2"}) class A {}
+// -----------------------------------------------------------------------------
+// ClassOrInterfaceDeclaration
+//   Modifier
+//     Annotation
+//     '@'
+//     QualifiedIdentifier <-- 'Ann'
+//     '('
+//     AnnotationElement
+//       ElementValue
+//         ElementValueArrayInitializer
+//           '{'
+//           ElementValues
+//             ElementValue
+//               Expression1
+//                 Expression2
+//                   Expression3
+//                     Primary
+//                       Literal
+//                         StringLiteral <-- "1"
+//           '}'
+//     ')'
+//   ClassDeclaration
+TEST(Parser, AnnotationElementValueArray) {
+  std::string filename = "Test.java";
+  std::string buffer = "@Ann({\"1\", \"2\"}) class A {}";
+  spDiagnosis diag = spDiagnosis(new Diagnosis);
+  Parser parser(filename, buffer, diag);
+  parser.parse();
+
+  spClassOrInterfaceDeclaration decl
+    = parser.compilationUnit->typeDecls[0]->decl;
+  spAnnotationElement elem = decl->modifier->annotations[0]->elem;
+  ASSERT_EQ(AnnotationElement::OPT_ELEMENT_VALUE, elem->opt);
+  ASSERT_EQ(ElementValue::OPT_ELEMENT_VALUE_ARRAY_INITIALIZER, elem->value->opt);
+  ASSERT_EQ(5, elem->value->elemValArrayInit->posLCBrace);
+  ASSERT_EQ(14, elem->value->elemValArrayInit->posRCBrace);
+}
+
 TEST(Parser, AnnotationElementValuePairs) {
   std::string filename = "Test.java";
   std::string buffer =

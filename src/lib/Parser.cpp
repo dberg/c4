@@ -286,7 +286,7 @@ void Parser::restoreState(State &state) {
 
 /// Annotation: @ QualifiedIdentifier [ ( [AnnotationElement] ) ]
 spAnnotation Parser::parseAnnotation() {
-  spAnnotation annotation = spAnnotation(new Annotation());
+  spAnnotation annotation = spAnnotation(new Annotation);
   annotation->posTokAt = lexer->getCursor() - 1;
   lexer->getNextToken(); // Consume '@'
 
@@ -309,7 +309,7 @@ spAnnotation Parser::parseAnnotation() {
 
     // Empty annotation element
     if (lexer->getCurToken() != TOK_RPAREN) {
-      annotation->elem = spAnnotationElement(new AnnotationElement());
+      annotation->elem = spAnnotationElement(new AnnotationElement);
       parseAnnotationElement(annotation->elem);
       if (annotation->elem->err) {
         annotation->err = true;
@@ -676,6 +676,7 @@ void Parser::parseElementValues(spElementValues &values) {
   while (lexer->getCurToken() == TOK_COMMA) {
     saveState(state);
     unsigned pos = lexer->getCursor() - 1;
+    lexer->getNextToken(); // consume ','
     spElementValue val = spElementValue(new ElementValue);
     parseElementValue(val);
     if (val->err) {
