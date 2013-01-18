@@ -2,6 +2,7 @@
 #ifndef __SYMBOL_TABLE_H__
 #define __SYMBOL_TABLE_H__
 #include <boost/smart_ptr.hpp>
+#include <cassert>
 #include <string>
 #include <vector>
 
@@ -19,8 +20,6 @@ enum SymbolType {
   ST_INTERFACE,
   ST_METHOD,
   ST_FIELD,
-  ST_INNER_CLASS,
-  ST_INNER_INTERFACE,
 
   // Symbols
   ST_IDENTIFIER,

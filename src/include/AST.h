@@ -235,7 +235,7 @@ struct PrefixOp {
 };
 
 /// ClassDeclaration: NormalClassDeclaration | EnumDeclaration
-struct ClassDeclaration {
+struct ClassDeclaration : ASTError {
   spNormalClassDeclaration nClassDecl;
   spEnumDeclaration enumDecl;
 };
@@ -336,8 +336,8 @@ struct MemberDecl : ASTError {
   // TODO:
   // GenericMethodOrConstructorDecl
 
-  // TODO:
   // ClassDeclaration
+  spClassDeclaration classDecl;
 
   // TODO:
   // InterfaceDeclaration

@@ -202,6 +202,23 @@ bool isInfixOp(int token) {
   return false;
 }
 
+bool isModifierOrMemberMemberDeclCandidate(int token) {
+  // Prior to a MemberDecl
+  if (isModifierToken(token)) {
+    return true;
+  }
+
+  // MemberDecl
+  if (TOK_IDENTIFIER == token
+    || isBasicType(token)
+    || TOK_KEY_VOID == token
+    || TOK_KEY_CLASS == token) {
+    return true;
+  }
+
+  return false;
+}
+
 bool isPrefixOp(int token) {
   if (TOK_OP_PLUS_PLUS == token
     || TOK_OP_MINUS_MINUS == token
@@ -225,13 +242,7 @@ bool isPostfixOp(int token) {
 }
 
 bool isValidInitTokenOfClassBodyDeclaration(int token) {
-  // Prior to a MemberDecl
-  if (isModifierToken(token)) {
-    return true;
-  }
-
-  // MemberDecl
-  if (TOK_IDENTIFIER == token || isBasicType(token) || TOK_KEY_VOID == token) {
+  if (isModifierOrMemberMemberDeclCandidate(token)) {
     return true;
   }
 
@@ -3491,7 +3502,6 @@ void Parser::parseNormalClassDeclaration(spNormalClassDeclaration &nClassDecl) {
     parseTypeParameters(nClassDecl->typeParams);
     if (nClassDecl->typeParams->err) {
       nClassDecl->addErr(-1);
-      st.scopePop();
       return;
     }
   }
@@ -3506,7 +3516,6 @@ void Parser::parseNormalClassDeclaration(spNormalClassDeclaration &nClassDecl) {
     if (lexer->getCurToken() != TOK_IDENTIFIER) {
       nClassDecl->addErr(diag->addErr(
         ERR_EXP_IDENTIFIER, lexer->getCursor() - 1));
-      st.scopePop();
       return;
     }
 
@@ -3527,14 +3536,12 @@ void Parser::parseNormalClassDeclaration(spNormalClassDeclaration &nClassDecl) {
     parseTypeList(nClassDecl->typeList);
     if (nClassDecl->typeList->err) {
       nClassDecl->addErr(-1);
-      st.scopePop();
       return;
     }
   }
 
   nClassDecl->classBody = spClassBody(new ClassBody);
   parseClassBody(nClassDecl->classBody);
-  st.scopePop();
 }
 
 void Parser::parseNullLiteral(spTokenExp &nullLiteral) {
@@ -3616,11 +3623,7 @@ void Parser::parseClassBody(spClassBody &classBody) {
 ///   {Modifier} MemberDecl
 ///   [static] Block
 void Parser::parseClassBodyDeclaration(spClassBodyDeclaration &decl) {
-  if (isModifierToken(lexer->getCurToken())
-      || lexer->getCurToken() == TOK_IDENTIFIER
-      || lexer->getCurToken() == TOK_KEY_VOID
-      || isBasicType(lexer->getCurToken())) {
-
+  if (isModifierOrMemberMemberDeclCandidate(lexer->getCurToken())) {
     st.addSym(ST_MEMBER_DECL, lexer->getCurTokenIni(), 0, src->getLine(), "");
     decl->opt = ClassBodyDeclaration::OPT_MODIFIER_MEMBER_DECL;
     decl->modifier = spModifier(new Modifier);
@@ -3741,7 +3744,19 @@ void Parser::parseMemberDecl(spMemberDecl &memberDecl) {
   }
 
   // TODO: GenericMethodOrConstructorDecl
-  // TODO: ClassDeclaration
+
+  // ClassDeclaration
+  if (lexer->getCurToken() == TOK_KEY_CLASS) {
+    memberDecl->opt = MemberDecl::OPT_CLASS_DECLARATION;
+    st.updateScopeType(ST_CLASS);
+    memberDecl->classDecl = spClassDeclaration(new ClassDeclaration);
+    parseClassDeclaration(memberDecl->classDecl);
+    if (memberDecl->classDecl->err) {
+      memberDecl->addErr(-1);
+    }
+    return;
+  }
+
   // TODO: InterfaceDeclaration
 }
 

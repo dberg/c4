@@ -147,8 +147,6 @@ public:
     stTypes[ST_INTERFACE] = "_interface";
     stTypes[ST_METHOD] = "_method";
     stTypes[ST_FIELD] = "_field";
-    stTypes[ST_INNER_CLASS] = "_inner_class";
-    stTypes[ST_INNER_INTERFACE] = "_inner_interface";
     stTypes[ST_IDENTIFIER] = "id";
     stTypes[ST_TYPE] = "type";
   }

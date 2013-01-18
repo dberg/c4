@@ -37,7 +37,12 @@ bool ST::isConstructor(const std::string identifier) {
 }
 
 bool ST::isNewScope(int type) {
-  if (type == ST_CLASS_OR_INTERFACE || type == ST_MEMBER_DECL) {
+  if (type == ST_CLASS_OR_INTERFACE
+    || type == ST_MEMBER_DECL
+    || type == ST_CLASS
+    || type == ST_ENUM
+    || type == ST_INTERFACE
+    || type == ST_METHOD) {
     return true;
   }
 
@@ -45,6 +50,7 @@ bool ST::isNewScope(int type) {
 }
 
 void ST::scopePop() {
+  assert (scopes.size() > 0);
   scopes.pop_back();
 }
 
