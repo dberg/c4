@@ -291,6 +291,19 @@ void EmacsOutput::setClassCreatorRest(const spClassCreatorRest &classCreatorRest
   }
 }
 
+void EmacsOutput::setClassDeclaration(const spClassDeclaration &classDecl) {
+  if (classDecl->nClassDecl) {
+    setNormalClassDeclaration(classDecl->nClassDecl);
+    return;
+  }
+
+  if (classDecl->enumDecl) {
+    // TODO:
+    //setEnumDeclaration(decl->classDecl->enumDecl);
+    return;
+  }
+}
+
 void EmacsOutput::setClassOrInterfaceDeclaration(
   const spClassOrInterfaceDeclaration &decl) {
 
@@ -301,12 +314,7 @@ void EmacsOutput::setClassOrInterfaceDeclaration(
   }
 
   if (decl->classDecl) {
-    if (decl->classDecl->nClassDecl) {
-      setNormalClassDeclaration(decl->classDecl->nClassDecl);
-    } else if (decl->classDecl->enumDecl) {
-      // TODO:
-      //setEnumDeclaration(decl->classDecl->enumDecl);
-    }
+    setClassDeclaration(decl->classDecl);
   }
 
   outSH += ")";
@@ -956,8 +964,10 @@ void EmacsOutput::setMemberDecl(const spMemberDecl &memberDecl) {
     return;
   }
 
-  // TODO:
   if (memberDecl->opt == MemberDecl::OPT_CLASS_DECLARATION) {
+    if (memberDecl->classDecl) {
+      setClassDeclaration(memberDecl->classDecl);
+    }
     return;
   }
 

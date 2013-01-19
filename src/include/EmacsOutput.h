@@ -49,6 +49,7 @@ class EmacsOutput {
   void setClassBody(const spClassBody &classBody);
   void setClassBodyDeclaration(const spClassBodyDeclaration &decl);
   void setClassCreatorRest(const spClassCreatorRest &classCreatorRest);
+  void setClassDeclaration(const spClassDeclaration &classDecl);
   void setClassOrInterfaceDeclaration(
     const spClassOrInterfaceDeclaration &decl);
   void setComments();
