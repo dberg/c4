@@ -392,6 +392,20 @@ void EmacsOutput::setCreator(const spCreator &creator) {
     if (creator->opt2->arrayCreatorRest) {
       setArrayCreatorRest(creator->opt2->arrayCreatorRest);
     }
+
+    return;
+  }
+
+  if (creator->opt == Creator::OPT_BASIC_TYPE) {
+    if (!creator->opt3) { return; }
+
+    if (creator->opt3->basicType && creator->opt3->basicType->token) {
+      setKeyword(creator->opt3->basicType->token);
+    }
+
+    if (creator->opt3->arrayCreatorRest) {
+      setArrayCreatorRest(creator->opt3->arrayCreatorRest);
+    }
   }
 }
 

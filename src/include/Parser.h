@@ -78,6 +78,7 @@ class Parser {
   void parseCreator(spCreator &creator);
   void parseCreatorOpt1(spCreatorOpt1 &opt1);
   void parseCreatorOpt2(spCreatorOpt2 &opt2);
+  void parseCreatorOpt3(spCreatorOpt3 &opt3);
   void parseElementValue(spElementValue &value);
   void parseElementValues(spElementValues &values);
   void parseElementValueArrayInitializer(

@@ -39,6 +39,7 @@ typedef boost::shared_ptr<struct CreatedName> spCreatedName;
 typedef boost::shared_ptr<struct Creator> spCreator;
 typedef boost::shared_ptr<struct CreatorOpt1> spCreatorOpt1;
 typedef boost::shared_ptr<struct CreatorOpt2> spCreatorOpt2;
+typedef boost::shared_ptr<struct CreatorOpt3> spCreatorOpt3;
 typedef boost::shared_ptr<struct ElementValue> spElementValue;
 typedef boost::shared_ptr<struct ElementValues> spElementValues;
 typedef boost::shared_ptr<struct ElementValueArrayInitializer>
@@ -1497,16 +1498,23 @@ struct SuperSuffix : ASTError {
 /// Creator:
 ///   NonWildcardTypeArguments CreatedName ClassCreatorRest
 ///   CreatedName ( ClassCreatorRest | ArrayCreatorRest )
+/// We have to update the grammar to take into account primitive arrays.
+/// For example: int[] a = new int[1];
+/// We add one more production rule to Creator.
+/// Creator:
+///   BasicType ArrayCreatorRest
 struct Creator : ASTError {
   enum CreatorEnum {
     OPT_UNDEFINED,
     OPT_NON_WILDCARD_TYPE_ARGUMENTS,
     OPT_CREATED_NAME,
+    OPT_BASIC_TYPE,
   };
 
   CreatorEnum opt;
   spCreatorOpt1 opt1;
   spCreatorOpt2 opt2;
+  spCreatorOpt3 opt3;
 
   Creator() : opt(OPT_UNDEFINED) {}
 };
@@ -1522,6 +1530,12 @@ struct CreatorOpt1 : ASTError {
 struct CreatorOpt2 : ASTError {
   spCreatedName createdName;
   spClassCreatorRest classCreatorRest;
+  spArrayCreatorRest arrayCreatorRest;
+};
+
+/// CreatorOpt3: BasicType ArrayCreatorRest
+struct CreatorOpt3 : ASTError {
+  spBasicType basicType;
   spArrayCreatorRest arrayCreatorRest;
 };
 

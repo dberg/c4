@@ -1011,12 +1011,25 @@ void Parser::parseCharacterLiteral(spCharacterLiteral &charLit) {
 /// Creator:
 ///   NonWildcardTypeArguments CreatedName ClassCreatorRest
 ///   CreatedName ( ClassCreatorRest | ArrayCreatorRest )
+///   BasicType ArrayCreatorRest
+/// See notes in AST.h
 void Parser::parseCreator(spCreator &creator) {
   // Option 1
   if (lexer->getCurToken() == TOK_OP_LT) {
     creator->opt = Creator::OPT_NON_WILDCARD_TYPE_ARGUMENTS;
     creator->opt1 = spCreatorOpt1(new CreatorOpt1);
     parseCreatorOpt1(creator->opt1);
+    return;
+  }
+
+  // Option 3
+  if (isBasicType(lexer->getCurToken())) {
+    creator->opt = Creator::OPT_BASIC_TYPE;
+    creator->opt3 = spCreatorOpt3(new CreatorOpt3);
+    parseCreatorOpt3(creator->opt3);
+    if (creator->opt3->err) {
+      creator->addErr(-1);
+    }
     return;
   }
 
@@ -1087,6 +1100,25 @@ void Parser::parseCreatorOpt2(spCreatorOpt2 &opt2) {
   // Error
   opt2->addErr(diag->addErr(
     ERR_EXP_CLASS_OR_ARRAY_CREATOR_REST, lexer->getCursor() - 1));
+}
+
+/// CreatorOpt3: BasicType ArrayCreatorRest
+void Parser::parseCreatorOpt3(spCreatorOpt3 &opt3) {
+  spTokenExp token = spTokenExp(new TokenExp(lexer->getCursor()
+    - tokenUtil.getTokenLength(lexer->getCurToken()), lexer->getCurToken()));
+  opt3->basicType = spBasicType(new BasicType(token));
+  lexer->getNextToken(); // consume BasicType
+
+  if (lexer->getCurToken() != TOK_LBRACKET) {
+    opt3->addErr(diag->addErr(ERR_EXP_LBRACKET, lexer->getCursor() - 1));
+    return;
+  }
+
+  opt3->arrayCreatorRest = spArrayCreatorRest(new ArrayCreatorRest);
+  parseArrayCreatorRest(opt3->arrayCreatorRest);
+  if (opt3->arrayCreatorRest->err) {
+    opt3->addErr(-1);
+  }
 }
 
 /// Expression: Expression1 [ AssignmentOperator Expression1 ]
@@ -2379,6 +2411,7 @@ void Parser::parsePrimaryBasicType(spPrimaryBasicType &primaryBasicType) {
   spTokenExp token = spTokenExp(new TokenExp(lexer->getCursor()
     - tokenUtil.getTokenLength(lexer->getCurToken()), lexer->getCurToken()));
   primaryBasicType->basicType = spBasicType(new BasicType(token));
+  lexer->getNextToken(); // consume 'BasicType'
 
   // {[]}
   parseArrayDepth(primaryBasicType->arrayDepth);
