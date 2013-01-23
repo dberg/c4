@@ -1143,6 +1143,34 @@ TEST(Parser, ImportDeclarations) {
 }
 
 // -----------------------------------------------------------------------------
+// class A { class B {} }
+// -----------------------------------------------------------------------------
+// TypeDeclaration
+//   ClassOrInterfaceDeclaration               +ST_CLASS (pop)
+//     ClassDeclaration
+//       NormalClassDeclaration                +ST_IDENTIFIER 'A'
+//         'class'
+//         Identifier <-- 'A'
+//         ClassBody
+//           '{'
+//           ClassBodyDeclaration
+//             MemberDecl                      +ST_MEMBER_DECL -> ST_CLASS (pop)
+//               ClassDeclaration
+//                 NormalClassDeclaration      +ST_IDENTIFIER 'B'
+//           '}'
+TEST(Parser, InnerClass) {
+  std::string filename = "Test.java";
+  std::string buffer = "class A { class B {} }";
+  spDiagnosis diag = spDiagnosis(new Diagnosis);
+  Parser parser(filename, buffer, diag);
+  parser.parse();
+
+  spMemberDecl memberDecl = parser.compilationUnit->typeDecls[0]->decl
+    ->classDecl->nClassDecl->classBody->decls[0]->memberDecl;
+  ASSERT_EQ(MemberDecl::OPT_CLASS_DECLARATION, memberDecl->opt);
+}
+
+// -----------------------------------------------------------------------------
 // class A { void test() { Exec exe = createExec(); }}
 // -----------------------------------------------------------------------------
 // BlockStatement
