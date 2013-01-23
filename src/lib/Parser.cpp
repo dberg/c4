@@ -4058,7 +4058,7 @@ void Parser::parseCreatedName(spCreatedName &createdName) {
   }
 
   // { . Identifier [TypeArgumentsOrDiamond] }
-  while (lexer->getCurToken() == TOK_COMMA) {
+  while (lexer->getCurToken() == TOK_PERIOD) {
     // Comma
     lexer->getNextToken(); // consume '.'
 
