@@ -2329,6 +2329,9 @@ void Parser::parsePrimary(spPrimary &primary) {
     primary->nonWildcardTypeArguments = spPrimaryNonWildcardTypeArguments(
       new PrimaryNonWildcardTypeArguments);
     parsePrimaryNonWildcardTypeArguments(primary->nonWildcardTypeArguments);
+    if (primary->nonWildcardTypeArguments->err) {
+      primary->addErr(-1);
+    }
     return;
   }
 

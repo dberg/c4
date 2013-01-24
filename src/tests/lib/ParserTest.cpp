@@ -944,6 +944,69 @@ TEST(Parser, For) {
 }
 
 // -----------------------------------------------------------------------------
+// class A { void m() { for (int i = 0; (i + 1) < max; i++) {} }}
+// -----------------------------------------------------------------------------
+// BlockStatement
+//   Statement
+//     'for'
+//     '('
+//     ForControl
+//       ForVarControl (opt 1)
+//         Type <-- 'int'
+//         VariableDeclaratorId
+//           Identifier <-- 'i'
+//         ForVarControlRest
+//           ForVariableDeclaratorsRest
+//             '='
+//             VariableInitializer
+//               Expression <-- '0'
+//           ';'
+//           Expression
+//             Expression1
+//               Expression2
+//                 Expression3
+//                   '('
+//                   Expression
+//                     Expression1
+//                       Expression2
+//                         Expression3
+//                           Primary <-- 'i'
+//                         Expression2Rest <-- '+ 1'
+//                   ')'
+//                   Expression3 <-- '< max'
+
+//                 Expression2Rest
+//                   InfixOp <-- '<'
+//                   Expression3 <-- 'max'
+//           ';'
+//           ForUpdate
+//     ')'
+//     Statement
+TEST(Parser, ForExpr) {
+  std::string filename = "Test.java";
+  std::string buffer
+    = "class A { void m() { for (int i = 0; (i + 1) < max; i++) {} }}";
+  spDiagnosis diag = spDiagnosis(new Diagnosis);
+  Parser parser(filename, buffer, diag);
+  parser.parse();
+
+  spStatement stmt = parser.compilationUnit->typeDecls[0]->decl->classDecl
+    ->nClassDecl->classBody->decls[0]->memberDecl->voidMethDeclRest->block
+    ->blockStmts[0]->stmt;
+
+  ASSERT_EQ(25, stmt->posLParen);
+  ASSERT_EQ(55, stmt->posRParen);
+
+  ASSERT_EQ(Statement::OPT_FOR, stmt->opt);
+  ASSERT_EQ(ForControl::OPT_FOR_VAR_CTRL, stmt->forCtrl->opt);
+  ASSERT_EQ(ForVarControlRest::OPT_FOR_VAR_DECLS_REST,
+    stmt->forCtrl->varCtrl->forVarCtrlRest->opt);
+
+  ASSERT_EQ(50, stmt->forCtrl->varCtrl->forVarCtrlRest->posSemiColon2);
+  ASSERT_EQ(0, diag->errors.size());
+}
+
+// -----------------------------------------------------------------------------
 // u = m.r(j, new A<B<T>>() {});
 // -----------------------------------------------------------------------------
 // Block
