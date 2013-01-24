@@ -13,7 +13,6 @@ typedef boost::shared_ptr<Diagnosis> spDiagnosis;
 class Diagnosis {
 public:
   std::vector<spError> errors;
-  //TODO: std::vector<spWarning> warnings;
 
   int addErr(int err, unsigned ini, unsigned end = 0);
 };

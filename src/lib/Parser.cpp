@@ -1404,7 +1404,7 @@ void Parser::parseExpression3Opt2(spExpression3Opt2 &opt2) {
 void Parser::parseExpression3Opt3(spExpression3Opt3 &opt3) {
   // '('
   opt3->posLParen = lexer->getCursor() - 1;
-  lexer->getNextToken(); // consue '('
+  lexer->getNextToken(); // consume '('
 
   // Expression
   opt3->expr = spExpression(new Expression);
@@ -2532,10 +2532,10 @@ void Parser::parsePrimaryNonWildcardTypeArguments(
 
   // NonWildcardTypeArguments
   primaryNonWildcard->nonWildcardTypeArguments = spNonWildcardTypeArguments(
-    new NonWildcardTypeArguments());
+    new NonWildcardTypeArguments);
   parseNonWildcardTypeArguments(primaryNonWildcard->nonWildcardTypeArguments);
 
-  if (primaryNonWildcard->err) {
+  if (primaryNonWildcard->nonWildcardTypeArguments->err) {
     primaryNonWildcard->addErr(-1);
     return;
   }
