@@ -1549,7 +1549,14 @@ void EmacsOutput::setTypeList(const spTypeList &typeList) {
 }
 
 void EmacsOutput::setTypeList2(const spTypeList2 &typeList2) {
-  // TODO:
+  if (typeList2->type) {
+    setType(typeList2->type);
+  }
+
+  for (unsigned int i = 0; i < typeList2->pairs.size(); i++) {
+    setOp(typeList2->pairs[i].first);
+    setType(typeList2->pairs[i].second);
+  }
 }
 
 void EmacsOutput::setTypeParameter(const spTypeParameter &typeParam) {
