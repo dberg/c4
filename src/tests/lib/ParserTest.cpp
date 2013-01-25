@@ -1483,10 +1483,10 @@ TEST(Parser, PrimaryNewCreator) {
   ASSERT_EQ(Creator::OPT_NON_WILDCARD_TYPE_ARGUMENTS, creator1->opt);
   ASSERT_EQ(22, creator1->opt1->nonWildcardTypeArguments->posLt);
   ASSERT_EQ(30, creator1->opt1->nonWildcardTypeArguments->posGt);
-  ASSERT_EQ(23,
-    creator1->opt1->nonWildcardTypeArguments->typeList->refType->id->pos);
-  ASSERT_EQ("Integer",
-    creator1->opt1->nonWildcardTypeArguments->typeList->refType->id->value);
+  ASSERT_EQ(23, creator1->opt1->nonWildcardTypeArguments
+    ->typeList2->type->refType->id->pos);
+  ASSERT_EQ("Integer", creator1->opt1->nonWildcardTypeArguments
+    ->typeList2->type->refType->id->value);
   ASSERT_EQ(32, creator1->opt1->createdName->id->pos);
   ASSERT_EQ("MyClass", creator1->opt1->createdName->id->value);
   ASSERT_EQ(TypeArgumentsOrDiamond::OPT_DIAMOND,
@@ -1503,14 +1503,14 @@ TEST(Parser, PrimaryNewCreator) {
   ASSERT_EQ(Creator::OPT_NON_WILDCARD_TYPE_ARGUMENTS, creator2->opt);
   ASSERT_EQ(53, creator2->opt1->nonWildcardTypeArguments->posLt);
   ASSERT_EQ(69, creator2->opt1->nonWildcardTypeArguments->posGt);
-  ASSERT_EQ(54,
-    creator2->opt1->nonWildcardTypeArguments->typeList->refType->id->pos);
-  ASSERT_EQ("String",
-    creator2->opt1->nonWildcardTypeArguments->typeList->refType->id->value);
-  ASSERT_EQ(62,
-    creator2->opt1->nonWildcardTypeArguments->typeList->refTypes[0]->id->pos);
-  ASSERT_EQ("Integer",
-    creator2->opt1->nonWildcardTypeArguments->typeList->refTypes[0]->id->value);
+  ASSERT_EQ(54, creator2->opt1->nonWildcardTypeArguments
+    ->typeList2->type->refType->id->pos);
+  ASSERT_EQ("String", creator2->opt1->nonWildcardTypeArguments
+    ->typeList2->type->refType->id->value);
+  std::pair<unsigned int, spType> pair = creator2->opt1
+    ->nonWildcardTypeArguments->typeList2->pairs[0];
+  ASSERT_EQ(62, pair.second->refType->id->pos);
+  ASSERT_EQ("Integer", pair.second->refType->id->value);
   ASSERT_EQ(71, creator2->opt1->createdName->id->pos);
   ASSERT_EQ("MyClass", creator2->opt1->createdName->id->value);
   ASSERT_EQ(TypeArgumentsOrDiamond::OPT_TYPE_ARGUMENTS,

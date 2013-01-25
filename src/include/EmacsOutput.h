@@ -116,6 +116,7 @@ class EmacsOutput {
   void setTypeArgumentsOrDiamond(const spTypeArgumentsOrDiamond &typeArgsOrDiam);
   void setTypeDeclarations(const std::vector<spTypeDeclaration> &typeDecls);
   void setTypeList(const spTypeList &typeList);
+  void setTypeList2(const spTypeList2 &typeList2);
   void setTypeParameter(const spTypeParameter &typeParam);
   void setTypeParameters(const spTypeParameters &typeParams);
   void setVariableDeclarator(const spVariableDeclarator &varDecl);

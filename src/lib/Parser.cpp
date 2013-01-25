@@ -3921,7 +3921,7 @@ void Parser::parseMethodOrFieldRest(spMethodOrFieldRest &methodOrFieldRest) {
   lexer->getNextToken(); // consume ';'
 }
 
-/// NonWildcardTypeArguments: < TypeList >
+/// NonWildcardTypeArguments: < TypeList2 >
 void Parser::parseNonWildcardTypeArguments(
   spNonWildcardTypeArguments &nonWildcardTypeArguments) {
 
@@ -3935,9 +3935,9 @@ void Parser::parseNonWildcardTypeArguments(
   nonWildcardTypeArguments->posLt = lexer->getCursor() - 1;
   lexer->getNextToken(); // consume '<'
 
-  nonWildcardTypeArguments->typeList = spTypeList(new TypeList);
-  parseTypeList(nonWildcardTypeArguments->typeList);
-  if (nonWildcardTypeArguments->typeList->err) {
+  nonWildcardTypeArguments->typeList2 = spTypeList2(new TypeList2);
+  parseTypeList2(nonWildcardTypeArguments->typeList2);
+  if (nonWildcardTypeArguments->typeList2->err) {
     nonWildcardTypeArguments->addErr(-1);
     return;
   }
@@ -4306,7 +4306,7 @@ void Parser::parseType(spType &type) {
   type->addErr(-1);
 }
 
-/// TypeList: ReferenceType {, ReferenceType }
+/// TypeList: ReferenceType { , ReferenceType }
 void Parser::parseTypeList(spTypeList &typeList) {
   if (lexer->getCurToken() != TOK_IDENTIFIER) {
     unsigned int cursor = lexer->getCursor();
@@ -4334,6 +4334,35 @@ void Parser::parseTypeList(spTypeList &typeList) {
     }
 
     typeList->refTypes.push_back(refType);
+  }
+}
+
+/// TypeList2: Type { , Type }
+void Parser::parseTypeList2(spTypeList2 &typeList2) {
+
+  typeList2->type = spType(new Type);
+  parseType(typeList2->type);
+
+  if (typeList2->type->err) {
+    typeList2->addErr(diag->addErr(ERR_EXP_TYPE, lexer->getCursor() - 1));
+    return;
+  }
+
+  State state;
+  while (lexer->getCurToken() == TOK_COMMA) {
+    saveState(state);
+    unsigned int pos = lexer->getCursor() - 1;
+    lexer->getNextToken(); // consume ','
+
+    spType type = spType(new Type);
+    parseType(type);
+    if (type->err) {
+      // we let the above layer to handle the error
+      restoreState(state);
+      return;
+    }
+
+    typeList2->pairs.push_back(std::make_pair(pos, type));
   }
 }
 

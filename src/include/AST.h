@@ -7,6 +7,63 @@
 #include "Token.h"
 #include "ErrorCodes.h"
 
+/// We have to modify a few production rules from the grammar.
+///
+/// 1. Expression2Rest. Defined in the grammar as
+/// Expression2Rest:
+///   (1) { InfixOp Expression3 }
+///   (2) instanceof Type
+/// but this doesn't take into account cases like
+///   if (x == 1 && y instanceof String) { ... }
+/// Modified version
+/// Expression2Rest:
+///   { InfixOp Expression3 | instanceof Type }
+///
+/// 2. Expression3:
+///   (1) PrefixOp Expression3
+///   (2) '(' Type ')' Expression3
+///   (3) '(' Expression ')' Expression3
+///   (3) Primary { Selector } { PostfixOp }
+/// The italicized parenthesis are probably a typo in the grammar.
+/// We treat them as terminals.
+///
+/// 3. CatchType. Defined in the grammar as
+/// CatchType:
+///   Identifier { '|' Identifier }
+/// Modified version
+/// CatchType:
+///   QualifiedIdentifier { '|' QualifiedIdentifier }
+///
+/// 4. Creator. Defined in the grammar as
+/// Creator:
+///   NonWildcardTypeArguments CreatedName ClassCreatorRest
+///   CreatedName ( ClassCreatorRest | ArrayCreatorRest )
+/// We have to update the grammar to take into account primitive arrays.
+/// For example: int[] a = new int[1];
+/// We add one more production rule to Creator. Modified version
+/// Creator:
+///   NonWildcardTypeArguments CreatedName ClassCreatorRest
+///   CreatedName ( ClassCreatorRest | ArrayCreatorRest )
+///   BasicType ArrayCreatorRest
+///
+/// 5. NonWildcardTypeArguments. Defined in the grammar as
+/// NonWildcardTypeArguments:
+///   < TypeList >
+/// And TypeList expands to
+/// TypeList:
+///   ReferenceType { , ReferenceType }
+///
+/// The problem is that it won't take into account arrays. Examples:
+///   <String[]>
+///   <int[]>
+/// Modified version
+/// NonWildcardTypeArguments:
+///   < TypeList2 >
+/// TypeList2:
+///   Type { , Type }
+/// We leave to the parser or the output to check for the invalid case of
+/// primitives that are not arrays. This is INVALID: <int>
+
 namespace djp {
 
 typedef boost::shared_ptr<struct Annotation> spAnnotation;
@@ -131,6 +188,7 @@ typedef boost::shared_ptr<struct TypeArgumentsOrDiamond>
   spTypeArgumentsOrDiamond;
 typedef boost::shared_ptr<struct TypeDeclaration> spTypeDeclaration;
 typedef boost::shared_ptr<struct TypeList> spTypeList;
+typedef boost::shared_ptr<struct TypeList2> spTypeList2;
 typedef boost::shared_ptr<struct TypeParameter> spTypeParameter;
 typedef boost::shared_ptr<struct TypeParameters> spTypeParameters;
 typedef boost::shared_ptr<struct VariableDeclarator> spVariableDeclarator;
@@ -924,7 +982,7 @@ struct AnnotationElement {
   AnnotationElement() : opt(OPT_UNDEFINED), err(false) {}
 };
 
-/// ElementValuePairs: ElementValuePair {, ElementValuePair }
+/// ElementValuePairs: ElementValuePair { , ElementValuePair }
 /// ElementValuePair: Identifier = ElementValue
 struct ElementValuePair {
   spIdentifier id;
@@ -1038,15 +1096,9 @@ struct Expression2 {
   }
 };
 
-/// The grammar defines Expression2Rest as follows
-/// Expression2Rest:
-///   (1) { InfixOp Expression3 }
-///   (2) instanceof Type
-/// but this doesn't take into account cases like
-///   if (x == 1 && y instanceof String) { ... }
-/// We use a modified production rule
 /// Expression2Rest:
 ///   { InfixOp Expression3 | instanceof Type }
+/// See note in the top of this file.
 struct Expression2Rest : ASTError {
   std::vector<spExpression2RestHelper> pairs;
 };
@@ -1086,8 +1138,7 @@ struct Arguments : ASTError {
 ///   (2) '(' Type ')' Expression3
 ///   (3) '(' Expression ')' Expression3
 ///   (3) Primary { Selector } { PostfixOp }
-/// The italicized parenthesis are probably a typo in the grammar.
-/// We treat them as terminals.
+/// See note in the top of this file.
 struct Expression3 : ASTError {
   enum Expression3Opt {
     OPT_UNDEFINED,
@@ -1435,10 +1486,9 @@ struct CatchClause : ASTError {
   CatchClause() : posLParen(0), posRParen(0) {}
 };
 
-/// The grammar defines CatchType as
-/// CatchType: Identifier { '|' Identifier }
-/// which is probably a typo. We use this version instead
-/// CatchType: QualifiedIdentifier { '|' QualifiedIdentifier }
+/// CatchType:
+///   QualifiedIdentifier { '|' QualifiedIdentifier }
+/// See note in the top of this file.
 struct CatchType : ASTError {
   spQualifiedIdentifier qualifiedId;
   std::vector<std::pair<unsigned, spQualifiedIdentifier> > pairs;
@@ -1498,11 +1548,8 @@ struct SuperSuffix : ASTError {
 /// Creator:
 ///   NonWildcardTypeArguments CreatedName ClassCreatorRest
 ///   CreatedName ( ClassCreatorRest | ArrayCreatorRest )
-/// We have to update the grammar to take into account primitive arrays.
-/// For example: int[] a = new int[1];
-/// We add one more production rule to Creator.
-/// Creator:
 ///   BasicType ArrayCreatorRest
+/// See note in the top of this file.
 struct Creator : ASTError {
   enum CreatorEnum {
     OPT_UNDEFINED,
@@ -1539,11 +1586,14 @@ struct CreatorOpt3 : ASTError {
   spArrayCreatorRest arrayCreatorRest;
 };
 
-/// NonWildcardTypeArguments: < TypeList >
+/// NonWildcardTypeArguments:
+///   < TypeList2 >
+/// A primitive type which is not an array is invalid.
+/// See note in the top of this file.
 struct NonWildcardTypeArguments : ASTError {
   unsigned int posLt;
   unsigned int posGt;
-  spTypeList typeList;
+  spTypeList2 typeList2;
   NonWildcardTypeArguments() : posLt(0), posGt(0) {}
 };
 
@@ -1564,10 +1614,16 @@ struct NonWildcardTypeArgumentsOrDiamond : ASTError {
   NonWildcardTypeArgumentsOrDiamond() : opt(OPT_UNDEFINED) {}
 };
 
-/// TypeList: ReferenceType {, ReferenceType }
+/// TypeList: ReferenceType { , ReferenceType }
 struct TypeList : ASTError {
   spReferenceType refType;
   std::vector<spReferenceType> refTypes;
+};
+
+/// TypeList2: Type { , Type }
+struct TypeList2 : ASTError {
+  spType type;
+  std::vector<std::pair<unsigned int, spType> > pairs;
 };
 
 /// TypeParameter:

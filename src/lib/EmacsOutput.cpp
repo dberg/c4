@@ -1071,8 +1071,8 @@ void EmacsOutput::setNonWildcardTypeArguments(
     setOp(nonWildcardTypeArguments->posLt);
   }
 
-  if (nonWildcardTypeArguments->typeList) {
-    setTypeList(nonWildcardTypeArguments->typeList);
+  if (nonWildcardTypeArguments->typeList2) {
+    setTypeList2(nonWildcardTypeArguments->typeList2);
   }
 
   if (nonWildcardTypeArguments->posGt) {
@@ -1546,6 +1546,10 @@ void EmacsOutput::setTypeList(const spTypeList &typeList) {
   for (unsigned i = 0; i < typeList->refTypes.size(); i++) {
     setReferenceType(typeList->refTypes[i]);
   }
+}
+
+void EmacsOutput::setTypeList2(const spTypeList2 &typeList2) {
+  // TODO:
 }
 
 void EmacsOutput::setTypeParameter(const spTypeParameter &typeParam) {

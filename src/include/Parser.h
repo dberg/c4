@@ -160,6 +160,7 @@ class Parser {
   std::vector<spTypeDeclaration> parseTypeDeclarations(
     std::vector<spAnnotation> &annotations);
   void parseTypeList(spTypeList &typeList);
+  void parseTypeList2(spTypeList2 &typeList2);
   void parseTypeParameter(spTypeParameter &typeParam);
   void parseTypeParameters(spTypeParameters &typeParams);
   void parseVariableDeclaratorId(spVariableDeclaratorId &varDeclId);
