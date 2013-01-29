@@ -1500,8 +1500,8 @@ void EmacsOutput::setType(const spType &type) {
 }
 
 void EmacsOutput::setTypeArgument(const spTypeArgument &typeArg) {
-  if (typeArg->opt == TypeArgument::OPT_REFERENCE_TYPE) {
-    if (typeArg->refType) { setReferenceType(typeArg->refType); }
+  if (typeArg->opt == TypeArgument::OPT_TYPE) {
+    if (typeArg->type) { setType(typeArg->type); }
   }
 
   if (typeArg->opt == TypeArgument::OPT_QUESTION_MARK) {
@@ -1513,8 +1513,8 @@ void EmacsOutput::setTypeArgument(const spTypeArgument &typeArg) {
       setKeyword(typeArg->opt2->tokExtendsOrSuper);
     }
 
-    if (typeArg->opt2->refType) {
-      setReferenceType(typeArg->opt2->refType);
+    if (typeArg->opt2->type) {
+      setType(typeArg->opt2->type);
     }
   }
 }

@@ -3244,14 +3244,16 @@ void Parser::parseStatementExpression(spStatementExpression &stmtExpr) {
 }
 
 /// TypeArgument:
-///   ReferenceType
-///   ? [(extends|super) ReferenceType]
+///   Type
+///   ? [(extends|super) Type]
 void Parser::parseTypeArgument(spTypeArgument &typeArg) {
   // option 1
-  if (lexer->getCurToken() == TOK_IDENTIFIER) {
-    typeArg->opt = TypeArgument::OPT_REFERENCE_TYPE;
-    typeArg->refType = spReferenceType(new ReferenceType);
-    parseReferenceType(typeArg->refType);
+  if (lexer->getCurToken() == TOK_IDENTIFIER
+    || isBasicType(lexer->getCurToken())) {
+    typeArg->opt = TypeArgument::OPT_TYPE;
+    typeArg->type = spType(new Type);
+    parseType(typeArg->type);
+    // TODO: it's an error if we have a non-array basic type
     return;
   }
 
@@ -3267,12 +3269,12 @@ void Parser::parseTypeArgument(spTypeArgument &typeArg) {
   typeArg->addErr(diag->addErr(ERR_NVAL_TYPE_ARGUMENT, lexer->getCursor() - 1));
 }
 
-/// TypeArgument: ? [(extends|super) ReferenceType]
+/// TypeArgument: ? [(extends|super) Type ]
 void Parser::parseTypeArgumentOpt2(spTypeArgumentOpt2 &opt2) {
   opt2->posQuestionMark = lexer->getCursor() - 1;
   lexer->getNextToken(); // consume '?'
 
-  // [(extends|super) Reference]
+  // [(extends|super) Type]
   if (lexer->getCurToken() != TOK_KEY_EXTENDS &&
     lexer->getCurToken() != TOK_KEY_SUPER) {
     return;
@@ -3289,9 +3291,10 @@ void Parser::parseTypeArgumentOpt2(spTypeArgumentOpt2 &opt2) {
     return;
   }
 
-  // ReferenceType
-  opt2->refType = spReferenceType(new ReferenceType);
-  parseReferenceType(opt2->refType);
+  // Type
+  opt2->type = spType(new Type);
+  parseType(opt2->type);
+  // TODO: it's an error if we have a non-array basic type
 }
 
 /// TypeArguments: < TypeArgument { , TypeArgument } >

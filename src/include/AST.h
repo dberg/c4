@@ -63,6 +63,17 @@
 ///   Type { , Type }
 /// We leave to the parser or the output to check for the invalid case of
 /// primitives that are not arrays. This is INVALID: <int>
+///
+/// 6. TypeArgument defined in the grammar
+/// TypeArgument:
+///   ReferenceType
+///   ? [ ( extends | super ) ReferenceType ]
+/// has the same problem as NonWildcardTypeArguments. It doesn't take into
+/// account arrays and basic types with arrays.
+/// Modified version
+/// TypeArgument:
+///   Type
+///   ? [ ( extends | super ) Type ]
 
 namespace djp {
 
@@ -760,27 +771,29 @@ struct TypeArguments : ASTError {
 };
 
 /// TypeArgument:
-///   ReferenceType
-///   ? [(extends|super) ReferenceType]
+///   Type
+///   ? [(extends|super) Type]
+/// See note in the top of this file.
 struct TypeArgument : ASTError {
   enum TypeArgumentOpt {
     OPT_UNDEFINED,
-    OPT_REFERENCE_TYPE,
+    OPT_TYPE,
     OPT_QUESTION_MARK,
   };
 
   TypeArgumentOpt opt;
-  spReferenceType refType; // opt1
+  spType type; // opt1
   spTypeArgumentOpt2 opt2;
 
   TypeArgument() : opt(OPT_UNDEFINED) {}
 };
 
-/// TypeArgument: ? [(extends|super) ReferenceType]
+/// TypeArgument: ? [(extends|super) Type ]
+/// See note in the top of this file.
 struct TypeArgumentOpt2 : ASTError {
   unsigned int posQuestionMark;
   spTokenExp tokExtendsOrSuper;
-  spReferenceType refType;
+  spType type;
 };
 
 /// Block: '{' BlockStatements '}'

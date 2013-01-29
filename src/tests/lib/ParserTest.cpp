@@ -1092,8 +1092,8 @@ TEST(Parser, Generics) {
   ASSERT_EQ(37, typeArgs->posLt);
   ASSERT_EQ(42, typeArgs->posGt);
 
-  ASSERT_EQ(39, typeArgs->typeArg->refType->typeArgs->posLt);
-  ASSERT_EQ(41, typeArgs->typeArg->refType->typeArgs->posGt);
+  ASSERT_EQ(39, typeArgs->typeArg->type->refType->typeArgs->posLt);
+  ASSERT_EQ(41, typeArgs->typeArg->type->refType->typeArgs->posGt);
 
   ASSERT_EQ(43, creator->opt2->classCreatorRest->args->posLParen);
   ASSERT_EQ(44, creator->opt2->classCreatorRest->args->posRParen);
@@ -1519,14 +1519,14 @@ TEST(Parser, PrimaryNewCreator) {
     creator2->opt1->createdName->typeArgsOrDiam->typeArgs->posLt);
   ASSERT_EQ(83,
     creator2->opt1->createdName->typeArgsOrDiam->typeArgs->posGt);
-  ASSERT_EQ(TypeArgument::OPT_REFERENCE_TYPE,
+  ASSERT_EQ(TypeArgument::OPT_TYPE,
     creator2->opt1->createdName->typeArgsOrDiam->typeArgs->typeArg->opt);
   ASSERT_EQ(79,
     creator2->opt1->createdName->typeArgsOrDiam->typeArgs->typeArg
-    ->refType->id->pos);
+    ->type->refType->id->pos);
   ASSERT_EQ("Long",
     creator2->opt1->createdName->typeArgsOrDiam->typeArgs->typeArg
-    ->refType->id->value);
+    ->type->refType->id->value);
 
   // Pair 3
   // "k4 = new MyClass()"
