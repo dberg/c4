@@ -9,13 +9,13 @@
 
 /// We have to modify a few production rules from the grammar.
 ///
-/// 1. Expression2Rest. Defined in the grammar as
+/// 1. Expression2Rest is defined in the grammar as follows
 /// Expression2Rest:
 ///   (1) { InfixOp Expression3 }
 ///   (2) instanceof Type
-/// but this doesn't take into account cases like
+/// but it doesn't take into account cases like
 ///   if (x == 1 && y instanceof String) { ... }
-/// Modified version
+/// Our version
 /// Expression2Rest:
 ///   { InfixOp Expression3 | instanceof Type }
 ///
@@ -23,30 +23,31 @@
 ///   (1) PrefixOp Expression3
 ///   (2) '(' Type ')' Expression3
 ///   (3) '(' Expression ')' Expression3
-///   (3) Primary { Selector } { PostfixOp }
-/// The italicized parenthesis are probably a typo in the grammar.
+///   (4) Primary { Selector } { PostfixOp }
+/// The italicized parentheses are probably a typo in the grammar.
 /// We treat them as terminals.
 ///
-/// 3. CatchType. Defined in the grammar as
+/// 3. CatchType is defined in the grammar as follows
 /// CatchType:
 ///   Identifier { '|' Identifier }
-/// Modified version
+/// Our version
 /// CatchType:
 ///   QualifiedIdentifier { '|' QualifiedIdentifier }
 ///
-/// 4. Creator. Defined in the grammar as
+/// 4. Creator is defined in the grammar as follows
 /// Creator:
 ///   NonWildcardTypeArguments CreatedName ClassCreatorRest
 ///   CreatedName ( ClassCreatorRest | ArrayCreatorRest )
-/// We have to update the grammar to take into account primitive arrays.
-/// For example: int[] a = new int[1];
-/// We add one more production rule to Creator. Modified version
+/// We have to take into account primitive arrays and we add one more production
+/// rule to Creator. For example
+///   int[] a = new int[1];
+/// Our version
 /// Creator:
 ///   NonWildcardTypeArguments CreatedName ClassCreatorRest
 ///   CreatedName ( ClassCreatorRest | ArrayCreatorRest )
 ///   BasicType ArrayCreatorRest
 ///
-/// 5. NonWildcardTypeArguments. Defined in the grammar as
+/// 5. NonWildcardTypeArguments is defined in the grammar as follows
 /// NonWildcardTypeArguments:
 ///   < TypeList >
 /// And TypeList expands to
@@ -56,21 +57,21 @@
 /// The problem is that it won't take into account arrays. Examples:
 ///   <String[]>
 ///   <int[]>
-/// Modified version
+/// Our version
 /// NonWildcardTypeArguments:
 ///   < TypeList2 >
 /// TypeList2:
 ///   Type { , Type }
-/// We leave to the parser or the output to check for the invalid case of
+/// The parser or the output code has to check for the invalid input of
 /// primitives that are not arrays. This is INVALID: <int>
 ///
-/// 6. TypeArgument defined in the grammar
+/// 6. TypeArgument is defined in the grammar as follows
 /// TypeArgument:
 ///   ReferenceType
 ///   ? [ ( extends | super ) ReferenceType ]
-/// has the same problem as NonWildcardTypeArguments. It doesn't take into
-/// account arrays and basic types with arrays.
-/// Modified version
+/// Like NonWildcardTypeArguments, this production rule doesn't take into
+/// account arrays, including basic type arrays.
+/// Our version
 /// TypeArgument:
 ///   Type
 ///   ? [ ( extends | super ) Type ]
@@ -1150,7 +1151,7 @@ struct Arguments : ASTError {
 ///   (1) PrefixOp Expression3
 ///   (2) '(' Type ')' Expression3
 ///   (3) '(' Expression ')' Expression3
-///   (3) Primary { Selector } { PostfixOp }
+///   (4) Primary { Selector } { PostfixOp }
 /// See note in the top of this file.
 struct Expression3 : ASTError {
   enum Expression3Opt {
@@ -1167,11 +1168,11 @@ struct Expression3 : ASTError {
   spPrefixOp prefixOp;
   spExpression3 expr3;
 
-  // 2,3
+  // (2,3)
   spExpression3Opt2 opt2;
   spExpression3Opt3 opt3;
 
-  // (3) Primary { Selector } { PostfixOp }
+  // (4) Primary { Selector } { PostfixOp }
   spPrimary primary;
   std::vector<spSelector> selectors;
   std::vector<spPostfixOp> postfixOps;
