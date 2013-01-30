@@ -4435,7 +4435,7 @@ void Parser::parseTypeParameters(spTypeParameters &typeParams) {
     typeParams->pairs.push_back(std::make_pair(pos, typeParam));
   }
 
-  if (lexer->getCurToken() == TOK_OP_GT) {
+  if (lexer->getCurToken() != TOK_OP_GT) {
     typeParams->addErr(diag->addErr(ERR_EXP_OP_GT, lexer->getCursor() - 1));
     return;
   }

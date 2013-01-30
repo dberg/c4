@@ -694,6 +694,35 @@ TEST(Parser, ClassDeclaration) {
   ASSERT_EQ("Def", decl->classDecl->nClassDecl->type->refType->id->value);
 }
 
+// -----------------------------------------------------------------------------
+// class A<T,U> {}
+// -----------------------------------------------------------------------------
+// NormalClassDeclaration
+//   'class'
+//   Identifier <-- 'A'
+//   TypeParameters
+//     '<'
+//     TypeParameter
+//       Identifier <-- 'T'
+//       ','
+//       TypeParameter
+//         Identifier <-- 'U'
+//     '>'
+//   ClassBody
+TEST(Parser, ClassTypeParameters) {
+  std::string filename = "Test.java";
+  std::string buffer = "class A<T,U> {}";
+  spDiagnosis diag = spDiagnosis(new Diagnosis);
+  Parser parser(filename, buffer, diag);
+  parser.parse();
+
+  spNormalClassDeclaration nClassDecl = parser.compilationUnit->typeDecls[0]
+    ->decl->classDecl->nClassDecl;
+
+  ASSERT_EQ(7, nClassDecl->typeParams->posLt);
+  ASSERT_EQ(11, nClassDecl->typeParams->posGt);
+}
+
 TEST(Parser, Comments) {
   std::string filename = "Test.java";
   std::string buffer =
