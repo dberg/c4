@@ -1283,6 +1283,99 @@ TEST(Parser, LocalVariableDeclarationStatement) {
 }
 
 // -----------------------------------------------------------------------------
+// class C { void m() { List<A> lst = new ArrayList<A>(); }}
+// -----------------------------------------------------------------------------
+// BlockStatement(1)
+//   LocalVariableDeclarationStatement
+//     Type
+//     VariableDeclarators
+//       ReferenceType
+//         Identifier <-- 'List'
+//           TypeArguments
+//             '<'
+//             Type
+//               ReferenceType <-- 'A'
+//             '>'
+//     ';'
+TEST(Parser, LocalVariableTypeArguments) {
+  std::string filename = "Test.java";
+  std::string buffer
+    = "class C { void m() { List<A> lst = new ArrayList<A>(); }}";
+  spDiagnosis diag = spDiagnosis(new Diagnosis);
+  Parser parser(filename, buffer, diag);
+  parser.parse();
+
+  spBlockStatement blockStmt = parser.compilationUnit->typeDecls[0]->decl
+    ->classDecl->nClassDecl->classBody->decls[0]->memberDecl->voidMethDeclRest
+    ->block->blockStmts[0];
+  ASSERT_EQ(BlockStatement::OPT_LOCAL_VAR, blockStmt->opt);
+  spLocalVariableDeclarationStatement localVar = blockStmt->localVar;
+  ASSERT_EQ(Type::OPT_REFERENCE_TYPE, localVar->type->opt);
+  ASSERT_EQ(21, localVar->type->refType->id->pos);
+  ASSERT_EQ("List", localVar->type->refType->id->value);
+  ASSERT_EQ(25, localVar->type->refType->typeArgs->posLt);
+  ASSERT_EQ(27, localVar->type->refType->typeArgs->posGt);
+  ASSERT_EQ(TypeArgument::OPT_TYPE,
+    localVar->type->refType->typeArgs->typeArg->opt);
+  ASSERT_EQ(Type::OPT_REFERENCE_TYPE,
+    localVar->type->refType->typeArgs->typeArg->type->opt);
+  ASSERT_EQ(26, localVar->type->refType->typeArgs->typeArg
+    ->type->refType->id->pos);
+  ASSERT_EQ("A", localVar->type->refType->typeArgs->typeArg
+    ->type->refType->id->value);
+  ASSERT_EQ(0, localVar->type->refType->typeArgs->typeArg
+    ->type->arrayDepth.size());
+  ASSERT_EQ(53, localVar->posSemiColon);
+}
+
+// -----------------------------------------------------------------------------
+// class C { void m() { List<A[]> lst = new ArrayList<A[]>(); }}
+// -----------------------------------------------------------------------------
+// BlockStatement(1)
+//   LocalVariableDeclarationStatement
+//     Type
+//     VariableDeclarators
+//       ReferenceType
+//         Identifier <-- 'List'
+//           TypeArguments
+//             '<'
+//             Type
+//               ReferenceType <-- 'A'
+//               '[]'
+//             '>'
+//     ';'
+TEST(Parser, LocalVariableTypeArgumentsArray) {
+  std::string filename = "Test.java";
+  std::string buffer
+    = "class C { void m() { List<A[]> lst = new ArrayList<A>(); }}";
+  spDiagnosis diag = spDiagnosis(new Diagnosis);
+  Parser parser(filename, buffer, diag);
+  parser.parse();
+
+  spBlockStatement blockStmt = parser.compilationUnit->typeDecls[0]->decl
+    ->classDecl->nClassDecl->classBody->decls[0]->memberDecl->voidMethDeclRest
+    ->block->blockStmts[0];
+  ASSERT_EQ(BlockStatement::OPT_LOCAL_VAR, blockStmt->opt);
+  spLocalVariableDeclarationStatement localVar = blockStmt->localVar;
+  ASSERT_EQ(Type::OPT_REFERENCE_TYPE, localVar->type->opt);
+  ASSERT_EQ(21, localVar->type->refType->id->pos);
+  ASSERT_EQ("List", localVar->type->refType->id->value);
+  ASSERT_EQ(25, localVar->type->refType->typeArgs->posLt);
+  ASSERT_EQ(29, localVar->type->refType->typeArgs->posGt);
+  ASSERT_EQ(TypeArgument::OPT_TYPE,
+    localVar->type->refType->typeArgs->typeArg->opt);
+  ASSERT_EQ(Type::OPT_REFERENCE_TYPE,
+    localVar->type->refType->typeArgs->typeArg->type->opt);
+  ASSERT_EQ(26, localVar->type->refType->typeArgs->typeArg
+    ->type->refType->id->pos);
+  ASSERT_EQ("A", localVar->type->refType->typeArgs->typeArg
+    ->type->refType->id->value);
+  ASSERT_EQ(1, localVar->type->refType->typeArgs->typeArg
+    ->type->arrayDepth.size());
+  ASSERT_EQ(55, localVar->posSemiColon);
+}
+
+// -----------------------------------------------------------------------------
 // class A { int m1() { return 1; }};
 // -----------------------------------------------------------------------------
 // ClassBody
