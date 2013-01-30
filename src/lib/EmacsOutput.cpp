@@ -1561,7 +1561,8 @@ void EmacsOutput::setTypeList2(const spTypeList2 &typeList2) {
 
 void EmacsOutput::setTypeParameter(const spTypeParameter &typeParam) {
   if (typeParam->id) {
-    setIdentifier(typeParam->id);
+    setIdentifier(typeParam->id,
+      EmacsOutput::OPT_IDENTIFIER_REFERENCE_TYPE);
   }
 
   if (typeParam->tokExtends) {
