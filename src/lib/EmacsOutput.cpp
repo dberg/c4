@@ -783,6 +783,66 @@ void EmacsOutput::setFormalParameterDeclsRest(
   }
 }
 
+void EmacsOutput::setGenericMethodOrConstructorDecl(
+  const spGenericMethodOrConstructorDecl &genMethodOrConstDecl) {
+
+  if (genMethodOrConstDecl->typeParams) {
+    setTypeParameters(genMethodOrConstDecl->typeParams);
+  }
+
+  if (genMethodOrConstDecl->rest) {
+    setGenericMethodOrConstructorRest(genMethodOrConstDecl->rest);
+  }
+}
+
+void EmacsOutput::setGenericMethodOrConstructorRest(
+  const spGenericMethodOrConstructorRest &rest) {
+
+  if (rest->opt == GenericMethodOrConstructorRest::OPT_TYPE_IDENTIFIER) {
+    if (rest->type) {
+      setType(rest->type);
+    }
+
+    if (rest->id) {
+      setIdentifier(rest->id);
+    }
+
+    if (rest->methodDeclRest) {
+      setMethodDeclaratorRest(rest->methodDeclRest);
+    }
+
+    return;
+  }
+
+  if (rest->opt == GenericMethodOrConstructorRest::OPT_VOID_IDENTIFIER) {
+    if (rest->tokVoid) {
+      setKeyword(rest->tokVoid);
+    }
+
+    if (rest->id) {
+      setIdentifier(rest->id);
+    }
+
+    if (rest->methodDeclRest) {
+      setMethodDeclaratorRest(rest->methodDeclRest);
+    }
+
+    return;
+  }
+
+  if (rest->opt == GenericMethodOrConstructorRest::OPT_IDENTIFIER_CONSTRUCTOR) {
+    if (rest->id) {
+      setIdentifier(rest->id);
+    }
+
+    if (rest->constDeclRest) {
+      setConstructorDeclaratorRest(rest->constDeclRest);
+    }
+
+    return;
+  }
+}
+
 void EmacsOutput::setIdentifier(const spIdentifier &identifier, IdentifierOpt opt) {
   int ini = identifier->pos + 1;
   int end = ini + identifier->value.length();
@@ -973,8 +1033,10 @@ void EmacsOutput::setMemberDecl(const spMemberDecl &memberDecl) {
     return;
   }
 
-  // TODO:
   if (memberDecl->opt == MemberDecl::OPT_GENERIC_METHOD_OR_CONSTRUCTOR_DECL) {
+    if (memberDecl->genMethodOrConstDecl) {
+      setGenericMethodOrConstructorDecl(memberDecl->genMethodOrConstDecl);
+    }
     return;
   }
 

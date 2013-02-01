@@ -81,6 +81,10 @@ class EmacsOutput {
   void setFormalParameterDecls(const spFormalParameterDecls &formParamDecls);
   void setFormalParameterDeclsRest(
     const spFormalParameterDeclsRest &formParamDeclsRest);
+  void setGenericMethodOrConstructorDecl(
+    const spGenericMethodOrConstructorDecl &genMethodOrConstDecl);
+  void setGenericMethodOrConstructorRest(
+    const spGenericMethodOrConstructorRest &rest);
   void setIdentifier(const spIdentifier &identifier,
     IdentifierOpt opt = EmacsOutput::OPT_UNDEFINED);
   void setIdentifierSuffix(const spIdentifierSuffix &idSuffix);
