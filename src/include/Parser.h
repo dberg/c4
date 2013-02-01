@@ -96,13 +96,9 @@ class Parser {
   void parseExpression3(spExpression3 &expr3);
   void parseExpression3Opt2(spExpression3Opt2 &opt2);
   void parseExpression3Opt3(spExpression3Opt3 &opt3);
-  void parseFinally(spFinally &finally);
-  void parseIdentifierSuffix(spIdentifierSuffix &idSuffix);
-  void parseIdentifierSuffixOpt1Helper(spIdentifierSuffix &idSuffix);
-  spImportDeclaration parseImportDeclaration();
-  spImportDeclarations parseImportDeclarations();
-  void parseInnerCreator(spInnerCreator &innerCreator);
   void parseFieldDeclaratorsRest(spFieldDeclaratorsRest &fieldDeclsRest);
+  void parseFinally(spFinally &finally);
+  void parseFloatingPointLiteral(spFloatingPointLiteral &fpLiteral);
   void parseForControl(spForControl &forCtrl);
   void parseForInit(spForInit &forInit);
   void parseForUpdate(spForUpdate &forUpdate);
@@ -114,8 +110,16 @@ class Parser {
   void parseFormalParameterDecls(spFormalParameterDecls &formParamDecls);
   void parseFormalParameterDeclsRest(
     spFormalParameterDeclsRest &formParamDeclsRest);
+  void parseGenericMethodOrConstructorDecl(
+    spGenericMethodOrConstructorDecl &genMethodOrConstDecl);
+  void parseGenericMethodOrConstructorRest(
+    spGenericMethodOrConstructorRest &rest);
+  void parseIdentifierSuffix(spIdentifierSuffix &idSuffix);
+  void parseIdentifierSuffixOpt1Helper(spIdentifierSuffix &idSuffix);
+  spImportDeclaration parseImportDeclaration();
+  spImportDeclarations parseImportDeclarations();
+  void parseInnerCreator(spInnerCreator &innerCreator);
   void parseIntegerLiteral(spIntegerLiteral &intLiteral);
-  void parseFloatingPointLiteral(spFloatingPointLiteral &fpLiteral);
   void parseLiteral(spLiteral &literal);
   void parseLocalVariableDeclarationStatement(
     spLocalVariableDeclarationStatement &localVar);

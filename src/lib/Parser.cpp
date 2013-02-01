@@ -1706,6 +1706,105 @@ void Parser::parseForVariableDeclaratorsRest(
   }
 }
 
+/// GenericMethodOrConstructorDecl:
+/// TypeParameters GenericMethodOrConstructorRest
+void Parser::parseGenericMethodOrConstructorDecl(
+  spGenericMethodOrConstructorDecl &genMethodOrConstDecl) {
+
+  genMethodOrConstDecl->typeParams = spTypeParameters(new TypeParameters);
+  parseTypeParameters(genMethodOrConstDecl->typeParams);
+  if (genMethodOrConstDecl->typeParams->err) {
+    genMethodOrConstDecl->addErr(-1);
+    return;
+  }
+
+  genMethodOrConstDecl->rest
+    = spGenericMethodOrConstructorRest(new GenericMethodOrConstructorRest);
+  parseGenericMethodOrConstructorRest(genMethodOrConstDecl->rest);
+  if (genMethodOrConstDecl->rest->err) {
+    genMethodOrConstDecl->addErr(-1);
+  }
+}
+
+/// GenericMethodOrConstructorRest:
+/// (1) Type Identifier MethodDeclaratorRest
+/// (2) void Identifier MethodDeclaratorRest
+/// (3) Identifier ConstructorDeclaratorRest
+void Parser::parseGenericMethodOrConstructorRest(
+  spGenericMethodOrConstructorRest &rest) {
+
+  if (lexer->getCurToken() == TOK_KEY_VOID) {
+    // 'void'
+    rest->opt = GenericMethodOrConstructorRest::OPT_VOID_IDENTIFIER;
+    rest->tokVoid = spTokenExp(new TokenExp(
+      lexer->getCursor() - tokenUtil.getTokenLength(
+        lexer->getCurToken()), lexer->getCurToken()));
+    lexer->getNextToken(); // consume 'void'
+
+    // Identifier
+    if (lexer->getCurToken() == TOK_IDENTIFIER) {
+      rest->addErr(diag->addErr(ERR_EXP_IDENTIFIER, lexer->getCursor() - 1));
+      return;
+    }
+
+    // MethodDeclaratorRest
+    rest->methodDeclRest = spMethodDeclaratorRest(new MethodDeclaratorRest);
+    parseMethodDeclaratorRest(rest->methodDeclRest);
+    if (rest->methodDeclRest->err) {
+      rest->addErr(-1);
+    }
+
+    return;
+  }
+
+  // We have to decide between (1) and (2). If we have an identifier we consume
+  // it and if the next token is an opening parenthesis we know we have
+  // (3). Otherwise we assume we have (1).
+  State state;
+  saveState(state);
+  if (lexer->getCurToken() == TOK_IDENTIFIER) {
+    spIdentifier id = spIdentifier(new Identifier(
+      lexer->getCurTokenIni(), lexer->getCurTokenStr()));
+    lexer->getNextToken(); // consume Identifier
+    if (lexer->getCurToken() == TOK_LPAREN) {
+      // (3) Identifier ConstructorDeclaratorRest
+      rest->opt = GenericMethodOrConstructorRest::OPT_IDENTIFIER_CONSTRUCTOR;
+      rest->id = id;
+      rest->constDeclRest
+        = spConstructorDeclaratorRest(new ConstructorDeclaratorRest);
+      parseConstructorDeclaratorRest(rest->constDeclRest);
+      if (rest->constDeclRest->err) {
+	rest->addErr(-1);
+      }
+      return;
+    }
+
+    restoreState(state);
+  }
+
+  // (1) Type Identifier MethodDeclaratorRest
+  rest->opt = GenericMethodOrConstructorRest::OPT_TYPE_IDENTIFIER;
+  // Type
+  rest->type = spType(new Type);
+  parseType(rest->type);
+  if (rest->type->err) {
+    rest->addErr(-1);
+    return;
+  }
+
+  // Identifier
+  rest->id = spIdentifier(new Identifier(
+    lexer->getCurTokenIni(), lexer->getCurTokenStr()));
+  lexer->getNextToken(); // consume Identifier
+
+  // MethodDeclaratorRest
+  rest->methodDeclRest = spMethodDeclaratorRest(new MethodDeclaratorRest);
+  parseMethodDeclaratorRest(rest->methodDeclRest);
+  if (rest->methodDeclRest->err) {
+    rest->addErr(-1);
+  }
+}
+
 /// IdentifierSuffix:
 ///   '[' ( {'[' ']'} . class | Expression ) ']'
 ///   Arguments
@@ -3782,7 +3881,17 @@ void Parser::parseMemberDecl(spMemberDecl &memberDecl) {
     return;
   }
 
-  // TODO: GenericMethodOrConstructorDecl
+  // GenericMethodOrConstructorDecl
+  if (lexer->getCurToken() == TOK_OP_LT) {
+    memberDecl->opt = MemberDecl::OPT_GENERIC_METHOD_OR_CONSTRUCTOR_DECL;
+    memberDecl->genMethodOrConstDecl
+      = spGenericMethodOrConstructorDecl(new GenericMethodOrConstructorDecl);
+    parseGenericMethodOrConstructorDecl(memberDecl->genMethodOrConstDecl);
+    if (memberDecl->genMethodOrConstDecl->err) {
+      memberDecl->addErr(-1);
+    }
+    return;
+  }
 
   // ClassDeclaration
   if (lexer->getCurToken() == TOK_KEY_CLASS) {

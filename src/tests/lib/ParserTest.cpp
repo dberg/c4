@@ -1036,6 +1036,58 @@ TEST(Parser, ForExpr) {
 }
 
 // -----------------------------------------------------------------------------
+// class A { private <E> E m(List<T> l) { return l.get(0); }}
+// -----------------------------------------------------------------------------
+// ClassBodyDeclaration(3)
+//   Modifier <-- 'private'
+//   MemberDecl(4)
+//     GenericMethodOrConstructorDecl
+//       TypeParameters
+//         '<'
+//         TypeParameter <-- 'E'
+//         '>'
+//       GenericMethodOrConstructorRest(1)
+//         Type <-- 'E'
+//         Identifier <-- 'm'
+//         MethodDeclaratorRest
+//         FormalParameters
+//           '('
+//           FormalParameterDecls
+//             Type <-- 'List<T>'
+//             FormalParameterDeclsRest
+//               VariableDeclaratorId
+//                 Identifier
+//           ')'
+//         Block
+//           '{'
+//           BlockStatements
+//           '}'
+TEST(Parser, GenericMethod) {
+  std::string filename = "Test.java";
+  std::string buffer
+    = "class A { private <E> E m(List<T> l) { return l.get(0); }}";
+  spDiagnosis diag = spDiagnosis(new Diagnosis);
+  Parser parser(filename, buffer, diag);
+  parser.parse();
+
+  spMemberDecl memberDecl = parser.compilationUnit->typeDecls[0]->decl
+    ->classDecl->nClassDecl->classBody->decls[0]->memberDecl;
+  ASSERT_EQ(MemberDecl::OPT_GENERIC_METHOD_OR_CONSTRUCTOR_DECL,
+    memberDecl->opt);
+
+  // <E>
+  ASSERT_EQ(18, memberDecl->genMethodOrConstDecl->typeParams->posLt);
+  ASSERT_EQ(20, memberDecl->genMethodOrConstDecl->typeParams->posGt);
+
+  // E m
+  ASSERT_EQ(GenericMethodOrConstructorRest::OPT_TYPE_IDENTIFIER,
+    memberDecl->genMethodOrConstDecl->rest->opt);
+  ASSERT_EQ(Type::OPT_REFERENCE_TYPE,
+    memberDecl->genMethodOrConstDecl->rest->type->opt);
+  ASSERT_EQ("m", memberDecl->genMethodOrConstDecl->rest->id->value);
+}
+
+// -----------------------------------------------------------------------------
 // u = m.r(j, new A<B<T>>() {});
 // -----------------------------------------------------------------------------
 // Block

@@ -145,6 +145,10 @@ typedef boost::shared_ptr<struct FormalParameters> spFormalParameters;
 typedef boost::shared_ptr<struct FormalParameterDecls> spFormalParameterDecls;
 typedef boost::shared_ptr<struct FormalParameterDeclsRest>
   spFormalParameterDeclsRest;
+typedef boost::shared_ptr<struct GenericMethodOrConstructorDecl>
+  spGenericMethodOrConstructorDecl;
+typedef boost::shared_ptr<struct GenericMethodOrConstructorRest>
+  spGenericMethodOrConstructorRest;
 typedef boost::shared_ptr<struct Identifier> spIdentifier;
 typedef boost::shared_ptr<struct IdentifierSuffix> spIdentifierSuffix;
 typedef boost::shared_ptr<struct ImportDeclaration> spImportDeclaration;
@@ -404,14 +408,14 @@ struct MemberDecl : ASTError {
   // (3) Identifier ConstructorDeclaratorRest
   spConstructorDeclaratorRest constDeclRest;
 
-  // TODO:
-  // GenericMethodOrConstructorDecl
+  // (4) GenericMethodOrConstructorDecl
+  spGenericMethodOrConstructorDecl genMethodOrConstDecl;
 
-  // ClassDeclaration
+  // (5) ClassDeclaration
   spClassDeclaration classDecl;
 
   // TODO:
-  // InterfaceDeclaration
+  // (6) InterfaceDeclaration
 
   MemberDecl() : opt(OPT_UNDEFINED) {}
 };
@@ -871,6 +875,36 @@ struct Annotation {
   spQualifiedIdentifier qualifiedId;
   spAnnotationElement elem;
   Annotation() : posTokAt(-1), err(false) {}
+};
+
+/// GenericMethodOrConstructorDecl:
+/// TypeParameters GenericMethodOrConstructorRest
+struct GenericMethodOrConstructorDecl : ASTError {
+  spTypeParameters typeParams;
+  spGenericMethodOrConstructorRest rest;
+};
+
+/// GenericMethodOrConstructorRest:
+/// (1) Type Identifier MethodDeclaratorRest
+/// (2) void Identifier MethodDeclaratorRest
+/// (3) Identifier ConstructorDeclaratorRest
+struct GenericMethodOrConstructorRest : ASTError {
+  enum GenericMethodOrConstructorRestOpt {
+    OPT_UNDEFINED,
+    OPT_TYPE_IDENTIFIER,
+    OPT_VOID_IDENTIFIER,
+    OPT_IDENTIFIER_CONSTRUCTOR,
+  };
+
+  GenericMethodOrConstructorRestOpt opt;
+
+  GenericMethodOrConstructorRest() : opt(OPT_UNDEFINED) {}
+
+  spType type;
+  spIdentifier id;
+  spMethodDeclaratorRest methodDeclRest;
+  spTokenExp tokVoid;
+  spConstructorDeclaratorRest constDeclRest;
 };
 
 /// Identifier: IdentifierChars but not Keyword or BooleanLiteral or NullLiteral
