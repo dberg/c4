@@ -3851,30 +3851,43 @@ void Parser::parseMemberDecl(spMemberDecl &memberDecl) {
   // the return type of the following method:
   //     ReturnType method(...) {}
   //     ----------
-  // Or, our identifier can represent the constructor of the following class:
+  // Or, a member declaration like:
+  //     class MyClass { MyClass m; }
+  // Finally, our identifier can represent a constructor:
   //     class MyClass { MyClass() {...} }
   //                     ---------
   // We consult the symbol to check if the Identifier name is the same as the
   // class name in our current scope.
-  if (lexer->getCurToken() == TOK_IDENTIFIER) {
-    // (3) Identifier ConstructorDeclaratorRest
-    if (st.isConstructor(lexer->getCurTokenStr())) {
-      memberDecl->opt = MemberDecl::OPT_IDENTIFIER_CONSTRUCTOR_DECLARATOR_REST;
-      st.updateScopeType(ST_METHOD);
-
-      // Identifier
-      memberDecl->id = spIdentifier(new Identifier(lexer->getCurTokenIni(),
-        lexer->getCurTokenStr()));
-      st.addSym(ST_IDENTIFIER, lexer->getCurTokenIni(), lexer->getCursor(),
-        src->getLine(), lexer->getCurTokenStr());
-      lexer->getNextToken(); // consume Identifier
-
-      // ConstructorDeclaratorRest
-      memberDecl->constDeclRest = spConstructorDeclaratorRest(
-        new ConstructorDeclaratorRest);
-      parseConstructorDeclaratorRest(memberDecl->constDeclRest);
-      return;
+  bool isConstructor = false;
+  if (lexer->getCurToken() == TOK_IDENTIFIER
+    && st.isConstructor(lexer->getCurTokenStr())) {
+    // We look ahead for a left parenthesis
+    State state;
+    saveState(state);
+    lexer->getNextToken(); // consume identifier
+    if (lexer->getCurToken() == TOK_LPAREN) {
+      isConstructor = true;
     }
+    restoreState(state);
+  }
+
+  if (isConstructor) {
+    // (3) Identifier ConstructorDeclaratorRest
+    memberDecl->opt = MemberDecl::OPT_IDENTIFIER_CONSTRUCTOR_DECLARATOR_REST;
+    st.updateScopeType(ST_METHOD);
+
+    // Identifier
+    memberDecl->id = spIdentifier(new Identifier(lexer->getCurTokenIni(),
+      lexer->getCurTokenStr()));
+    st.addSym(ST_IDENTIFIER, lexer->getCurTokenIni(), lexer->getCursor(),
+      src->getLine(), lexer->getCurTokenStr());
+    lexer->getNextToken(); // consume Identifier
+
+    // ConstructorDeclaratorRest
+    memberDecl->constDeclRest = spConstructorDeclaratorRest(
+      new ConstructorDeclaratorRest);
+    parseConstructorDeclaratorRest(memberDecl->constDeclRest);
+    return;
   }
 
   // (1) MethodOrFieldDecl
