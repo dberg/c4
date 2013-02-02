@@ -342,9 +342,9 @@ struct ClassBody : ASTError {
 };
 
 /// ClassBodyDeclaration:
-///   ;
-///   {Modifier} MemberDecl
-///   [static] Block
+///   (1) ;
+///   (2) {Modifier} MemberDecl
+///   (3) [static] Block
 /// Our Modifier structure defines an array of annotation and tokens so we treat
 /// {Modifier} as spModifier.
 ///
@@ -354,7 +354,7 @@ struct ClassBody : ASTError {
 ///   InstanceInitializer
 ///   StaticInitializer
 ///   ConstructorDeclaration
-struct ClassBodyDeclaration {
+struct ClassBodyDeclaration : ASTError {
   enum ClassBodyDeclarationOpt {
     OPT_UNDEFINED,
     OPT_MODIFIER_MEMBER_DECL,  // { Modifier } MemberDecl
@@ -363,14 +363,13 @@ struct ClassBodyDeclaration {
 
   ClassBodyDeclarationOpt opt;
 
-  // OPT_MODIFIER_MEMBER_DECL
+  // (2) {Modifier} MemberDecl
   spModifier modifier;
   spMemberDecl memberDecl;
 
-  // TODO:
-  // OPT_STATIC_BLOCK
-  //spTokenExp staticToken;
-  //spBlock block;
+  // (3) [static] Block
+  spTokenExp tokStatic;
+  spBlock block;
 
   ClassBodyDeclaration() : opt(OPT_UNDEFINED) {}
 };

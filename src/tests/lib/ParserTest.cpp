@@ -1938,6 +1938,46 @@ TEST(Parser, StatementSynchronized) {
 }
 
 // -----------------------------------------------------------------------------
+// class A { int a; static { a = 10; }}
+// -----------------------------------------------------------------------------
+// ClassBodyDeclaration[0](1)
+//   MemberDecl(1)
+//     Type <-- int
+//     Identifier <-- a
+//     MethodOrFieldRest
+//       FieldDeclaratorsRest
+//         VariableDeclaratorRest <-- nothing to see here
+//       ';'
+// ClassBodyDeclaration[1](3)
+//   'static'
+//   Block
+//     '{'
+//     BlockStatements
+//     '}'
+TEST(Parser, StaticInitializer) {
+  std::string filename = "Test.java";
+  std::string buffer = "class A { int a; static { a = 10; }}";
+
+  spDiagnosis diag = spDiagnosis(new Diagnosis);
+  Parser parser(filename, buffer, diag);
+  parser.parse();
+
+  spClassBodyDeclaration decl0 = parser.compilationUnit->typeDecls[0]->decl
+    ->classDecl->nClassDecl->classBody->decls[0];
+  ASSERT_EQ(ClassBodyDeclaration::OPT_MODIFIER_MEMBER_DECL, decl0->opt);
+  ASSERT_EQ(MemberDecl::OPT_METHOD_OR_FIELD_DECL, decl0->memberDecl->opt);
+  ASSERT_EQ(15,
+    decl0->memberDecl->methodOrFieldDecl->methodOrFieldRest->posSemiColon);
+
+  spClassBodyDeclaration decl1 = parser.compilationUnit->typeDecls[0]->decl
+    ->classDecl->nClassDecl->classBody->decls[1];
+  ASSERT_EQ(ClassBodyDeclaration::OPT_STATIC_BLOCK, decl1->opt);
+  ASSERT_EQ(17, decl1->tokStatic->pos);
+  ASSERT_EQ(24, decl1->block->posLCBracket);
+  ASSERT_EQ(34, decl1->block->posRCBracket);
+}
+
+// -----------------------------------------------------------------------------
 // class A { void m() { int a = x == 0 ? 1 : 2; }}
 // -----------------------------------------------------------------------------
 // BlockStatement(1)

@@ -3757,10 +3757,54 @@ void Parser::parseClassBody(spClassBody &classBody) {
 }
 
 /// ClassBodyDeclaration:
-///   ;
-///   {Modifier} MemberDecl
-///   [static] Block
+///   (1) ;
+///   (2) {Modifier} MemberDecl
+///   (3) [static] Block
 void Parser::parseClassBodyDeclaration(spClassBodyDeclaration &decl) {
+
+  // The keyword 'static' is ambiguous. It can lead to option (2) or (3).
+  bool isOption3 = false;
+  if (lexer->getCurToken() == TOK_LCURLY_BRACKET) {
+    isOption3 = true;
+  } else if (lexer->getCurToken() == TOK_KEY_STATIC) {
+    // We look ahead for a '{'
+    State state;
+    saveState(state);
+    lexer->getNextToken(); // consume 'static'
+    if (lexer->getCurToken() == TOK_LCURLY_BRACKET) {
+      isOption3 = true;
+    }
+    restoreState(state);
+  }
+
+  // (3) [static] Block
+  if (isOption3) {
+    decl->opt = ClassBodyDeclaration::OPT_STATIC_BLOCK;
+    // [static]
+    if (lexer->getCurToken() == TOK_KEY_STATIC) {
+      decl->tokStatic = spTokenExp(new TokenExp(
+        lexer->getCursor() - tokenUtil.getTokenLength(
+          lexer->getCurToken()), lexer->getCurToken()));
+      lexer->getNextToken(); // consume 'static'
+    }
+
+    // Block
+    if (lexer->getCurToken() != TOK_LCURLY_BRACKET) {
+      decl->addErr(diag->addErr(
+        ERR_EXP_LCURLY_BRACKET, lexer->getCursor() - 1));
+      return;
+    }
+
+    decl->block = spBlock(new Block);
+    parseBlock(decl->block);
+    if (decl->block->err) {
+      decl->addErr(-1);
+    }
+
+    return;
+  }
+
+  // (2) {Modifier} MemberDecl
   if (isModifierOrMemberMemberDeclCandidate(lexer->getCurToken())) {
     st.addSym(ST_MEMBER_DECL, lexer->getCurTokenIni(), 0, src->getLine(), "");
     decl->opt = ClassBodyDeclaration::OPT_MODIFIER_MEMBER_DECL;
@@ -3772,10 +3816,8 @@ void Parser::parseClassBodyDeclaration(spClassBodyDeclaration &decl) {
     return;
   }
 
-  // TODO: [static] Block
-
-  // TODO:
-  //lexer->getNextToken();
+  // Error
+  decl->addErr(-1);
 }
 
 /// ClassCreatorRest: Arguments [ClassBody]
