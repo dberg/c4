@@ -274,9 +274,17 @@ void EmacsOutput::setClassBodyDeclaration(const spClassBodyDeclaration &decl) {
     return;
   }
 
-  // TODO:
   if (decl->opt == ClassBodyDeclaration::OPT_STATIC_BLOCK) {
-    //outSH += "(djp-member-decl-modifier-static-block ";
+    outSH += "(djp-member-decl-modifier-static-block ";
+    if (decl->tokStatic) {
+      setKeyword(decl->tokStatic);
+    }
+
+    if (decl->block) {
+      setBlock(decl->block);
+    }
+
+    outSH += ")";
     return;
   }
 }
