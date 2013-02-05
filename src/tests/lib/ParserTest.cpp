@@ -902,6 +902,75 @@ TEST(Parser, Expression3Opt2) {
 }
 
 // -----------------------------------------------------------------------------
+// class C { C c = new C() { {} }; }
+// -----------------------------------------------------------------------------
+// MethodOrFieldDecl
+//   Type <-- 'C'
+//   Identifier <-- 'c'
+//   MethodOrFieldRest(1)
+//     FieldDeclaratorsRest
+//       VariableDeclaratorRest
+//         '='
+//         VariableInitializer(2)
+//           Expression*
+//     ';'
+//
+// Expression*
+//   Expression1
+//     Expression2
+//       Expression3
+//         Primary(5)
+//           'new'
+//           Creator**
+//
+// Creator(2)
+//   CreatedName
+//     Identifier <-- C
+//   ClassCreatorRest
+//     Arguments <-- '()'
+//     ClassBody
+//       '{'
+//       ClassBodyDeclaration(3)
+//         Block
+//           '{'
+//             BlockStatements <-- empty!
+//           '}'
+//       '}'
+TEST(Parser, FieldDeclaratorWithClassBody) {
+  std::string filename = "Test.java";
+  std::string buffer = "class C { C c = new C() { {} }; }";
+  spDiagnosis diag = spDiagnosis(new Diagnosis);
+  Parser parser(filename, buffer, diag);
+  parser.parse();
+
+  spMethodOrFieldRest methodOrFieldRest = parser.compilationUnit->typeDecls[0]
+    ->decl->classDecl->nClassDecl->classBody->decls[0]->memberDecl
+    ->methodOrFieldDecl->methodOrFieldRest;
+  ASSERT_EQ(MethodOrFieldRest::OPT_FIELD, methodOrFieldRest->opt);
+  ASSERT_EQ(30, methodOrFieldRest->posSemiColon);
+  ASSERT_EQ(14, methodOrFieldRest->fieldDeclsRest->varDeclRest->posEquals);
+  ASSERT_EQ(VariableInitializer::OPT_EXPRESSION,
+    methodOrFieldRest->fieldDeclsRest->varDeclRest->varInit->opt);
+
+  spPrimary primary = methodOrFieldRest->fieldDeclsRest->varDeclRest->varInit
+    ->expr->expr1->expr2->expr3->primary;
+  ASSERT_EQ(Primary::OPT_NEW_CREATOR, primary->opt);
+  ASSERT_EQ(Creator::OPT_CREATED_NAME, primary->newCreator->creator->opt);
+  spClassCreatorRest classCreatorRest
+    = primary->newCreator->creator->opt2->classCreatorRest;
+
+  ASSERT_EQ(21, classCreatorRest->args->posLParen);
+  ASSERT_EQ(22, classCreatorRest->args->posRParen);
+  ASSERT_EQ(24, classCreatorRest->classBody->posLCBrace);
+  ASSERT_EQ(29, classCreatorRest->classBody->posRCBrace);
+
+  ASSERT_EQ(ClassBodyDeclaration::OPT_STATIC_BLOCK,
+    classCreatorRest->classBody->decls[0]->opt);
+  ASSERT_EQ(26, classCreatorRest->classBody->decls[0]->block->posLCBracket);
+  ASSERT_EQ(27, classCreatorRest->classBody->decls[0]->block->posRCBracket);
+}
+
+// -----------------------------------------------------------------------------
 // class A { void m() { for (int i = 0; i < max; i++) { ; }}}
 // -----------------------------------------------------------------------------
 // BlockStatement(3)

@@ -247,7 +247,7 @@ bool isValidInitTokenOfClassBodyDeclaration(int token) {
   }
 
   // Prior to a Block
-  if (TOK_KEY_STATIC == token) {
+  if (TOK_KEY_STATIC == token || TOK_LCURLY_BRACKET == token) {
     return true;
   }
 
@@ -3832,7 +3832,7 @@ void Parser::parseClassCreatorRest(spClassCreatorRest &classCreatorRest) {
 
   // ClassBody
   if (lexer->getCurToken() == TOK_LCURLY_BRACKET) {
-    spClassBody classBody = spClassBody(new ClassBody());
+    spClassBody classBody = spClassBody(new ClassBody);
     classCreatorRest->classBody = classBody;
     parseClassBody(classCreatorRest->classBody);
   }
