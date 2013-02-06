@@ -1042,6 +1042,28 @@ TEST(Parser, For) {
 }
 
 // -----------------------------------------------------------------------------
+// class S { void m() { for (;;) { break; }}}
+// -----------------------------------------------------------------------------
+// Statement(10)
+//   'for'
+//   '('
+//   ForControl
+//   ')'
+//   Statement
+TEST(Parser, ForBreak) {
+  std::string filename = "Test.java";
+  std::string buffer = "class S { void m() { for (;;) { break; }}}";
+  spDiagnosis diag = spDiagnosis(new Diagnosis);
+  Parser parser(filename, buffer, diag);
+  parser.parse();
+
+  spStatement stmt = parser.compilationUnit->typeDecls[0]->decl->classDecl
+    ->nClassDecl->classBody->decls[0]->memberDecl->voidMethDeclRest->block
+    ->blockStmts[0]->stmt;
+  ASSERT_EQ(Statement::OPT_FOR, stmt->opt);
+}
+
+// -----------------------------------------------------------------------------
 // class A { void m() { for (int i = 0; (i + 1) < max; i++) {} }}
 // -----------------------------------------------------------------------------
 // BlockStatement

@@ -1482,7 +1482,7 @@ void Parser::parseFieldDeclaratorsRest(spFieldDeclaratorsRest &fieldDeclsRest) {
 
 /// ForControl
 ///   (1) ForVarControl
-///   (2) ForInit ; [Expression] ; [ForUpdate]
+///   (2) [ForInit] ; [Expression] ; [ForUpdate]
 void Parser::parseForControl(spForControl &forCtrl) {
   State state;
   saveState(state);
@@ -1499,9 +1499,11 @@ void Parser::parseForControl(spForControl &forCtrl) {
   restoreState(state);
   forCtrl->opt = ForControl::OPT_FOR_INIT;
 
-  // (2) ForInit ; [Expression] ; [ForUpdate]
-  forCtrl->forInit = spForInit(new ForInit);
-  parseForInit(forCtrl->forInit);
+  // (2) [ForInit] ; [Expression] ; [ForUpdate]
+  if (lexer->getCurToken() != TOK_SEMICOLON) {
+    forCtrl->forInit = spForInit(new ForInit);
+    parseForInit(forCtrl->forInit);
+  }
 
   // ';'
   if (lexer->getCurToken() != TOK_SEMICOLON) {
@@ -1531,10 +1533,12 @@ void Parser::parseForControl(spForControl &forCtrl) {
   lexer->getNextToken(); // consume ';'
 
   // [ForUpdate]
-  forCtrl->forUpdate = spForUpdate(new ForUpdate);
-  parseForUpdate(forCtrl->forUpdate);
-  if (forCtrl->forUpdate->err) {
-    forCtrl->addErr(-1);
+  if (lexer->getCurToken() != TOK_RPAREN) {
+    forCtrl->forUpdate = spForUpdate(new ForUpdate);
+    parseForUpdate(forCtrl->forUpdate);
+    if (forCtrl->forUpdate->err) {
+      forCtrl->addErr(-1);
+    }
   }
 }
 
@@ -3092,7 +3096,7 @@ void Parser::parseStatement(spStatement &stmt) {
     stmt->opt = Statement::OPT_FOR;
 
     // for
-    spTokenExp tokFor = spTokenExp(new TokenExp(
+    stmt->tokFor = spTokenExp(new TokenExp(
       lexer->getCursor() - tokenUtil.getTokenLength(
       lexer->getCurToken()), lexer->getCurToken()));
     lexer->getNextToken(); // consume 'for'

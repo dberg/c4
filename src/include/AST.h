@@ -75,6 +75,17 @@
 /// TypeArgument:
 ///   Type
 ///   ? [ ( extends | super ) Type ]
+///
+/// 7. ForControl is defined in the grammar as follows
+/// ForControl:
+///   ForVarControl
+///   ForInit ; [Expression] ; [ForUpdate]
+/// We have to make ForInit optional to handle this case
+///   for (;;) { ... }
+/// Our version
+/// ForControl:
+///   ForVarControl
+///   [ForInit] ; [Expression] ; [ForUpdate]
 
 namespace djp {
 
@@ -1424,9 +1435,10 @@ struct FloatingPointLiteral {
   FloatingPointLiteral() : opt(OPT_UNDEFINED), pos(-1) {}
 };
 
-/// ForControl
+/// ForControl:
 ///   (1) ForVarControl
-///   (2) ForInit ; [Expression] ; [ForUpdate]
+///   (2) [ForInit] ; [Expression] ; [ForUpdate]
+/// See note in the top of this file.
 struct ForControl : ASTError {
   enum ForControlOpt {
     OPT_UNDEFINED,
