@@ -3135,7 +3135,26 @@ void Parser::parseStatement(spStatement &stmt) {
 
   // (11) break [Identifier] ;
   if (lexer->getCurToken() == TOK_KEY_BREAK) {
-    // TODO:
+    stmt->opt = Statement::OPT_BREAK;
+    stmt->tokBreak = spTokenExp(new TokenExp(
+      lexer->getCursor() - tokenUtil.getTokenLength(
+      lexer->getCurToken()), lexer->getCurToken()));
+    lexer->getNextToken(); // consume 'break'
+
+    if (lexer->getCurToken() == TOK_IDENTIFIER) {
+      stmt->id = spIdentifier(new Identifier(
+        lexer->getCurTokenIni(), lexer->getCurTokenStr()));
+      lexer->getNextToken(); // consume Identifier
+    }
+
+    if (lexer->getCurToken() != TOK_SEMICOLON) {
+      stmt->addErr(diag->addErr(ERR_EXP_SEMICOLON, lexer->getCursor() - 1));
+      return;
+    }
+
+    stmt->posSemiColon = lexer->getCursor() - 1;
+    lexer->getNextToken(); // consume ';'
+
     return;
   }
 

@@ -699,13 +699,13 @@ struct Statement : ASTError {
   // shared 1,15,16
   spBlock block;
 
-  // shared 2,4,12,13,14
+  // shared 2,4,11,12,13,14
   unsigned posSemiColon;
 
   // shared 5,8,15
   spParExpression parExpr;
 
-  // shared 3,12
+  // shared 3,11,12
   spIdentifier id;
 
   // (1) Block
@@ -735,6 +735,9 @@ struct Statement : ASTError {
   unsigned posRParen;
   spForControl forCtrl;
   spStatement stmtFor;
+
+  // (11) break [Identifier] ;
+  spTokenExp tokBreak;
 
   // (12) continue [Identifier] ;
   spTokenExp tokContinue;
