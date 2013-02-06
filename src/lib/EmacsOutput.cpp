@@ -1476,7 +1476,17 @@ void EmacsOutput::setStatement(const spStatement &stmt) {
   }
 
   if (stmt->opt == Statement::OPT_BREAK) {
-    // TODO:
+    if (stmt->tokBreak) {
+      setKeyword(stmt->tokBreak);
+    }
+
+    if (stmt->id) {
+      setIdentifier(stmt->id);
+    }
+
+    if (stmt->posSemiColon) {
+      setOp(stmt->posSemiColon);
+    }
     return;
   }
 
