@@ -213,6 +213,12 @@ typedef boost::shared_ptr<struct Statement> spStatement;
 typedef boost::shared_ptr<struct StatementExpression> spStatementExpression;
 typedef boost::shared_ptr<struct StringLiteral> spStringLiteral;
 typedef boost::shared_ptr<struct SuperSuffix> spSuperSuffix;
+typedef boost::shared_ptr<struct SwitchBlockStatementGroup>
+  spSwitchBlockStatementGroup;
+typedef boost::shared_ptr<struct SwitchBlockStatementGroups>
+  spSwitchBlockStatementGroups;
+typedef boost::shared_ptr<struct SwitchLabel> spSwitchLabel;
+typedef boost::shared_ptr<struct SwitchLabels> spSwitchLabels;
 typedef boost::shared_ptr<struct TokenExp> spTokenExp;
 typedef boost::shared_ptr<struct TokenExp> spNullLiteral;
 typedef boost::shared_ptr<struct Type> spType;
@@ -721,7 +727,7 @@ struct Statement : ASTError {
   // shared 2,4,11,12,13,14
   unsigned posSemiColon;
 
-  // shared 5,8,15
+  // shared 5,7,8,15
   spParExpression parExpr;
 
   // shared 3,11,12
@@ -743,6 +749,12 @@ struct Statement : ASTError {
   spStatement stmtIf;
   spTokenExp tokElse;
   spStatement stmtElse;
+
+  // (7) switch ParExpression '{' SwitchBlockStatementGroups '}'
+  spTokenExp tokSwitch;
+  unsigned posLCBrace;
+  unsigned posRCBrace;
+  spSwitchBlockStatementGroups switchStmtGroups;
 
   // (8) while ParExpression Statement
   spTokenExp tokWhile;
@@ -778,7 +790,8 @@ struct Statement : ASTError {
   spFinally finally;
 
   Statement()
-    : opt(OPT_UNDEFINED), posSemiColon(0), posLParen(0), posRParen(0) {}
+    : opt(OPT_UNDEFINED), posSemiColon(0), posLCBrace(0), posRCBrace(0),
+      posLParen(0), posRParen(0) {}
 };
 
 /// StatementExpression: Expression
@@ -1614,6 +1627,49 @@ struct SuperSuffix : ASTError {
   spArguments args;
 
   SuperSuffix() : opt(OPT_UNDEFINED), posPeriod(0) {}
+};
+
+/// SwitchBlockStatementGroup:
+///   SwitchLabels BlockStatements
+struct SwitchBlockStatementGroup : ASTError {
+  spSwitchLabels labels;
+};
+
+/// SwitchBlockStatementGroups:
+///   { SwitchBlockStatementGroup }
+///
+struct SwitchBlockStatementGroups : ASTError {
+  std::vector<spSwitchBlockStatementGroup> groups;
+};
+
+/// SwitchLabels:
+///   SwitchLabel { SwitchLabel }
+struct SwitchLabels : ASTError {
+  spSwitchLabel label;
+  std::vector<spSwitchLabel> labels;
+};
+
+/// SwitchLabel:
+///   case Expression :
+///   case EnumConstantName :
+///   default :
+struct SwitchLabel : ASTError {
+  enum SwitchLabelOpt {
+    OPT_UNDEFINED,
+    OPT_EXPRESSION,
+    OPT_ENUM,
+    OPT_DEFAULT,
+  };
+
+  SwitchLabelOpt opt;
+  unsigned posColon;
+  spTokenExp tokCase;
+  spTokenExp tokDefault;
+  spExpression expr;
+  // TODO: EnumConstantName
+  //spEnumConstantName enumConstName;
+
+  SwitchLabel() : opt(OPT_UNDEFINED), posColon(0) {}
 };
 
 /// Creator:
