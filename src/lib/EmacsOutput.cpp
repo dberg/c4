@@ -499,8 +499,8 @@ void EmacsOutput::setExpression(const spExpression &expr) {
     setOp(expr->assignOp->tok->pos,
       tokenUtil.getTokenLength(expr->assignOp->tok->type));
 
-    if (expr->assignExpr1) {
-      setExpression1(expr->assignExpr1);
+    if (expr->assignExpr) {
+      setExpression(expr->assignExpr);
     }
   }
 }

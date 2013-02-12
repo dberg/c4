@@ -86,6 +86,14 @@
 /// ForControl:
 ///   ForVarControl
 ///   [ForInit] ; [Expression] ; [ForUpdate]
+///
+/// 8. Expression is defined in the grammas as follows
+/// Expression:
+///   Expression1 [ AssignmentOperator Expression1 ]
+/// This prevents multiple assignments like a = b = 1
+/// Our version
+/// Expression:
+///   Expression1 [ AssignmentOperator Expression ]
 
 namespace djp {
 
@@ -1115,12 +1123,13 @@ struct ExplicitGenericInvocationSuffix : ASTError {
   ExplicitGenericInvocationSuffix() : opt(OPT_UNDEFINED) {}
 };
 
-/// Expression: Expression1 [ AssignmentOperator Expression1 ]
+/// Expression: Expression1 [ AssignmentOperator Expression ]
+/// See note in the top of this file.
 struct Expression {
   spExpression1 expr1;
   // [ AssignmentOperator Expression1 ]
   spAssignmentOperator assignOp;
-  spExpression1 assignExpr1;
+  spExpression assignExpr;
 
   bool isEmpty() {
     return (expr1) ? false : true;

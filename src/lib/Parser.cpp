@@ -1121,7 +1121,7 @@ void Parser::parseCreatorOpt3(spCreatorOpt3 &opt3) {
   }
 }
 
-/// Expression: Expression1 [ AssignmentOperator Expression1 ]
+/// Expression: Expression1 [ AssignmentOperator Expression ]
 void Parser::parseExpression(spExpression &expr) {
   spExpression1 expr1 = spExpression1(new Expression1);
   parseExpression1(expr1);
@@ -1143,15 +1143,15 @@ void Parser::parseExpression(spExpression &expr) {
         lexer->getCurToken()), lexer->getCurToken()));
     lexer->getNextToken(); // consume assignment token
 
-    spExpression1 assignExpr1 = spExpression1(new Expression1);
-    parseExpression1(assignExpr1);
-    if (assignExpr1->isEmpty()) {
+    spExpression assignExpr = spExpression(new Expression);
+    parseExpression(assignExpr);
+    if (assignExpr->isEmpty()) {
       restoreState(state);
       return;
     }
 
     expr->assignOp = assignOp;
-    expr->assignExpr1 = assignExpr1;
+    expr->assignExpr = assignExpr;
   }
 }
 

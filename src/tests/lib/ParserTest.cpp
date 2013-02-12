@@ -858,17 +858,18 @@ TEST(Parser, Expression2Rest) {
 //         Primary(7)
 //           Identifier <-- 'u'
 //     AssignmentOperator '='
-//     Expression1
-//       Expression2
-//         Expression3(2)
-//           '('
-//           Type <-- 'U'
-//           Expression3(4)
-//             Primary(7)
-//               Identifier { . Identifier } <-- 'u.get'
-//               [IdentifierSuffix](3)
-//                 Arguments <-- '(' ')'
-//           ')'
+//     Expression
+//       Expression1
+//         Expression2
+//           Expression3(2)
+//             '('
+//             Type <-- 'U'
+//             Expression3(4)
+//               Primary(7)
+//                 Identifier { . Identifier } <-- 'u.get'
+//                 [IdentifierSuffix](3)
+//                   Arguments <-- '(' ')'
+//             ')'
 TEST(Parser, Expression3Opt2) {
   std::string filename = "Test.java";
   std::string buffer = "class A { void m() { u = (U) e.get(); }}";
@@ -887,7 +888,7 @@ TEST(Parser, Expression3Opt2) {
   ASSERT_EQ(23, stmt->stmtExpr->expr->assignOp->tok->pos);
 
   // '(U)'
-  spExpression3 expr3 = stmt->stmtExpr->expr->assignExpr1->expr2->expr3;
+  spExpression3 expr3 = stmt->stmtExpr->expr->assignExpr->expr1->expr2->expr3;
   ASSERT_EQ(Expression3::OPT_TYPE_EXPRESSION3, expr3->opt);
   ASSERT_EQ(25, expr3->opt2->posLParen);
   ASSERT_EQ(27, expr3->opt2->posRParen);
@@ -899,6 +900,71 @@ TEST(Parser, Expression3Opt2) {
     expr3->opt2->expr3->primary->primaryId->idSuffix->args->posLParen);
   ASSERT_EQ(35,
     expr3->opt2->expr3->primary->primaryId->idSuffix->args->posRParen);
+}
+
+// -----------------------------------------------------------------------------
+// class S { void m() { a = b = 10; }}
+// -----------------------------------------------------------------------------
+// BlockStatements
+//   BlockStatement
+//     Statement(4)
+//       StatementExpression
+//         Expression
+//           Expression1
+//             Expression2
+//               Expression3
+//                 Primary
+//                   Identifier <-- 'a'
+//           AssignmentOperator <-- '='
+//           Expression
+//             Expression1
+//               Expression2
+//                 Expression3
+//                   Primary
+//                     Identifier <-- 'b'
+//             AssignmentOperator <-- '='
+//             Expression
+//               Expression1
+//                 Expression2
+//                   Expression3
+//                     Primary
+//                       Literal <-- '10'
+//         ';'
+TEST(Parser, ExpressionMultipleAssignment) {
+  std::string filename = "Test.java";
+  std::string buffer = "class S { void m() { a = b = 10; }}";
+  spDiagnosis diag = spDiagnosis(new Diagnosis);
+  Parser parser(filename, buffer, diag);
+  parser.parse();
+
+  spStatement stmt = parser.compilationUnit->typeDecls[0]->decl->classDecl
+    ->nClassDecl->classBody->decls[0]->memberDecl->voidMethDeclRest->block
+    ->blockStmts[0]->stmt;
+  ASSERT_EQ(Statement::OPT_STMT_EXPR, stmt->opt);
+
+  // 'a'
+  ASSERT_EQ(21,
+    stmt->stmtExpr->expr->expr1->expr2->expr3->primary->primaryId->ids[0]->pos);
+  ASSERT_EQ("a",
+    stmt->stmtExpr->expr->expr1->expr2->expr3->primary->primaryId->ids[0]->value);
+
+  // '='
+  ASSERT_EQ(23, stmt->stmtExpr->expr->assignOp->tok->pos);
+  ASSERT_EQ(TOK_OP_EQUALS, stmt->stmtExpr->expr->assignOp->tok->type);
+
+  // 'b'
+  ASSERT_EQ(25, stmt->stmtExpr->expr->assignExpr->expr1->expr2->expr3
+    ->primary->primaryId->ids[0]->pos);
+  ASSERT_EQ("b", stmt->stmtExpr->expr->assignExpr->expr1->expr2->expr3
+    ->primary->primaryId->ids[0]->value);
+
+  // '='
+  ASSERT_EQ(27, stmt->stmtExpr->expr->assignExpr->assignOp->tok->pos);
+  ASSERT_EQ(TOK_OP_EQUALS,
+    stmt->stmtExpr->expr->assignExpr->assignOp->tok->type);
+
+  ASSERT_EQ(Literal::OPT_INTEGER, stmt->stmtExpr->expr->assignExpr
+    ->assignExpr->expr1->expr2->expr3->primary->literal->opt);
 }
 
 // -----------------------------------------------------------------------------
@@ -1196,24 +1262,25 @@ TEST(Parser, GenericMethod) {
 //       Primary(7)
 //         Identifier <-- 'u'
 // AssignmentOperator <-- '='
-// Expression1
-//   Expression2
-//     Expression3(3)
-//       Primary(7)
-//         Identifier { . Identifier } <-- m.r
-//         IdentifierSuffix
-//           Arguments
-//             '('
-//             Expression <-- 'j' *
-//             ','
-//             Expression
-//               Expression1
-//                 Expression2
-//                  Expression3
-//                    Primary(5)
-//                      'new'
-//                      Creator**
-//             ')'
+// Expression
+//   Expression1
+//     Expression2
+//       Expression3(3)
+//         Primary(7)
+//           Identifier { . Identifier } <-- m.r
+//           IdentifierSuffix
+//             Arguments
+//               '('
+//               Expression <-- 'j' *
+//               ','
+//               Expression
+//                 Expression1
+//                   Expression2
+//                    Expression3
+//                      Primary(5)
+//                        'new'
+//                        Creator**
+//               ')'
 //
 // Expression*
 //   Expression2
@@ -1251,7 +1318,7 @@ TEST(Parser, Generics) {
     ->blockStmts[0]->stmt->stmtExpr->expr;
   ASSERT_EQ(23, expr->assignOp->tok->pos);
 
-  spArguments args = expr->assignExpr1->expr2->expr3->primary->primaryId
+  spArguments args = expr->assignExpr->expr1->expr2->expr3->primary->primaryId
     ->idSuffix->args;
   ASSERT_EQ(28, args->posLParen);
   ASSERT_EQ(48, args->posRParen);
@@ -1284,21 +1351,22 @@ TEST(Parser, Generics) {
 //               Primary(7)
 //                 Identifier <-- 'p'
 //         AssignmentOperator <-- '='
-//         Expression1
-//           Expression2
-//             Expression3(3)
-//               Primary(7)
-//                 Identifier <-- 's'
-//                 IdentifierSuffix(2)
-//                   '['
-//                   Expression
-//                     Expression1
-//                       Expression2
-//                         Expression3(3)
-//                           Primary(7)
-//                             Identifier <-- 'i'
-//                   ']'
-//     ';'
+//         Expression
+//           Expression1
+//             Expression2
+//               Expression3(3)
+//                 Primary(7)
+//                   Identifier <-- 's'
+//                   IdentifierSuffix(2)
+//                     '['
+//                     Expression
+//                       Expression1
+//                         Expression2
+//                           Expression3(3)
+//                             Primary(7)
+//                               Identifier <-- 'i'
+//                     ']'
+//       ';'
 TEST(Parser, IdentifierSuffix) {
   std::string filename = "Test.java";
   std::string buffer = "class A { void m() { p = s[i]; }}";
@@ -1318,7 +1386,7 @@ TEST(Parser, IdentifierSuffix) {
   spExpression expr = blockStmt->stmt->stmtExpr->expr;
   ASSERT_EQ(23, expr->assignOp->tok->pos);
 
-  spPrimary primary = expr->assignExpr1->expr2->expr3->primary;
+  spPrimary primary = expr->assignExpr->expr1->expr2->expr3->primary;
   ASSERT_EQ(Primary::OPT_IDENTIFIER, primary->opt);
 
   spIdentifierSuffix idSuffix = primary->primaryId->idSuffix;
