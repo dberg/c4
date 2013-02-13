@@ -2072,6 +2072,42 @@ TEST(Parser, StatementContinue) {
 }
 
 // -----------------------------------------------------------------------------
+// class C { void m() { switch (getR()) { case R.I: break; default: ; }}}
+// -----------------------------------------------------------------------------
+// Statement(7)
+//   'switch'
+//   ParExpression
+//   '{'
+//   SwitchBlockStatementGroups
+//     SwitchBlockStatementGroup[0]
+//       SwitchLabels
+//         SwitchLabel(1)
+//           'case'
+//           Expression
+//           ':'
+//       BlockStatements
+//         BlockStatement[0]
+//           Statement(11)
+//             'break'
+//             ';'
+//   '}'
+TEST(Parser, StatementSwitch) {
+  std::string filename = "Test.java";
+  std::string buffer
+    = "class C { void m() { switch (getR()) { case R.I: break; default: ; }}}";
+
+  spDiagnosis diag = spDiagnosis(new Diagnosis);
+  Parser parser(filename, buffer, diag);
+  parser.parse();
+
+  spStatement stmt = parser.compilationUnit->typeDecls[0]->decl->classDecl
+    ->nClassDecl->classBody->decls[0]->memberDecl->voidMethDeclRest->block
+    ->blockStmts[0]->stmt;
+
+  ASSERT_EQ(stmt->opt, Statement::OPT_SWITCH);
+}
+
+// -----------------------------------------------------------------------------
 // class A { void m() { synchronized(x) { }}}
 // -----------------------------------------------------------------------------
 // BlockStatement(3)

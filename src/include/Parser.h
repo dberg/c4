@@ -155,6 +155,11 @@ class Parser {
   void parseStatementExpression(spStatementExpression &stmtExpr);
   void parseStringLiteral(spStringLiteral &strLit);
   void parseSuperSuffix(spSuperSuffix &superSuffix);
+  void parseSwitchBlockStatementGroup(spSwitchBlockStatementGroup &group);
+  void parseSwitchBlockStatementGroups(
+    spSwitchBlockStatementGroups &switchStmtGroups);
+  void parseSwitchLabel(spSwitchLabel &label);
+  void parseSwitchLabels(spSwitchLabels &labels);
   void parseType(spType &type);
   void parseTypeArgument(spTypeArgument &typeArg);
   void parseTypeArgumentOpt2(spTypeArgumentOpt2 &opt2);

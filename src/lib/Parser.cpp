@@ -839,13 +839,14 @@ void Parser::parseBlockStatement(spBlockStatement &blockStmt) {
 void Parser::parseBlockStatements(std::vector<spBlockStatement> &blockStmts) {
   unsigned pos = 0;
   while (lexer->getCurToken() != TOK_RCURLY_BRACKET
+    && lexer->getCurToken() != TOK_KEY_CASE     // in case we are inside a
+    && lexer->getCurToken() != TOK_KEY_DEFAULT  // switch statement.
     && pos != lexer->getCursor()) {
 
     pos = lexer->getCursor();
     spBlockStatement blockStmt = spBlockStatement(new BlockStatement);
     parseBlockStatement(blockStmt);
     if (blockStmt->err) {
-      blockStmt->addErr(-1);
       return;
     }
     blockStmts.push_back(blockStmt);
@@ -3054,7 +3055,50 @@ void Parser::parseStatement(spStatement &stmt) {
 
   // (7) switch ParExpression '{' SwitchBlockStatementGroups '}'
   if (lexer->getCurToken() == TOK_KEY_SWITCH) {
-    // TODO:
+    // switch
+    stmt->opt = Statement::OPT_SWITCH;
+    stmt->tokSwitch = spTokenExp(new TokenExp(
+      lexer->getCursor() - tokenUtil.getTokenLength(
+      lexer->getCurToken()), lexer->getCurToken()));
+    lexer->getNextToken(); // consume 'switch'
+
+    // ParExpression
+    stmt->parExpr = spParExpression(new ParExpression);
+    parseParExpression(stmt->parExpr);
+    if (stmt->parExpr->err) {
+      stmt->addErr(-1);
+      return;
+    }
+
+    // '{'
+    if (lexer->getCurToken() != TOK_LCURLY_BRACKET) {
+      stmt->addErr(diag->addErr(
+        ERR_EXP_LCURLY_BRACKET, lexer->getCursor() - 1));
+      return;
+    }
+
+    stmt->posLCBrace = lexer->getCursor() - 1;
+    lexer->getNextToken(); // consume '{'
+
+    // SwitchBlockStatementGroups
+    stmt->switchStmtGroups = spSwitchBlockStatementGroups(
+      new SwitchBlockStatementGroups);
+    parseSwitchBlockStatementGroups(stmt->switchStmtGroups);
+    if (stmt->switchStmtGroups->err) {
+      stmt->addErr(-1);
+      return;
+    }
+
+    // '}'
+    if (lexer->getCurToken() != TOK_RCURLY_BRACKET) {
+      stmt->addErr(diag->addErr(
+        ERR_EXP_RCURLY_BRACKET, lexer->getCursor() - 1));
+      return;
+    }
+
+    stmt->posRCBrace = lexer->getCursor() - 1;
+    lexer->getNextToken(); // consume '}'
+
     return;
   }
 
@@ -4467,6 +4511,132 @@ void Parser::parseSuperSuffix(spSuperSuffix &superSuffix) {
       superSuffix->args = spArguments(new Arguments);
       parseArguments(superSuffix->args);
     }
+  }
+}
+
+/// SwitchBlockStatementGroups:
+///   { SwitchBlockStatementGroup }
+void Parser::parseSwitchBlockStatementGroups(
+  spSwitchBlockStatementGroups &switchStmtGroups) {
+
+  while (lexer->getCurToken() == TOK_KEY_CASE
+    || lexer->getCurToken() == TOK_KEY_DEFAULT) {
+
+    // We only consume valid nodes and we leave to upper levels dealing with
+    // errors found here.
+    State state;
+    saveState(state);
+    spSwitchBlockStatementGroup group = spSwitchBlockStatementGroup(
+      new SwitchBlockStatementGroup);
+    parseSwitchBlockStatementGroup(group);
+    if (group->err) {
+      restoreState(state);
+      return;
+    }
+
+    switchStmtGroups->groups.push_back(group);
+  }
+
+}
+
+/// SwitchBlockStatementGroup:
+///   SwitchLabels BlockStatements
+void Parser::parseSwitchBlockStatementGroup(
+  spSwitchBlockStatementGroup &group) {
+
+  // SwitchLabels
+  group->labels = spSwitchLabels(new SwitchLabels);
+  parseSwitchLabels(group->labels);
+  if (group->labels->err) {
+    group->addErr(-1);
+  }
+
+  // BlockStatements
+  parseBlockStatements(group->blockStmts);
+}
+
+/// SwitchLabel:
+///   (1) case Expression :
+///   (2) case EnumConstantName :
+///   (3) default :
+void Parser::parseSwitchLabel(spSwitchLabel &label) {
+  // (3) default :
+  if (lexer->getCurToken() == TOK_KEY_DEFAULT) {
+    label->opt = SwitchLabel::OPT_DEFAULT;
+
+    // default
+    label->tokDefault = spTokenExp(new TokenExp(
+      lexer->getCursor() - tokenUtil.getTokenLength(
+      lexer->getCurToken()), lexer->getCurToken()));
+    lexer->getNextToken(); // consume 'default'
+
+    if (lexer->getCurToken() != TOK_OP_COLON) {
+      label->addErr(diag->addErr(ERR_EXP_OP_COLON, lexer->getCursor() - 1));
+      return;
+    }
+
+    label->posColon = lexer->getCursor() - 1;
+    lexer->getNextToken(); // consume ':'
+    return;
+  }
+
+  if (lexer->getCurToken() != TOK_KEY_CASE) {
+    label->addErr(-1);
+    return;
+  }
+
+  // case
+  label->tokCase = spTokenExp(new TokenExp(
+    lexer->getCursor() - tokenUtil.getTokenLength(
+      lexer->getCurToken()), lexer->getCurToken()));
+  lexer->getNextToken(); // consume 'case'
+
+  if (lexer->getCurToken() == TOK_IDENTIFIER) {
+    // TODO: check if it's an EnumConstantName.
+  }
+
+  // (1) case Expression :
+  label->opt = SwitchLabel::OPT_EXPRESSION;
+  label->expr = spExpression(new Expression);
+  parseExpression(label->expr);
+  if (label->expr->isEmpty()) {
+    label->addErr(-1);
+    return;
+  }
+
+  // ':'
+  if (lexer->getCurToken() != TOK_OP_COLON) {
+    label->addErr(diag->addErr(ERR_EXP_OP_COLON, lexer->getCursor() - 1));
+    return;
+  }
+
+  label->posColon = lexer->getCursor() - 1;
+  lexer->getNextToken(); // consume ':'
+}
+
+/// SwitchLabels:
+///   SwitchLabel { SwitchLabel }
+void Parser::parseSwitchLabels(spSwitchLabels &labels) {
+  // SwtichLabel
+  labels->label = spSwitchLabel(new SwitchLabel);
+  parseSwitchLabel(labels->label);
+  if (labels->label->err) {
+    labels->addErr(-1);
+    return;
+  }
+
+  // { SwitchLabel }
+  while (lexer->getCurToken() == TOK_KEY_CASE
+    || lexer->getCurToken() == TOK_KEY_DEFAULT) {
+    State state;
+    saveState(state);
+    spSwitchLabel label = spSwitchLabel(new SwitchLabel);
+    parseSwitchLabel(label);
+    if (label->err) {
+      restoreState(state);
+      return;
+    }
+    labels->labels.push_back(label);
   }
 }
 

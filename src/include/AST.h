@@ -1633,26 +1633,19 @@ struct SuperSuffix : ASTError {
 ///   SwitchLabels BlockStatements
 struct SwitchBlockStatementGroup : ASTError {
   spSwitchLabels labels;
+  std::vector<spBlockStatement> blockStmts;
 };
 
 /// SwitchBlockStatementGroups:
 ///   { SwitchBlockStatementGroup }
-///
 struct SwitchBlockStatementGroups : ASTError {
   std::vector<spSwitchBlockStatementGroup> groups;
 };
 
-/// SwitchLabels:
-///   SwitchLabel { SwitchLabel }
-struct SwitchLabels : ASTError {
-  spSwitchLabel label;
-  std::vector<spSwitchLabel> labels;
-};
-
 /// SwitchLabel:
-///   case Expression :
-///   case EnumConstantName :
-///   default :
+///   (1) case Expression :
+///   (2) case EnumConstantName :
+///   (3) default :
 struct SwitchLabel : ASTError {
   enum SwitchLabelOpt {
     OPT_UNDEFINED,
@@ -1670,6 +1663,13 @@ struct SwitchLabel : ASTError {
   //spEnumConstantName enumConstName;
 
   SwitchLabel() : opt(OPT_UNDEFINED), posColon(0) {}
+};
+
+/// SwitchLabels:
+///   SwitchLabel { SwitchLabel }
+struct SwitchLabels : ASTError {
+  spSwitchLabel label;
+  std::vector<spSwitchLabel> labels;
 };
 
 /// Creator:
