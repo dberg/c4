@@ -1435,7 +1435,28 @@ void EmacsOutput::setStatement(const spStatement &stmt) {
   }
 
   if (stmt->opt == Statement::OPT_SWITCH) {
-    // TODO:
+    if (stmt->tokSwitch) {
+      setKeyword(stmt->tokSwitch);
+    }
+
+    if (stmt->parExpr) {
+      setParExpression(stmt->parExpr);
+    }
+
+    if (stmt->posLCBrace) {
+      setOp(stmt->posLCBrace);
+    }
+
+    if (stmt->switchStmtGroups) {
+      for (unsigned i = 0; i < stmt->switchStmtGroups->groups.size(); i++) {
+        setSwitchBlockStatementGroup(stmt->switchStmtGroups->groups[i]);
+      }
+    }
+
+    if (stmt->posRCBrace) {
+      setOp(stmt->posRCBrace);
+    }
+
     return;
   }
 
@@ -1562,6 +1583,61 @@ void EmacsOutput::setStringLiteral(const spStringLiteral &strLiteral) {
   unsigned end = ini + strLiteral->val.length();
   outSH += "(djp-node-string-literal "
     + itos(ini) + " " + itos(end) + ")";
+}
+
+void EmacsOutput::setSwitchBlockStatementGroup(
+  const spSwitchBlockStatementGroup &group) {
+
+  if (group->labels) {
+    setSwitchLabels(group->labels);
+  }
+
+  for (unsigned i = 0; i < group->blockStmts.size(); i++) {
+    setBlockStatement(group->blockStmts[i]);
+  }
+}
+
+void EmacsOutput::setSwitchLabel(const spSwitchLabel &label) {
+  if (label->opt == SwitchLabel::OPT_EXPRESSION) {
+    if (label->tokCase) {
+      setKeyword(label->tokCase);
+    }
+
+    if (label->expr) {
+      setExpression(label->expr);
+    }
+
+    if (label->posColon) {
+      setOp(label->posColon);
+    }
+
+    return;
+  }
+
+  if (label->opt == SwitchLabel::OPT_ENUM) {
+    // TODO:
+    // return;
+  }
+
+  if (label->opt == SwitchLabel::OPT_DEFAULT) {
+    if (label->tokCase) {
+      setKeyword(label->tokCase);
+    }
+
+    if (label->posColon) {
+      setOp(label->posColon);
+    }
+  }
+}
+
+void EmacsOutput::setSwitchLabels(const spSwitchLabels &labels) {
+  if (labels->label) {
+    setSwitchLabel(labels->label);
+  }
+
+  for (unsigned i = 0; i < labels->labels.size(); i++) {
+    setSwitchLabel(labels->labels[i]);
+  }
 }
 
 void EmacsOutput::setType(const spType &type) {

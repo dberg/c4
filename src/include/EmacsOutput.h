@@ -114,6 +114,9 @@ class EmacsOutput {
   void setStatement(const spStatement &stmt);
   void setStatementExpression(const spStatementExpression &stmtExpr);
   void setStringLiteral(const spStringLiteral &strLiteral);
+  void setSwitchBlockStatementGroup(const spSwitchBlockStatementGroup &group);
+  void setSwitchLabel(const spSwitchLabel &label);
+  void setSwitchLabels(const spSwitchLabels &labels);
   void setType(const spType &type);
   void setTypeArgument(const spTypeArgument &typeArg);
   void setTypeArguments(const spTypeArguments &typeArgs);
