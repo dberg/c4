@@ -724,7 +724,7 @@ struct Statement : ASTError {
   // shared 1,15,16
   spBlock block;
 
-  // shared 2,4,11,12,13,14
+  // shared 2,4,6,11,12,13,14
   unsigned posSemiColon;
 
   // shared 5,7,8,15
@@ -733,12 +733,14 @@ struct Statement : ASTError {
   // shared 3,11,12
   spIdentifier id;
 
+  // shared 3,6
+  unsigned int posColon;
+
   // (1) Block
 
   // (2) ';'
 
   // (3) Identifier : Statement
-  unsigned int posColon;
   spStatement stmt;
 
   // (4) StatementExpression ;
@@ -749,6 +751,11 @@ struct Statement : ASTError {
   spStatement stmtIf;
   spTokenExp tokElse;
   spStatement stmtElse;
+
+  // (6) assert Expression [: Expression] ;
+  spTokenExp tokAssert;
+  spExpression exprAssert1;
+  spExpression exprAssert2;
 
   // (7) switch ParExpression '{' SwitchBlockStatementGroups '}'
   spTokenExp tokSwitch;

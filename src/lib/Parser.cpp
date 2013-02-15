@@ -3049,7 +3049,46 @@ void Parser::parseStatement(spStatement &stmt) {
 
   // (6) assert Expression [: Expression] ;
   if (lexer->getCurToken() == TOK_KEY_ASSERT) {
-    // TODO:
+    stmt->opt = Statement::OPT_ASSERT;
+    // assert
+    stmt->tokAssert = spTokenExp(new TokenExp(
+      lexer->getCursor() - tokenUtil.getTokenLength(
+      lexer->getCurToken()), lexer->getCurToken()));
+    lexer->getNextToken(); // consume 'assert'
+
+    // Expression
+    spExpression expr = spExpression(new Expression);
+    parseExpression(expr);
+    if (expr->isEmpty()) {
+      stmt->addErr(-1);
+      return;
+    }
+
+    stmt->exprAssert1 = expr;
+
+    // [: Expression]
+    if (lexer->getCurToken() == TOK_OP_COLON) {
+      stmt->posColon = lexer->getCursor() - 1;
+      lexer->getNextToken(); // consume ':'
+
+      spExpression expr = spExpression(new Expression);
+      parseExpression(expr);
+      if (expr->isEmpty()) {
+	stmt->addErr(-1);
+	return;
+      }
+
+      stmt->exprAssert2 = expr;
+    }
+
+    // ';'
+    if (lexer->getCurToken() != TOK_SEMICOLON) {
+      stmt->addErr(diag->addErr(ERR_EXP_SEMICOLON, lexer->getCursor() - 1));
+      return;
+    }
+
+    stmt->posSemiColon = lexer->getCursor() - 1;
+    lexer->getNextToken(); // consume ';'
     return;
   }
 
