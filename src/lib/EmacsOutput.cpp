@@ -1430,7 +1430,26 @@ void EmacsOutput::setStatement(const spStatement &stmt) {
   }
 
   if (stmt->opt == Statement::OPT_ASSERT) {
-    // TODO:
+    if (stmt->tokAssert) {
+      setKeyword(stmt->tokAssert);
+    }
+
+    if (stmt->exprAssert1) {
+      setExpression(stmt->exprAssert1);
+    }
+
+    if (stmt->posColon) {
+      setOp(stmt->posColon);
+    }
+
+    if (stmt->exprAssert2) {
+      setExpression(stmt->exprAssert2);
+    }
+
+    if (stmt->posSemiColon) {
+      setOp(stmt->posSemiColon);
+    }
+
     return;
   }
 
