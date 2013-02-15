@@ -1254,8 +1254,8 @@ void Parser::parseExpression2Rest(spExpression2Rest &expr2Rest) {
       parseType(helper->type);
 
       if (helper->type->err) {
-	restoreState(state);
-	return;
+        restoreState(state);
+        return;
       }
 
       expr2Rest->pairs.push_back(helper);
@@ -1779,7 +1779,7 @@ void Parser::parseGenericMethodOrConstructorRest(
         = spConstructorDeclaratorRest(new ConstructorDeclaratorRest);
       parseConstructorDeclaratorRest(rest->constDeclRest);
       if (rest->constDeclRest->err) {
-	rest->addErr(-1);
+        rest->addErr(-1);
       }
       return;
     }
@@ -1811,40 +1811,61 @@ void Parser::parseGenericMethodOrConstructorRest(
 }
 
 /// IdentifierSuffix:
-///   '[' ( {'[' ']'} . class | Expression ) ']'
+///   '[' ( ']' {'[]'} . class | Expression ']' )
 ///   Arguments
 ///   . ( class | ExplicitGenericInvocation | this | super Arguments |
 ///       new [NonWildcardTypeArguments] InnerCreator )
 void Parser::parseIdentifierSuffix(spIdentifierSuffix &idSuffix) {
   // opt1-2
   if (lexer->getCurToken() == TOK_LBRACKET) {
-    State state;
-    saveState(state);
-
     idSuffix->arrayPair.first = lexer->getCursor() - 1;
     lexer->getNextToken(); // consume '['
 
     // opt1
-    if (lexer->getCurToken() == TOK_RBRACKET
-      || lexer->getCurToken() == TOK_COMMA) {
-      // '[' {'[' ']'}  ']' '.' class
+    if (lexer->getCurToken() == TOK_RBRACKET) {
+      // '[]' {'[]'} . class
       idSuffix->opt = IdentifierSuffix::OPT_ARRAY_ARRAY_DEPTH_CLASS;
-      // {'[' ']'} . class
-      parseIdentifierSuffixOpt1Helper(idSuffix);
-    } else {
-      // opt2
-      // '[' Expression ']'
-      idSuffix->opt = IdentifierSuffix::OPT_ARRAY_EXPRESSION;
-      idSuffix->expr = spExpression(new Expression);
-      parseExpression(idSuffix->expr);
-      if (idSuffix->expr->isEmpty()) {
-	idSuffix->addErr(-1);
-	restoreState(state);
-	return;
+      idSuffix->arrayPair.second = lexer->getCursor() - 1;
+      lexer->getNextToken(); // consume ']'
+
+      // {'[]'}
+      parseArrayDepth(idSuffix->arrayDepth);
+
+      // . class
+      if (lexer->getCurToken() != TOK_PERIOD) {
+        idSuffix->addErr(diag->addErr(ERR_EXP_PERIOD, lexer->getCursor() - 1));
+        return;
       }
+
+      idSuffix->posPeriod = lexer->getCursor() - 1;
+      lexer->getNextToken(); // consume '.'
+
+      // class
+      if (lexer->getCurToken() != TOK_KEY_CLASS) {
+        idSuffix->addErr(diag->addErr(ERR_EXP_CLASS, lexer->getCursor() - 1));
+        return;
+      }
+
+      // class
+      idSuffix->tokSuper = spTokenExp(new TokenExp(
+        lexer->getCursor() - tokenUtil.getTokenLength(
+        lexer->getCurToken()), lexer->getCurToken()));
+
+      lexer->getNextToken(); // consume 'class'
+      return;
     }
 
-    // Error: ']' expected
+    // opt2
+    // '[' Expression ']'
+    idSuffix->opt = IdentifierSuffix::OPT_ARRAY_EXPRESSION;
+    idSuffix->expr = spExpression(new Expression);
+    parseExpression(idSuffix->expr);
+    if (idSuffix->expr->isEmpty()) {
+      idSuffix->addErr(-1);
+      return;
+    }
+
+    // ']'
     if (lexer->getCurToken() != TOK_RBRACKET) {
       idSuffix->addErr(diag->addErr(ERR_EXP_RBRACKET, lexer->getCursor() - 1));
       return;
@@ -1913,7 +1934,7 @@ void Parser::parseIdentifierSuffix(spIdentifierSuffix &idSuffix) {
         return;
       }
 
-      idSuffix->args = spArguments(new Arguments());
+      idSuffix->args = spArguments(new Arguments);
       parseArguments(idSuffix->args);
       if (idSuffix->args->err) { idSuffix->addErr(-1); }
       return;
@@ -1941,7 +1962,7 @@ void Parser::parseIdentifierSuffix(spIdentifierSuffix &idSuffix) {
       }
 
       // InnerCreator
-      idSuffix->innerCreator = spInnerCreator(new InnerCreator());
+      idSuffix->innerCreator = spInnerCreator(new InnerCreator);
       parseInnerCreator(idSuffix->innerCreator);
 
       // Error: invalid InnerCreator
@@ -1955,32 +1976,6 @@ void Parser::parseIdentifierSuffix(spIdentifierSuffix &idSuffix) {
   // error
   idSuffix->addErr(diag->addErr(
     ERR_NVAL_IDENTIFIER_SUFFIX, lexer->getCursor() - 1));
-}
-
-void Parser::parseIdentifierSuffixOpt1Helper(spIdentifierSuffix &idSuffix) {
-  parseArrayDepth(idSuffix->arrayDepth);
-
-  // Error: '.' expected
-  if (lexer->getCurToken() != TOK_COMMA) {
-    idSuffix->addErr(diag->addErr(ERR_EXP_COMMA, lexer->getCursor() - 1));
-    return;
-  }
-
-  idSuffix->posPeriod = lexer->getCursor() - 1;
-  lexer->getNextToken(); // consume '.'
-
-  // Error: 'super' expected
-  if (lexer->getCurToken() != TOK_KEY_SUPER) {
-    idSuffix->addErr(diag->addErr(ERR_EXP_SUPER, lexer->getCursor() - 1));
-    return;
-  }
-
-  // super
-  idSuffix->tokSuper = spTokenExp(new TokenExp(
-    lexer->getCursor() - tokenUtil.getTokenLength(
-    lexer->getCurToken()), lexer->getCurToken()));
-
-  lexer->getNextToken(); // consume 'super'
 }
 
 /// ElementValuePairs: ElementValuePair {, ElementValuePair }
@@ -2840,8 +2835,8 @@ void Parser::parseReferenceType(spReferenceType &refType) {
       tri->typeArgs = spTypeArguments(new TypeArguments);
       parseTypeArguments(tri->typeArgs);
       if (tri->typeArgs->err) {
-	restoreState(state);
-	return;
+        restoreState(state);
+        return;
       }
     }
 
@@ -3074,8 +3069,8 @@ void Parser::parseStatement(spStatement &stmt) {
       spExpression expr = spExpression(new Expression);
       parseExpression(expr);
       if (expr->isEmpty()) {
-	stmt->addErr(-1);
-	return;
+        stmt->addErr(-1);
+        return;
       }
 
       stmt->exprAssert2 = expr;

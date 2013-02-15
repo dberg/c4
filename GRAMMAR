@@ -451,7 +451,7 @@ ArrayCreatorRest:
     Expression ']' {'[' Expression ']'} {'[' ']'} )
 
 IdentifierSuffix:
-  '[' ( {'[' ']'} . class | Expression ) ']'
+  '[' ( ']' {'[]'} . class | Expression ']' )
   Arguments
   . ( class | ExplicitGenericInvocation | this | super Arguments |
       new [NonWildcardTypeArguments] InnerCreator )

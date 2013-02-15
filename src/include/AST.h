@@ -94,6 +94,13 @@
 /// Our version
 /// Expression:
 ///   Expression1 [ AssignmentOperator Expression ]
+///
+/// 9. IdentifierSuffix. The first production rule option is defined as follows:
+/// IdentifierSuffix:
+///   '[' ( {'[]'} . class | Expression ) ']'
+/// Our version
+/// IdentifierSuffix:
+///   '[' ( ']' {'[]'} . class | Expression ']' )
 
 namespace djp {
 
@@ -959,10 +966,11 @@ struct Identifier {
 };
 
 /// IdentifierSuffix:
-///   '[' ( {'[' ']'} . class | Expression ) ']'
+///   '[' ( ']' {'[]'} . class | Expression ']' )
 ///   Arguments
 ///   . ( class | ExplicitGenericInvocation | this | super Arguments |
 ///       new [NonWildcardTypeArguments] InnerCreator )
+/// See note in the top of this file.
 struct IdentifierSuffix : ASTError {
   enum IdentifierSuffixOpt {
     OPT_UNDEFINED,

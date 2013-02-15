@@ -114,7 +114,6 @@ class Parser {
   void parseGenericMethodOrConstructorRest(
     spGenericMethodOrConstructorRest &rest);
   void parseIdentifierSuffix(spIdentifierSuffix &idSuffix);
-  void parseIdentifierSuffixOpt1Helper(spIdentifierSuffix &idSuffix);
   spImportDeclaration parseImportDeclaration();
   spImportDeclarations parseImportDeclarations();
   void parseInnerCreator(spInnerCreator &innerCreator);
