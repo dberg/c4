@@ -1323,8 +1323,10 @@ struct Primary : ASTError {
 struct PrimaryBasicType : ASTError {
   spBasicType basicType;
   ArrayDepth arrayDepth;
-  unsigned int posComma;
+  unsigned posPeriod;
   spTokenExp tokClass;
+
+  PrimaryBasicType() : posPeriod(0) {}
 };
 
 /// Primary: Identifier { . Identifier } [IdentifierSuffix]

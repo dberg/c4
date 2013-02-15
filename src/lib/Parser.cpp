@@ -2489,7 +2489,7 @@ void Parser::parsePrimary(spPrimary &primary) {
   // (8) BasicType {[]} . class
   if (isBasicType(lexer->getCurToken())) {
     primary->opt = Primary::OPT_BASIC_TYPE;
-    primary->primaryBasicType = spPrimaryBasicType(new PrimaryBasicType());
+    primary->primaryBasicType = spPrimaryBasicType(new PrimaryBasicType);
     parsePrimaryBasicType(primary->primaryBasicType);
     return;
   }
@@ -2524,13 +2524,13 @@ void Parser::parsePrimaryBasicType(spPrimaryBasicType &primaryBasicType) {
   parseArrayDepth(primaryBasicType->arrayDepth);
 
   // '.'
-  if (lexer->getCurToken() != TOK_COMMA) {
+  if (lexer->getCurToken() != TOK_PERIOD) {
     primaryBasicType->addErr(diag->addErr(
-      ERR_EXP_COMMA, lexer->getCursor() - 1));
+      ERR_EXP_PERIOD, lexer->getCursor() - 1));
     return;
   }
 
-  primaryBasicType->posComma = lexer->getCursor() - 1;
+  primaryBasicType->posPeriod = lexer->getCursor() - 1;
   lexer->getNextToken(); // consume '.'
 
   // 'class'

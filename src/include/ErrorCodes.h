@@ -32,6 +32,7 @@ enum ErrorCode {
   ERR_EXP_OP_COLON,
   ERR_EXP_OP_LT,
   ERR_EXP_OP_GT,
+  ERR_EXP_PERIOD,
   ERR_EXP_QID,
   ERR_EXP_RBRACKET,
   ERR_EXP_RCURLY_BRACKET,
@@ -73,6 +74,7 @@ public:
     msgs[ERR_EXP_OP_COLON] = "Expected colon";
     msgs[ERR_EXP_OP_LT] = "Expected operator <";
     msgs[ERR_EXP_OP_GT] = "Expected operator >";
+    msgs[ERR_EXP_PERIOD] = "Expected period";
     msgs[ERR_EXP_QID] = "Expected qualified id";
     msgs[ERR_EXP_RBRACKET] = "Expected ']'";
     msgs[ERR_EXP_RCURLY_BRACKET] = "Expected closing curly brackets";
