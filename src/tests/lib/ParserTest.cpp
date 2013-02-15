@@ -1920,6 +1920,28 @@ TEST(Parser, PrimarySuper) {
 }
 
 // -----------------------------------------------------------------------------
+// class A { void m() { this(); }}
+// -----------------------------------------------------------------------------
+// Primary
+TEST(Parser, PrimaryThis) {
+  std::string filename = "Test.java";
+  std::string buffer = "class A { void m() { this(); }}";
+
+  spDiagnosis diag = spDiagnosis(new Diagnosis);
+  Parser parser(filename, buffer, diag);
+  parser.parse();
+
+  spStatement stmt = parser.compilationUnit->typeDecls[0]->decl->classDecl
+    ->nClassDecl->classBody->decls[0]->memberDecl->voidMethDeclRest->block
+    ->blockStmts[0]->stmt;
+
+  ASSERT_EQ(Statement::OPT_STMT_EXPR, stmt->opt);
+  spPrimary primary = stmt->stmtExpr->expr->expr1->expr2->expr3->primary;
+  ASSERT_EQ(Primary::OPT_THIS_ARGUMENTS, primary->opt);
+}
+
+
+// -----------------------------------------------------------------------------
 // class A { void m() { long l = (new Long(i)).longValue(); }}
 // -----------------------------------------------------------------------------
 // BlockStatement(1)

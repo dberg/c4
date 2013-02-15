@@ -2448,7 +2448,7 @@ void Parser::parsePrimary(spPrimary &primary) {
   // (3) this [Arguments]
   if (lexer->getCurToken() == TOK_KEY_THIS) {
     primary->opt = Primary::OPT_THIS_ARGUMENTS;
-    primary->thisArgs = spPrimaryThisArguments(new PrimaryThisArguments());
+    primary->thisArgs = spPrimaryThisArguments(new PrimaryThisArguments);
     parsePrimaryThisArguments(primary->thisArgs);
     return;
   }
@@ -2589,8 +2589,10 @@ void Parser::parsePrimaryThisArguments(
   lexer->getNextToken(); // consume 'this'
 
   // [Arguments]
-  if (lexer->getCurToken() == TOK_LPAREN)
+  if (lexer->getCurToken() == TOK_LPAREN) {
+    primaryThisArgs->args = spArguments(new Arguments);
     parseArguments(primaryThisArgs->args);
+  }
 }
 
 /// Primary: super SuperSuffix
