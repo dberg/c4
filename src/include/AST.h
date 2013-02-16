@@ -140,8 +140,11 @@ typedef boost::shared_ptr<struct ElementValues> spElementValues;
 typedef boost::shared_ptr<struct ElementValueArrayInitializer>
   spElementValueArrayInitializer;
 typedef boost::shared_ptr<struct ElementValuePair> spElementValuePair;
-typedef boost::shared_ptr<struct EnumDeclaration>
-  spEnumDeclaration;
+typedef boost::shared_ptr<struct EnumBody> spEnumBody;
+typedef boost::shared_ptr<struct EnumBodyDeclarations> spEnumBodyDeclarations;
+typedef boost::shared_ptr<struct EnumConstant> spEnumConstant;
+typedef boost::shared_ptr<struct EnumConstants> spEnumConstants;
+typedef boost::shared_ptr<struct EnumDeclaration> spEnumDeclaration;
 typedef boost::shared_ptr<struct ExplicitGenericInvocation>
   spExplicitGenericInvocation;
 typedef boost::shared_ptr<struct ExplicitGenericInvocationSuffix>
@@ -886,9 +889,50 @@ struct BlockStatement : ASTError {
   BlockStatement() : opt(OPT_UNDEFINED) {}
 };
 
-/// TODO:
-struct EnumDeclaration {
+/// EnumBody:
+///   '{' [EnumConstants] [,] [EnumBodyDeclarations] '}'
+struct EnumBody : ASTError {
+  unsigned posLCBrace;
+  unsigned posRCBrace;
+  unsigned posComma;
+  spEnumConstants enumConsts;
+  spEnumBodyDeclarations bodyDecls;
 
+  EnumBody() : posLCBrace(0), posRCBrace(0), posComma(0) {}
+};
+
+/// EnumBodyDeclarations:
+///   ; {ClassBodyDeclaration}
+struct EnumBodyDeclarations : ASTError {
+  unsigned postSemicolon;
+  std::vector<spClassBodyDeclaration> classBodyDecls;
+};
+
+/// EnumConstant:
+///   [Annotations] Identifier [Arguments] [ClassBody]
+struct EnumConstant : ASTError {
+  std::vector<spAnnotation> annotations;
+  spIdentifier id;
+  spArguments args;
+  spClassBody classBody;
+};
+
+/// EnumConstants:
+///   EnumConstant
+///   EnumConstants , EnumConstant
+struct EnumConstants : ASTError {
+  spEnumConstant enumConst;
+  std::vector<std::pair<unsigned, spEnumConstant> > pairs;
+};
+
+/// EnumDeclaration:
+///   enum Identifier [implements TypeList] EnumBody
+struct EnumDeclaration : ASTError {
+  spTokenExp tokEnum;
+  spIdentifier id;
+  spTokenExp tokImpl;
+  spTypeList typeList;
+  spEnumBody enumBody;
 };
 
 /// InterfaceDeclaration:

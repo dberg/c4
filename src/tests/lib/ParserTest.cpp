@@ -742,10 +742,54 @@ TEST(Parser, Comments) {
   ASSERT_EQ(63, parser.comments[1]->posEnd);
 }
 
+// -----------------------------------------------------------------------------
+// enum E { E1, E2 }
+// -----------------------------------------------------------------------------
+// TypeDeclaration
+//   ClassOrInterfaceDeclaration
+//     ClassDeclaration(2)
+//       EnumDeclaration
+//         'enum'
+//         Identifier
+//         EnumBody
+//           '{'
+//           EnumConstants
+//             EnumConstant
+//               Identifier <-- E1
+//             ','
+//             EnumConstant
+//               Identifier <-- E2
+//           '}'
+TEST(Parser, Enum) {
+  std::string filename = "Test.java";
+  std::string buffer = "enum E { E1, E2 }";
+  spDiagnosis diag = spDiagnosis(new Diagnosis);
+  Parser parser(filename, buffer, diag);
+  parser.parse();
+
+  spEnumDeclaration enumDecl = parser.compilationUnit->typeDecls[0]->decl
+    ->classDecl->enumDecl;
+  ASSERT_EQ(0, enumDecl->tokEnum->pos);
+  ASSERT_EQ(TOK_KEY_ENUM, enumDecl->tokEnum->type);
+  ASSERT_EQ(5, enumDecl->id->pos);
+  ASSERT_EQ("E", enumDecl->id->value);
+  ASSERT_EQ(7, enumDecl->enumBody->posLCBrace);
+  ASSERT_EQ(16, enumDecl->enumBody->posRCBrace);
+
+  ASSERT_EQ(9, enumDecl->enumBody->enumConsts->enumConst->id->pos);
+  ASSERT_EQ("E1", enumDecl->enumBody->enumConsts->enumConst->id->value);
+
+  std::pair<unsigned, spEnumConstant> pair
+    = enumDecl->enumBody->enumConsts->pairs[0];
+  ASSERT_EQ(11, pair.first);
+  spEnumConstant enumConst = pair.second;
+}
+
+
 TEST(Parser, Errors) {
   std::string filename = "Test.java";
   std::string buffer = "@";
-  spDiagnosis diag = spDiagnosis(new Diagnosis());
+  spDiagnosis diag = spDiagnosis(new Diagnosis);
   Parser parser(filename, buffer, diag);
   parser.parse();
   ASSERT_EQ(1, diag->errors.size());

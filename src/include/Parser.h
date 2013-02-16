@@ -66,6 +66,8 @@ class Parser {
   void parseCharacterLiteral(spCharacterLiteral &charLit);
   void parseClassBody(spClassBody &classBody);
   void parseClassBodyDeclaration(spClassBodyDeclaration &decl);
+  void parseClassBodyDeclarationsHelper(
+    std::vector<spClassBodyDeclaration> &classBodyDecls);
   void parseClassCreatorRest(spClassCreatorRest &classCreatorRest);
   void parseClassDeclaration(spClassDeclaration &classDecl);
   void parseClassOrInterfaceDeclaration(spClassOrInterfaceDeclaration& decl);
@@ -83,6 +85,11 @@ class Parser {
   void parseElementValueArrayInitializer(
     spElementValueArrayInitializer &elemValArrayInit);
   void parseElementValuePairs(std::vector<spElementValuePair> &pairs);
+  void parseEnumBody(spEnumBody &enumBody);
+  void parseEnumBodyDeclarations(spEnumBodyDeclarations &bodyDecls);
+  void parseEnumConstant(spEnumConstant &enumConst);
+  void parseEnumConstants(spEnumConstants &enumConsts);
+  void parseEnumDeclaration(spEnumDeclaration &enumDecl);
   void parseExplicitGenericInvocation(
     spExplicitGenericInvocation &explGenInvocation);
   void parseExplicitGenericInvocationSuffix(

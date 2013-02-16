@@ -266,7 +266,9 @@ bool isValidInitTokenOfTypeDeclaration(int token) {
 
   if (TOK_ANNOTATION == token
     || TOK_KEY_CLASS == token
-    || TOK_KEY_INTERFACE == token) {
+    || TOK_KEY_INTERFACE == token
+    || TOK_KEY_ENUM == token) {
+
     return true;
   }
 
@@ -739,6 +741,167 @@ void Parser::parseElementValueArrayInitializer(
 
   elemValArrayInit->posRCBrace = lexer->getCursor() - 1;
   lexer->getNextToken(); // consume '}'
+}
+
+/// EnumBody:
+///   '{' [EnumConstants] [,] [EnumBodyDeclarations] '}'
+void Parser::parseEnumBody(spEnumBody &enumBody) {
+  // '{'
+  if (lexer->getCurToken() != TOK_LCURLY_BRACKET) {
+    enumBody->addErr(diag->addErr(
+      ERR_EXP_LCURLY_BRACKET, lexer->getCursor() - 1));
+    return;
+  }
+
+  enumBody->posLCBrace = lexer->getCursor() - 1;
+  lexer->getNextToken(); // consume '{'
+
+  // EnumConstants
+  if (lexer->getCurToken() == TOK_ANNOTATION
+    || lexer->getCurToken() == TOK_IDENTIFIER) {
+
+    enumBody->enumConsts = spEnumConstants(new EnumConstants);
+    parseEnumConstants(enumBody->enumConsts);
+    if (enumBody->enumConsts->err) {
+      enumBody->addErr(-1);
+      return;
+    }
+  }
+
+  if (lexer->getCurToken() == TOK_COMMA) {
+    enumBody->posComma = lexer->getCursor() - 1;
+    lexer->getNextToken(); // consume ','
+  }
+
+  // EnumBodyDeclarations
+  if (lexer->getCurToken() == TOK_SEMICOLON) {
+    enumBody->bodyDecls = spEnumBodyDeclarations(new EnumBodyDeclarations);
+    parseEnumBodyDeclarations(enumBody->bodyDecls);
+    if (enumBody->bodyDecls->err) {
+      enumBody->addErr(-1);
+    }
+  }
+
+  // '}'
+  if (lexer->getCurToken() != TOK_RCURLY_BRACKET) {
+    enumBody->addErr(diag->addErr(
+      ERR_EXP_RCURLY_BRACKET, lexer->getCursor() - 1));
+    return;
+  }
+
+  enumBody->posRCBrace = lexer->getCursor() - 1;
+  lexer->getNextToken(); // consume '}'
+}
+
+/// EnumBodyDeclarations:
+///   ; {ClassBodyDeclaration}
+void Parser::parseEnumBodyDeclarations(spEnumBodyDeclarations &bodyDecls) {
+  // ';'
+  if (lexer->getCurToken() != TOK_SEMICOLON) {
+    bodyDecls->addErr(diag->addErr(ERR_EXP_SEMICOLON, lexer->getCursor() - 1));
+    return;
+  }
+
+  // {ClassBodyDeclaration}
+  parseClassBodyDeclarationsHelper(bodyDecls->classBodyDecls);
+}
+
+/// EnumConstant:
+///   [Annotations] Identifier [Arguments] [ClassBody]
+void Parser::parseEnumConstant(spEnumConstant &enumConst) {
+  // [Annotations]
+  parseAnnotations(enumConst->annotations);
+
+  // Identifier
+  if (lexer->getCurToken() != TOK_IDENTIFIER) {
+    enumConst->addErr(diag->addErr(ERR_EXP_IDENTIFIER, lexer->getCursor() - 1));
+    return;
+  }
+
+  enumConst->id = spIdentifier(new Identifier(
+    lexer->getCurTokenIni(), lexer->getCurTokenStr()));
+  lexer->getNextToken(); // consume 'Identifier'
+
+  // [Arguments]
+  if (lexer->getCurToken() == TOK_LPAREN) {
+    enumConst->args = spArguments(new Arguments);
+    parseArguments(enumConst->args);
+    if (enumConst->args->err) {
+      enumConst->addErr(-1);
+      return;
+    }
+  }
+
+  // [ClassBody]
+  if (lexer->getCurToken() == TOK_LCURLY_BRACKET) {
+    enumConst->classBody = spClassBody(new ClassBody);
+    parseClassBody(enumConst->classBody);
+    if (enumConst->classBody->err) {
+      enumConst->addErr(-1);
+      return;
+    }
+  }
+}
+
+/// EnumConstants:
+///   EnumConstant
+///   EnumConstants , EnumConstant
+void Parser::parseEnumConstants(spEnumConstants &enumConsts) {
+  enumConsts->enumConst = spEnumConstant(new EnumConstant);
+  parseEnumConstant(enumConsts->enumConst);
+  if (enumConsts->enumConst->err) {
+    enumConsts->addErr(-1);
+    return;
+  }
+
+  State state;
+  while (lexer->getCurToken() == TOK_COMMA) {
+    saveState(state);
+    unsigned pos = lexer->getCursor() - 1;
+    lexer->getNextToken(); // consume ','
+
+    spEnumConstant enumConst = spEnumConstant(new EnumConstant);
+    parseEnumConstant(enumConst);
+    if (enumConst->err) {
+      restoreState(state);
+      return;
+    }
+
+    enumConsts->pairs.push_back(std::make_pair(pos, enumConst));
+  }
+}
+
+/// EnumDeclaration:
+///   enum Identifier [implements TypeList] EnumBody
+void Parser::parseEnumDeclaration(spEnumDeclaration &enumDecl) {
+  // enum
+  if (lexer->getCurToken() != TOK_KEY_ENUM) {
+    enumDecl->addErr(-1);
+    return;
+  }
+
+  enumDecl->tokEnum = spTokenExp(new TokenExp(
+    lexer->getCursor() - tokenUtil.getTokenLength(
+    lexer->getCurToken()), lexer->getCurToken()));
+  lexer->getNextToken(); // consume 'enum'
+
+  // Identifier
+  if (lexer->getCurToken() != TOK_IDENTIFIER) {
+    enumDecl->addErr(diag->addErr(ERR_EXP_IDENTIFIER, lexer->getCursor() - 1));
+    return;
+  }
+
+  enumDecl->id = spIdentifier(new Identifier(
+    lexer->getCurTokenIni(), lexer->getCurTokenStr()));
+  lexer->getNextToken(); // consume Identifier
+
+  // TODO: [implements TypeList]
+
+  enumDecl->enumBody = spEnumBody(new EnumBody);
+  parseEnumBody(enumDecl->enumBody);
+  if (enumDecl->enumBody->err) {
+    enumDecl->addErr(-1);
+  }
 }
 
 /// Block: '{' BlockStatements '}'
@@ -3691,6 +3854,7 @@ void Parser::parseModifier(spModifier &modifier) {
 
 /// ClassDeclaration: NormalClassDeclaration | EnumDeclaration
 void Parser::parseClassDeclaration(spClassDeclaration &classDecl) {
+  // NormalClassDeclaration
   if (lexer->getCurToken() == TOK_KEY_CLASS) {
     classDecl->nClassDecl = spNormalClassDeclaration(
       new NormalClassDeclaration);
@@ -3698,9 +3862,10 @@ void Parser::parseClassDeclaration(spClassDeclaration &classDecl) {
     return;
   }
 
-  // TODO:
+  // EnumDeclaration
   if (lexer->getCurToken() == TOK_KEY_ENUM) {
-    lexer->getNextToken();
+    classDecl->enumDecl = spEnumDeclaration(new EnumDeclaration);
+    parseEnumDeclaration(classDecl->enumDecl);
     return;
   }
 
@@ -3832,6 +3997,23 @@ void Parser::parseClassBody(spClassBody &classBody) {
   lexer->getNextToken(); // consume '{'
 
   // ClassBodyDeclaration
+  parseClassBodyDeclarationsHelper(classBody->decls);
+
+  if (lexer->getCurToken() != TOK_RCURLY_BRACKET) {
+    classBody->addErr(diag->addErr(
+      ERR_EXP_RCURLY_BRACKET, lexer->getCursor() - 1));
+    return;
+  }
+
+  classBody->posRCBrace = lexer->getCursor() - 1;
+  st.updateScopeEnd(lexer->getCursor());
+  lexer->getNextToken(); // consume '}'
+}
+
+/// { ClassBodyDeclaration }
+void Parser::parseClassBodyDeclarationsHelper(
+  std::vector<spClassBodyDeclaration> &classBodyDecls) {
+
   unsigned pos = 0;
   while (isValidInitTokenOfClassBodyDeclaration(lexer->getCurToken())
     && pos != lexer->getCursor()) {
@@ -3845,18 +4027,8 @@ void Parser::parseClassBody(spClassBody &classBody) {
     spClassBodyDeclaration decl = spClassBodyDeclaration(
       new ClassBodyDeclaration);
     parseClassBodyDeclaration(decl);
-    classBody->decls.push_back(decl);
+    classBodyDecls.push_back(decl);
   }
-
-  if (lexer->getCurToken() != TOK_RCURLY_BRACKET) {
-    classBody->addErr(diag->addErr(
-      ERR_EXP_RCURLY_BRACKET, lexer->getCursor() - 1));
-    return;
-  }
-
-  classBody->posRCBrace = lexer->getCursor() - 1;
-  st.updateScopeEnd(lexer->getCursor());
-  lexer->getNextToken(); // consume '}'
 }
 
 /// ClassBodyDeclaration:
