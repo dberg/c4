@@ -904,8 +904,10 @@ struct EnumBody : ASTError {
 /// EnumBodyDeclarations:
 ///   ; {ClassBodyDeclaration}
 struct EnumBodyDeclarations : ASTError {
-  unsigned postSemicolon;
+  unsigned posSemiColon;
   std::vector<spClassBodyDeclaration> classBodyDecls;
+
+  EnumBodyDeclarations() : posSemiColon(0) {}
 };
 
 /// EnumConstant:

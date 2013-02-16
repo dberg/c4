@@ -802,6 +802,9 @@ void Parser::parseEnumBodyDeclarations(spEnumBodyDeclarations &bodyDecls) {
     return;
   }
 
+  bodyDecls->posSemiColon = lexer->getCursor() - 1;
+  lexer->getNextToken(); // consume ';'
+
   // {ClassBodyDeclaration}
   parseClassBodyDeclarationsHelper(bodyDecls->classBodyDecls);
 }
