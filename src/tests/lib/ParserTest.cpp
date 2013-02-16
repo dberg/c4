@@ -785,6 +785,62 @@ TEST(Parser, Enum) {
   spEnumConstant enumConst = pair.second;
 }
 
+// -----------------------------------------------------------------------------
+// enum E { O1("a"), O2("b"); private String s; E(String s) { this.s = s; }}
+// -----------------------------------------------------------------------------
+// EnumDeclaration
+//   enum
+//   Identifier
+//   EnumBody
+//     '{'
+//     EnumConstants
+//       EnumConstant
+//         Identifier <-- O1
+//         Arguments
+//       ','
+//       EnumConstant
+//         Identifier <-- O2
+//         Arguments
+//     EnumBodyDeclarations
+//       ';'
+//       ClassBodyDeclaration[0](1)
+//         MemberDecl(1)
+//           methodOrFieldDecl <-- 'private String s;'
+//       ClassBodyDeclaration[1](1)
+//         MemberDecl(3)
+//           Identifier ConstructorRest
+//     '}'
+TEST(Parser, EnumConstructor) {
+  std::string filename = "Test.java";
+  std::string buffer = "enum E { O1(\"a\"), O2(\"b\"); "
+    "private String s; E(String s) { this.s = s; }}";
+  spDiagnosis diag = spDiagnosis(new Diagnosis);
+  Parser parser(filename, buffer, diag);
+  parser.parse();
+
+  spEnumDeclaration enumDecl = parser.compilationUnit->typeDecls[0]->decl
+    ->classDecl->enumDecl;
+
+  ASSERT_EQ(7, enumDecl->enumBody->posLCBrace);
+  ASSERT_EQ(72, enumDecl->enumBody->posRCBrace);
+
+  ASSERT_EQ(25, enumDecl->enumBody->bodyDecls->posSemiColon);
+  ASSERT_EQ(2, enumDecl->enumBody->bodyDecls->classBodyDecls.size());
+
+  spClassBodyDeclaration classBodyDecl1
+    = enumDecl->enumBody->bodyDecls->classBodyDecls[0];
+  ASSERT_EQ(ClassBodyDeclaration::OPT_MODIFIER_MEMBER_DECL,
+    classBodyDecl1->opt);
+  ASSERT_EQ(MemberDecl::OPT_METHOD_OR_FIELD_DECL,
+    classBodyDecl1->memberDecl->opt);
+
+  spClassBodyDeclaration classBodyDecl2
+    = enumDecl->enumBody->bodyDecls->classBodyDecls[1];
+  ASSERT_EQ(ClassBodyDeclaration::OPT_MODIFIER_MEMBER_DECL,
+    classBodyDecl2->opt);
+  ASSERT_EQ(MemberDecl::OPT_IDENTIFIER_CONSTRUCTOR_DECLARATOR_REST,
+    classBodyDecl2->memberDecl->opt);
+}
 
 TEST(Parser, Errors) {
   std::string filename = "Test.java";

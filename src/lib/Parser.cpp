@@ -790,6 +790,7 @@ void Parser::parseEnumBody(spEnumBody &enumBody) {
   }
 
   enumBody->posRCBrace = lexer->getCursor() - 1;
+  st.updateScopeEnd(lexer->getCursor());
   lexer->getNextToken(); // consume '}'
 }
 
@@ -896,6 +897,10 @@ void Parser::parseEnumDeclaration(spEnumDeclaration &enumDecl) {
 
   enumDecl->id = spIdentifier(new Identifier(
     lexer->getCurTokenIni(), lexer->getCurTokenStr()));
+
+  st.addSym(ST_IDENTIFIER, lexer->getCurTokenIni(), lexer->getCursor(),
+    src->getLine(), lexer->getCurTokenStr());
+
   lexer->getNextToken(); // consume Identifier
 
   // TODO: [implements TypeList]

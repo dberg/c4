@@ -18,16 +18,16 @@ void ST::addSym(int type, unsigned pos, unsigned end, unsigned line,
 /// We match the identifier name with our current scope name.
 bool ST::isConstructor(const std::string identifier) {
   // If the current scope is of type ST_MEMBER_DECL the previous scope should be
-  // of type ST_CLASS. Given that the first scope is a compilation unit the
-  // scope size should be equal or greater than 3 at this point.
+  // of type ST_CLASS or ST_ENUM. Given that the first scope is a compilation
+  // unit the scope size should be equal or greater than 3 at this point.
   if (scopes.size() < 3) { return false; }
   std::vector<std::size_t>::size_type classId = scopes[scopes.size() - 2];
   spSymbol symClass = symbols[classId];
-  if (symClass->type != ST_CLASS) {
+  if (symClass->type != ST_CLASS && symClass->type != ST_ENUM) {
     return false;
   }
 
-  // The next symbol after ST_CLASS should be of type ST_IDENTIFIER.
+  // The next symbol after ST_CLASS or ST_ENUM should be of type ST_IDENTIFIER.
   spSymbol symId = symbols[classId + 1];
   if (symId->type == ST_IDENTIFIER && symId->metadata == identifier) {
     return true;
