@@ -4219,7 +4219,7 @@ void Parser::parseMemberDecl(spMemberDecl &memberDecl) {
     return;
   }
 
-  // GenericMethodOrConstructorDecl
+  // (4) GenericMethodOrConstructorDecl
   if (lexer->getCurToken() == TOK_OP_LT) {
     memberDecl->opt = MemberDecl::OPT_GENERIC_METHOD_OR_CONSTRUCTOR_DECL;
     memberDecl->genMethodOrConstDecl
@@ -4231,10 +4231,16 @@ void Parser::parseMemberDecl(spMemberDecl &memberDecl) {
     return;
   }
 
-  // ClassDeclaration
-  if (lexer->getCurToken() == TOK_KEY_CLASS) {
+  // (5) ClassDeclaration
+  if (lexer->getCurToken() == TOK_KEY_CLASS
+    || lexer->getCurToken() == TOK_KEY_ENUM) {
+
     memberDecl->opt = MemberDecl::OPT_CLASS_DECLARATION;
-    st.updateScopeType(ST_CLASS);
+    if (lexer->getCurToken() == TOK_KEY_CLASS) {
+      st.updateScopeType(ST_CLASS);
+    } else {
+      st.updateScopeType(ST_ENUM);
+    }
     memberDecl->classDecl = spClassDeclaration(new ClassDeclaration);
     parseClassDeclaration(memberDecl->classDecl);
     if (memberDecl->classDecl->err) {
