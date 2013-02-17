@@ -3338,7 +3338,49 @@ void Parser::parseStatement(spStatement &stmt) {
 
   // (9) do Statement while ParExpression ;
   if (lexer->getCurToken() == TOK_KEY_DO) {
-    // TODO:
+    stmt->opt = Statement::OPT_DO;
+
+    // do
+    stmt->tokDo = spTokenExp(new TokenExp(
+      lexer->getCursor() - tokenUtil.getTokenLength(
+      lexer->getCurToken()), lexer->getCurToken()));
+    lexer->getNextToken(); // consume 'do'
+
+    // Statement
+    stmt->stmtDo = spStatement(new Statement);
+    parseStatement(stmt->stmtDo);
+    if (stmt->stmtDo->err) {
+      stmt->addErr(-1);
+      return;
+    }
+
+    // while
+    if (lexer->getCurToken() != TOK_KEY_WHILE) {
+      stmt->addErr(diag->addErr(ERR_EXP_WHILE, lexer->getCursor() - 1));
+      return;
+    }
+
+    stmt->tokWhile = spTokenExp(new TokenExp(
+      lexer->getCursor() - tokenUtil.getTokenLength(
+      lexer->getCurToken()), lexer->getCurToken()));
+    lexer->getNextToken(); // consume 'while'
+
+    // ParExpression
+    stmt->parExpr = spParExpression(new ParExpression);
+    parseParExpression(stmt->parExpr);
+    if (stmt->parExpr->err) {
+      stmt->addErr(-1);
+      return;
+    }
+
+    // ';'
+    if (lexer->getCurToken() != TOK_SEMICOLON) {
+      stmt->addErr(diag->addErr(ERR_EXP_SEMICOLON, lexer->getCursor() - 1));
+      return;
+    }
+
+    stmt->posSemiColon = lexer->getCursor() - 1;
+    lexer->getNextToken(); // consume ';'
     return;
   }
 

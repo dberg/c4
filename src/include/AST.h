@@ -734,10 +734,10 @@ struct Statement : ASTError {
   // shared 1,15,16
   spBlock block;
 
-  // shared 2,4,6,11,12,13,14
+  // shared 2,4,6,9,11,12,13,14
   unsigned posSemiColon;
 
-  // shared 5,7,8,15
+  // shared 5,7,8,9,15
   spParExpression parExpr;
 
   // shared 3,11,12
@@ -745,6 +745,9 @@ struct Statement : ASTError {
 
   // shared 3,6
   unsigned int posColon;
+
+  // shared 8,9
+  spTokenExp tokWhile;
 
   // (1) Block
 
@@ -774,8 +777,11 @@ struct Statement : ASTError {
   spSwitchBlockStatementGroups switchStmtGroups;
 
   // (8) while ParExpression Statement
-  spTokenExp tokWhile;
   spStatement stmtWhile;
+
+  // (9) do Statement while ParExpression ;
+  spTokenExp tokDo;
+  spStatement stmtDo;
 
   // (10) for '(' ForControl ')' Statement
   spTokenExp tokFor;

@@ -42,6 +42,7 @@ enum ErrorCode {
   ERR_EXP_SUPER,
   ERR_EXP_TYPE,
   ERR_EXP_VOID,
+  ERR_EXP_WHILE,
   ERR_NVAL_ANNOT_ELEM,
   ERR_NVAL_ARRAY,
   ERR_NVAL_EXPLICIT_GENERIC_INVOCATION_SUFFIX,
@@ -84,6 +85,7 @@ public:
     msgs[ERR_EXP_SUPER] = "Expected keyword super";
     msgs[ERR_EXP_TYPE] = "Expected Type";
     msgs[ERR_EXP_VOID] = "Expected keyword void";
+    msgs[ERR_EXP_WHILE] = "Expected keyword while";
     msgs[ERR_NVAL_ANNOT_ELEM] = "Invalid annotation element";
     msgs[ERR_NVAL_ARRAY] = "Invalid array notation";
     msgs[ERR_NVAL_EXPLICIT_GENERIC_INVOCATION_SUFFIX] =
