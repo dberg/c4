@@ -489,8 +489,8 @@ AnnotationTypeBody:
 AnnotationTypeElementDeclarations:
   AnnotationTypeElementDeclaration
   AnnotationTypeElementDeclarations AnnotationTypeElementDeclaration
-  AnnotationTypeElementDeclaration:
 
+AnnotationTypeElementDeclaration:
   {Modifier} AnnotationTypeElementRest
 
 AnnotationTypeElementRest:
