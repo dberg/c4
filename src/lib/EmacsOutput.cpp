@@ -1487,7 +1487,26 @@ void EmacsOutput::setStatement(const spStatement &stmt) {
   }
 
   if (stmt->opt == Statement::OPT_DO) {
-    // TODO:
+    if (stmt->tokDo) {
+      setKeyword(stmt->tokDo);
+    }
+
+    if (stmt->stmtDo) {
+      setStatement(stmt->stmtDo);
+    }
+
+    if (stmt->tokWhile) {
+      setKeyword(stmt->tokWhile);
+    }
+
+    if (stmt->parExpr) {
+      setParExpression(stmt->parExpr);
+    }
+
+    if (stmt->posSemiColon) {
+      setOp(stmt->posSemiColon);
+    }
+
     return;
   }
 
