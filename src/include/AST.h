@@ -106,6 +106,18 @@ namespace djp {
 
 typedef boost::shared_ptr<struct Annotation> spAnnotation;
 typedef boost::shared_ptr<struct AnnotationElement> spAnnotationElement;
+typedef boost::shared_ptr<struct AnnotationMethodOrConstantRest>
+  spAnnotationMethodOrConstantRest;
+typedef boost::shared_ptr<struct AnnotationMethodRest> spAnnotationMethodRest;
+typedef boost::shared_ptr<struct AnnotationTypeBody> spAnnotationTypeBody;
+typedef boost::shared_ptr<struct AnnotationTypeDeclaration>
+  spAnnotationTypeDeclaration;
+typedef boost::shared_ptr<struct AnnotationTypeElementDeclaration>
+  spAnnotationTypeElementDeclaration;
+typedef boost::shared_ptr<struct AnnotationTypeElementDeclarations>
+  spAnnotationTypeElementDeclarations;
+typedef boost::shared_ptr<struct AnnotationTypeElementRest>
+  spAnnotationTypeElementRest;
 typedef boost::shared_ptr<struct Arguments> spArguments;
 typedef boost::shared_ptr<struct ArrayCreatorRest> spArrayCreatorRest;
 typedef boost::shared_ptr<struct ArrayCreatorRestOpt1> spArrayCreatorRestOpt1;
@@ -128,6 +140,10 @@ typedef boost::shared_ptr<struct ClassDeclaration> spClassDeclaration;
 typedef boost::shared_ptr<struct ClassOrInterfaceDeclaration>
   spClassOrInterfaceDeclaration;
 typedef boost::shared_ptr<struct CompilationUnit> spCompilationUnit;
+typedef boost::shared_ptr<struct ConstantDeclaratorsRest>
+  spConstantDeclaratorsRest;
+typedef boost::shared_ptr<struct ConstantDeclaratorRest>
+  spConstantDeclaratorRest;
 typedef boost::shared_ptr<struct ConstructorDeclaratorRest>
   spConstructorDeclaratorRest;
 typedef boost::shared_ptr<struct CreatedName> spCreatedName;
@@ -183,7 +199,19 @@ typedef boost::shared_ptr<struct IdentifierSuffix> spIdentifierSuffix;
 typedef boost::shared_ptr<struct ImportDeclaration> spImportDeclaration;
 typedef boost::shared_ptr<struct ImportDeclarations> spImportDeclarations;
 typedef boost::shared_ptr<struct IntegerLiteral> spIntegerLiteral;
+typedef boost::shared_ptr<struct InterfaceBody> spInterfaceBody;
+typedef boost::shared_ptr<struct InterfaceBodyDeclaration>
+  spInterfaceBodyDeclaration;
 typedef boost::shared_ptr<struct InterfaceDeclaration> spInterfaceDeclaration;
+typedef boost::shared_ptr<struct InterfaceGenericMethodDecl>
+   spInterfaceGenericMethodDecl;
+typedef boost::shared_ptr<struct InterfaceMemberDecl> spInterfaceMemberDecl;
+typedef boost::shared_ptr<struct InterfaceMethodDeclaratorRest>
+  spInterfaceMethodDeclaratorRest;
+typedef boost::shared_ptr<struct InterfaceMethodOrFieldDecl>
+  spInterfaceMethodOrFieldDecl;
+typedef boost::shared_ptr<struct InterfaceMethodOrFieldRest>
+  spInterfaceMethodOrFieldRest;
 typedef boost::shared_ptr<struct InnerCreator> spInnerCreator;
 typedef boost::shared_ptr<struct Literal> spLiteral;
 typedef boost::shared_ptr<struct LocalVariableDeclarationStatement>
@@ -195,6 +223,8 @@ typedef boost::shared_ptr<struct MethodOrFieldRest> spMethodOrFieldRest;
 typedef boost::shared_ptr<struct Modifier> spModifier;
 typedef boost::shared_ptr<struct NormalClassDeclaration>
   spNormalClassDeclaration;
+typedef boost::shared_ptr<struct NormalInterfaceDeclaration>
+  spNormalInterfaceDeclaration;
 typedef boost::shared_ptr<struct NonWildcardTypeArguments>
   spNonWildcardTypeArguments;
 typedef boost::shared_ptr<struct NonWildcardTypeArgumentsOrDiamond>
@@ -249,6 +279,8 @@ typedef boost::shared_ptr<struct VariableDeclaratorRest>
   spVariableDeclaratorRest;
 typedef boost::shared_ptr<struct VariableInitializer> spVariableInitializer;
 typedef boost::shared_ptr<struct VariableModifier> spVariableModifier;
+typedef boost::shared_ptr<struct VoidInterfaceMethodDeclaratorRest>
+  spVoidInterfaceMethodDeclaratorRest;
 typedef boost::shared_ptr<struct VoidMethodDeclaratorRest>
   spVoidMethodDeclaratorRest;
 
@@ -287,6 +319,23 @@ struct CompilationUnit {
   spPackageDeclaration pkgDecl;
   spImportDeclarations impDecls;
   std::vector<spTypeDeclaration> typeDecls;
+};
+
+/// ConstantDeclaratorsRest:
+///   ConstantDeclaratorRest { , ConstantDeclarator }
+struct ConstantDeclaratorsRest : ASTError {
+  spConstantDeclaratorRest constDeclRest;
+  std::vector<std::pair<unsigned, spConstantDeclaratorRest> > pairs;
+};
+
+/// ConstantDeclaratorRest:
+///   {'[]'} = VariableInitializer
+struct ConstantDeclaratorRest : ASTError {
+  unsigned posEquals;
+  ArrayDepth arrayDepth;
+  spVariableInitializer varInit;
+
+  ConstantDeclaratorRest() : posEquals(0) {}
 };
 
 /// PackageDeclaration: [ [Annotations]  package QualifiedIdentifier ; ]
@@ -365,6 +414,17 @@ struct NormalClassDeclaration : ASTError {
   spTokenExp implementsTok;
   spTypeList typeList;
   spClassBody classBody;
+};
+
+/// NormalInterfaceDeclaration:
+///   interface Identifier [TypeParameters] [extends TypeList] InterfaceBody
+struct NormalInterfaceDeclaration : ASTError {
+  spTokenExp tokInterface;
+  spIdentifier id;
+  spTypeParameters typeParams;
+  spTokenExp tokExtends;
+  spTypeList typeList;
+  spInterfaceBody body;
 };
 
 /// ClassBody: '{' {ClassBodyDeclaration} '}'
@@ -448,8 +508,8 @@ struct MemberDecl : ASTError {
   // (5) ClassDeclaration
   spClassDeclaration classDecl;
 
-  // TODO:
   // (6) InterfaceDeclaration
+  spInterfaceDeclaration interfaceDecl;
 
   MemberDecl() : opt(OPT_UNDEFINED) {}
 };
@@ -537,6 +597,17 @@ struct VariableModifier : ASTError {
 
     return false;
   }
+};
+
+/// VoidInterfaceMethodDeclaratorRest:
+///   FormalParameters [throws QualifiedIdentifierList] ;
+struct VoidInterfaceMethodDeclaratorRest : ASTError {
+  unsigned posSemiColon;
+  spFormalParameters formParams;
+  spTokenExp tokThrows;
+  spQualifiedIdentifierList qualifiedIdList;
+
+  VoidInterfaceMethodDeclaratorRest() : posSemiColon(0) {}
 };
 
 /// VoidMethodDeclaratorRest:
@@ -943,12 +1014,140 @@ struct EnumDeclaration : ASTError {
   spEnumBody enumBody;
 };
 
+/// InterfaceBody:
+///   '{' { InterfaceBodyDeclaration } '}'
+struct InterfaceBody : ASTError {
+  unsigned posLCBrace;
+  unsigned posRCBrace;
+  std::vector<spInterfaceBodyDeclaration> bodyDecls;
+
+  InterfaceBody() : posLCBrace(0), posRCBrace(0) {}
+};
+
+/// InterfaceBodyDeclaration:
+///   (1) ;
+///   (2) {Modifier} InterfaceMemberDecl
+struct InterfaceBodyDeclaration : ASTError {
+  enum InterfaceBodyDeclarationOpt {
+    OPT_UNDEFINED,
+    OPT_SEMI_COLON,
+    OPT_MEMBER_DECL,
+  };
+
+  InterfaceBodyDeclarationOpt opt;
+
+  // (1) ;
+  unsigned posSemiColon;
+
+  // (2)
+  spModifier modifier;
+  spInterfaceMemberDecl memberDecl;
+
+  InterfaceBodyDeclaration() : opt(OPT_UNDEFINED), posSemiColon(0) {}
+};
+
 /// InterfaceDeclaration:
 ///   NormalInterfaceDeclaration
 ///   AnnotationTypeDeclaration
-// TODO:
 struct InterfaceDeclaration {
+  enum InterfaceDeclarationOpt {
+    OPT_UNDEFINED,
+    OPT_NORMAL,
+    OPT_ANNOTATION,
+  };
 
+  InterfaceDeclarationOpt opt;
+  spNormalInterfaceDeclaration normalDecl;
+  spAnnotationTypeDeclaration annotationDecl;
+
+  InterfaceDeclaration() : opt(OPT_UNDEFINED) {}
+};
+
+/// InterfaceGenericMethodDecl:
+///   TypeParameters (Type | void) Identifier InterfaceMethodDeclaratorRest
+struct InterfaceGenericMethodDecl : ASTError {
+  spTypeParameters typeParams;
+  spType type;
+  spTokenExp tokVoid;
+  spIdentifier id;
+  spInterfaceMethodDeclaratorRest methDeclRest;
+};
+
+/// InterfaceMemberDecl:
+///   (1) InterfaceMethodOrFieldDecl
+///   (2) void Identifier VoidInterfaceMethodDeclaratorRest
+///   (3) InterfaceGenericMethodDecl
+///   (4) ClassDeclaration
+///   (5) InterfaceDeclaration
+struct InterfaceMemberDecl : ASTError {
+  enum InterfaceMemberDeclOpt {
+    OPT_UNDEFINED,
+    OPT_INTERFACE_METHOD_OR_FIELD_DECL,
+    OPT_VOID_IDENTIFIER,
+    OPT_INTERFACE_GENERIC,
+    OPT_CLASS_DECLARATION,
+    OPT_INTERFACE_DECLARATION,
+  };
+
+  InterfaceMemberDeclOpt opt;
+
+  // (1) InterfaceMethodOrFieldDecl
+  spInterfaceMethodOrFieldDecl methodOrFieldDecl;
+
+  // (2) void Identifier VoidInterfaceMethodDeclaratorRest
+  spTokenExp tokVoid;
+  spIdentifier id;
+  spVoidInterfaceMethodDeclaratorRest voidMethDeclRest;
+
+  // (3) InterfaceGenericMethodDecl
+  spInterfaceGenericMethodDecl genMethodDecl;
+
+  // (4) ClassDeclaration
+  spClassDeclaration classDecl;
+
+  // (5) InterfaceDeclaration
+  spInterfaceDeclaration interfaceDecl;
+
+  InterfaceMemberDecl() : opt(OPT_UNDEFINED) {}
+};
+
+/// InterfaceMethodDeclaratorRest:
+///   FormalParameters {'[]'} [throws QualifiedIdentifierList] ;
+struct InterfaceMethodDeclaratorRest : ASTError {
+  unsigned posSemiColon;
+  spFormalParameters formParams;
+  ArrayDepth arrayDepth;
+  spTokenExp tokThrows;
+  spQualifiedIdentifierList qualifiedIdList;
+
+  InterfaceMethodDeclaratorRest() : posSemiColon(0) {}
+};
+
+/// InterfaceMethodOrFieldDecl:
+///   Type Identifier InterfaceMethodOrFieldRest
+struct InterfaceMethodOrFieldDecl : ASTError {
+  spType type;
+  spIdentifier id;
+  spInterfaceMethodOrFieldRest rest;
+};
+
+/// InterfaceMethodOrFieldRest
+///   ConstantDeclaratorsRest ;
+///   InterfaceMethodDeclaratorRest
+struct InterfaceMethodOrFieldRest : ASTError {
+  enum InterfaceMethodOrFieldRestOpt {
+    OPT_UNDEFINED,
+    OPT_CONSTANT_REST,
+    OPT_METHOD_REST,
+  };
+
+  InterfaceMethodOrFieldRestOpt opt;
+  unsigned posSemiColon;
+
+  spConstantDeclaratorsRest constRest;
+  spInterfaceMethodDeclaratorRest methDeclRest;
+
+  InterfaceMethodOrFieldRest() : opt(OPT_UNDEFINED), posSemiColon(0) {}
 };
 
 /// ImportDeclarations:
@@ -1129,6 +1328,107 @@ struct AnnotationElement {
   spElementValue value;
 
   AnnotationElement() : opt(OPT_UNDEFINED), err(false) {}
+};
+
+/// AnnotationMethodOrConstantRest:
+///   AnnotationMethodRest
+///   ConstantDeclaratorsRest
+struct AnnotationMethodOrConstantRest : ASTError {
+  enum AnnotationMethodOrConstantRestOpt {
+    OPT_UNDEFINED,
+    OPT_ANNOTATION_METHOD_REST,
+    OPT_CONSTANT_DECLARATORS_REST,
+  };
+
+  AnnotationMethodOrConstantRestOpt opt;
+  spAnnotationMethodRest methRest;
+  spConstantDeclaratorsRest constRest;
+
+  AnnotationMethodOrConstantRest() : opt(OPT_UNDEFINED) {}
+};
+
+/// AnnotationMethodRest:
+///   '()' ['[]'] [default ElementValue]
+struct AnnotationMethodRest : ASTError {
+  unsigned posLParen;
+  unsigned posRParen;
+  unsigned posLBracket;
+  unsigned posRBracket;
+  spTokenExp tokDefault;
+  spElementValue elemVal;
+
+  AnnotationMethodRest()
+    : posLParen(0), posRParen(0), posLBracket(0), posRBracket(0) {}
+};
+
+/// AnnotationTypeBody:
+///   { [AnnotationTypeElementDeclarations] }
+struct AnnotationTypeBody : ASTError {
+  std::vector<spAnnotationTypeElementDeclarations> elemDecls;
+};
+
+/// AnnotationTypeDeclaration:
+///   @ interface Identifier AnnotationTypeBody
+struct AnnotationTypeDeclaration : ASTError {
+  unsigned posAt;
+  spTokenExp tokInterface;
+  spIdentifier id;
+  spAnnotationTypeBody annTypeBody;
+
+  AnnotationTypeDeclaration() : posAt(0) {}
+};
+
+/// AnnotationTypeElementDeclaration:
+///   {Modifier} AnnotationTypeElementRest
+struct AnnotationTypeElementDeclaration : ASTError {
+  spModifier modifier;
+  spAnnotationTypeElementRest elemRest;
+};
+
+/// AnnotationTypeElementDeclarations:
+///   AnnotationTypeElementDeclaration
+///   AnnotationTypeElementDeclarations AnnotationTypeElementDeclaration
+struct AnnotationTypeElementDeclarations : ASTError {
+  std::vector<spAnnotationTypeElementDeclaration> elemDecls;
+};
+
+/// AnnotationTypeElementRest:
+///   (1) Type Identifier AnnotationMethodOrConstantRest ;
+///   (2) ClassDeclaration
+///   (3) InterfaceDeclaration
+///   (4) EnumDeclaration
+///   (5) AnnotationTypeDeclaration
+struct AnnotationTypeElementRest : ASTError {
+  enum AnnotationTypeElementRestOpt {
+    OPT_UNDEFINED,
+    OPT_METHOD_OR_CONSTANT,
+    OPT_CLASS_DECLARATION,
+    OPT_INTERFACE_DECLARATION,
+    OPT_ENUM_DECLARATION,
+    OPT_ANNOTATION_DECLARATION,
+  };
+
+  AnnotationTypeElementRestOpt opt;
+
+  // (1) Type Identifier AnnotationMethodOrConstantRest ;
+  unsigned posSemiColon;
+  spType type;
+  spIdentifier id;
+  spAnnotationMethodOrConstantRest methodOrConstRest;
+
+  // (2) ClassDeclaration
+  spClassDeclaration classDecl;
+
+  // (3) InterfaceDeclaration
+  spInterfaceDeclaration interfaceDecl;
+
+  // (4) EnumDeclaration
+  spEnumDeclaration enumDecl;
+
+  // (5) AnnotationTypeDeclaration
+  spAnnotationTypeDeclaration annotationDecl;
+
+  AnnotationTypeElementRest() : opt(OPT_UNDEFINED), posSemiColon(0) {}
 };
 
 /// ElementValuePairs: ElementValuePair { , ElementValuePair }
