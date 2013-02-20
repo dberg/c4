@@ -355,9 +355,18 @@ struct TypeDeclaration {
 /// ClassOrInterfaceDeclaration:
 ///   {Modifier} (ClassDeclaration | InterfaceDeclaration)
 struct ClassOrInterfaceDeclaration : ASTError {
+  enum ClassOrInterfaceDeclarationOpt {
+    OPT_UNDEFINED,
+    OPT_CLASS,
+    OPT_INTERFACE,
+  };
+
+  ClassOrInterfaceDeclarationOpt opt;
   spModifier modifier;
   spClassDeclaration classDecl;
   spInterfaceDeclaration interfaceDecl;
+
+  ClassOrInterfaceDeclaration() : opt(OPT_UNDEFINED) {}
 };
 
 struct TokenExp {
@@ -1049,7 +1058,7 @@ struct InterfaceBodyDeclaration : ASTError {
 /// InterfaceDeclaration:
 ///   NormalInterfaceDeclaration
 ///   AnnotationTypeDeclaration
-struct InterfaceDeclaration {
+struct InterfaceDeclaration : ASTError {
   enum InterfaceDeclarationOpt {
     OPT_UNDEFINED,
     OPT_NORMAL,
