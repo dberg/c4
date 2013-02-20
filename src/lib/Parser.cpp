@@ -265,6 +265,7 @@ bool isValidInitTokenOfTypeDeclaration(int token) {
   }
 
   if (TOK_ANNOTATION == token
+    || TOK_ANNOTATION_TYPE_DECLARATION == token
     || TOK_KEY_CLASS == token
     || TOK_KEY_INTERFACE == token
     || TOK_KEY_ENUM == token) {
@@ -1979,6 +1980,67 @@ void Parser::parseGenericMethodOrConstructorRest(
   if (rest->methodDeclRest->err) {
     rest->addErr(-1);
   }
+}
+
+/// InterfaceBody:
+///   '{' { InterfaceBodyDeclaration } '}'
+void Parser::parseInterfaceBody(spInterfaceBody &body) {
+  // '{'
+  if (lexer->getCurToken() != TOK_LCURLY_BRACKET) {
+    body->addErr(diag->addErr(
+      ERR_EXP_LCURLY_BRACKET, lexer->getCurToken() - 1));
+    return;
+  }
+
+  body->posLCBrace = lexer->getCursor() - 1;
+  lexer->getNextToken(); // consume '{'
+
+  // { InterfaceBodyDeclaration }
+  unsigned pos = 0;
+  while (lexer->getCurToken() != TOK_RCURLY_BRACKET
+    && pos != lexer->getCursor()) {
+    pos = lexer->getCursor();
+    // TODO:
+  }
+
+  // '}'
+  if (lexer->getCurToken() != TOK_RCURLY_BRACKET) {
+    body->addErr(diag->addErr(
+      ERR_EXP_RCURLY_BRACKET, lexer->getCurToken() - 1));
+    return;
+  }
+
+  body->posRCBrace = lexer->getCursor() - 1;
+  lexer->getNextToken(); // consume '}'
+}
+
+/// InterfaceDeclaration:
+///   NormalInterfaceDeclaration
+///   AnnotationTypeDeclaration
+void Parser::parseInterfaceDeclaration(spInterfaceDeclaration &interfaceDecl) {
+  // AnnotationTypeDeclaration
+  if (lexer->getCurToken() == TOK_ANNOTATION_TYPE_DECLARATION) {
+    // TODO:
+    interfaceDecl->opt = InterfaceDeclaration::OPT_ANNOTATION;
+    lexer->getCurToken();
+    return;
+  }
+
+  // NormalInterfaceDeclaration
+  if (lexer->getCurToken() == TOK_KEY_INTERFACE) {
+    interfaceDecl->opt = InterfaceDeclaration::OPT_NORMAL;
+    interfaceDecl->normalDecl = spNormalInterfaceDeclaration(
+      new NormalInterfaceDeclaration);
+    parseNormalInterfaceDeclaration(interfaceDecl->normalDecl);
+    if (interfaceDecl->normalDecl->err) {
+      interfaceDecl->addErr(-1);
+    }
+
+    return;
+  }
+
+  // Error
+  interfaceDecl->addErr(-1);
 }
 
 /// IdentifierSuffix:
@@ -3856,6 +3918,7 @@ void Parser::parseClassOrInterfaceDeclaration(
 
   // Class
   if (lexer->getCurToken() == TOK_KEY_CLASS) {
+    decl->opt = ClassOrInterfaceDeclaration::OPT_CLASS;
     st.updateScopeType(ST_CLASS);
     decl->classDecl = spClassDeclaration(new ClassDeclaration);
     parseClassDeclaration(decl->classDecl);
@@ -3865,6 +3928,7 @@ void Parser::parseClassOrInterfaceDeclaration(
 
   // Enum
   if (lexer->getCurToken() == TOK_KEY_ENUM) {
+    decl->opt = ClassOrInterfaceDeclaration::OPT_CLASS;
     st.updateScopeType(ST_ENUM);
     decl->classDecl = spClassDeclaration(new ClassDeclaration);
     parseClassDeclaration(decl->classDecl);
@@ -3872,10 +3936,13 @@ void Parser::parseClassOrInterfaceDeclaration(
     return;
   }
 
-  // TODO:
-  if (lexer->getCurToken() == TOK_KEY_INTERFACE) {
+  // Interface
+  if (lexer->getCurToken() == TOK_KEY_INTERFACE
+      || lexer->getCurToken() == TOK_ANNOTATION_TYPE_DECLARATION) {
+    decl->opt = ClassOrInterfaceDeclaration::OPT_INTERFACE;
     st.updateScopeType(ST_INTERFACE);
-    lexer->getNextToken();
+    decl->interfaceDecl = spInterfaceDeclaration(new InterfaceDeclaration);
+    parseInterfaceDeclaration(decl->interfaceDecl);
     st.scopePop();
     return;
   }
@@ -3998,6 +4065,62 @@ void Parser::parseNormalClassDeclaration(spNormalClassDeclaration &nClassDecl) {
 
   nClassDecl->classBody = spClassBody(new ClassBody);
   parseClassBody(nClassDecl->classBody);
+}
+
+/// NormalInterfaceDeclaration:
+///   interface Identifier [TypeParameters] [extends TypeList] InterfaceBody
+void Parser::parseNormalInterfaceDeclaration(
+  spNormalInterfaceDeclaration &normalDecl) {
+
+  // interface
+  normalDecl->tokInterface = spTokenExp(new TokenExp(
+      lexer->getCursor() - tokenUtil.getTokenLength(
+        lexer->getCurToken()), lexer->getCurToken()));
+  lexer->getNextToken(); // consume 'interface'
+
+  // Identifier
+  if (lexer->getCurToken() != TOK_IDENTIFIER) {
+    normalDecl->addErr(diag->addErr(
+      ERR_EXP_IDENTIFIER, lexer->getCursor() - 1));
+    return;
+  }
+
+  normalDecl->id = spIdentifier(new Identifier(
+    lexer->getCurTokenIni(), lexer->getCurTokenStr()));
+  lexer->getNextToken(); // consume Identifier
+
+  // [TypeParameters]
+  if (lexer->getCurToken() == TOK_OP_LT) {
+    normalDecl->typeParams = spTypeParameters(new TypeParameters);
+    parseTypeParameters(normalDecl->typeParams);
+    if (normalDecl->typeParams->err) {
+      normalDecl->addErr(-1);
+      return;
+    }
+  }
+
+  // [extends TypeList]
+  if (lexer->getCurToken() == TOK_KEY_EXTENDS) {
+    // extends
+    normalDecl->tokExtends = spTokenExp(new TokenExp(
+      lexer->getCursor() - tokenUtil.getTokenLength(TOK_KEY_EXTENDS),
+      lexer->getCurToken()));
+    lexer->getNextToken(); // consume 'extends'
+
+    // TypeList
+    normalDecl->typeList = spTypeList(new TypeList);
+    parseTypeList(normalDecl->typeList);
+    if (normalDecl->typeList->err) {
+      normalDecl->addErr(-1);
+      return;
+    }
+  }
+
+  normalDecl->body = spInterfaceBody(new InterfaceBody);
+  parseInterfaceBody(normalDecl->body);
+  if (normalDecl->body->err) {
+    normalDecl->addErr(-1);
+  }
 }
 
 void Parser::parseNullLiteral(spTokenExp &nullLiteral) {

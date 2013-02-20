@@ -120,6 +120,8 @@ class Parser {
     spGenericMethodOrConstructorDecl &genMethodOrConstDecl);
   void parseGenericMethodOrConstructorRest(
     spGenericMethodOrConstructorRest &rest);
+  void parseInterfaceBody(spInterfaceBody &body);
+  void parseInterfaceDeclaration(spInterfaceDeclaration &interfaceDecl);
   void parseIdentifierSuffix(spIdentifierSuffix &idSuffix);
   spImportDeclaration parseImportDeclaration();
   spImportDeclarations parseImportDeclarations();
@@ -138,6 +140,8 @@ class Parser {
   void parseNonWildcardTypeArgumentsOrDiamond(
     spNonWildcardTypeArgumentsOrDiamond &nonWildcardOrDiam);
   void parseNormalClassDeclaration(spNormalClassDeclaration &nClassDecl);
+  void parseNormalInterfaceDeclaration(
+    spNormalInterfaceDeclaration &normalDecl);
   void parseNullLiteral(spNullLiteral &nullLiteral);
   spPackageDeclaration parsePackageDeclaration(
     std::vector<spAnnotation> &annotations);
