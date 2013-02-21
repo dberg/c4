@@ -2000,7 +2000,16 @@ void Parser::parseInterfaceBody(spInterfaceBody &body) {
   while (lexer->getCurToken() != TOK_RCURLY_BRACKET
     && pos != lexer->getCursor()) {
     pos = lexer->getCursor();
-    // TODO:
+
+    spInterfaceBodyDeclaration bodyDecl = spInterfaceBodyDeclaration(
+      new InterfaceBodyDeclaration);
+    parseInterfaceBodyDeclaration(bodyDecl);
+    body->bodyDecls.push_back(bodyDecl);
+
+    // Exit if we find an error
+    if (bodyDecl->err) {
+      return;
+    }
   }
 
   // '}'
@@ -2012,6 +2021,31 @@ void Parser::parseInterfaceBody(spInterfaceBody &body) {
 
   body->posRCBrace = lexer->getCursor() - 1;
   lexer->getNextToken(); // consume '}'
+}
+
+/// InterfaceBodyDeclaration:
+///   (1) ;
+///   (2) {Modifier} InterfaceMemberDecl
+void Parser::parseInterfaceBodyDeclaration(
+  spInterfaceBodyDeclaration &bodyDecl) {
+
+  // (1) ';'
+  if (lexer->getCurToken() == TOK_SEMICOLON) {
+    bodyDecl->opt = InterfaceBodyDeclaration::OPT_SEMICOLON;
+    bodyDecl->posSemiColon = lexer->getCursor() - 1;
+    lexer->getNextToken(); // consume ';'
+    return;
+  }
+
+  // (2) {Modifier} InterfaceMemberDecl
+  bodyDecl->opt = InterfaceBodyDeclaration::OPT_MEMBER_DECL;
+  bodyDecl->modifier = spModifier(new Modifier);
+  parseModifier(bodyDecl->modifier);
+  bodyDecl->memberDecl = spInterfaceMemberDecl(new InterfaceMemberDecl);
+  parseInterfaceMemberDecl(bodyDecl->memberDecl);
+  if (bodyDecl->memberDecl->err) {
+    bodyDecl->addErr(-1);
+  }
 }
 
 /// InterfaceDeclaration:
@@ -2041,6 +2075,52 @@ void Parser::parseInterfaceDeclaration(spInterfaceDeclaration &interfaceDecl) {
 
   // Error
   interfaceDecl->addErr(-1);
+}
+
+/// InterfaceMemberDecl:
+///   (1) InterfaceMethodOrFieldDecl
+///   (2) void Identifier VoidInterfaceMethodDeclaratorRest
+///   (3) InterfaceGenericMethodDecl
+///   (4) ClassDeclaration
+///   (5) InterfaceDeclaration
+void Parser::parseInterfaceMemberDecl(spInterfaceMemberDecl &memberDecl) {
+  // TODO:
+  // (1) InterfaceMethodOrFieldDecl
+
+  // (2) void Identifier VoidInterfaceMethodDeclaratorRest
+  if (lexer->getCurToken() == TOK_KEY_VOID) {
+    // void
+    memberDecl->tokVoid = spTokenExp(new TokenExp(
+      lexer->getCursor() - tokenUtil.getTokenLength(
+      lexer->getCurToken()), lexer->getCurToken()));
+    lexer->getNextToken(); // consume 'void'
+
+    // Identifier
+    if (lexer->getCurToken() != TOK_IDENTIFIER) {
+      memberDecl->addErr(diag->addErr(
+        ERR_EXP_IDENTIFIER, lexer->getCursor() - 1));
+      return;
+    }
+
+    memberDecl->id = spIdentifier(new Identifier(
+      lexer->getCurTokenIni(), lexer->getCurTokenStr()));
+    lexer->getNextToken(); // consume Identifier
+
+    // VoidInterfaceMethodDeclaratorRest
+    memberDecl->voidMethDeclRest = spVoidInterfaceMethodDeclaratorRest(
+      new VoidInterfaceMethodDeclaratorRest);
+    parseVoidInterfaceMethodDeclaratorRest(memberDecl->voidMethDeclRest);
+    if (memberDecl->voidMethDeclRest->err) {
+      memberDecl->addErr(-1);
+    }
+
+    return;
+  }
+
+  // TODO:
+  // (3) InterfaceGenericMethodDecl
+  // (4) ClassDeclaration
+  // (5) InterfaceDeclaration
 }
 
 /// IdentifierSuffix:
@@ -2453,7 +2533,7 @@ void Parser::parseInnerCreator(spInnerCreator &innerCreator) {
 
   // Identifier
   innerCreator->id = spIdentifier(new Identifier(
-      lexer->getCurTokenIni(), lexer->getCurTokenStr()));
+    lexer->getCurTokenIni(), lexer->getCurTokenStr()));
   lexer->getNextToken(); // consume Identifier
 
   // NonWildcardTypeArgumentsOrDiamond
@@ -4074,8 +4154,8 @@ void Parser::parseNormalInterfaceDeclaration(
 
   // interface
   normalDecl->tokInterface = spTokenExp(new TokenExp(
-      lexer->getCursor() - tokenUtil.getTokenLength(
-        lexer->getCurToken()), lexer->getCurToken()));
+    lexer->getCursor() - tokenUtil.getTokenLength(
+      lexer->getCurToken()), lexer->getCurToken()));
   lexer->getNextToken(); // consume 'interface'
 
   // Identifier
@@ -4814,6 +4894,46 @@ void Parser::parseVariableModifier(spVariableModifier &varModifier) {
       parseAnnotations(varModifier->annotations);
     }
   }
+}
+
+/// VoidInterfaceMethodDeclaratorRest:
+///   FormalParameters [throws QualifiedIdentifierList] ;
+void Parser::parseVoidInterfaceMethodDeclaratorRest(
+  spVoidInterfaceMethodDeclaratorRest &voidMethDeclRest) {
+
+  // FormalParameters
+  voidMethDeclRest->formParams = spFormalParameters(new FormalParameters);
+  parseFormalParameters(voidMethDeclRest->formParams);
+  if (voidMethDeclRest->formParams->err) {
+    voidMethDeclRest->addErr(-1);
+    return;
+  }
+
+  // [throws QualifiedIdentifierList]
+  if (lexer->getCurToken() == TOK_KEY_THROWS) {
+    voidMethDeclRest->tokThrows = spTokenExp(new TokenExp(
+      lexer->getCursor() - tokenUtil.getTokenLength(
+        lexer->getCurToken()), lexer->getCurToken()));
+    lexer->getNextToken(); // consume 'throws'
+
+    voidMethDeclRest->qualifiedIdList = spQualifiedIdentifierList(
+      new QualifiedIdentifierList);
+    parseQualifiedIdentifierList(voidMethDeclRest->qualifiedIdList);
+    if (voidMethDeclRest->qualifiedIdList->err) {
+      voidMethDeclRest->addErr(-1);
+      return;
+    }
+  }
+
+  // ;
+  if (lexer->getCurToken() != TOK_SEMICOLON) {
+    voidMethDeclRest->addErr(diag->addErr(
+      ERR_EXP_SEMICOLON, lexer->getCursor() - 1));
+    return;
+  }
+
+  voidMethDeclRest->posSemiColon = lexer->getCursor() - 1;
+  lexer->getNextToken(); // consume ';'
 }
 
 /// VoidMethodDeclaratorRest:

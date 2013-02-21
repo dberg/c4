@@ -121,7 +121,9 @@ class Parser {
   void parseGenericMethodOrConstructorRest(
     spGenericMethodOrConstructorRest &rest);
   void parseInterfaceBody(spInterfaceBody &body);
+  void parseInterfaceBodyDeclaration(spInterfaceBodyDeclaration &bodyDecl);
   void parseInterfaceDeclaration(spInterfaceDeclaration &interfaceDecl);
+  void parseInterfaceMemberDecl(spInterfaceMemberDecl &memberDecl);
   void parseIdentifierSuffix(spIdentifierSuffix &idSuffix);
   spImportDeclaration parseImportDeclaration();
   spImportDeclarations parseImportDeclarations();
@@ -187,6 +189,8 @@ class Parser {
   void parseVariableDeclarators(spVariableDeclarators &varDecls);
   void parseVariableInitializer(spVariableInitializer &varInit);
   void parseVariableModifier(spVariableModifier &varModifier);
+  void parseVoidInterfaceMethodDeclaratorRest(
+    spVoidInterfaceMethodDeclaratorRest &voidMethDeclRest);
   void parseVoidMethodDeclaratorRest(
     spVoidMethodDeclaratorRest &voidMethDeclRest);
 

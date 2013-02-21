@@ -1039,7 +1039,7 @@ struct InterfaceBody : ASTError {
 struct InterfaceBodyDeclaration : ASTError {
   enum InterfaceBodyDeclarationOpt {
     OPT_UNDEFINED,
-    OPT_SEMI_COLON,
+    OPT_SEMICOLON,
     OPT_MEMBER_DECL,
   };
 

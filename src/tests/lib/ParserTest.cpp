@@ -1439,6 +1439,35 @@ TEST(Parser, Generics) {
 }
 
 // -----------------------------------------------------------------------------
+// interface I { void m(); }
+// -----------------------------------------------------------------------------
+// ClassOrInterfaceDeclaration
+//   InterfaceDeclaration
+//    NormalInterfaceDeclaration
+//      interface
+//      Identifier
+//      InterfaceBody
+//        '{'
+//        InterfaceBodyDeclaration
+//        '}'
+TEST(Parser, Interface) {
+  std::string filename = "Test.java";
+  std::string buffer = "interface I { void m(); }";
+  spDiagnosis diag = spDiagnosis(new Diagnosis);
+  Parser parser(filename, buffer, diag);
+  parser.parse();
+
+  spClassOrInterfaceDeclaration decl
+    = parser.compilationUnit->typeDecls[0]->decl;
+  ASSERT_EQ(decl->opt, ClassOrInterfaceDeclaration::OPT_INTERFACE);
+  ASSERT_EQ(12, decl->interfaceDecl->normalDecl->body->posLCBrace);
+  ASSERT_EQ(24, decl->interfaceDecl->normalDecl->body->posRCBrace);
+
+  ASSERT_EQ(InterfaceBodyDeclaration::OPT_MEMBER_DECL,
+    decl->interfaceDecl->normalDecl->body->bodyDecls[0]->opt);
+}
+
+// -----------------------------------------------------------------------------
 // class A { void m() { p = s[i]; }}
 // -----------------------------------------------------------------------------
 // BlockStatement(3)
