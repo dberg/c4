@@ -1067,8 +1067,7 @@ void EmacsOutput::setInterfaceMemberDeclaration(
     }
 
     if (memberDecl->voidMethDeclRest) {
-      // TODO:
-      //setVoidInterfaceMethodDeclaratorRest(memberDecl->voidMethDeclRest);
+      setVoidInterfaceMethodDeclaratorRest(memberDecl->voidMethDeclRest);
     }
 
     return;
@@ -2111,6 +2110,26 @@ void EmacsOutput::setVariableModifier(const spVariableModifier &varModifier) {
   }
 
   setAnnotations(varModifier->annotations);
+}
+
+void EmacsOutput::setVoidInterfaceMethodDeclaratorRest(
+  const spVoidInterfaceMethodDeclaratorRest &voidMethDeclRest) {
+
+  if (voidMethDeclRest->formParams) {
+    setFormalParameters(voidMethDeclRest->formParams);
+  }
+
+  if (voidMethDeclRest->tokThrows) {
+    setKeyword(voidMethDeclRest->tokThrows);
+  }
+
+  if (voidMethDeclRest->qualifiedIdList) {
+    setQualifiedIdentifierList(voidMethDeclRest->qualifiedIdList);
+  }
+
+  if (voidMethDeclRest->posSemiColon) {
+    setOp(voidMethDeclRest->posSemiColon);
+  }
 }
 
 void EmacsOutput::setVoidMethodDeclaratorRest(

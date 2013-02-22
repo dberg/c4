@@ -149,6 +149,8 @@ class EmacsOutput {
   void setVariableDeclarators(const spVariableDeclarators &varDecls);
   void setVariableInitializer(const spVariableInitializer &varInit);
   void setVariableModifier(const spVariableModifier &varModifier);
+  void setVoidInterfaceMethodDeclaratorRest(
+    const spVoidInterfaceMethodDeclaratorRest &voidMethDeclRest);
   void setVoidMethodDeclaratorRest(
     const spVoidMethodDeclaratorRest &voidMethDeclRest);
 
