@@ -101,7 +101,11 @@
 /// Our version
 /// IdentifierSuffix:
 ///   '[' ( ']' {'[]'} . class | Expression ']' )
-
+///
+/// 10. AnnotationTypeBody. Our version
+/// AnnotationTypeBody:
+///   [AnnotationTypeElementDeclarations]
+/// See note in the top of this file.
 namespace djp {
 
 typedef boost::shared_ptr<struct Annotation> spAnnotation;
@@ -1371,9 +1375,10 @@ struct AnnotationMethodRest : ASTError {
 };
 
 /// AnnotationTypeBody:
-///   { [AnnotationTypeElementDeclarations] }
+///   [AnnotationTypeElementDeclarations]
+/// See note in the top of this file.
 struct AnnotationTypeBody : ASTError {
-  std::vector<spAnnotationTypeElementDeclarations> elemDecls;
+  spAnnotationTypeElementDeclarations elemDecls;
 };
 
 /// AnnotationTypeDeclaration:

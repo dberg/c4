@@ -359,12 +359,276 @@ void Parser::parseAnnotationElement(spAnnotationElement &elem) {
   parseElementValue(elem->value);
 }
 
+/// AnnotationMethodOrConstantRest:
+///   AnnotationMethodRest
+///   ConstantDeclaratorsRest
+void Parser::parseAnnotationMethodOrConstantRest(
+  spAnnotationMethodOrConstantRest &methodOrConstRest) {
+
+  // AnnotationMethodRest
+  if (lexer->getCurToken() == TOK_LPAREN) {
+    // TODO:
+    methodOrConstRest->opt
+      = AnnotationMethodOrConstantRest::OPT_ANNOTATION_METHOD_REST;
+    methodOrConstRest->methRest = spAnnotationMethodRest(
+      new AnnotationMethodRest);
+    parseAnnotationMethodRest(methodOrConstRest->methRest);
+    if (methodOrConstRest->methRest->err) {
+      methodOrConstRest->addErr(-1);
+    }
+
+    return;
+  }
+
+  // ConstantDeclaratorsRest
+  if (lexer->getCurToken() == TOK_LBRACKET
+    || lexer->getCurToken() == TOK_OP_EQUALS) {
+
+    methodOrConstRest->opt
+      = AnnotationMethodOrConstantRest::OPT_CONSTANT_DECLARATORS_REST;
+    methodOrConstRest->constRest = spConstantDeclaratorsRest(
+      new ConstantDeclaratorsRest);
+    parseConstantDeclaratorsRest(methodOrConstRest->constRest);
+    if (methodOrConstRest->constRest->err) {
+      methodOrConstRest->addErr(-1);
+    }
+
+    return;
+  }
+
+  // Error
+  methodOrConstRest->addErr(-1);
+}
+
+/// AnnotationMethodRest:
+///   '()' ['[]'] [default ElementValue]
+void Parser::parseAnnotationMethodRest(spAnnotationMethodRest &methRest) {
+  // '('
+  if (lexer->getCurToken() != TOK_LPAREN) {
+    methRest->addErr(diag->addErr(ERR_EXP_LPAREN, lexer->getCursor() - 1));
+    return;
+  }
+
+  methRest->posLParen = lexer->getCursor() - 1;
+  lexer->getNextToken(); // consume '('
+
+  if (lexer->getCurToken() != TOK_RPAREN) {
+    methRest->addErr(diag->addErr(ERR_EXP_RPAREN, lexer->getCursor() - 1));
+    return;
+  }
+
+  methRest->posRParen = lexer->getCursor() - 1;
+  lexer->getNextToken(); // consume ')'
+
+  // ['[]']
+  if (lexer->getCurToken() == TOK_LBRACKET) {
+    methRest->posLBracket = lexer->getCursor() - 1;
+    lexer->getNextToken(); // consume '['
+
+    if (lexer->getCurToken() != TOK_RBRACKET) {
+      methRest->addErr(diag->addErr(ERR_EXP_RBRACKET, lexer->getCursor() - 1));
+      return;
+    }
+
+    methRest->posRBracket = lexer->getCursor() - 1;
+    lexer->getNextToken(); // consume ']'
+  }
+
+  // [default ElementValue]
+  if (lexer->getCurToken() != TOK_KEY_DEFAULT) {
+    return;
+  }
+
+  methRest->tokDefault = spTokenExp(new TokenExp(
+    lexer->getCursor() - tokenUtil.getTokenLength(
+    lexer->getCurToken()), lexer->getCurToken()));
+  lexer->getNextToken(); // consume 'default'
+
+  methRest->elemVal = spElementValue(new ElementValue);
+  parseElementValue(methRest->elemVal);
+  if (methRest->elemVal->err) {
+    methRest->addErr(-1);
+  }
+}
+
 /// Annotations.
 void Parser::parseAnnotations(std::vector<spAnnotation> &annotations) {
   while (lexer->getCurToken() == TOK_ANNOTATION) {
     spAnnotation annotation = parseAnnotation();
     annotations.push_back(annotation);
   }
+}
+
+/// AnnotationTypeBody:
+///   [AnnotationTypeElementDeclarations]
+void Parser::parseAnnotationTypeBody(spAnnotationTypeBody &annTypeBody) {
+  annTypeBody->elemDecls = spAnnotationTypeElementDeclarations(
+    new AnnotationTypeElementDeclarations);
+
+  State state;
+  unsigned pos = 0;
+  while (pos != lexer->getCursor()) {
+    pos = lexer->getCursor();
+    saveState(state);
+    spAnnotationTypeElementDeclaration elemDecl =
+      spAnnotationTypeElementDeclaration(new AnnotationTypeElementDeclaration);
+    parseAnnotationTypeElementDeclaration(elemDecl);
+    if (elemDecl->err) {
+      restoreState(state);
+      return;
+    }
+
+    annTypeBody->elemDecls->elemDecls.push_back(elemDecl);
+  }
+}
+
+/// AnnotationTypeDeclaration:
+///   @ interface Identifier AnnotationTypeBody
+void Parser::parseAnnotationTypeDeclaration(
+  spAnnotationTypeDeclaration &annotationDecl) {
+
+  // @
+  annotationDecl->posAt = lexer->getCursor() - 1;
+  lexer->getNextToken(); // consume '@'
+
+  // interface
+  if (lexer->getCurToken() != TOK_KEY_INTERFACE) {
+    annotationDecl->addErr(diag->addErr(
+      ERR_EXP_INTERFACE, lexer->getCursor() - 1));
+    return;
+  }
+
+  annotationDecl->tokInterface = spTokenExp(new TokenExp(
+    lexer->getCursor() - tokenUtil.getTokenLength(
+    lexer->getCurToken()), lexer->getCurToken()));
+  lexer->getNextToken(); // consume 'interface'
+
+  // Identifier
+  if (lexer->getCurToken() != TOK_IDENTIFIER) {
+    annotationDecl->addErr(diag->addErr(
+      ERR_EXP_IDENTIFIER, lexer->getCursor() - 1));
+    return;
+  }
+
+  // AnnotationTypeBody
+  annotationDecl->annTypeBody = spAnnotationTypeBody(new AnnotationTypeBody);
+  parseAnnotationTypeBody(annotationDecl->annTypeBody);
+  if (annotationDecl->annTypeBody->err) {
+    annotationDecl->addErr(-1);
+  }
+}
+
+/// AnnotationTypeElementDeclaration:
+///   {Modifier} AnnotationTypeElementRest
+void Parser::parseAnnotationTypeElementDeclaration(
+  spAnnotationTypeElementDeclaration &elemDecl) {
+
+  elemDecl->modifier = spModifier(new Modifier);
+  parseModifier(elemDecl->modifier);
+
+  elemDecl->elemRest = spAnnotationTypeElementRest(
+    new AnnotationTypeElementRest);
+  parseAnnotationTypeElementRest(elemDecl->elemRest);
+  if (elemDecl->elemRest->err) {
+    elemDecl->addErr(-1);
+  }
+}
+
+/// AnnotationTypeElementRest:
+///   (1) Type Identifier AnnotationMethodOrConstantRest ;
+///   (2) ClassDeclaration
+///   (3) InterfaceDeclaration
+///   (4) EnumDeclaration
+///   (5) AnnotationTypeDeclaration
+void Parser::parseAnnotationTypeElementRest(
+  spAnnotationTypeElementRest &elemRest) {
+
+  // (1) Type Identifier AnnotationMethodOrConstantRest ;
+  if (lexer->getCurToken() == TOK_IDENTIFIER
+    || isBasicType(lexer->getCurToken())) {
+
+    elemRest->opt = AnnotationTypeElementRest::OPT_METHOD_OR_CONSTANT;
+
+    // Type
+    elemRest->type = spType(new Type);
+    parseType(elemRest->type);
+    if (elemRest->type->err) {
+      elemRest->addErr(-1);
+      return;
+    }
+
+    // Identifier
+    elemRest->id = spIdentifier(new Identifier(
+      lexer->getCurTokenIni(), lexer->getCurTokenStr()));
+    lexer->getNextToken(); // consume 'Identifier'
+
+    // AnnotationMethodOrConstantRest
+    elemRest->methodOrConstRest = spAnnotationMethodOrConstantRest(
+      new AnnotationMethodOrConstantRest);
+    parseAnnotationMethodOrConstantRest(elemRest->methodOrConstRest);
+    if (elemRest->methodOrConstRest->err) {
+      elemRest->addErr(-1);
+    }
+
+    // ';'
+    if (lexer->getCurToken() != TOK_SEMICOLON) {
+      elemRest->addErr(diag->addErr(
+        ERR_EXP_SEMICOLON, lexer->getCursor() - 1));
+      return;
+    }
+
+    elemRest->posSemiColon = lexer->getCursor() - 1;
+    lexer->getNextToken(); // consume ';'
+
+    return;
+  }
+
+  // (2) ClassDeclaration
+  if (lexer->getCurToken() == TOK_KEY_CLASS) {
+    elemRest->opt = AnnotationTypeElementRest::OPT_CLASS_DECLARATION;
+    elemRest->classDecl = spClassDeclaration(new ClassDeclaration);
+    parseClassDeclaration(elemRest->classDecl);
+    if (elemRest->classDecl->err) {
+      elemRest->addErr(-1);
+    }
+    return;
+  }
+
+  // (3) InterfaceDeclaration
+  if (lexer->getCurToken() == TOK_KEY_INTERFACE) {
+    elemRest->opt = AnnotationTypeElementRest::OPT_INTERFACE_DECLARATION;
+    elemRest->interfaceDecl = spInterfaceDeclaration(new InterfaceDeclaration);
+    parseInterfaceDeclaration(elemRest->interfaceDecl);
+    if (elemRest->interfaceDecl->err) {
+      elemRest->addErr(-1);
+    }
+    return;
+  }
+
+  // (4) EnumDeclaration
+  if (lexer->getCurToken() == TOK_KEY_ENUM) {
+    elemRest->opt = AnnotationTypeElementRest::OPT_ENUM_DECLARATION;
+    elemRest->enumDecl = spEnumDeclaration(new EnumDeclaration);
+    parseEnumDeclaration(elemRest->enumDecl);
+    if (elemRest->enumDecl->err) {
+      elemRest->addErr(-1);
+    }
+    return;
+  }
+
+  // (5) AnnotationTypeDeclaration
+  if (lexer->getCurToken() == TOK_ANNOTATION_TYPE_DECLARATION) {
+    elemRest->opt = AnnotationTypeElementRest::OPT_ANNOTATION_DECLARATION;
+    elemRest->annotationDecl = spAnnotationTypeDeclaration(
+      new AnnotationTypeDeclaration);
+    if (elemRest->annotationDecl->err) {
+      elemRest->addErr(-1);
+    }
+    return;
+  }
+
+  // Error
+  elemRest->addErr(-1);
 }
 
 /// Arguments: '(' [ Expression { , Expression }] ')'
@@ -2054,9 +2318,13 @@ void Parser::parseInterfaceBodyDeclaration(
 void Parser::parseInterfaceDeclaration(spInterfaceDeclaration &interfaceDecl) {
   // AnnotationTypeDeclaration
   if (lexer->getCurToken() == TOK_ANNOTATION_TYPE_DECLARATION) {
-    // TODO:
     interfaceDecl->opt = InterfaceDeclaration::OPT_ANNOTATION;
-    lexer->getCurToken();
+    interfaceDecl->annotationDecl = spAnnotationTypeDeclaration(
+      new AnnotationTypeDeclaration);
+    parseAnnotationTypeDeclaration(interfaceDecl->annotationDecl);
+    if (interfaceDecl->annotationDecl->err) {
+      interfaceDecl->addErr(-1);
+    }
     return;
   }
 

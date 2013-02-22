@@ -48,7 +48,16 @@ class Parser {
   void buildParseTree();
   spAnnotation parseAnnotation();
   void parseAnnotationElement(spAnnotationElement &elem);
+  void parseAnnotationMethodOrConstantRest(
+    spAnnotationMethodOrConstantRest &methodOrConstRest);
+  void parseAnnotationMethodRest(spAnnotationMethodRest &methRest);
   void parseAnnotations(std::vector<spAnnotation> &annotations);
+  void parseAnnotationTypeBody(spAnnotationTypeBody &annTypeBody);
+  void parseAnnotationTypeDeclaration(
+    spAnnotationTypeDeclaration &annotationDecl);
+  void parseAnnotationTypeElementDeclaration(
+    spAnnotationTypeElementDeclaration &elemDecl);
+  void parseAnnotationTypeElementRest(spAnnotationTypeElementRest &elemRest);
   void parseArguments(spArguments &args);
   void parseArrayCreatorRest(spArrayCreatorRest &arrayCreatorRest);
   void parseArrayCreatorRestOpt1(spArrayCreatorRestOpt1 &opt1);
