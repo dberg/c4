@@ -321,8 +321,14 @@ void EmacsOutput::setClassOrInterfaceDeclaration(
     setModifier(decl->modifier);
   }
 
-  if (decl->classDecl) {
-    setClassDeclaration(decl->classDecl);
+  if (decl->opt == ClassOrInterfaceDeclaration::OPT_CLASS) {
+    if (decl->classDecl) {
+      setClassDeclaration(decl->classDecl);
+    }
+  } else if (decl->opt == ClassOrInterfaceDeclaration::OPT_INTERFACE) {
+    if (decl->interfaceDecl) {
+      setInterfaceDeclaration(decl->interfaceDecl);
+    }
   }
 
   outSH += ")";
@@ -938,6 +944,24 @@ void EmacsOutput::setImportDeclarations(const spImportDeclarations &impDecls) {
   outSH += ")";
 }
 
+void EmacsOutput::setInterfaceDeclaration(
+  const spInterfaceDeclaration &interfaceDecl) {
+
+  if (interfaceDecl->opt == InterfaceDeclaration::OPT_NORMAL) {
+    if (interfaceDecl->normalDecl) {
+      setNormalInterfaceDeclaration(interfaceDecl->normalDecl);
+    }
+    return;
+  }
+
+  if (interfaceDecl->opt == InterfaceDeclaration::OPT_ANNOTATION) {
+    if (interfaceDecl->annotationDecl) {
+      // TODO:
+      //setAnnotationTypeDeclaration(interfaceDecl->annotationDecl);
+    }
+  }
+}
+
 void EmacsOutput::setKeyword(const spTokenExp &token) {
   setKeyword(token->pos + 1, token->pos + 1
     + tokenUtil.getTokenLength(token->type));
@@ -1187,6 +1211,34 @@ void EmacsOutput::setNormalClassDeclaration(
   }
 
   outSH += ")";
+}
+
+void EmacsOutput::setNormalInterfaceDeclaration(
+  const spNormalInterfaceDeclaration &normalDecl) {
+  if (normalDecl->tokInterface) {
+    setKeyword(normalDecl->tokInterface);
+  }
+
+  if (normalDecl->id) {
+    setIdentifier(normalDecl->id,
+      EmacsOutput::OPT_IDENTIFIER_REFERENCE_TYPE);
+  }
+
+  if (normalDecl->typeParams) {
+    setTypeParameters(normalDecl->typeParams);
+  }
+
+  if (normalDecl->tokExtends) {
+    setKeyword(normalDecl->tokExtends);
+  }
+
+  if (normalDecl->typeList) {
+    setTypeList(normalDecl->typeList);
+  }
+
+  if (normalDecl->body) {
+    //setInterfaceBody(normalDecl->body);
+  }
 }
 
 void EmacsOutput::setOp(unsigned int ini, int len) {

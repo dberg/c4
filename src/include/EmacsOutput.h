@@ -90,6 +90,7 @@ class EmacsOutput {
   void setIdentifierSuffix(const spIdentifierSuffix &idSuffix);
   void setImportDeclaration(const spImportDeclaration &import);
   void setImportDeclarations(const spImportDeclarations &impDecls);
+  void setInterfaceDeclaration(const spInterfaceDeclaration &interfaceDecl);
   void setKeyword(int ini, int end);
   void setKeyword(const spTokenExp &token);
   void setLiteral(const spLiteral &literal);
@@ -103,6 +104,8 @@ class EmacsOutput {
   void setNonWildcardTypeArguments(
     const spNonWildcardTypeArguments &nonWildcardTypeArguments);
   void setNormalClassDeclaration(const spNormalClassDeclaration &nClassDecl);
+  void setNormalInterfaceDeclaration(
+    const spNormalInterfaceDeclaration &normalDecl);
   void setOp(unsigned int ini, int len = 1);
   void setPackageDeclaration(const spPackageDeclaration &pkgDecl);
   void setParExpression(const spParExpression &parExpr);
