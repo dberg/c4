@@ -321,13 +321,6 @@ struct CompilationUnit {
   std::vector<spTypeDeclaration> typeDecls;
 };
 
-/// ConstantDeclaratorsRest:
-///   ConstantDeclaratorRest { , ConstantDeclarator }
-struct ConstantDeclaratorsRest : ASTError {
-  spConstantDeclaratorRest constDeclRest;
-  std::vector<std::pair<unsigned, spConstantDeclaratorRest> > pairs;
-};
-
 /// ConstantDeclaratorRest:
 ///   {'[]'} = VariableInitializer
 struct ConstantDeclaratorRest : ASTError {
@@ -336,6 +329,13 @@ struct ConstantDeclaratorRest : ASTError {
   spVariableInitializer varInit;
 
   ConstantDeclaratorRest() : posEquals(0) {}
+};
+
+/// ConstantDeclaratorsRest:
+///   ConstantDeclaratorRest { , ConstantDeclarator }
+struct ConstantDeclaratorsRest : ASTError {
+  spConstantDeclaratorRest constDeclRest;
+  std::vector<std::pair<unsigned, spConstantDeclaratorRest> > pairs;
 };
 
 /// PackageDeclaration: [ [Annotations]  package QualifiedIdentifier ; ]
@@ -1140,7 +1140,7 @@ struct InterfaceMethodOrFieldDecl : ASTError {
   spInterfaceMethodOrFieldRest rest;
 };
 
-/// InterfaceMethodOrFieldRest
+/// InterfaceMethodOrFieldRest:
 ///   ConstantDeclaratorsRest ;
 ///   InterfaceMethodDeclaratorRest
 struct InterfaceMethodOrFieldRest : ASTError {
