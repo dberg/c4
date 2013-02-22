@@ -72,6 +72,7 @@ class Parser {
   void parseClassDeclaration(spClassDeclaration &classDecl);
   void parseClassOrInterfaceDeclaration(spClassOrInterfaceDeclaration& decl);
   void parseCompilationUnit();
+  void parseConstantDeclaratorsRest(spConstantDeclaratorsRest &constRest);
   void parseConstructorDeclaratorRest(
     spConstructorDeclaratorRest &constDeclRest);
   void parseCreatedName(spCreatedName &createdName);
@@ -124,6 +125,11 @@ class Parser {
   void parseInterfaceBodyDeclaration(spInterfaceBodyDeclaration &bodyDecl);
   void parseInterfaceDeclaration(spInterfaceDeclaration &interfaceDecl);
   void parseInterfaceMemberDecl(spInterfaceMemberDecl &memberDecl);
+  void parseInterfaceMethodDeclaratorRest(
+    spInterfaceMethodDeclaratorRest &methDeclRest);
+  void parseInterfaceMethodOrFieldDecl(
+    spInterfaceMethodOrFieldDecl &methodOrFieldDecl);
+  void parseInterfaceMethodOrFieldRest(spInterfaceMethodOrFieldRest &rest);
   void parseIdentifierSuffix(spIdentifierSuffix &idSuffix);
   spImportDeclaration parseImportDeclaration();
   spImportDeclarations parseImportDeclarations();

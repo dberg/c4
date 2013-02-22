@@ -2084,11 +2084,26 @@ void Parser::parseInterfaceDeclaration(spInterfaceDeclaration &interfaceDecl) {
 ///   (4) ClassDeclaration
 ///   (5) InterfaceDeclaration
 void Parser::parseInterfaceMemberDecl(spInterfaceMemberDecl &memberDecl) {
-  // TODO:
   // (1) InterfaceMethodOrFieldDecl
+  if (isBasicType(lexer->getCurToken())
+    || lexer->getCurToken() == TOK_IDENTIFIER) {
+
+    memberDecl->opt = InterfaceMemberDecl::OPT_INTERFACE_METHOD_OR_FIELD_DECL;
+
+    memberDecl->methodOrFieldDecl = spInterfaceMethodOrFieldDecl(
+      new InterfaceMethodOrFieldDecl);
+    parseInterfaceMethodOrFieldDecl(memberDecl->methodOrFieldDecl);
+    if (memberDecl->methodOrFieldDecl->err) {
+      memberDecl->addErr(-1);
+    }
+
+    return;
+  }
 
   // (2) void Identifier VoidInterfaceMethodDeclaratorRest
   if (lexer->getCurToken() == TOK_KEY_VOID) {
+    memberDecl->opt = InterfaceMemberDecl::OPT_VOID_IDENTIFIER;
+
     // void
     memberDecl->tokVoid = spTokenExp(new TokenExp(
       lexer->getCursor() - tokenUtil.getTokenLength(
@@ -2117,10 +2132,155 @@ void Parser::parseInterfaceMemberDecl(spInterfaceMemberDecl &memberDecl) {
     return;
   }
 
-  // TODO:
   // (3) InterfaceGenericMethodDecl
+  if (lexer->getCurToken() == TOK_OP_LT) {
+
+    memberDecl->opt = InterfaceMemberDecl::OPT_INTERFACE_GENERIC;
+    // TODO:
+    return;
+  }
+
   // (4) ClassDeclaration
+  if (lexer->getCurToken() == TOK_KEY_CLASS
+    || lexer->getCurToken() == TOK_KEY_ENUM) {
+
+    memberDecl->opt = InterfaceMemberDecl::OPT_CLASS_DECLARATION;
+    // TODO:
+    return;
+  }
+
   // (5) InterfaceDeclaration
+  if (lexer->getCurToken() == TOK_KEY_INTERFACE) {
+
+    memberDecl->opt = InterfaceMemberDecl::OPT_INTERFACE_DECLARATION;
+    // TODO:
+    return;
+  }
+
+  memberDecl->addErr(-1);
+}
+
+/// InterfaceMethodDeclaratorRest:
+///   FormalParameters {'[]'} [throws QualifiedIdentifierList] ;
+void Parser::parseInterfaceMethodDeclaratorRest(
+  spInterfaceMethodDeclaratorRest &methDeclRest) {
+  // FormalParameters
+  methDeclRest->formParams = spFormalParameters(new FormalParameters);
+  parseFormalParameters(methDeclRest->formParams);
+  if (methDeclRest->formParams->err) {
+    methDeclRest->addErr(-1);
+    return;
+  }
+
+  // {'[]'}
+  parseArrayDepth(methDeclRest->arrayDepth);
+
+  // [throws QualifiedIdentifierList]
+  if (lexer->getCurToken() == TOK_KEY_THROWS) {
+    methDeclRest->tokThrows = spTokenExp(new TokenExp(
+      lexer->getCursor() - tokenUtil.getTokenLength(
+        lexer->getCurToken()), lexer->getCurToken()));
+    lexer->getNextToken(); // consume 'throws'
+
+    methDeclRest->qualifiedIdList = spQualifiedIdentifierList(
+      new QualifiedIdentifierList);
+    parseQualifiedIdentifierList(methDeclRest->qualifiedIdList);
+    if (methDeclRest->qualifiedIdList->err) {
+      methDeclRest->addErr(-1);
+    }
+
+    return;
+  }
+
+  // ;
+  if (lexer->getCurToken() != TOK_SEMICOLON) {
+    methDeclRest->addErr(diag->addErr(
+      ERR_EXP_SEMICOLON, lexer->getCursor() - 1));
+    return;
+  }
+
+  methDeclRest->posSemiColon = lexer->getCursor() - 1;
+  lexer->getNextToken(); // consume ';'
+}
+
+/// InterfaceMethodOrFieldDecl:
+///   Type Identifier InterfaceMethodOrFieldRest
+void Parser::parseInterfaceMethodOrFieldDecl(
+  spInterfaceMethodOrFieldDecl &methodOrFieldDecl) {
+
+  // Type
+  methodOrFieldDecl->type = spType(new Type);
+  parseType(methodOrFieldDecl->type);
+  if (methodOrFieldDecl->type->err) {
+    methodOrFieldDecl->addErr(-1);
+    return;
+  }
+
+  // Identifier
+  if (lexer->getCurToken() != TOK_IDENTIFIER) {
+    methodOrFieldDecl->addErr(diag->addErr(
+      ERR_EXP_IDENTIFIER, lexer->getCursor() -1));
+    return;
+  }
+
+  methodOrFieldDecl->id = spIdentifier(new Identifier(
+    lexer->getCurTokenIni(), lexer->getCurTokenStr()));
+  lexer->getNextToken(); // consume Identifier
+
+  // InterfaceMethodOrFieldRest
+  methodOrFieldDecl->rest = spInterfaceMethodOrFieldRest(
+    new InterfaceMethodOrFieldRest);
+  parseInterfaceMethodOrFieldRest(methodOrFieldDecl->rest);
+  if (methodOrFieldDecl->rest->err) {
+    methodOrFieldDecl->addErr(-1);
+  }
+}
+
+/// InterfaceMethodOrFieldRest
+///   ConstantDeclaratorsRest ;
+///   InterfaceMethodDeclaratorRest
+void Parser::parseInterfaceMethodOrFieldRest(
+  spInterfaceMethodOrFieldRest &rest) {
+  // ConstantDeclaratorsRest ;
+  if (lexer->getCurToken() == TOK_LBRACKET
+    || lexer->getCurToken() == TOK_OP_EQUALS) {
+
+    rest->opt = InterfaceMethodOrFieldRest::OPT_CONSTANT_REST;
+
+    // ConstantDeclaratorsRest
+    rest->constRest = spConstantDeclaratorsRest(new ConstantDeclaratorsRest);
+    parseConstantDeclaratorsRest(rest->constRest);
+    if (rest->constRest->err) {
+      rest->addErr(-1);
+      return;
+    }
+
+    // ';'
+    if (lexer->getCurToken() != TOK_SEMICOLON) {
+      rest->addErr(diag->addErr(ERR_EXP_SEMICOLON, lexer->getCursor() - 1));
+      return;
+    }
+
+    rest->posSemiColon = lexer->getCursor() - 1;
+    lexer->getNextToken(); // consume ';'
+    return;
+  }
+
+  // InterfaceMethodDeclaratorRest
+  if (lexer->getCurToken() == TOK_LPAREN) {
+    rest->opt = InterfaceMethodOrFieldRest::OPT_METHOD_REST;
+    rest->methDeclRest = spInterfaceMethodDeclaratorRest(
+      new InterfaceMethodDeclaratorRest);
+    parseInterfaceMethodDeclaratorRest(rest->methDeclRest);
+    if (rest->methDeclRest->err) {
+      rest->addErr(-1);
+    }
+
+    return;
+  }
+
+  // Error
+  rest->addErr(-1);
 }
 
 /// IdentifierSuffix:
@@ -2162,8 +2322,7 @@ void Parser::parseIdentifierSuffix(spIdentifierSuffix &idSuffix) {
       // class
       idSuffix->tokSuper = spTokenExp(new TokenExp(
         lexer->getCursor() - tokenUtil.getTokenLength(
-        lexer->getCurToken()), lexer->getCurToken()));
-
+          lexer->getCurToken()), lexer->getCurToken()));
       lexer->getNextToken(); // consume 'class'
       return;
     }
@@ -4713,6 +4872,13 @@ void Parser::parseCompilationUnit() {
 
   // Type Declarations
   compilationUnit->typeDecls = parseTypeDeclarations(annotations);
+}
+
+/// ConstantDeclaratorsRest:
+///   ConstantDeclaratorRest { , ConstantDeclarator }
+void Parser::parseConstantDeclaratorsRest(
+  spConstantDeclaratorsRest &constRest) {
+  // TODO:
 }
 
 /// ConstructorDeclaratorRest:
