@@ -125,6 +125,8 @@ class Parser {
   void parseInterfaceBody(spInterfaceBody &body);
   void parseInterfaceBodyDeclaration(spInterfaceBodyDeclaration &bodyDecl);
   void parseInterfaceDeclaration(spInterfaceDeclaration &interfaceDecl);
+  void parseInterfaceGenericMethodDecl(
+    spInterfaceGenericMethodDecl &genMethDecl);
   void parseInterfaceMemberDecl(spInterfaceMemberDecl &memberDecl);
   void parseInterfaceMethodDeclaratorRest(
     spInterfaceMethodDeclaratorRest &methDeclRest);

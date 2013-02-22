@@ -2077,6 +2077,54 @@ void Parser::parseInterfaceDeclaration(spInterfaceDeclaration &interfaceDecl) {
   interfaceDecl->addErr(-1);
 }
 
+/// InterfaceGenericMethodDecl:
+///   TypeParameters (Type | void) Identifier InterfaceMethodDeclaratorRest
+void Parser::parseInterfaceGenericMethodDecl(
+  spInterfaceGenericMethodDecl &genMethDecl) {
+
+  // TypeParameters
+  genMethDecl->typeParams = spTypeParameters(new TypeParameters);
+  parseTypeParameters(genMethDecl->typeParams);
+  if (genMethDecl->typeParams->err) {
+    genMethDecl->addErr(-1);
+    return;
+  }
+
+  // Type | void
+  if (lexer->getCurToken() == TOK_KEY_VOID) {
+    genMethDecl->tokVoid = spTokenExp(new TokenExp(
+      lexer->getCursor() - tokenUtil.getTokenLength(
+      lexer->getCurToken()), lexer->getCurToken()));
+    lexer->getNextToken(); // consume 'void'
+  } else {
+    genMethDecl->type = spType(new Type);
+    parseType(genMethDecl->type);
+    if (genMethDecl->type->err) {
+      genMethDecl->addErr(-1);
+      return;
+    }
+  }
+
+  // Identifier
+  if (lexer->getCurToken() != TOK_IDENTIFIER) {
+    genMethDecl->addErr(diag->addErr(
+      ERR_EXP_IDENTIFIER, lexer->getCursor() - 1));
+    return;
+  }
+
+  genMethDecl->id = spIdentifier(new Identifier(
+      lexer->getCurTokenIni(), lexer->getCurTokenStr()));
+  lexer->getNextToken(); // consume Identifier
+
+  // InterfaceMethodDeclaratorRest
+  genMethDecl->methDeclRest = spInterfaceMethodDeclaratorRest(
+    new InterfaceMethodDeclaratorRest);
+  parseInterfaceMethodDeclaratorRest(genMethDecl->methDeclRest);
+  if (genMethDecl->methDeclRest->err) {
+    genMethDecl->addErr(-1);
+  }
+}
+
 /// InterfaceMemberDecl:
 ///   (1) InterfaceMethodOrFieldDecl
 ///   (2) void Identifier VoidInterfaceMethodDeclaratorRest
@@ -2134,9 +2182,13 @@ void Parser::parseInterfaceMemberDecl(spInterfaceMemberDecl &memberDecl) {
 
   // (3) InterfaceGenericMethodDecl
   if (lexer->getCurToken() == TOK_OP_LT) {
-
     memberDecl->opt = InterfaceMemberDecl::OPT_INTERFACE_GENERIC;
-    // TODO:
+    memberDecl->genMethodDecl = spInterfaceGenericMethodDecl(
+      new InterfaceGenericMethodDecl);
+    parseInterfaceGenericMethodDecl(memberDecl->genMethodDecl);
+    if (memberDecl->genMethodDecl->err) {
+      memberDecl->addErr(-1);
+    }
     return;
   }
 
