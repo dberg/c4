@@ -2137,7 +2137,6 @@ void Parser::parseInterfaceMemberDecl(spInterfaceMemberDecl &memberDecl) {
     || lexer->getCurToken() == TOK_IDENTIFIER) {
 
     memberDecl->opt = InterfaceMemberDecl::OPT_INTERFACE_METHOD_OR_FIELD_DECL;
-
     memberDecl->methodOrFieldDecl = spInterfaceMethodOrFieldDecl(
       new InterfaceMethodOrFieldDecl);
     parseInterfaceMethodOrFieldDecl(memberDecl->methodOrFieldDecl);
@@ -2197,15 +2196,23 @@ void Parser::parseInterfaceMemberDecl(spInterfaceMemberDecl &memberDecl) {
     || lexer->getCurToken() == TOK_KEY_ENUM) {
 
     memberDecl->opt = InterfaceMemberDecl::OPT_CLASS_DECLARATION;
-    // TODO:
+    memberDecl->classDecl = spClassDeclaration(new ClassDeclaration);
+    parseClassDeclaration(memberDecl->classDecl);
+    if (memberDecl->classDecl->err) {
+      memberDecl->addErr(-1);
+    }
     return;
   }
 
   // (5) InterfaceDeclaration
   if (lexer->getCurToken() == TOK_KEY_INTERFACE) {
-
     memberDecl->opt = InterfaceMemberDecl::OPT_INTERFACE_DECLARATION;
-    // TODO:
+    memberDecl->interfaceDecl = spInterfaceDeclaration(
+      new InterfaceDeclaration);
+    parseInterfaceDeclaration(memberDecl->interfaceDecl);
+    if (memberDecl->interfaceDecl->err) {
+      memberDecl->addErr(-1);
+    }
     return;
   }
 
