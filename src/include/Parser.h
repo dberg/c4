@@ -72,7 +72,8 @@ class Parser {
   void parseClassDeclaration(spClassDeclaration &classDecl);
   void parseClassOrInterfaceDeclaration(spClassOrInterfaceDeclaration& decl);
   void parseCompilationUnit();
-  void parseConstantDeclaratorsRest(spConstantDeclaratorsRest &constRest);
+  void parseConstantDeclaratorRest(spConstantDeclaratorRest &constDeclRest);
+  void parseConstantDeclaratorsRest(spConstantDeclaratorsRest &constDeclsRest);
   void parseConstructorDeclaratorRest(
     spConstructorDeclaratorRest &constDeclRest);
   void parseCreatedName(spCreatedName &createdName);

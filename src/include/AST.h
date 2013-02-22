@@ -1153,7 +1153,7 @@ struct InterfaceMethodOrFieldRest : ASTError {
   InterfaceMethodOrFieldRestOpt opt;
   unsigned posSemiColon;
 
-  spConstantDeclaratorsRest constRest;
+  spConstantDeclaratorsRest constDeclsRest;
   spInterfaceMethodDeclaratorRest methDeclRest;
 
   InterfaceMethodOrFieldRest() : opt(OPT_UNDEFINED), posSemiColon(0) {}

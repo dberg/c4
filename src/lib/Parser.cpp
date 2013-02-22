@@ -2248,9 +2248,10 @@ void Parser::parseInterfaceMethodOrFieldRest(
     rest->opt = InterfaceMethodOrFieldRest::OPT_CONSTANT_REST;
 
     // ConstantDeclaratorsRest
-    rest->constRest = spConstantDeclaratorsRest(new ConstantDeclaratorsRest);
-    parseConstantDeclaratorsRest(rest->constRest);
-    if (rest->constRest->err) {
+    rest->constDeclsRest = spConstantDeclaratorsRest(
+      new ConstantDeclaratorsRest);
+    parseConstantDeclaratorsRest(rest->constDeclsRest);
+    if (rest->constDeclsRest->err) {
       rest->addErr(-1);
       return;
     }
@@ -4874,11 +4875,60 @@ void Parser::parseCompilationUnit() {
   compilationUnit->typeDecls = parseTypeDeclarations(annotations);
 }
 
+/// ConstantDeclaratorRest:
+///   {'[]'} = VariableInitializer
+void Parser::parseConstantDeclaratorRest(
+  spConstantDeclaratorRest &constDeclRest) {
+
+  // {'[]'}
+  parseArrayDepth(constDeclRest->arrayDepth);
+
+  // '='
+  if (lexer->getCurToken() != TOK_OP_EQUALS) {
+    constDeclRest->addErr(diag->addErr(
+      ERR_EXP_OP_EQUALS, lexer->getCursor() - 1));
+    return;
+  }
+
+  constDeclRest->posEquals = lexer->getCursor() - 1;
+  lexer->getNextToken(); // consume '='
+
+  constDeclRest->varInit = spVariableInitializer(new VariableInitializer);
+  parseVariableInitializer(constDeclRest->varInit);
+  if (constDeclRest->varInit->err) {
+    constDeclRest->addErr(-1);
+  }
+}
+
 /// ConstantDeclaratorsRest:
 ///   ConstantDeclaratorRest { , ConstantDeclarator }
 void Parser::parseConstantDeclaratorsRest(
-  spConstantDeclaratorsRest &constRest) {
-  // TODO:
+  spConstantDeclaratorsRest &constDeclsRest) {
+
+  constDeclsRest->constDeclRest = spConstantDeclaratorRest(
+    new ConstantDeclaratorRest);
+  parseConstantDeclaratorRest(constDeclsRest->constDeclRest);
+  if (constDeclsRest->constDeclRest->err) {
+    constDeclsRest->addErr(-1);
+    return;
+  }
+
+  State state;
+  while (lexer->getCurToken() == TOK_COMMA) {
+    saveState(state);
+    unsigned pos = lexer->getCursor() - 1;
+    spConstantDeclaratorRest constDeclRest = spConstantDeclaratorRest(
+      new ConstantDeclaratorRest);
+    parseConstantDeclaratorRest(constDeclRest);
+    // If we find an error we restore the state and exit leaving upper levels to
+    // handle the error.
+    if (constDeclRest->err) {
+      restoreState(state);
+      return;
+    }
+
+    constDeclsRest->pairs.push_back(std::make_pair(pos, constDeclRest));
+  }
 }
 
 /// ConstructorDeclaratorRest:

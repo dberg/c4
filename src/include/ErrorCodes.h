@@ -30,6 +30,7 @@ enum ErrorCode {
   ERR_EXP_LBRACKET,
   ERR_EXP_LPAREN,
   ERR_EXP_OP_COLON,
+  ERR_EXP_OP_EQUALS,
   ERR_EXP_OP_LT,
   ERR_EXP_OP_GT,
   ERR_EXP_PERIOD,
@@ -73,6 +74,7 @@ public:
     msgs[ERR_EXP_LBRACKET] = "Expected '['";
     msgs[ERR_EXP_LPAREN] = "Expected opening parenthesis";
     msgs[ERR_EXP_OP_COLON] = "Expected colon";
+    msgs[ERR_EXP_OP_EQUALS] = "Expected operator =";
     msgs[ERR_EXP_OP_LT] = "Expected operator <";
     msgs[ERR_EXP_OP_GT] = "Expected operator >";
     msgs[ERR_EXP_PERIOD] = "Expected period";
