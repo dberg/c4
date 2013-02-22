@@ -53,6 +53,10 @@ class EmacsOutput {
   void setClassOrInterfaceDeclaration(
     const spClassOrInterfaceDeclaration &decl);
   void setComments();
+  void setConstantDeclaratorRest(
+    const spConstantDeclaratorRest &constDeclRest);
+  void setConstantDeclaratorsRest(
+    const spConstantDeclaratorsRest &constDeclsRest);
   void setConstructorDeclaratorRest(
     const spConstructorDeclaratorRest &constDeclRest);
   void setCreatedName(const spCreatedName &createdName);
@@ -90,7 +94,13 @@ class EmacsOutput {
   void setIdentifierSuffix(const spIdentifierSuffix &idSuffix);
   void setImportDeclaration(const spImportDeclaration &import);
   void setImportDeclarations(const spImportDeclarations &impDecls);
+  void setInterfaceBody(const spInterfaceBody &body);
+  void setInterfaceBodyDeclaration(const spInterfaceBodyDeclaration &bodyDecl);
   void setInterfaceDeclaration(const spInterfaceDeclaration &interfaceDecl);
+  void setInterfaceMemberDeclaration(const spInterfaceMemberDecl &memberDecl);
+  void setInterfaceMethodOrFieldDecl(
+    const spInterfaceMethodOrFieldDecl &methodOrFieldDecl);
+  void setInterfaceMethodOrFieldRest(const spInterfaceMethodOrFieldRest &rest);
   void setKeyword(int ini, int end);
   void setKeyword(const spTokenExp &token);
   void setLiteral(const spLiteral &literal);

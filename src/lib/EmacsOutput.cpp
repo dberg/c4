@@ -346,6 +346,33 @@ void EmacsOutput::setComments() {
   outSH += ")";
 }
 
+void EmacsOutput::setConstantDeclaratorRest(
+  const spConstantDeclaratorRest &constDeclRest) {
+
+  setArrayDepth(constDeclRest->arrayDepth);
+
+  if (constDeclRest->posEquals) {
+    setOp(constDeclRest->posEquals);
+  }
+
+  if (constDeclRest->varInit) {
+    setVariableInitializer(constDeclRest->varInit);
+  }
+}
+
+void EmacsOutput::setConstantDeclaratorsRest(
+  const spConstantDeclaratorsRest &constDeclsRest) {
+
+  if (constDeclsRest->constDeclRest) {
+    setConstantDeclaratorRest(constDeclsRest->constDeclRest);
+  }
+
+  for (unsigned i = 0; i < constDeclsRest->pairs.size(); i++) {
+    setOp(constDeclsRest->pairs[i].first);
+    setConstantDeclaratorRest(constDeclsRest->pairs[i].second);
+  }
+}
+
 void EmacsOutput::setConstructorDeclaratorRest(
   const spConstructorDeclaratorRest &constDeclRest) {
   outSH += "(djp-constructor-declarator-rest ";
@@ -944,6 +971,41 @@ void EmacsOutput::setImportDeclarations(const spImportDeclarations &impDecls) {
   outSH += ")";
 }
 
+void EmacsOutput::setInterfaceBody(const spInterfaceBody &body) {
+  if (body->posLCBrace) {
+    setOp(body->posLCBrace);
+  }
+
+  for (unsigned i = 0; i < body->bodyDecls.size(); i++) {
+    setInterfaceBodyDeclaration(body->bodyDecls[i]);
+  }
+
+  if (body->posRCBrace) {
+    setOp(body->posRCBrace);
+  }
+}
+
+void EmacsOutput::setInterfaceBodyDeclaration(
+  const spInterfaceBodyDeclaration &bodyDecl) {
+
+  if (bodyDecl->opt == InterfaceBodyDeclaration::OPT_SEMICOLON) {
+    if (bodyDecl->posSemiColon) {
+      setOp(bodyDecl->posSemiColon);
+    }
+    return;
+  }
+
+  if (bodyDecl->opt == InterfaceBodyDeclaration::OPT_MEMBER_DECL) {
+    if (bodyDecl->modifier) {
+      setModifier(bodyDecl->modifier);
+    }
+
+    if (bodyDecl->memberDecl) {
+      setInterfaceMemberDeclaration(bodyDecl->memberDecl);
+    }
+  }
+}
+
 void EmacsOutput::setInterfaceDeclaration(
   const spInterfaceDeclaration &interfaceDecl) {
 
@@ -958,6 +1020,96 @@ void EmacsOutput::setInterfaceDeclaration(
     if (interfaceDecl->annotationDecl) {
       // TODO:
       //setAnnotationTypeDeclaration(interfaceDecl->annotationDecl);
+    }
+  }
+}
+
+void EmacsOutput::setInterfaceMemberDeclaration(
+  const spInterfaceMemberDecl &memberDecl) {
+
+  if (memberDecl->opt
+    == InterfaceMemberDecl::OPT_INTERFACE_METHOD_OR_FIELD_DECL) {
+
+    if (memberDecl->methodOrFieldDecl) {
+      setInterfaceMethodOrFieldDecl(memberDecl->methodOrFieldDecl);
+    }
+
+    return;
+  }
+
+  if (memberDecl->opt == InterfaceMemberDecl::OPT_VOID_IDENTIFIER) {
+    if (memberDecl->tokVoid) {
+      setKeyword(memberDecl->tokVoid);
+    }
+
+    if (memberDecl->id) {
+      setIdentifier(memberDecl->id);
+    }
+
+    if (memberDecl->voidMethDeclRest) {
+      // TODO:
+      //setVoidInterfaceMethodDeclaratorRest(memberDecl->voidMethDeclRest);
+    }
+
+    return;
+  }
+
+  if (memberDecl->opt == InterfaceMemberDecl::OPT_INTERFACE_GENERIC) {
+    if (memberDecl->genMethodDecl) {
+      // TODO:
+      //setInterfaceGenericMethodDecl(memberDecl->genMethodDecl);
+    }
+
+    return;
+  }
+
+  if (memberDecl->opt == InterfaceMemberDecl::OPT_CLASS_DECLARATION) {
+    if (memberDecl->classDecl) {
+      setClassDeclaration(memberDecl->classDecl);
+    }
+
+    return;
+  }
+
+  if (memberDecl->opt == InterfaceMemberDecl::OPT_INTERFACE_DECLARATION) {
+    if (memberDecl->interfaceDecl) {
+      setInterfaceDeclaration(memberDecl->interfaceDecl);
+    }
+
+    return;
+  }
+}
+
+void EmacsOutput::setInterfaceMethodOrFieldDecl(
+  const spInterfaceMethodOrFieldDecl &methodOrFieldDecl) {
+
+  if (methodOrFieldDecl->type) {
+    setType(methodOrFieldDecl->type);
+  }
+
+  if (methodOrFieldDecl->id) {
+    setIdentifier(methodOrFieldDecl->id);
+  }
+
+  if (methodOrFieldDecl->rest) {
+    setInterfaceMethodOrFieldRest(methodOrFieldDecl->rest);
+  }
+}
+
+void EmacsOutput::setInterfaceMethodOrFieldRest(
+  const spInterfaceMethodOrFieldRest &rest) {
+
+  if (rest->opt == InterfaceMethodOrFieldRest::OPT_CONSTANT_REST) {
+    if (rest->constDeclsRest) {
+      setConstantDeclaratorsRest(rest->constDeclsRest);
+    }
+    return;
+  }
+
+  if (rest->opt == InterfaceMethodOrFieldRest::OPT_METHOD_REST) {
+    if (rest->methDeclRest) {
+      // TODO:
+      //setInterfaceMethodDeclaratorRest(rest->methDeclRest);
     }
   }
 }
@@ -1237,7 +1389,7 @@ void EmacsOutput::setNormalInterfaceDeclaration(
   }
 
   if (normalDecl->body) {
-    //setInterfaceBody(normalDecl->body);
+    setInterfaceBody(normalDecl->body);
   }
 }
 
