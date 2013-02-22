@@ -1024,6 +1024,26 @@ void EmacsOutput::setInterfaceDeclaration(
   }
 }
 
+void EmacsOutput::setInterfaceMethodDeclaratorRest(
+  const spInterfaceMethodDeclaratorRest &methDeclRest) {
+
+  if (methDeclRest->formParams) {
+    setFormalParameters(methDeclRest->formParams);
+  }
+
+  if (methDeclRest->tokThrows) {
+    setKeyword(methDeclRest->tokThrows);
+  }
+
+  if (methDeclRest->qualifiedIdList) {
+    setQualifiedIdentifierList(methDeclRest->qualifiedIdList);
+  }
+
+  if (methDeclRest->posSemiColon) {
+    setOp(methDeclRest->posSemiColon);
+  }
+}
+
 void EmacsOutput::setInterfaceMemberDeclaration(
   const spInterfaceMemberDecl &memberDecl) {
 
@@ -1108,8 +1128,7 @@ void EmacsOutput::setInterfaceMethodOrFieldRest(
 
   if (rest->opt == InterfaceMethodOrFieldRest::OPT_METHOD_REST) {
     if (rest->methDeclRest) {
-      // TODO:
-      //setInterfaceMethodDeclaratorRest(rest->methDeclRest);
+      setInterfaceMethodDeclaratorRest(rest->methDeclRest);
     }
   }
 }
@@ -1499,6 +1518,19 @@ void EmacsOutput::setQualifiedId(const spQualifiedIdentifier &qualifiedId) {
   for (unsigned i = 0; i < qualifiedId->pairs.size(); i++) {
     setOp(qualifiedId->pairs[i].first);
     setIdentifier(qualifiedId->pairs[i].second);
+  }
+}
+
+void EmacsOutput::setQualifiedIdentifierList(
+  const spQualifiedIdentifierList &qualifiedIdList) {
+
+  if (qualifiedIdList->qualifiedId) {
+    setQualifiedId(qualifiedIdList->qualifiedId);
+  }
+
+  for (unsigned i = 0; qualifiedIdList->pairs.size(); i++) {
+    setOp(qualifiedIdList->pairs[i].first);
+    setQualifiedId(qualifiedIdList->pairs[i].second);
   }
 }
 

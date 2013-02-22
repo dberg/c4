@@ -98,6 +98,8 @@ class EmacsOutput {
   void setInterfaceBodyDeclaration(const spInterfaceBodyDeclaration &bodyDecl);
   void setInterfaceDeclaration(const spInterfaceDeclaration &interfaceDecl);
   void setInterfaceMemberDeclaration(const spInterfaceMemberDecl &memberDecl);
+  void setInterfaceMethodDeclaratorRest(
+    const spInterfaceMethodDeclaratorRest &methDeclRest);
   void setInterfaceMethodOrFieldDecl(
     const spInterfaceMethodOrFieldDecl &methodOrFieldDecl);
   void setInterfaceMethodOrFieldRest(const spInterfaceMethodOrFieldRest &rest);
@@ -122,6 +124,8 @@ class EmacsOutput {
   void setPrimary(const spPrimary &primary);
   void setPrimaryIdentifier(const spPrimaryIdentifier &primaryId);
   void setQualifiedId(const spQualifiedIdentifier &qualifiedId);
+  void setQualifiedIdentifierList(
+    const spQualifiedIdentifierList &qualifiedIdList);
   void setReferenceType(const spReferenceType &refType);
   void setSelector(const spSelector &selector);
   void setStatement(const spStatement &stmt);
