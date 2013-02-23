@@ -213,6 +213,7 @@ bool isModifierOrMemberMemberDeclCandidate(int token) {
     || isBasicType(token)
     || TOK_KEY_VOID == token
     || TOK_KEY_CLASS == token
+    || TOK_KEY_ENUM == token
     || TOK_KEY_INTERFACE == token
     || TOK_ANNOTATION_TYPE_DECLARATION == token) {
     return true;
@@ -2707,7 +2708,7 @@ void Parser::parseIdentifierSuffix(spIdentifierSuffix &idSuffix) {
       return;
     }
 
-    // opt5
+    // opt5: . ExplicitGenericInvocation
     if (lexer->getCurToken() == TOK_OP_LT) {
       idSuffix->opt = IdentifierSuffix::OPT_PERIOD_EXPLICIT_GENERIC_INVOCATION;
       idSuffix->explGenInvocation = spExplicitGenericInvocation(
@@ -2727,7 +2728,7 @@ void Parser::parseIdentifierSuffix(spIdentifierSuffix &idSuffix) {
       return;
     }
 
-    // opt7:
+    // opt7: . super Arguments
     if (lexer->getCurToken() == TOK_KEY_SUPER) {
       idSuffix->opt = IdentifierSuffix::OPT_PERIOD_SUPER_ARGUMENTS;
       idSuffix->tokSuper = spTokenExp(new TokenExp(
@@ -2747,7 +2748,7 @@ void Parser::parseIdentifierSuffix(spIdentifierSuffix &idSuffix) {
       return;
     }
 
-    // opt8:
+    // opt8: . new [NonWildcardTypeArguments] InnerCreator
     if (lexer->getCurToken() == TOK_KEY_NEW) {
       idSuffix->opt = IdentifierSuffix::OPT_NEW;
       idSuffix->tokNew = spTokenExp(new TokenExp(
@@ -2775,8 +2776,9 @@ void Parser::parseIdentifierSuffix(spIdentifierSuffix &idSuffix) {
       // Error: invalid InnerCreator
       if (idSuffix->innerCreator->err) {
         idSuffix->addErr(-1);
-        return;
       }
+
+      return;
     }
   }
 
@@ -3031,18 +3033,20 @@ void Parser::parseInnerCreator(spInnerCreator &innerCreator) {
   lexer->getNextToken(); // consume Identifier
 
   // NonWildcardTypeArgumentsOrDiamond
-  innerCreator->nonWildcardOrDiam = spNonWildcardTypeArgumentsOrDiamond(
-    new NonWildcardTypeArgumentsOrDiamond());
-  parseNonWildcardTypeArgumentsOrDiamond(innerCreator->nonWildcardOrDiam);
+  if (lexer->getCurToken() == TOK_OP_LT) {
+    innerCreator->nonWildcardOrDiam = spNonWildcardTypeArgumentsOrDiamond(
+      new NonWildcardTypeArgumentsOrDiamond());
+    parseNonWildcardTypeArgumentsOrDiamond(innerCreator->nonWildcardOrDiam);
 
-  // Error: invalid NonWildcardTypeArgumentsOrDiamond
-  if (innerCreator->nonWildcardOrDiam->err) {
-    innerCreator->addErr(-1);
-    return;
+    // Error: invalid NonWildcardTypeArgumentsOrDiamond
+    if (innerCreator->nonWildcardOrDiam->err) {
+      innerCreator->addErr(-1);
+      return;
+    }
   }
 
   // ClassCreatorRest
-  innerCreator->classCreatorRest = spClassCreatorRest(new ClassCreatorRest());
+  innerCreator->classCreatorRest = spClassCreatorRest(new ClassCreatorRest);
   parseClassCreatorRest(innerCreator->classCreatorRest);
   if (innerCreator->classCreatorRest->err) {
     innerCreator->addErr(-1);
@@ -4560,8 +4564,8 @@ void Parser::parseClassDeclaration(spClassDeclaration &classDecl) {
     return;
   }
 
-  // TODO: handle error
-  lexer->getNextToken();
+  // Error
+  classDecl->addErr(-1);
 }
 
 /// NormalClassDeclaration:
@@ -4743,7 +4747,7 @@ void Parser::parseClassBody(spClassBody &classBody) {
   classBody->posLCBrace = lexer->getCursor() - 1;
   lexer->getNextToken(); // consume '{'
 
-  // ClassBodyDeclaration
+  // { ClassBodyDeclaration }
   parseClassBodyDeclarationsHelper(classBody->decls);
 
   if (lexer->getCurToken() != TOK_RCURLY_BRACKET) {

@@ -1603,6 +1603,76 @@ TEST(Parser, InnerClass) {
 }
 
 // -----------------------------------------------------------------------------
+// class A { class B {} void m() { A a = new A(); a.new B(); }}
+// -----------------------------------------------------------------------------
+// ClassBody
+//   ClassBodyDeclaration[0](1)
+//     MemberDecl(5)
+//   ClassBodyDeclaration[1](1)
+//     MemberDecl(2)
+//       void
+//       Identifier <-- m
+//       VoidMethodDeclaratorRest
+//         FormalParameters
+//         Block
+//           '{'
+//           BlockStatements
+//             BlockStatement[0](1)
+//             BlockStatement[1](3)
+//               Statement(4)
+//                 StatementExpression
+//                   Expression
+//                     Expression1
+//                       Expression2
+//                         Expression3
+//                           Primary(7)
+//                             Identifier <-- 'a'
+//                             IdentifierSuffix
+//                               '.'
+//                               new
+//                               InnerCreator
+//                                 Identifier <- 'B'
+//                                 ClassCreatorRest
+//                 ';'
+//           '}'
+TEST(Parser, InnerClassInstance) {
+  std::string filename = "Test.java";
+  std::string buffer
+    = "class A { class B {} void m() { A a = new A(); a.new B(); }}";
+  spDiagnosis diag = spDiagnosis(new Diagnosis);
+  Parser parser(filename, buffer, diag);
+  parser.parse();
+
+  spClassBody classBody = parser.compilationUnit->typeDecls[0]->decl->classDecl
+    ->nClassDecl->classBody;
+
+  ASSERT_EQ(8, classBody->posLCBrace);
+  ASSERT_EQ(59, classBody->posRCBrace);
+
+  ASSERT_EQ(2, classBody->decls.size());
+  ASSERT_EQ(MemberDecl::OPT_CLASS_DECLARATION,
+    classBody->decls[0]->memberDecl->opt);
+
+  spMemberDecl memberDecl = classBody->decls[1]->memberDecl;
+  ASSERT_EQ(MemberDecl::OPT_VOID_IDENTIFIER_VOID_METHOD_DECLARATOR_REST,
+    memberDecl->opt);
+
+  spBlock block = memberDecl->voidMethDeclRest->block;
+  ASSERT_EQ(30, block->posLCBracket);
+  ASSERT_EQ(58, block->posRCBracket);
+
+  ASSERT_EQ(2, block->blockStmts.size());
+
+  ASSERT_EQ(BlockStatement::OPT_LOCAL_VAR, block->blockStmts[0]->opt);
+
+  ASSERT_EQ(BlockStatement::OPT_ID_STMT, block->blockStmts[1]->opt);
+
+  spStatement stmt = block->blockStmts[1]->stmt;
+  ASSERT_EQ(Statement::OPT_STMT_EXPR, stmt->opt);
+  ASSERT_EQ(56, stmt->posSemiColon);
+}
+
+// -----------------------------------------------------------------------------
 // class A { void test() { Exec exe = createExec(); }}
 // -----------------------------------------------------------------------------
 // BlockStatement
