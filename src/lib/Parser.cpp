@@ -2514,9 +2514,8 @@ void Parser::parseInterfaceMethodDeclaratorRest(
     parseQualifiedIdentifierList(methDeclRest->qualifiedIdList);
     if (methDeclRest->qualifiedIdList->err) {
       methDeclRest->addErr(-1);
+      return;
     }
-
-    return;
   }
 
   // ;

@@ -1527,7 +1527,7 @@ void EmacsOutput::setQualifiedIdentifierList(
     setQualifiedId(qualifiedIdList->qualifiedId);
   }
 
-  for (unsigned i = 0; qualifiedIdList->pairs.size(); i++) {
+  for (unsigned i = 0; i < qualifiedIdList->pairs.size(); i++) {
     setOp(qualifiedIdList->pairs[i].first);
     setQualifiedId(qualifiedIdList->pairs[i].second);
   }
