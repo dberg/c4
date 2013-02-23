@@ -2176,6 +2176,8 @@ void Parser::parseGenericMethodOrConstructorDecl(
 void Parser::parseGenericMethodOrConstructorRest(
   spGenericMethodOrConstructorRest &rest) {
 
+
+  // (1) Type Identifier MethodDeclaratorRest
   if (lexer->getCurToken() == TOK_KEY_VOID) {
     // 'void'
     rest->opt = GenericMethodOrConstructorRest::OPT_VOID_IDENTIFIER;
@@ -2185,10 +2187,14 @@ void Parser::parseGenericMethodOrConstructorRest(
     lexer->getNextToken(); // consume 'void'
 
     // Identifier
-    if (lexer->getCurToken() == TOK_IDENTIFIER) {
+    if (lexer->getCurToken() != TOK_IDENTIFIER) {
       rest->addErr(diag->addErr(ERR_EXP_IDENTIFIER, lexer->getCursor() - 1));
       return;
     }
+
+    rest->id = spIdentifier(new Identifier(
+      lexer->getCurTokenIni(), lexer->getCurTokenStr()));
+    lexer->getNextToken(); // consume Identifier
 
     // MethodDeclaratorRest
     rest->methodDeclRest = spMethodDeclaratorRest(new MethodDeclaratorRest);
