@@ -212,7 +212,9 @@ bool isModifierOrMemberMemberDeclCandidate(int token) {
   if (TOK_IDENTIFIER == token
     || isBasicType(token)
     || TOK_KEY_VOID == token
-    || TOK_KEY_CLASS == token) {
+    || TOK_KEY_CLASS == token
+    || TOK_KEY_INTERFACE == token
+    || TOK_ANNOTATION_TYPE_DECLARATION == token) {
     return true;
   }
 
@@ -4980,7 +4982,22 @@ void Parser::parseMemberDecl(spMemberDecl &memberDecl) {
     return;
   }
 
-  // TODO: InterfaceDeclaration
+  // InterfaceDeclaration
+  if (lexer->getCurToken() == TOK_KEY_INTERFACE
+    || lexer->getCurToken() == TOK_ANNOTATION_TYPE_DECLARATION) {
+
+    memberDecl->opt = MemberDecl::OPT_INTERFACE_DECLARATION;
+    memberDecl->interfaceDecl = spInterfaceDeclaration(
+      new InterfaceDeclaration);
+    parseInterfaceDeclaration(memberDecl->interfaceDecl);
+    if (memberDecl->interfaceDecl->err) {
+      memberDecl->addErr(-1);
+    }
+
+    return;
+  }
+
+  memberDecl->addErr(-1);
 }
 
 /// MethodDeclaratorRest:

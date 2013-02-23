@@ -1745,6 +1745,25 @@ TEST(Parser, LocalVariableTypeArgumentsArray) {
 }
 
 // -----------------------------------------------------------------------------
+// class A { interface I {} }
+// -----------------------------------------------------------------------------
+// MemberDecl
+//   InterfaceDeclaration
+//     NormalInterfaceDeclaration
+TEST(Parser, MemberDeclInterfaceDeclaration) {
+  std::string filename = "Test.java";
+  std::string buffer = "class A { interface I {} }";
+  spDiagnosis diag = spDiagnosis(new Diagnosis);
+  Parser parser(filename, buffer, diag);
+  parser.parse();
+
+//  spMemberDecl memberDecl = parser.compilationUnit->typeDecls[0]->decl
+//    ->classDecl->nClassDecl->classBody->decls[0]->memberDecl;
+//
+//  ASSERT_EQ(MemberDecl::OPT_INTERFACE_DECLARATION, memberDecl->opt);
+}
+
+// -----------------------------------------------------------------------------
 // class A { int m1() { return 1; }};
 // -----------------------------------------------------------------------------
 // ClassBody
