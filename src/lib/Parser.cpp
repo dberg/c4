@@ -3514,13 +3514,13 @@ void Parser::parsePrimaryVoidClass(spPrimaryVoidClass &primaryVoidClass) {
   lexer->getNextToken(); // consume 'void'
 
   // '.'
-  if (lexer->getCurToken() != TOK_COMMA) {
+  if (lexer->getCurToken() != TOK_PERIOD) {
     primaryVoidClass->addErr(diag->addErr(
-      ERR_EXP_COMMA, lexer->getCursor() - 1));
+      ERR_EXP_PERIOD, lexer->getCursor() - 1));
     return;
   }
 
-  primaryVoidClass->posComma = lexer->getCursor() - 1;
+  primaryVoidClass->posPeriod = lexer->getCursor() - 1;
   lexer->getNextToken(); // consume '.'
 
   // 'class'

@@ -1753,10 +1753,10 @@ struct PrimaryNonWildcardTypeArguments : ASTError {
 /// Primary: void . class
 struct PrimaryVoidClass : ASTError {
   spTokenExp tokVoid;
-  unsigned int posComma;
+  unsigned posPeriod;
   spTokenExp tokClass;
 
-  PrimaryVoidClass() : posComma(0) {}
+  PrimaryVoidClass() : posPeriod(0) {}
 };
 
 /// Literal:
