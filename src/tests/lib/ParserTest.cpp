@@ -1468,6 +1468,54 @@ TEST(Parser, Interface) {
 }
 
 // -----------------------------------------------------------------------------
+// interface A { class B { B() {} }}
+// -----------------------------------------------------------------------------
+// NormalInterfaceDeclaration
+//   interface
+//   Identifier <-- 'A'
+//   InterfaceBody
+//     '{'
+//     InterfaceBodyDeclaration[0]
+//       InterfaceMemberDecl(4)
+//         ClassDeclaration
+//           NormalClassDeclaration
+//             class
+//             Identifier 'B'
+//             ClassBody
+//               '{'
+//                 ClassBodyDeclarations[0]
+//                   MemberDecl(3)
+//               '}'
+//     '}'
+TEST(Parser, InterfaceInnerClassConstructor) {
+  std::string filename = "Test.java";
+  std::string buffer = "interface A { class B { B() {} }}";
+  spDiagnosis diag = spDiagnosis(new Diagnosis);
+  Parser parser(filename, buffer, diag);
+  parser.parse();
+
+  spInterfaceBody body = parser.compilationUnit->typeDecls[0]->decl
+    ->interfaceDecl->normalDecl->body;
+  ASSERT_EQ(12, body->posLCBrace);
+  ASSERT_EQ(32, body->posRCBrace);
+
+  spInterfaceMemberDecl interfaceMemberDecl = body->bodyDecls[0]->memberDecl;
+  ASSERT_EQ(InterfaceMemberDecl::OPT_CLASS_DECLARATION,
+    interfaceMemberDecl->opt);
+
+  spClassBody classBody = interfaceMemberDecl->classDecl->nClassDecl->classBody;
+  ASSERT_EQ(22, classBody->posLCBrace);
+  ASSERT_EQ(31, classBody->posRCBrace);
+
+  spClassBodyDeclaration decl = classBody->decls[0];
+  ASSERT_EQ(ClassBodyDeclaration::OPT_MODIFIER_MEMBER_DECL, decl->opt);
+
+  spMemberDecl memberDecl = decl->memberDecl;
+  ASSERT_EQ(MemberDecl::OPT_IDENTIFIER_CONSTRUCTOR_DECLARATOR_REST,
+    memberDecl->opt);
+}
+
+// -----------------------------------------------------------------------------
 // class A { void m() { p = s[i]; }}
 // -----------------------------------------------------------------------------
 // BlockStatement(3)

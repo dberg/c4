@@ -465,11 +465,15 @@ struct ClassBody : ASTError {
 struct ClassBodyDeclaration : ASTError {
   enum ClassBodyDeclarationOpt {
     OPT_UNDEFINED,
+    OPT_SEMICOLON,
     OPT_MODIFIER_MEMBER_DECL,  // { Modifier } MemberDecl
     OPT_STATIC_BLOCK,          // [static] Block
   };
 
   ClassBodyDeclarationOpt opt;
+
+  // (1) ;
+  unsigned posSemiColon;
 
   // (2) {Modifier} MemberDecl
   spModifier modifier;
@@ -479,7 +483,7 @@ struct ClassBodyDeclaration : ASTError {
   spTokenExp tokStatic;
   spBlock block;
 
-  ClassBodyDeclaration() : opt(OPT_UNDEFINED) {}
+  ClassBodyDeclaration() : opt(OPT_UNDEFINED), posSemiColon(0) {}
 };
 
 /// MemberDecl:

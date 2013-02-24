@@ -2293,6 +2293,7 @@ void Parser::parseInterfaceBody(spInterfaceBody &body) {
   }
 
   body->posRCBrace = lexer->getCursor() - 1;
+  st.updateScopeEnd(lexer->getCursor());
   lexer->getNextToken(); // consume '}'
 }
 
@@ -2311,6 +2312,7 @@ void Parser::parseInterfaceBodyDeclaration(
   }
 
   // (2) {Modifier} InterfaceMemberDecl
+  st.addSym(ST_MEMBER_DECL, lexer->getCurTokenIni(), 0, src->getLine(), "");
   bodyDecl->opt = InterfaceBodyDeclaration::OPT_MEMBER_DECL;
   bodyDecl->modifier = spModifier(new Modifier);
   parseModifier(bodyDecl->modifier);
@@ -2319,6 +2321,7 @@ void Parser::parseInterfaceBodyDeclaration(
   if (bodyDecl->memberDecl->err) {
     bodyDecl->addErr(-1);
   }
+  st.scopePop();
 }
 
 /// InterfaceDeclaration:
@@ -2443,6 +2446,8 @@ void Parser::parseInterfaceMemberDecl(spInterfaceMemberDecl &memberDecl) {
 
     memberDecl->id = spIdentifier(new Identifier(
       lexer->getCurTokenIni(), lexer->getCurTokenStr()));
+    st.addSym(ST_IDENTIFIER, lexer->getCurTokenIni(), lexer->getCursor(),
+      src->getLine(), lexer->getCurTokenStr());
     lexer->getNextToken(); // consume Identifier
 
     // VoidInterfaceMethodDeclaratorRest
@@ -2473,6 +2478,12 @@ void Parser::parseInterfaceMemberDecl(spInterfaceMemberDecl &memberDecl) {
     || lexer->getCurToken() == TOK_KEY_ENUM) {
 
     memberDecl->opt = InterfaceMemberDecl::OPT_CLASS_DECLARATION;
+    if (lexer->getCurToken() == TOK_KEY_CLASS) {
+      st.updateScopeType(ST_CLASS);
+    } else {
+      st.updateScopeType(ST_ENUM);
+    }
+
     memberDecl->classDecl = spClassDeclaration(new ClassDeclaration);
     parseClassDeclaration(memberDecl->classDecl);
     if (memberDecl->classDecl->err) {
@@ -4665,6 +4676,10 @@ void Parser::parseNormalInterfaceDeclaration(
 
   normalDecl->id = spIdentifier(new Identifier(
     lexer->getCurTokenIni(), lexer->getCurTokenStr()));
+
+  st.addSym(ST_IDENTIFIER, lexer->getCurTokenIni(), lexer->getCursor(),
+    src->getLine(), lexer->getCurTokenStr());
+
   lexer->getNextToken(); // consume Identifier
 
   // [TypeParameters]
@@ -4736,8 +4751,10 @@ void Parser::parseParExpression(spParExpression &parExpr) {
   lexer->getNextToken(); // consume ')'
 }
 
-/// ClassBody: '{' { ClassBodyDeclaration } '}'
+/// ClassBody:
+///   '{' { ClassBodyDeclaration } '}'
 void Parser::parseClassBody(spClassBody &classBody) {
+  // '{'
   if (lexer->getCurToken() != TOK_LCURLY_BRACKET) {
     classBody->addErr(diag->addErr(
       ERR_EXP_LCURLY_BRACKET, lexer->getCursor() - 1));
@@ -4750,6 +4767,7 @@ void Parser::parseClassBody(spClassBody &classBody) {
   // { ClassBodyDeclaration }
   parseClassBodyDeclarationsHelper(classBody->decls);
 
+  // '}'
   if (lexer->getCurToken() != TOK_RCURLY_BRACKET) {
     classBody->addErr(diag->addErr(
       ERR_EXP_RCURLY_BRACKET, lexer->getCursor() - 1));
@@ -4841,6 +4859,9 @@ void Parser::parseClassBodyDeclaration(spClassBodyDeclaration &decl) {
     st.scopePop();
     return;
   }
+
+  // TODO:
+  // (1) ;
 
   // Error
   decl->addErr(-1);
