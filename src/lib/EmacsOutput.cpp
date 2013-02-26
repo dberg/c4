@@ -899,13 +899,17 @@ void EmacsOutput::setExpression3(const spExpression3 &expr3) {
   }
 }
 
-void EmacsOutput::setFieldDeclsRest(const spFieldDeclaratorsRest &fieldDeclsRest) {
+void EmacsOutput::setFieldDeclsRest(
+  const spFieldDeclaratorsRest &fieldDeclsRest) {
+
   if (fieldDeclsRest->varDeclRest) {
     setVariableDeclaratorRest(fieldDeclsRest->varDeclRest);
   }
 
-  // TODO:
-  //std::vector<std::pair<unsigned int, spVariableDeclarator> > pairsCommaVarDecl;
+  for (unsigned i = 0; i < fieldDeclsRest->pairs.size(); i++) {
+    setOp(fieldDeclsRest->pairs[i].first);
+    setVariableDeclarator(fieldDeclsRest->pairs[i].second);
+  }
 }
 
 void EmacsOutput::setFinally(const spFinally &finally) {
