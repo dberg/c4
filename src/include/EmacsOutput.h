@@ -36,6 +36,18 @@ class EmacsOutput {
   void setAnnotationElement(const spAnnotationElement elem);
   void setAnnotation(const spAnnotation &annotation);
   void setAnnotations(const std::vector<spAnnotation> &annotations);
+  void setAnnotationMethodOrConstantRest(
+    const spAnnotationMethodOrConstantRest &methodOrConstRest);
+  void setAnnotationMethodRest(const spAnnotationMethodRest &methRest);
+  void setAnnotationTypeBody(const spAnnotationTypeBody &annTypeBody);
+  void setAnnotationTypeDeclaration(
+    const spAnnotationTypeDeclaration &annotationDecl);
+  void setAnnotationTypeElementDeclaration(
+    const spAnnotationTypeElementDeclaration &elemDecl);
+  void setAnnotationTypeElementDeclarations(
+    const spAnnotationTypeElementDeclarations &elemDecls);
+  void setAnnotationTypeElementRest(
+    const spAnnotationTypeElementRest &elemRest);
   void setArguments(const spArguments &args);
   void setArrayCreatorRest(const spArrayCreatorRest &arrayCreatorRest);
   void setArrayDepth(ArrayDepth &arrayDepth);

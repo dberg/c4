@@ -91,6 +91,161 @@ void EmacsOutput::setAnnotations(
   }
 }
 
+void EmacsOutput::setAnnotationMethodOrConstantRest(
+  const spAnnotationMethodOrConstantRest &methodOrConstRest) {
+
+  if (methodOrConstRest->opt
+    == AnnotationMethodOrConstantRest::OPT_ANNOTATION_METHOD_REST) {
+
+    if (methodOrConstRest->methRest) {
+      setAnnotationMethodRest(methodOrConstRest->methRest);
+    }
+
+    return;
+  }
+
+  if (methodOrConstRest->opt
+    == AnnotationMethodOrConstantRest::OPT_CONSTANT_DECLARATORS_REST) {
+
+    if (methodOrConstRest->constRest) {
+      setConstantDeclaratorsRest(methodOrConstRest->constRest);
+    }
+  }
+}
+
+void EmacsOutput::setAnnotationMethodRest(
+  const spAnnotationMethodRest &methRest) {
+
+  if (methRest->posLParen) {
+    setOp(methRest->posLParen);
+  }
+
+  if (methRest->posRParen) {
+    setOp(methRest->posRParen);
+  }
+
+  if (methRest->posLBracket) {
+    setOp(methRest->posLBracket);
+  }
+
+  if (methRest->posRBracket) {
+    setOp(methRest->posRBracket);
+  }
+
+  if (methRest->tokDefault) {
+    setKeyword(methRest->tokDefault);
+  }
+
+  if (methRest->elemVal) {
+    setElementValue(methRest->elemVal);
+  }
+}
+
+void EmacsOutput::setAnnotationTypeBody(
+  const spAnnotationTypeBody &annTypeBody) {
+
+  if (annTypeBody->elemDecls) {
+    setAnnotationTypeElementDeclarations(annTypeBody->elemDecls);
+  }
+}
+
+void EmacsOutput::setAnnotationTypeDeclaration(
+  const spAnnotationTypeDeclaration &annotationDecl) {
+
+  if (annotationDecl->posAt) {
+    outSH +=
+      "(djp-node-annotation-tok-at "
+      + itos(annotationDecl->posAt + 1)
+      + ")";
+  }
+
+  if (annotationDecl->tokInterface) {
+    setKeyword(annotationDecl->tokInterface);
+  }
+
+  if (annotationDecl->id) {
+    setIdentifier(annotationDecl->id,
+      EmacsOutput::OPT_IDENTIFIER_REFERENCE_TYPE);
+  }
+
+  if (annotationDecl->annTypeBody) {
+    setAnnotationTypeBody(annotationDecl->annTypeBody);
+  }
+}
+
+void EmacsOutput::setAnnotationTypeElementDeclaration(
+  const spAnnotationTypeElementDeclaration &elemDecl) {
+
+  if (elemDecl->modifier) {
+    setModifier(elemDecl->modifier);
+  }
+
+  if (elemDecl->elemRest) {
+    setAnnotationTypeElementRest(elemDecl->elemRest);
+  }
+}
+
+void EmacsOutput::setAnnotationTypeElementDeclarations(
+  const spAnnotationTypeElementDeclarations &elemDecls) {
+
+  for (unsigned i = 0; i < elemDecls->elemDecls.size(); i++) {
+    setAnnotationTypeElementDeclaration(elemDecls->elemDecls[i]);
+  }
+}
+
+void EmacsOutput::setAnnotationTypeElementRest(
+  const spAnnotationTypeElementRest &elemRest) {
+
+  if (elemRest->opt == AnnotationTypeElementRest::OPT_METHOD_OR_CONSTANT) {
+    if (elemRest->type) {
+      setType(elemRest->type);
+    }
+
+    if (elemRest->id) {
+      setIdentifier(elemRest->id);
+    }
+
+    if (elemRest->methodOrConstRest) {
+      setAnnotationMethodOrConstantRest(elemRest->methodOrConstRest);
+    }
+
+    if (elemRest->posSemiColon) {
+      setOp(elemRest->posSemiColon);
+    }
+
+    return;
+  }
+
+  if (elemRest->opt == AnnotationTypeElementRest::OPT_CLASS_DECLARATION) {
+    if (elemRest->classDecl) {
+      setClassDeclaration(elemRest->classDecl);
+    }
+    return;
+  }
+
+  if (elemRest->opt == AnnotationTypeElementRest::OPT_INTERFACE_DECLARATION) {
+    if (elemRest->interfaceDecl) {
+      setInterfaceDeclaration(elemRest->interfaceDecl);
+    }
+    return;
+  }
+
+  if (elemRest->opt == AnnotationTypeElementRest::OPT_ENUM_DECLARATION) {
+    if (elemRest->enumDecl) {
+      setEnumDeclaration(elemRest->enumDecl);
+    }
+    return;
+  }
+
+  if (elemRest->opt == AnnotationTypeElementRest::OPT_ANNOTATION_DECLARATION) {
+
+    if (elemRest->annotationDecl) {
+      setAnnotationTypeDeclaration(elemRest->annotationDecl);
+    }
+    return;
+  }
+}
+
 void EmacsOutput::setArguments(const spArguments &args) {
   if (args->posLParen) { setOp(args->posLParen); }
   if (args->posRParen) { setOp(args->posRParen); }
@@ -1097,8 +1252,7 @@ void EmacsOutput::setInterfaceDeclaration(
 
   if (interfaceDecl->opt == InterfaceDeclaration::OPT_ANNOTATION) {
     if (interfaceDecl->annotationDecl) {
-      // TODO:
-      //setAnnotationTypeDeclaration(interfaceDecl->annotationDecl);
+      setAnnotationTypeDeclaration(interfaceDecl->annotationDecl);
     }
   }
 }
@@ -1328,8 +1482,10 @@ void EmacsOutput::setMemberDecl(const spMemberDecl &memberDecl) {
     return;
   }
 
-  // TODO:
   if (memberDecl->opt == MemberDecl::OPT_INTERFACE_DECLARATION) {
+    if (memberDecl->interfaceDecl) {
+      setInterfaceDeclaration(memberDecl->interfaceDecl);
+    }
     return;
   }
 }
