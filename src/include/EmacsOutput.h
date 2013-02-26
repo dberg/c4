@@ -86,6 +86,7 @@ class EmacsOutput {
   void setErrors(const std::vector<spError> &errors);
   void setExpression(const spExpression &expr);
   void setExpression1(const spExpression1 &expr1);
+  void setExpression1Rest(const spExpression1Rest &expr1Rest);
   void setExpression2(const spExpression2 &expr2);
   void setExpression2Rest(const spExpression2Rest &expr2Rest);
   void setExpression3(const spExpression3 &expr3);

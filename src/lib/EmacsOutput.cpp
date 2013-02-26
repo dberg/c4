@@ -780,8 +780,25 @@ void EmacsOutput::setExpression1(const spExpression1 &expr1) {
   }
 
   if (expr1->expr1Rest) {
-    // TODO:
-    //setExpression1Rest(expr1->expr1Rest);
+    setExpression1Rest(expr1->expr1Rest);
+  }
+}
+
+void EmacsOutput::setExpression1Rest(const spExpression1Rest &expr1Rest) {
+  if (expr1Rest->posQuestionMark) {
+    setOp(expr1Rest->posQuestionMark);
+  }
+
+  if (expr1Rest->expr) {
+    setExpression(expr1Rest->expr);
+  }
+
+  if (expr1Rest->posColon) {
+    setOp(expr1Rest->posColon);
+  }
+
+  if (expr1Rest->expr1) {
+    setExpression1(expr1Rest->expr1);
   }
 }
 
