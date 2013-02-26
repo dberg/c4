@@ -347,7 +347,9 @@ void EmacsOutput::setBlockStatement(const spBlockStatement &blockStmt) {
   }
 
   if (blockStmt->opt == BlockStatement::OPT_CLASS_OR_INTERFACE_DECL) {
-    // TODO:
+    if (blockStmt->decl) {
+      setClassOrInterfaceDeclaration(blockStmt->decl);
+    }
     return;
   }
 
