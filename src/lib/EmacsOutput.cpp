@@ -388,7 +388,7 @@ void EmacsOutput::setCatches(const spCatches &catches) {
 void EmacsOutput::setCatchClause(const spCatchClause &catchClause) {
   if (catchClause->tokCatch) { setKeyword(catchClause->tokCatch); }
   if (catchClause->posLParen) { setOp(catchClause->posLParen); }
-  // TODO: {VariableModifier}
+  if (catchClause->varMod) { setVariableModifier(catchClause->varMod); }
   if (catchClause->catchType) { setCatchType(catchClause->catchType); }
   if (catchClause->id) { setIdentifier(catchClause->id); }
   if (catchClause->posRParen) { setOp(catchClause->posRParen); }
