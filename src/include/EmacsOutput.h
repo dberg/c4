@@ -66,6 +66,11 @@ class EmacsOutput {
   void setElementValueArrayInitializer(
     const spElementValueArrayInitializer &elemValArrayInit);
   void setElementValuePair(const spElementValuePair &pair);
+  void setEnumBody(const spEnumBody &enumBody);
+  void setEnumBodyDeclarations(const spEnumBodyDeclarations &bodyDecls);
+  void setEnumConstant(const spEnumConstant &enumConst);
+  void setEnumConstants(const spEnumConstants &enumConsts);
+  void setEnumDeclaration(spEnumDeclaration &enumDecl);
   void setErrors(const std::vector<spError> &errors);
   void setExpression(const spExpression &expr);
   void setExpression1(const spExpression1 &expr1);

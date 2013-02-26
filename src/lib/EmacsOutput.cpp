@@ -306,8 +306,7 @@ void EmacsOutput::setClassDeclaration(const spClassDeclaration &classDecl) {
   }
 
   if (classDecl->enumDecl) {
-    // TODO:
-    //setEnumDeclaration(decl->classDecl->enumDecl);
+    setEnumDeclaration(classDecl->enumDecl);
     return;
   }
 }
@@ -510,6 +509,86 @@ void EmacsOutput::setElementValuePair(const spElementValuePair &pair) {
 
   if (pair->value) {
     setElementValue(pair->value);
+  }
+}
+
+void EmacsOutput::setEnumBody(const spEnumBody &enumBody) {
+  if (enumBody->posLCBrace) {
+    setOp(enumBody->posLCBrace);
+  }
+
+  if (enumBody->enumConsts) {
+    setEnumConstants(enumBody->enumConsts);
+  }
+
+  if (enumBody->bodyDecls) {
+    setEnumBodyDeclarations(enumBody->bodyDecls);
+  }
+
+  if (enumBody->posRCBrace) {
+    setOp(enumBody->posRCBrace);
+  }
+}
+
+void EmacsOutput::setEnumBodyDeclarations(
+  const spEnumBodyDeclarations &bodyDecls) {
+
+  if (bodyDecls->posSemiColon) {
+    setOp(bodyDecls->posSemiColon);
+  }
+
+  for (unsigned i = 0; i < bodyDecls->classBodyDecls.size(); i++) {
+    setClassBodyDeclaration(bodyDecls->classBodyDecls[i]);
+  }
+}
+
+void EmacsOutput::setEnumConstant(const spEnumConstant &enumConst) {
+  setAnnotations(enumConst->annotations);
+
+  if (enumConst->id) {
+    setIdentifier(enumConst->id);
+  }
+
+  if (enumConst->args) {
+    setArguments(enumConst->args);
+  }
+
+  if (enumConst->classBody) {
+    setClassBody(enumConst->classBody);
+  }
+}
+
+void EmacsOutput::setEnumConstants(const spEnumConstants &enumConsts) {
+  if (enumConsts->enumConst) {
+    setEnumConstant(enumConsts->enumConst);
+  }
+
+  for (unsigned i = 0; i < enumConsts->pairs.size(); i++) {
+    setOp(enumConsts->pairs[i].first);
+    setEnumConstant(enumConsts->pairs[i].second);
+  }
+}
+
+
+void EmacsOutput::setEnumDeclaration(spEnumDeclaration &enumDecl) {
+  if (enumDecl->tokEnum) {
+    setKeyword(enumDecl->tokEnum);
+  }
+
+  if (enumDecl->id) {
+    setIdentifier(enumDecl->id, EmacsOutput::OPT_IDENTIFIER_REFERENCE_TYPE);
+  }
+
+  if (enumDecl->tokImpl) {
+    setKeyword(enumDecl->tokImpl);
+  }
+
+  if (enumDecl->typeList) {
+    setTypeList(enumDecl->typeList);
+  }
+
+  if (enumDecl->enumBody) {
+    setEnumBody(enumDecl->enumBody);
   }
 }
 
