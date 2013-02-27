@@ -1689,8 +1689,9 @@ void EmacsOutput::setMethodDeclaratorRest(
     setKeyword(methodDeclRest->tokThrows);
   }
 
-  // TODO:
-  //spQualifiedIdentifierList qualifiedIdList;
+  if (methodDeclRest->qualifiedIdList) {
+    setQualifiedIdentifierList(methodDeclRest->qualifiedIdList);
+  }
 
   if (methodDeclRest->block) {
     setBlock(methodDeclRest->block);
