@@ -2078,10 +2078,9 @@ void EmacsOutput::setSelector(const spSelector &selector) {
 
   if (selector->opt == Selector::OPT_EXPLICIT_GENERIC_INVOCATION) {
     if (selector->posPeriod) { setOp(selector->posPeriod); }
-    // TODO:
-    //if (selector->explGenInvocation) {
-    //  setExplicitGenericInvocation(selector->explGenInvocation);
-    //}
+    if (selector->explGenInvocation) {
+      setExplicitGenericInvocation(selector->explGenInvocation);
+    }
   }
 
   if (selector->opt == Selector::OPT_THIS) {
@@ -2092,8 +2091,7 @@ void EmacsOutput::setSelector(const spSelector &selector) {
   if (selector->opt == Selector::OPT_SUPER_SUPER_SUFFIX) {
     if (selector->posPeriod) { setOp(selector->posPeriod); }
     if (selector->tokSuper) { setKeyword(selector->tokSuper); }
-    // TODO:
-    //if (selector->superSuffix) { setSuperSuffix(selector->superSuffix); }
+    if (selector->superSuffix) { setSuperSuffix(selector->superSuffix); }
   }
 
   if (selector->opt == Selector::OPT_NEW) {
@@ -2102,10 +2100,9 @@ void EmacsOutput::setSelector(const spSelector &selector) {
     if (selector->nonWildcardTypeArguments) {
       setNonWildcardTypeArguments(selector->nonWildcardTypeArguments);
     }
-    // TODO:
-    //if (selector->innerCreator) {
-    //  setInnerCreator(selector->innerCreator);
-    //}
+    if (selector->innerCreator) {
+      setInnerCreator(selector->innerCreator);
+    }
   }
 
   if (selector->opt == Selector::OPT_EXPRESSION) {
