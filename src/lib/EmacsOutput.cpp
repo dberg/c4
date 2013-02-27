@@ -1576,7 +1576,15 @@ void EmacsOutput::setLiteral(const spLiteral &literal) {
   }
 
   if (literal->opt == Literal::OPT_BOOLEAN) {
-    // TODO:
+    if (literal->boolLiteral) {
+      if (literal->boolLiteral->val) {
+        // true
+        setKeyword(literal->boolLiteral->pos, literal->boolLiteral->pos + 5);
+      } else {
+        // false
+        setKeyword(literal->boolLiteral->pos, literal->boolLiteral->pos + 6);
+      }
+    }
     return;
   }
 
