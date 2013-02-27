@@ -328,6 +328,12 @@ void EmacsOutput::setArrayInitializer(const spArrayInitializer arrayInit) {
   }
 }
 
+void EmacsOutput::setBasicType(const spBasicType &basicType) {
+  if (basicType->token) {
+    setKeyword(basicType->token);
+  }
+}
+
 void EmacsOutput::setBlock(const spBlock &block) {
   if (block->posLCBracket) { setOp(block->posLCBracket); }
 
@@ -1895,18 +1901,36 @@ void EmacsOutput::setPrimary(const spPrimary &primary) {
     return;
   }
 
-  if (primary->opt == Primary::OPT_PAR_EXPRESSION) {
-    // TODO:
+  if (primary->opt == Primary::OPT_PAR_EXPRESSION
+    && primary->parExpr) {
+    setParExpression(primary->parExpr);
     return;
   }
 
-  if (primary->opt == Primary::OPT_THIS_ARGUMENTS) {
-    // TODO:
+  if (primary->opt == Primary::OPT_THIS_ARGUMENTS
+    && primary->thisArgs) {
+
+    if (primary->thisArgs->tokThis) {
+      setKeyword(primary->thisArgs->tokThis);
+    }
+
+    if (primary->thisArgs->args) {
+      setArguments(primary->thisArgs->args);
+    }
+
     return;
   }
 
-  if (primary->opt == Primary::OPT_SUPER_SUPER_SUFFIX) {
-    // TODO:
+  if (primary->opt == Primary::OPT_SUPER_SUPER_SUFFIX
+    && primary->superSuperSuffix) {
+    if (primary->superSuperSuffix->tokSuper) {
+      setKeyword(primary->superSuperSuffix->tokSuper);
+    }
+
+    if (primary->superSuperSuffix->superSuffix) {
+      setSuperSuffix(primary->superSuperSuffix->superSuffix);
+    }
+
     return;
   }
 
@@ -1924,8 +1948,27 @@ void EmacsOutput::setPrimary(const spPrimary &primary) {
     return;
   }
 
-  if (primary->opt == Primary::OPT_NON_WILDCARD_TYPE_ARGUMENTS) {
-    // TODO:
+  if (primary->opt == Primary::OPT_NON_WILDCARD_TYPE_ARGUMENTS
+    && primary->nonWildcardTypeArguments) {
+
+    if (primary->nonWildcardTypeArguments->nonWildcardTypeArguments) {
+      setNonWildcardTypeArguments(
+        primary->nonWildcardTypeArguments->nonWildcardTypeArguments);
+    }
+
+    if (primary->nonWildcardTypeArguments->explGen) {
+      setExplicitGenericInvocationSuffix(
+        primary->nonWildcardTypeArguments->explGen);
+    }
+
+    if (primary->nonWildcardTypeArguments->tokThis) {
+      setKeyword(primary->nonWildcardTypeArguments->tokThis);
+    }
+
+    if (primary->nonWildcardTypeArguments->args) {
+      setArguments(primary->nonWildcardTypeArguments->args);
+    }
+
     return;
   }
 
@@ -1936,13 +1979,37 @@ void EmacsOutput::setPrimary(const spPrimary &primary) {
     return;
   }
 
-  if (primary->opt == Primary::OPT_BASIC_TYPE) {
-    // TODO:
+  if (primary->opt == Primary::OPT_BASIC_TYPE && primary->primaryBasicType) {
+    if (primary->primaryBasicType->basicType) {
+      setBasicType(primary->primaryBasicType->basicType);
+    }
+
+    setArrayDepth(primary->primaryBasicType->arrayDepth);
+
+    if (primary->primaryBasicType->posPeriod) {
+      setOp(primary->primaryBasicType->posPeriod);
+    }
+
+    if (primary->primaryBasicType->tokClass) {
+      setKeyword(primary->primaryBasicType->tokClass);
+    }
+
     return;
   }
 
-  if (primary->opt == Primary::OPT_VOID_CLASS) {
-    // TODO:
+  if (primary->opt == Primary::OPT_VOID_CLASS && primary->primaryVoidClass) {
+    if (primary->primaryVoidClass->tokVoid) {
+      setKeyword(primary->primaryVoidClass->tokVoid);
+    }
+
+    if (primary->primaryVoidClass->posPeriod) {
+      setOp(primary->primaryVoidClass->posPeriod);
+    }
+
+    if (primary->primaryVoidClass->tokClass) {
+      setKeyword(primary->primaryVoidClass->tokClass);
+    }
+
     return;
   }
 }

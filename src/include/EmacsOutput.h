@@ -52,6 +52,7 @@ class EmacsOutput {
   void setArrayCreatorRest(const spArrayCreatorRest &arrayCreatorRest);
   void setArrayDepth(ArrayDepth &arrayDepth);
   void setArrayInitializer(const spArrayInitializer arrayInit);
+  void setBasicType(const spBasicType &basicType);
   void setBlock(const spBlock &block);
   void setBlockStatement(const spBlockStatement &blockStmt);
   void setBound(const spBound &bound);

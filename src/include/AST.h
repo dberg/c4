@@ -1690,8 +1690,8 @@ struct Primary : ASTError {
   spPrimaryNewCreator newCreator;
   spPrimaryNonWildcardTypeArguments nonWildcardTypeArguments;
   spPrimaryIdentifier primaryId;
-  spPrimaryVoidClass primaryVoidClass;
   spPrimaryBasicType primaryBasicType;
+  spPrimaryVoidClass primaryVoidClass;
 
   Primary() : opt(OPT_UNDEFINED) {}
   bool isEmpty() { return opt == OPT_UNDEFINED; }
