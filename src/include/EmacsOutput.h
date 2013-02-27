@@ -120,6 +120,8 @@ class EmacsOutput {
   void setInterfaceBody(const spInterfaceBody &body);
   void setInterfaceBodyDeclaration(const spInterfaceBodyDeclaration &bodyDecl);
   void setInterfaceDeclaration(const spInterfaceDeclaration &interfaceDecl);
+  void setInterfaceGenericMethodDecl(
+    const spInterfaceGenericMethodDecl &genMethodDecl);
   void setInterfaceMemberDeclaration(const spInterfaceMemberDecl &memberDecl);
   void setInterfaceMethodDeclaratorRest(
     const spInterfaceMethodDeclaratorRest &methDeclRest);

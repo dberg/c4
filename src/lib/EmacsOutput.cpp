@@ -1412,6 +1412,30 @@ void EmacsOutput::setInterfaceDeclaration(
   }
 }
 
+void EmacsOutput::setInterfaceGenericMethodDecl(
+  const spInterfaceGenericMethodDecl &genMethodDecl) {
+
+  if (genMethodDecl->typeParams) {
+    setTypeParameters(genMethodDecl->typeParams);
+  }
+
+  if (genMethodDecl->type) {
+    setType(genMethodDecl->type);
+  }
+
+  if (genMethodDecl->tokVoid) {
+    setKeyword(genMethodDecl->tokVoid);
+  }
+
+  if (genMethodDecl->id) {
+    setIdentifier(genMethodDecl->id);
+  }
+
+  if (genMethodDecl->methDeclRest) {
+    setInterfaceMethodDeclaratorRest(genMethodDecl->methDeclRest);
+  }
+}
+
 void EmacsOutput::setInterfaceMethodDeclaratorRest(
   const spInterfaceMethodDeclaratorRest &methDeclRest) {
 
@@ -1463,8 +1487,7 @@ void EmacsOutput::setInterfaceMemberDeclaration(
 
   if (memberDecl->opt == InterfaceMemberDecl::OPT_INTERFACE_GENERIC) {
     if (memberDecl->genMethodDecl) {
-      // TODO:
-      //setInterfaceGenericMethodDecl(memberDecl->genMethodDecl);
+      setInterfaceGenericMethodDecl(memberDecl->genMethodDecl);
     }
 
     return;
