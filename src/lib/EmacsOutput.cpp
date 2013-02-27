@@ -759,6 +759,44 @@ void EmacsOutput::setErrors(const std::vector<spError> &errors) {
   }
 }
 
+void EmacsOutput::setExplicitGenericInvocation(
+  const spExplicitGenericInvocation &explGenInvocation) {
+
+  if (explGenInvocation->nonWildcardTypeArguments) {
+    setNonWildcardTypeArguments(explGenInvocation->nonWildcardTypeArguments);
+  }
+
+  if (explGenInvocation->explGen) {
+    setExplicitGenericInvocationSuffix(explGenInvocation->explGen);
+  }
+}
+
+void EmacsOutput::setExplicitGenericInvocationSuffix(
+  const spExplicitGenericInvocationSuffix &explGen) {
+
+  if (explGen->opt == ExplicitGenericInvocationSuffix::OPT_SUPER) {
+    if (explGen->tokSuper) {
+      setKeyword(explGen->tokSuper);
+    }
+
+    if (explGen->superSuffix) {
+      setSuperSuffix(explGen->superSuffix);
+    }
+
+    return;
+  }
+
+  if (explGen->opt == ExplicitGenericInvocationSuffix::OPT_IDENTIFIER) {
+    if (explGen->id) {
+      setIdentifier(explGen->id);
+    }
+
+    if (explGen->args) {
+      setArguments(explGen->args);
+    }
+  }
+}
+
 void EmacsOutput::setExpression(const spExpression &expr) {
   if (expr->expr1) {
     setExpression1(expr->expr1);
@@ -1156,12 +1194,48 @@ void EmacsOutput::setIdentifier(const spIdentifier &identifier, IdentifierOpt op
 
 void EmacsOutput::setIdentifierSuffix(const spIdentifierSuffix &idSuffix) {
   if (idSuffix->opt == IdentifierSuffix::OPT_ARRAY_ARRAY_DEPTH_CLASS) {
-    // TODO:
+    // '['
+    if (idSuffix->arrayPair.first) {
+      setOp(idSuffix->arrayPair.first);
+    }
+
+    // { '[]' }
+    setArrayDepth(idSuffix->arrayDepth);
+
+    // '.'
+    if (idSuffix->posPeriod) {
+      setOp(idSuffix->posPeriod);
+    }
+
+    // 'class'
+    if (idSuffix->tokClass) {
+      setKeyword(idSuffix->tokClass);
+    }
+
+    // ']'
+    if (idSuffix->arrayPair.second) {
+      setOp(idSuffix->arrayPair.second);
+    }
+
     return;
   }
 
   if (idSuffix->opt == IdentifierSuffix::OPT_ARRAY_EXPRESSION) {
-    // TODO:
+    // '['
+    if (idSuffix->arrayPair.first) {
+      setOp(idSuffix->arrayPair.first);
+    }
+
+    // Expression
+    if (idSuffix->expr) {
+      setExpression(idSuffix->expr);
+    }
+
+    // ']'
+    if (idSuffix->arrayPair.second) {
+      setOp(idSuffix->arrayPair.second);
+    }
+
     return;
   }
 
@@ -1169,6 +1243,7 @@ void EmacsOutput::setIdentifierSuffix(const spIdentifierSuffix &idSuffix) {
     if (idSuffix->args) {
       setArguments(idSuffix->args);
     }
+
     return;
   }
 
@@ -1178,23 +1253,66 @@ void EmacsOutput::setIdentifierSuffix(const spIdentifierSuffix &idSuffix) {
     return;
   }
 
-  if (idSuffix->opt == IdentifierSuffix::OPT_PERIOD_EXPLICIT_GENERIC_INVOCATION) {
-    // TODO:
+  if (idSuffix->opt
+     == IdentifierSuffix::OPT_PERIOD_EXPLICIT_GENERIC_INVOCATION) {
+
+    if (idSuffix->posPeriod) {
+      setOp(idSuffix->posPeriod);
+    }
+
+    if (idSuffix->explGenInvocation) {
+      setExplicitGenericInvocation(idSuffix->explGenInvocation);
+    }
+
     return;
   }
 
   if (idSuffix->opt == IdentifierSuffix::OPT_PERIOD_THIS) {
-    // TODO:
+    if (idSuffix->posPeriod) {
+      setOp(idSuffix->posPeriod);
+    }
+
+    if (idSuffix->tokThis) {
+      setKeyword(idSuffix->tokThis);
+    }
+
     return;
   }
 
   if (idSuffix->opt == IdentifierSuffix::OPT_PERIOD_SUPER_ARGUMENTS) {
-    // TODO:
+
+    if (idSuffix->posPeriod) {
+      setOp(idSuffix->posPeriod);
+    }
+
+    if (idSuffix->tokSuper) {
+      setKeyword(idSuffix->tokSuper);
+    }
+
+    if (idSuffix->args) {
+      setArguments(idSuffix->args);
+    }
+
     return;
   }
 
   if (idSuffix->opt == IdentifierSuffix::OPT_NEW) {
-    // TODO:
+    if (idSuffix->posPeriod) {
+      setOp(idSuffix->posPeriod);
+    }
+
+    if (idSuffix->tokNew) {
+      setKeyword(idSuffix->tokNew);
+    }
+
+    if (idSuffix->nonWildcardTypeArguments) {
+      setNonWildcardTypeArguments(idSuffix->nonWildcardTypeArguments);
+    }
+
+    if (idSuffix->innerCreator) {
+      setInnerCreator(idSuffix->innerCreator);
+    }
+
     return;
   }
 }
@@ -1226,6 +1344,20 @@ void EmacsOutput::setImportDeclarations(const spImportDeclarations &impDecls) {
     setImportDeclaration(impDecls->imports[i]);
   }
   outSH += ")";
+}
+
+void EmacsOutput::setInnerCreator(const spInnerCreator &innerCreator) {
+  if (innerCreator->id) {
+    setIdentifier(innerCreator->id);
+  }
+
+  if (innerCreator->nonWildcardOrDiam) {
+    setNonWildcardTypeArgumentsOrDiamond(innerCreator->nonWildcardOrDiam);
+  }
+
+  if (innerCreator->classCreatorRest) {
+    setClassCreatorRest(innerCreator->classCreatorRest);
+  }
 }
 
 void EmacsOutput::setInterfaceBody(const spInterfaceBody &body) {
@@ -1599,6 +1731,32 @@ void EmacsOutput::setNonWildcardTypeArguments(
 
   if (nonWildcardTypeArguments->posGt) {
     setOp(nonWildcardTypeArguments->posGt);
+  }
+}
+
+void EmacsOutput::setNonWildcardTypeArgumentsOrDiamond(
+  const spNonWildcardTypeArgumentsOrDiamond &nonWildcardOrDiam) {
+
+  if (nonWildcardOrDiam->opt
+    == NonWildcardTypeArgumentsOrDiamond::OPT_DIAMOND) {
+
+    if (nonWildcardOrDiam->diamond.first) {
+      setOp(nonWildcardOrDiam->diamond.first);
+    }
+
+    if (nonWildcardOrDiam->diamond.second) {
+      setOp(nonWildcardOrDiam->diamond.second);
+    }
+
+    return;
+  }
+
+  if (nonWildcardOrDiam->opt
+    == NonWildcardTypeArgumentsOrDiamond::OPT_NON_WILDCARD_TYPE_ARGUMENTS) {
+
+    if (nonWildcardOrDiam->nonWildcardTypeArguments) {
+      setNonWildcardTypeArguments(nonWildcardOrDiam->nonWildcardTypeArguments);
+    }
   }
 }
 
@@ -2114,6 +2272,30 @@ void EmacsOutput::setStringLiteral(const spStringLiteral &strLiteral) {
   unsigned end = ini + strLiteral->val.length();
   outSH += "(djp-node-string-literal "
     + itos(ini) + " " + itos(end) + ")";
+}
+
+void EmacsOutput::setSuperSuffix(const spSuperSuffix &superSuffix) {
+
+  if (superSuffix->opt == SuperSuffix::OPT_ARGUMENTS) {
+    if (superSuffix->args) {
+      setArguments(superSuffix->args);
+    }
+    return;
+  }
+
+  if (superSuffix->opt == SuperSuffix::OPT_IDENTIFIER_ARGUMENTS) {
+    if (superSuffix->posPeriod) {
+      setOp(superSuffix->posPeriod);
+    }
+
+    if (superSuffix->id) {
+      setIdentifier(superSuffix->id);
+    }
+
+    if (superSuffix->args) {
+      setArguments(superSuffix->args);
+    }
+  }
 }
 
 void EmacsOutput::setSwitchBlockStatementGroup(

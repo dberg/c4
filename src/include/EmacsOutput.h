@@ -84,6 +84,10 @@ class EmacsOutput {
   void setEnumConstants(const spEnumConstants &enumConsts);
   void setEnumDeclaration(spEnumDeclaration &enumDecl);
   void setErrors(const std::vector<spError> &errors);
+  void setExplicitGenericInvocation(
+    const spExplicitGenericInvocation &explGenInvocation);
+  void setExplicitGenericInvocationSuffix(
+    const spExplicitGenericInvocationSuffix &explGen);
   void setExpression(const spExpression &expr);
   void setExpression1(const spExpression1 &expr1);
   void setExpression1Rest(const spExpression1Rest &expr1Rest);
@@ -112,6 +116,7 @@ class EmacsOutput {
   void setIdentifierSuffix(const spIdentifierSuffix &idSuffix);
   void setImportDeclaration(const spImportDeclaration &import);
   void setImportDeclarations(const spImportDeclarations &impDecls);
+  void setInnerCreator(const spInnerCreator &innerCreator);
   void setInterfaceBody(const spInterfaceBody &body);
   void setInterfaceBodyDeclaration(const spInterfaceBodyDeclaration &bodyDecl);
   void setInterfaceDeclaration(const spInterfaceDeclaration &interfaceDecl);
@@ -133,6 +138,8 @@ class EmacsOutput {
   void setModifier(const spModifier &modifier);
   void setNonWildcardTypeArguments(
     const spNonWildcardTypeArguments &nonWildcardTypeArguments);
+  void setNonWildcardTypeArgumentsOrDiamond(
+    const spNonWildcardTypeArgumentsOrDiamond &nonWildcardOrDiam);
   void setNormalClassDeclaration(const spNormalClassDeclaration &nClassDecl);
   void setNormalInterfaceDeclaration(
     const spNormalInterfaceDeclaration &normalDecl);
@@ -149,6 +156,7 @@ class EmacsOutput {
   void setStatement(const spStatement &stmt);
   void setStatementExpression(const spStatementExpression &stmtExpr);
   void setStringLiteral(const spStringLiteral &strLiteral);
+  void setSuperSuffix(const spSuperSuffix &superSuffix);
   void setSwitchBlockStatementGroup(const spSwitchBlockStatementGroup &group);
   void setSwitchLabel(const spSwitchLabel &label);
   void setSwitchLabels(const spSwitchLabels &labels);
