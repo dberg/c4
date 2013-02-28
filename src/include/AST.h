@@ -1827,7 +1827,7 @@ struct IntegerLiteral {
   IntegerLiteral() : opt(OPT_UNDEFINED), intSuffix(false), pos(-1) {}
 };
 
-/// FloatingPointLiteral
+/// FloatingPointLiteral:
 ///   DecimalFloatingPointLiteral
 ///   HexadecimalFloatingPointLiteral
 struct FloatingPointLiteral {

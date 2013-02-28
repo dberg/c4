@@ -16,6 +16,8 @@
 (defvar djp-face-reference-type-id 'font-lock-type-face)
 (defvar djp-face-string-literal 'font-lock-string-face)
 (defvar djp-face-op nil)
+(defvar djp-face-literal-number nil)
+(defvar djp-face-literal-char nil)
 
 (defface djp-error-face
   `((((class color) (background light))
@@ -175,6 +177,10 @@ The output of the compiler is used to build djp-parse-tree and djp-symbol-table.
       (put-text-property pos-tok-at
 			 (+ pos-tok-at 1) 'face djp-face-annotation-tok-at)))
 
+(defun djp-node-literal-char (ini end)
+  (if djp-face-literal-char
+      (put-text-property ini end 'face djp-face-literal-char)))
+
 (defun djp-node-identifier (ini end)
   (if djp-face-identifier
       (put-text-property ini end 'face djp-face-identifier)))
@@ -182,6 +188,10 @@ The output of the compiler is used to build djp-parse-tree and djp-symbol-table.
 (defun djp-node-keyword (ini end)
   (if djp-face-keyword
       (put-text-property ini end 'face djp-face-keyword)))
+
+(defun djp-node-literal-number (ini end)
+  (if djp-face-literal-number
+      (put-text-property ini end 'face djp-face-literal-number)))
 
 (defun djp-node-qualified-id (ini end)
   (if djp-face-qualified-id

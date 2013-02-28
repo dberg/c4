@@ -413,6 +413,16 @@ void EmacsOutput::setCatchType(const spCatchType &catchType) {
   }
 }
 
+void EmacsOutput::setCharacterLiteral(const spCharacterLiteral &charLiteral) {
+  if (charLiteral->pos && charLiteral->val.size()) {
+    outSH += "(djp-node-literal-char "
+      + itos(charLiteral->pos + 1)
+      + " "
+      + itos(charLiteral->pos + charLiteral->val.size() + 1);
+    outSH += ")";
+  }
+}
+
 void EmacsOutput::setClassBody(const spClassBody &classBody) {
   for (std::size_t i = 0; i < classBody->decls.size(); i++) {
     setClassBodyDeclaration(classBody->decls[i]);
@@ -961,6 +971,18 @@ void EmacsOutput::setFinally(const spFinally &finally) {
   if (finally->block) { setBlock(finally->block); }
 }
 
+void EmacsOutput::setFloatingPointLiteral(
+  const spFloatingPointLiteral &fpLiteral) {
+
+  if (fpLiteral->pos && fpLiteral->value.size()) {
+    outSH += "(djp-node-literal-number "
+      + itos(fpLiteral->pos + 1)
+      + " "
+      + itos(fpLiteral->pos + fpLiteral->value.size() + 1);
+    outSH += ")";
+  }
+}
+
 void EmacsOutput::setForControl(const spForControl &forCtrl) {
   if (forCtrl->opt == ForControl::OPT_FOR_VAR_CTRL) {
     if (forCtrl->varCtrl) {
@@ -1366,6 +1388,16 @@ void EmacsOutput::setInnerCreator(const spInnerCreator &innerCreator) {
   }
 }
 
+void EmacsOutput::setIntegerLiteral(const spIntegerLiteral &intLiteral) {
+  if (intLiteral->pos && intLiteral->value.size()) {
+    outSH += "(djp-node-literal-number "
+      + itos(intLiteral->pos + 1)
+      + " "
+      + itos(intLiteral->pos + intLiteral->value.size() + 1);
+    outSH += ")";
+  }
+}
+
 void EmacsOutput::setInterfaceBody(const spInterfaceBody &body) {
   if (body->posLCBrace) {
     setOp(body->posLCBrace);
@@ -1560,17 +1592,23 @@ void EmacsOutput::setKeyword(int ini, int end) {
 
 void EmacsOutput::setLiteral(const spLiteral &literal) {
   if (literal->opt == Literal::OPT_INTEGER) {
-    // TODO:
+    if (literal->intLiteral) {
+      setIntegerLiteral(literal->intLiteral);
+    }
     return;
   }
 
   if (literal->opt == Literal::OPT_FLOATING_POINT) {
-    // TODO:
+    if (literal->fpLiteral) {
+      setFloatingPointLiteral(literal->fpLiteral);
+    }
     return;
   }
 
   if (literal->opt == Literal::OPT_CHAR) {
-    // TODO:
+    if (literal->charLiteral) {
+      setCharacterLiteral(literal->charLiteral);
+    }
     return;
   }
 

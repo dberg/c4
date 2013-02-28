@@ -59,6 +59,7 @@ class EmacsOutput {
   void setCatches(const spCatches &catches);
   void setCatchClause(const spCatchClause &catchClause);
   void setCatchType(const spCatchType &catchType);
+  void setCharacterLiteral(const spCharacterLiteral &charLiteral);
   void setClassBody(const spClassBody &classBody);
   void setClassBodyDeclaration(const spClassBodyDeclaration &decl);
   void setClassCreatorRest(const spClassCreatorRest &classCreatorRest);
@@ -97,6 +98,7 @@ class EmacsOutput {
   void setExpression3(const spExpression3 &expr3);
   void setFieldDeclsRest(const spFieldDeclaratorsRest &fieldDeclsRest);
   void setFinally(const spFinally &finally);
+  void setFloatingPointLiteral(const spFloatingPointLiteral &fpLiteral);
   void setForControl(const spForControl &forCtrl);
   void setForInit(const spForInit &forInit);
   void setForUpdate(const spForUpdate &forUpdate);
@@ -118,6 +120,7 @@ class EmacsOutput {
   void setImportDeclaration(const spImportDeclaration &import);
   void setImportDeclarations(const spImportDeclarations &impDecls);
   void setInnerCreator(const spInnerCreator &innerCreator);
+  void setIntegerLiteral(const spIntegerLiteral &intLiteral);
   void setInterfaceBody(const spInterfaceBody &body);
   void setInterfaceBodyDeclaration(const spInterfaceBodyDeclaration &bodyDecl);
   void setInterfaceDeclaration(const spInterfaceDeclaration &interfaceDecl);
