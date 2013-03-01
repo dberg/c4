@@ -3680,6 +3680,107 @@ void Parser::parseReferenceType(spReferenceType &refType) {
   }
 }
 
+/// Resource:
+///   {VariableModifier} ReferenceType VariableDeclaratorId = Expression
+void Parser::parseResource(spResource &res) {
+  // {VariableModifier}
+  res->varModifier = spVariableModifier(new VariableModifier);
+  parseVariableModifier(res->varModifier);
+
+  // ReferenceType
+  res->refType = spReferenceType(new ReferenceType);
+  parseReferenceType(res->refType);
+  if (res->refType->err) {
+    res->addErr(-1);
+    return;
+  }
+
+  // VariableDeclaratorId
+  res->varDeclId = spVariableDeclaratorId(new VariableDeclaratorId);
+  parseVariableDeclaratorId(res->varDeclId);
+  if (res->varDeclId->err) {
+    res->addErr(-1);
+    return;
+  }
+
+  // =
+  res->posEquals = lexer->getCursor() - 1;
+  lexer->getNextToken(); // consume '='
+
+  // Expression
+  res->expr = spExpression(new Expression);
+  parseExpression(res->expr);
+  if (res->expr->isEmpty()) {
+    res->addErr(-1);
+  }
+}
+
+/// Resources:
+///   Resource { ; Resource }
+void Parser::parseResources(spResources &resources) {
+  // Resource
+  resources->res = spResource(new Resource);
+  parseResource(resources->res);
+  if (resources->res->err) {
+    resources->addErr(-1);
+    return;
+  }
+
+  // { ; Resource }
+  State state;
+  while (lexer->getCurToken() == TOK_SEMICOLON) {
+    saveState(state);
+    unsigned pos = lexer->getCursor() - 1;
+    lexer->getNextToken(); // consume ';'
+
+    spResource res = spResource(new Resource);
+    parseResource(res);
+    if (res->err) {
+      // We let upper layers handle the error
+      restoreState(state);
+      return;
+    }
+
+    resources->pairs.push_back(std::make_pair(pos, res));
+  }
+}
+
+/// ResourceSpecification:
+///   '(' Resources [;] ')'
+void Parser::parseResourceSpecification(spResourceSpecification &resSpec) {
+  // '('
+  if (lexer->getCurToken() != TOK_LPAREN) {
+    resSpec->addErr(diag->addErr(ERR_EXP_LPAREN, lexer->getCursor() - 1));
+    return;
+  }
+
+  resSpec->posLParen = lexer->getCursor() - 1;
+  lexer->getNextToken(); // consume '('
+
+  // Resources
+  resSpec->resources = spResources(new Resources);
+  parseResources(resSpec->resources);
+  if (resSpec->resources->err) {
+    resSpec->addErr(-1);
+    return;
+  }
+
+  // [;]
+  if (lexer->getCurToken() == TOK_SEMICOLON) {
+    resSpec->posSemiColon = lexer->getCursor() - 1;
+    lexer->getNextToken(); // consume ';'
+  }
+
+  // ')'
+  if (lexer->getCurToken() != TOK_RPAREN) {
+    resSpec->addErr(diag->addErr(ERR_EXP_RPAREN, lexer->getCursor() - 1));
+    return;
+  }
+
+  resSpec->posRParen = lexer->getCursor() - 1;
+  lexer->getNextToken(); // consume ')'
+}
+
 /// Selector:
 ///   . Identifier [Arguments]
 ///   . ExplicitGenericInvocation
@@ -4236,6 +4337,7 @@ void Parser::parseStatement(spStatement &stmt) {
       lexer->getCurToken()), lexer->getCurToken()));
     lexer->getNextToken(); // consume 'try'
 
+    // (16) try Block ( Catches | [Catches] Finally )
     if (lexer->getCurToken() == TOK_LCURLY_BRACKET) {
       stmt->opt = Statement::OPT_TRY_BLOCK;
 
@@ -4269,9 +4371,42 @@ void Parser::parseStatement(spStatement &stmt) {
       return;
     }
 
-    // TODO: (17)
+    // (17) try ResourceSpecification Block [Catches] [Finally]
+    // ResourceSpecification
+    stmt->resSpec = spResourceSpecification(new ResourceSpecification);
+    parseResourceSpecification(stmt->resSpec);
+    if (stmt->resSpec->err) {
+      stmt->addErr(-1);
+      return;
+    }
 
-    stmt->addErr(-1);
+    // Block
+    stmt->block = spBlock(new Block);
+    parseBlock(stmt->block);
+    if (stmt->block->err) {
+      stmt->addErr(-1);
+      return;
+    }
+
+    // [Catches]
+    if (lexer->getCurToken() == TOK_KEY_CATCH) {
+      stmt->catches = spCatches(new Catches);
+      parseCatches(stmt->catches);
+      if (stmt->catches->err) {
+	stmt->addErr(-1);
+	return;
+      }
+    }
+
+    // [Finally]
+    if (lexer->getCurToken() == TOK_KEY_FINALLY) {
+      stmt->finally = spFinally(new Finally);
+      parseFinally(stmt->finally);
+      if (stmt->finally->err) {
+	stmt->addErr(-1);
+      }
+    }
+
     return;
   }
 
@@ -5447,7 +5582,7 @@ void Parser::parseFormalParameters(spFormalParameters &formParams) {
 /// FormalParameterDecls: {VariableModifier} Type FormalParameterDeclsRest
 void Parser::parseFormalParameterDecls(spFormalParameterDecls &formParamDecls) {
   // {VariableModifier}
-  formParamDecls->varModifier = spVariableModifier(new VariableModifier());
+  formParamDecls->varModifier = spVariableModifier(new VariableModifier);
   parseVariableModifier(formParamDecls->varModifier);
 
   // Type

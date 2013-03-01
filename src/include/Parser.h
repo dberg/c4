@@ -180,6 +180,9 @@ class Parser {
   void parseQualifiedIdentifier(spQualifiedIdentifier &qualifiedId);
   void parseQualifiedIdentifierList(spQualifiedIdentifierList &qualifiedIdList);
   void parseReferenceType(spReferenceType &refType);
+  void parseResource(spResource &res);
+  void parseResources(spResources &resources);
+  void parseResourceSpecification(spResourceSpecification &resSpec);
   void parseSelector(spSelector &selector);
   void parseStatement(spStatement &stmt);
   void parseStatementExpression(spStatementExpression &stmtExpr);
