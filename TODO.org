@@ -1,8 +1,6 @@
-- [ ] Improve AST structures with Unions
-- [ ] Export Symbol table and helper mapper to elisp (pos -> symbol table)
-- [ ] Semantically invalid.
-  - [ ] @ann(k = <MyRefType> super())
-    Check Primary option 6. The same expression is valid in a different context:
-    class X { public <T> X() {} }
-    class Y extends X { public Y() { <Integer> super(); } }
+- Semantically invalid.
+  @ann(k = <MyRefType> super())
+  Check Primary option 6. The same expression is valid in a different context:
+  class X { public <T> X() {} }
+  class Y extends X { public Y() { <Integer> super(); } }
 
