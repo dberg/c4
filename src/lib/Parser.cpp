@@ -370,7 +370,6 @@ void Parser::parseAnnotationMethodOrConstantRest(
 
   // AnnotationMethodRest
   if (lexer->getCurToken() == TOK_LPAREN) {
-    // TODO:
     methodOrConstRest->opt
       = AnnotationMethodOrConstantRest::OPT_ANNOTATION_METHOD_REST;
     methodOrConstRest->methRest = spAnnotationMethodRest(
