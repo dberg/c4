@@ -252,6 +252,9 @@ typedef boost::shared_ptr<struct QualifiedIdentifierList>
   spQualifiedIdentifierList;
 typedef boost::shared_ptr<struct ReferenceType> spReferenceType;
 typedef boost::shared_ptr<struct ReferenceTypeTriplet> spReferenceTypeTriplet;
+typedef boost::shared_ptr<struct Resource> spResource;
+typedef boost::shared_ptr<struct Resources> spResources;
+typedef boost::shared_ptr<struct ResourceSpecification> spResourceSpecification;
 typedef boost::shared_ptr<struct Selector> spSelector;
 typedef boost::shared_ptr<struct Statement> spStatement;
 typedef boost::shared_ptr<struct StatementExpression> spStatementExpression;
@@ -728,6 +731,36 @@ struct ReferenceTypeTriplet {
   ReferenceTypeTriplet() : posPeriod(0) {}
 };
 
+/// Resource:
+///   {VariableModifier} ReferenceType VariableDeclaratorId = Expression
+struct Resource : ASTError {
+  unsigned posEquals;
+  spVariableModifier varModifier;
+  spReferenceType refType;
+  spVariableDeclaratorId varDeclId;
+  spExpression expr;
+
+  Resource() : posEquals(0) {}
+};
+
+/// Resources:
+///   Resource { ; Resource }
+struct Resources : ASTError {
+  spResource res;
+  std::vector<std::pair<unsigned, spResource> > pairs;
+};
+
+/// ResourceSpecification:
+///   '(' Resources [;] ')'
+struct ResourceSpecification : ASTError {
+  unsigned posLParen;
+  unsigned posRParen;
+  unsigned posSemiColon;
+  spResources resources;
+
+  ResourceSpecification() : posLParen(0), posRParen(0), posSemiColon(0) {}
+};
+
 /// Selector:
 ///   . Identifier [Arguments]
 ///   . ExplicitGenericInvocation
@@ -819,7 +852,7 @@ struct Statement : ASTError {
 
   StatementOpt opt;
 
-  // shared 1,15,16
+  // shared 1,15,16,17
   spBlock block;
 
   // shared 2,4,6,9,11,12,13,14
@@ -895,10 +928,15 @@ struct Statement : ASTError {
   // (15) synchronized ParExpression Block
   spTokenExp tokSync;
 
-  // (16) try Block ( Catches | [Catches] Finally )
+  // shared 16,17
   spTokenExp tokTry;
   spCatches catches;
   spFinally finally;
+
+  // (16) try Block ( Catches | [Catches] Finally )
+
+  // (17) try ResourceSpecification Block [Catches] [Finally]
+  spResourceSpecification resSpec;
 
   Statement()
     : opt(OPT_UNDEFINED), posSemiColon(0), posLCBrace(0), posRCBrace(0),
