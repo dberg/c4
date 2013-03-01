@@ -4683,7 +4683,6 @@ void Parser::parseClassOrInterfaceDeclaration(
     return;
   }
 
-  // TODO: handle error
   st.scopePop();
 }
 
