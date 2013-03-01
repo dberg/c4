@@ -1170,7 +1170,20 @@ void Parser::parseEnumDeclaration(spEnumDeclaration &enumDecl) {
 
   lexer->getNextToken(); // consume Identifier
 
-  // TODO: [implements TypeList]
+  // [implements TypeList]
+  if (lexer->getCurToken() == TOK_KEY_IMPLEMENTS) {
+    enumDecl->tokImpl = spTokenExp(new TokenExp(
+      lexer->getCursor() - tokenUtil.getTokenLength(
+        lexer->getCurToken()), lexer->getCurToken()));
+    lexer->getNextToken(); // consume 'implements'
+
+    enumDecl->typeList = spTypeList(new TypeList);
+    parseTypeList(enumDecl->typeList);
+    if (enumDecl->typeList->err) {
+      enumDecl->addErr(-1);
+      return;
+    }
+  }
 
   enumDecl->enumBody = spEnumBody(new EnumBody);
   parseEnumBody(enumDecl->enumBody);
