@@ -5006,8 +5006,13 @@ void Parser::parseClassBodyDeclaration(spClassBodyDeclaration &decl) {
     return;
   }
 
-  // TODO:
   // (1) ;
+  if (lexer->getCurToken() == TOK_SEMICOLON) {
+    decl->opt = ClassBodyDeclaration::OPT_SEMICOLON;
+    decl->posSemiColon = lexer->getCursor() - 1;
+    lexer->getNextToken(); // consume ';'
+    return;
+  }
 
   // Error
   decl->addErr(-1);

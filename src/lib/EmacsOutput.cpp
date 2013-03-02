@@ -429,9 +429,10 @@ void EmacsOutput::setClassBody(const spClassBody &classBody) {
   }
 }
 
-/// We have 2 options export:
+/// We have 3 options export:
 ///   (djp-member-decl-modifier-member-decl ...) -> {Modifier} MemberDecl
 ///   (djp-member-decl-modifier-static-block ...) -> [static] Block
+///   (djp-op ...)
 void EmacsOutput::setClassBodyDeclaration(const spClassBodyDeclaration &decl) {
   if (decl->opt == ClassBodyDeclaration::OPT_MODIFIER_MEMBER_DECL) {
     outSH += "(djp-member-decl-modifier-member-decl ";
@@ -459,6 +460,12 @@ void EmacsOutput::setClassBodyDeclaration(const spClassBodyDeclaration &decl) {
 
     outSH += ")";
     return;
+  }
+
+  if (decl->opt == ClassBodyDeclaration::OPT_SEMICOLON) {
+    if (decl->posSemiColon) {
+      setOp(decl->posSemiColon);
+    }
   }
 }
 
