@@ -158,6 +158,9 @@ class EmacsOutput {
   void setQualifiedIdentifierList(
     const spQualifiedIdentifierList &qualifiedIdList);
   void setReferenceType(const spReferenceType &refType);
+  void setResource(const spResource &res);
+  void setResources(const spResources &resources);
+  void setResourceSpecification(const spResourceSpecification &resSpec);
   void setSelector(const spSelector &selector);
   void setStatement(const spStatement &stmt);
   void setStatementExpression(const spStatementExpression &stmtExpr);

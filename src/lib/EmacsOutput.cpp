@@ -2107,6 +2107,57 @@ void EmacsOutput::setReferenceType(const spReferenceType &refType) {
   }
 }
 
+void EmacsOutput::setResource(const spResource &res) {
+  if (res->varModifier) {
+    setVariableModifier(res->varModifier);
+  }
+
+  if (res->refType) {
+    setReferenceType(res->refType);
+  }
+
+  if (res->varDeclId) {
+    setVariableDeclaratorId(res->varDeclId);
+  }
+
+  if (res->posEquals) {
+    setOp(res->posEquals);
+  }
+
+  if (res->expr) {
+    setExpression(res->expr);
+  }
+}
+
+void EmacsOutput::setResources(const spResources &resources) {
+  if (resources->res) {
+    setResource(resources->res);
+  }
+
+  for (unsigned i = 0; i < resources->pairs.size(); i++) {
+    setOp(resources->pairs[i].first);
+    setResource(resources->pairs[i].second);
+  }
+}
+
+void EmacsOutput::setResourceSpecification(const spResourceSpecification &resSpec) {
+  if (resSpec->posLParen) {
+    setOp(resSpec->posLParen);
+  }
+
+  if (resSpec->resources) {
+    setResources(resSpec->resources);
+  }
+
+  if (resSpec->posSemiColon) {
+    setOp(resSpec->posSemiColon);
+  }
+
+  if (resSpec->posRParen) {
+    setOp(resSpec->posRParen);
+  }
+}
+
 void EmacsOutput::setSelector(const spSelector &selector) {
   if (selector->opt == Selector::OPT_IDENTIFIER_ARGUMENTS) {
     if (selector->posPeriod) { setOp(selector->posPeriod); }
@@ -2160,92 +2211,43 @@ void EmacsOutput::setSelector(const spSelector &selector) {
 
 void EmacsOutput::setStatement(const spStatement &stmt) {
   if (stmt->opt == Statement::OPT_BLOCK) {
-    if (stmt->block) {
-      setBlock(stmt->block);
-    }
+    if (stmt->block) { setBlock(stmt->block); }
     return;
   }
 
   if (stmt->opt == Statement::OPT_SEMI_COLON) {
-    if (stmt->posSemiColon) {
-      setOp(stmt->posSemiColon);
-    }
-
+    if (stmt->posSemiColon) { setOp(stmt->posSemiColon); }
     return;
   }
 
   if (stmt->opt == Statement::OPT_ID_STMT) {
-    if (stmt->id) {
-      setIdentifier(stmt->id);
-    }
-
-    if (stmt->posColon) {
-      setOp(stmt->posColon);
-    }
-
-    if (stmt->stmt) {
-      setStatement(stmt->stmt);
-    }
-
+    if (stmt->id) { setIdentifier(stmt->id); }
+    if (stmt->posColon) { setOp(stmt->posColon); }
+    if (stmt->stmt) { setStatement(stmt->stmt); }
     return;
   }
 
   if (stmt->opt == Statement::OPT_STMT_EXPR) {
-    if (stmt->stmtExpr) {
-      setStatementExpression(stmt->stmtExpr);
-    }
-
-    if (stmt->posSemiColon) {
-      setOp(stmt->posSemiColon);
-    }
+    if (stmt->stmtExpr) { setStatementExpression(stmt->stmtExpr); }
+    if (stmt->posSemiColon) { setOp(stmt->posSemiColon); }
     return;
   }
 
   if (stmt->opt == Statement::OPT_IF) {
-    if (stmt->tokIf) {
-      setKeyword(stmt->tokIf);
-    }
-
-    if (stmt->parExpr) {
-      setParExpression(stmt->parExpr);
-    }
-
-    if (stmt->stmtIf) {
-      setStatement(stmt->stmtIf);
-    }
-
-    if (stmt->tokElse) {
-      setKeyword(stmt->tokElse);
-    }
-
-    if (stmt->stmtElse) {
-      setStatement(stmt->stmtElse);
-    }
-
+    if (stmt->tokIf) { setKeyword(stmt->tokIf); }
+    if (stmt->parExpr) { setParExpression(stmt->parExpr); }
+    if (stmt->stmtIf) { setStatement(stmt->stmtIf); }
+    if (stmt->tokElse) { setKeyword(stmt->tokElse); }
+    if (stmt->stmtElse) { setStatement(stmt->stmtElse); }
     return;
   }
 
   if (stmt->opt == Statement::OPT_ASSERT) {
-    if (stmt->tokAssert) {
-      setKeyword(stmt->tokAssert);
-    }
-
-    if (stmt->exprAssert1) {
-      setExpression(stmt->exprAssert1);
-    }
-
-    if (stmt->posColon) {
-      setOp(stmt->posColon);
-    }
-
-    if (stmt->exprAssert2) {
-      setExpression(stmt->exprAssert2);
-    }
-
-    if (stmt->posSemiColon) {
-      setOp(stmt->posSemiColon);
-    }
-
+    if (stmt->tokAssert) { setKeyword(stmt->tokAssert); }
+    if (stmt->exprAssert1) { setExpression(stmt->exprAssert1); }
+    if (stmt->posColon) { setOp(stmt->posColon); }
+    if (stmt->exprAssert2) { setExpression(stmt->exprAssert2); }
+    if (stmt->posSemiColon) { setOp(stmt->posSemiColon); }
     return;
   }
 
@@ -2283,65 +2285,29 @@ void EmacsOutput::setStatement(const spStatement &stmt) {
   }
 
   if (stmt->opt == Statement::OPT_DO) {
-    if (stmt->tokDo) {
-      setKeyword(stmt->tokDo);
-    }
-
-    if (stmt->stmtDo) {
-      setStatement(stmt->stmtDo);
-    }
-
-    if (stmt->tokWhile) {
-      setKeyword(stmt->tokWhile);
-    }
-
-    if (stmt->parExpr) {
-      setParExpression(stmt->parExpr);
-    }
-
-    if (stmt->posSemiColon) {
-      setOp(stmt->posSemiColon);
-    }
+    if (stmt->tokDo) { setKeyword(stmt->tokDo); }
+    if (stmt->stmtDo) { setStatement(stmt->stmtDo); }
+    if (stmt->tokWhile) { setKeyword(stmt->tokWhile); }
+    if (stmt->parExpr) { setParExpression(stmt->parExpr); }
+    if (stmt->posSemiColon) { setOp(stmt->posSemiColon); }
 
     return;
   }
 
   if (stmt->opt == Statement::OPT_FOR) {
-    if (stmt->tokFor) {
-      setKeyword(stmt->tokFor);
-    }
-
-    if (stmt->posLParen) {
-      setOp(stmt->posLParen);
-    }
-
-    if (stmt->forCtrl) {
-      setForControl(stmt->forCtrl);
-    }
-
-    if (stmt->posRParen) {
-      setOp(stmt->posRParen);
-    }
-
-    if (stmt->stmtFor) {
-      setStatement(stmt->stmtFor);
-    }
+    if (stmt->tokFor) { setKeyword(stmt->tokFor); }
+    if (stmt->posLParen) { setOp(stmt->posLParen); }
+    if (stmt->forCtrl) { setForControl(stmt->forCtrl); }
+    if (stmt->posRParen) { setOp(stmt->posRParen); }
+    if (stmt->stmtFor) { setStatement(stmt->stmtFor); }
 
     return;
   }
 
   if (stmt->opt == Statement::OPT_BREAK) {
-    if (stmt->tokBreak) {
-      setKeyword(stmt->tokBreak);
-    }
-
-    if (stmt->id) {
-      setIdentifier(stmt->id);
-    }
-
-    if (stmt->posSemiColon) {
-      setOp(stmt->posSemiColon);
-    }
+    if (stmt->tokBreak) { setKeyword(stmt->tokBreak); }
+    if (stmt->id) { setIdentifier(stmt->id); }
+    if (stmt->posSemiColon) { setOp(stmt->posSemiColon); }
     return;
   }
 
@@ -2353,33 +2319,16 @@ void EmacsOutput::setStatement(const spStatement &stmt) {
   }
 
   if (stmt->opt == Statement::OPT_RETURN) {
-    if (stmt->tokReturn) {
-      setKeyword(stmt->tokReturn);
-    }
-
-    if (stmt->exprReturn) {
-      setExpression(stmt->exprReturn);
-    }
-
-    if (stmt->posSemiColon) {
-      setOp(stmt->posSemiColon);
-    }
-
+    if (stmt->tokReturn) { setKeyword(stmt->tokReturn); }
+    if (stmt->exprReturn) { setExpression(stmt->exprReturn); }
+    if (stmt->posSemiColon) { setOp(stmt->posSemiColon); }
     return;
   }
 
   if (stmt->opt == Statement::OPT_THROW) {
-    if (stmt->tokThrow) {
-      setKeyword(stmt->tokThrow);
-    }
-
-    if (stmt->throwExpr) {
-      setExpression(stmt->throwExpr);
-    }
-
-    if (stmt->posSemiColon) {
-      setOp(stmt->posSemiColon);
-    }
+    if (stmt->tokThrow) { setKeyword(stmt->tokThrow); }
+    if (stmt->throwExpr) { setExpression(stmt->throwExpr); }
+    if (stmt->posSemiColon) { setOp(stmt->posSemiColon); }
 
     return;
   }
@@ -2401,7 +2350,11 @@ void EmacsOutput::setStatement(const spStatement &stmt) {
   }
 
   if (stmt->opt == Statement::OPT_TRY_RESOURCE) {
-    // TODO:
+    if (stmt->tokTry) { setKeyword(stmt->tokTry); }
+    if (stmt->resSpec) { setResourceSpecification(stmt->resSpec); }
+    if (stmt->block) { setBlock(stmt->block); }
+    if (stmt->catches) { setCatches(stmt->catches); }
+    if (stmt->finally) { setFinally(stmt->finally); }
     return;
   }
 }
