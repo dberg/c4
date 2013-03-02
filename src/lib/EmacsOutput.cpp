@@ -2410,34 +2410,27 @@ void EmacsOutput::setSwitchBlockStatementGroup(
 
 void EmacsOutput::setSwitchLabel(const spSwitchLabel &label) {
   if (label->opt == SwitchLabel::OPT_EXPRESSION) {
-    if (label->tokCase) {
-      setKeyword(label->tokCase);
-    }
-
-    if (label->expr) {
-      setExpression(label->expr);
-    }
-
-    if (label->posColon) {
-      setOp(label->posColon);
-    }
-
+    if (label->tokCase) { setKeyword(label->tokCase); }
+    if (label->expr) { setExpression(label->expr); }
+    if (label->posColon) { setOp(label->posColon); }
     return;
   }
 
   if (label->opt == SwitchLabel::OPT_ENUM) {
-    // TODO:
-    // return;
+    if (label->tokCase) { setKeyword(label->tokCase); }
+
+    if (label->enumConstName && label->enumConstName->id) {
+      setIdentifier(label->enumConstName->id);
+    }
+
+    if (label->posColon) { setOp(label->posColon); }
+
+    return;
   }
 
   if (label->opt == SwitchLabel::OPT_DEFAULT) {
-    if (label->tokCase) {
-      setKeyword(label->tokCase);
-    }
-
-    if (label->posColon) {
-      setOp(label->posColon);
-    }
+    if (label->tokCase) { setKeyword(label->tokCase); }
+    if (label->posColon) { setOp(label->posColon); }
   }
 }
 
