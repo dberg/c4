@@ -164,6 +164,7 @@ typedef boost::shared_ptr<struct EnumBody> spEnumBody;
 typedef boost::shared_ptr<struct EnumBodyDeclarations> spEnumBodyDeclarations;
 typedef boost::shared_ptr<struct EnumConstant> spEnumConstant;
 typedef boost::shared_ptr<struct EnumConstants> spEnumConstants;
+typedef boost::shared_ptr<struct EnumConstantName> spEnumConstantName;
 typedef boost::shared_ptr<struct EnumDeclaration> spEnumDeclaration;
 typedef boost::shared_ptr<struct ExplicitGenericInvocation>
   spExplicitGenericInvocation;
@@ -1057,6 +1058,12 @@ struct EnumConstant : ASTError {
 struct EnumConstants : ASTError {
   spEnumConstant enumConst;
   std::vector<std::pair<unsigned, spEnumConstant> > pairs;
+};
+
+/// EnumConstantName:
+///   Identifier
+struct EnumConstantName : ASTError {
+  spIdentifier id;
 };
 
 /// EnumDeclaration:
@@ -2084,8 +2091,7 @@ struct SwitchLabel : ASTError {
   spTokenExp tokCase;
   spTokenExp tokDefault;
   spExpression expr;
-  // TODO: EnumConstantName
-  //spEnumConstantName enumConstName;
+  spEnumConstantName enumConstName;
 
   SwitchLabel() : opt(OPT_UNDEFINED), posColon(0) {}
 };

@@ -3559,7 +3559,7 @@ void Parser::parsePrimaryVoidClass(spPrimaryVoidClass &primaryVoidClass) {
   lexer->getNextToken(); // consume 'class'
 }
 
-/// QualifiedIdentifier: Identifer { . Identifier }
+/// QualifiedIdentifier: Identifier { . Identifier }
 void Parser::parseQualifiedIdentifier(
   spQualifiedIdentifier &qualifiedId) {
 
@@ -5834,8 +5834,25 @@ void Parser::parseSwitchLabel(spSwitchLabel &label) {
       lexer->getCurToken()), lexer->getCurToken()));
   lexer->getNextToken(); // consume 'case'
 
+  // Try the production rule
+  // (2) case EnumConstantName :
+  State state;
   if (lexer->getCurToken() == TOK_IDENTIFIER) {
-    // TODO: check if it's an EnumConstantName.
+    saveState(state);
+    spIdentifier id = spIdentifier(new Identifier(
+      lexer->getCurTokenIni(), lexer->getCurTokenStr()));
+    lexer->getNextToken(); // consume Identifier
+    if (lexer->getCurToken() == TOK_OP_COLON) {
+      label->opt = SwitchLabel::OPT_ENUM;
+      label->enumConstName = spEnumConstantName(new EnumConstantName);
+      label->enumConstName->id = id;
+      label->posColon = lexer->getCursor() - 1;
+      lexer->getNextToken(); // consume ':'
+      return;
+    }
+
+    // We restore the state and try the first production rule
+    restoreState(state);
   }
 
   // (1) case Expression :
