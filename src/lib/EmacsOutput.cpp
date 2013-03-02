@@ -2175,7 +2175,18 @@ void EmacsOutput::setStatement(const spStatement &stmt) {
   }
 
   if (stmt->opt == Statement::OPT_ID_STMT) {
-    // TODO:
+    if (stmt->id) {
+      setIdentifier(stmt->id);
+    }
+
+    if (stmt->posColon) {
+      setOp(stmt->posColon);
+    }
+
+    if (stmt->stmt) {
+      setStatement(stmt->stmt);
+    }
+
     return;
   }
 
