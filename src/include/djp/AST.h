@@ -866,7 +866,7 @@ struct Statement : ASTError {
   spIdentifier id;
 
   // shared 3,6
-  unsigned int posColon;
+  unsigned posColon;
 
   // shared 8,9
   spTokenExp tokWhile;

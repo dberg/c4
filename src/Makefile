@@ -58,25 +58,16 @@ directories:
 
 # main djp
 $(bin)/djp: $(obj)/CmdInput.o \
-            $(obj)/Diagnosis.o \
             $(obj)/File.o \
-            $(obj)/Lexer.o \
-            $(obj)/LiteralSupport.o \
-            $(obj)/Parser.o \
             $(obj)/EmacsOutput.o \
             $(obj)/SourceCodeStream.o \
             $(obj)/SymbolTable.o \
-            $(obj)/djp.o
+            $(obj)/djp.o \
+            $(obj)/libdjp.a
 	$(CXX) $(obj)/CmdInput.o \
-               $(obj)/Diagnosis.o \
                $(obj)/File.o \
-               $(obj)/Lexer.o \
-               $(obj)/LiteralSupport.o \
-               $(obj)/Parser.o \
                $(obj)/EmacsOutput.o \
-               $(obj)/SourceCodeStream.o \
-               $(obj)/SymbolTable.o \
-               $(CFLAGS) $(INC) $(obj)/djp.o -o $@
+               $(CFLAGS) $(INC) $(obj)/djp.o -o $@ $(obj)/libdjp.a
 
 # modules
 $(obj)/CmdInput.o: $(libdir)/CmdInput.cpp $(incdir)/djp/CmdInput.h
@@ -128,30 +119,29 @@ $(obj)/SymbolTable.o: $(libdir)/SymbolTable.cpp \
 $(obj)/djp.o: $(libdir)/djp.cpp
 	$(CXX) $(CFLAGS) $(INC) -c $< -o $@
 
+$(obj)/libdjp.a: $(obj)/Diagnosis.o \
+                 $(obj)/Lexer.o \
+                 $(obj)/LiteralSupport.o \
+                 $(obj)/Parser.o \
+                 $(obj)/SourceCodeStream.o \
+                 $(obj)/SymbolTable.o
+	ar -rv $@ $+
+
 # tests
 $(bin)/tests: $(test_libdir)/ParserTest.cpp \
               $(test_libdir)/SymbolTableTest.cpp \
               $(test_libdir)/EmacsOutputTest.cpp \
-              $(obj)/Lexer.o \
-              $(obj)/LiteralSupport.o \
-              $(obj)/Parser.o \
               $(obj)/EmacsOutput.o \
               $(obj)/Diagnosis.o \
-              $(obj)/SourceCodeStream.o \
-              $(obj)/SymbolTable.o \
+              $(obj)/libdjp.a \
               $(gtest_obj)/libgtest.a
 
-	$(CXX) -g3 $(INC) -I$(gtest_inc) $(obj)/Lexer.o \
-                                     $(obj)/LiteralSupport.o \
-                                     $(obj)/Parser.o \
-                                     $(obj)/EmacsOutput.o \
-                                     $(obj)/Diagnosis.o \
-                                     $(obj)/SourceCodeStream.o \
-                                     $(obj)/SymbolTable.o \
+	$(CXX) -g3 $(INC) -I$(gtest_inc) $(obj)/EmacsOutput.o \
                                      $(test_libdir)/ParserTest.cpp \
                                      $(test_libdir)/SymbolTableTest.cpp \
                                      $(test_libdir)/EmacsOutputTest.cpp \
                                      -o $@ \
+                                     $(obj)/libdjp.a \
                                      $(gtest_obj)/libgtest.a \
                                      -lpthread
 
