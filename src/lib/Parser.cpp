@@ -4911,7 +4911,7 @@ void Parser::parseClassBody(spClassBody &classBody) {
   lexer->getNextToken(); // consume '{'
 
   // { ClassBodyDeclaration }
-  parseClassBodyDeclarationsHelper(classBody->decls);
+  parseClassBodyDeclarationsHelper(classBody->classBodyDecls);
 
   // '}'
   if (lexer->getCurToken() != TOK_RCURLY_BRACKET) {

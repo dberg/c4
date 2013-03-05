@@ -424,8 +424,8 @@ void EmacsOutput::setCharacterLiteral(const spCharacterLiteral &charLiteral) {
 }
 
 void EmacsOutput::setClassBody(const spClassBody &classBody) {
-  for (std::size_t i = 0; i < classBody->decls.size(); i++) {
-    setClassBodyDeclaration(classBody->decls[i]);
+  for (std::size_t i = 0; i < classBody->classBodyDecls.size(); i++) {
+    setClassBodyDeclaration(classBody->classBodyDecls[i]);
   }
 }
 

@@ -448,7 +448,7 @@ struct NormalInterfaceDeclaration : ASTError {
 struct ClassBody : ASTError {
   unsigned posLCBrace;
   unsigned posRCBrace;
-  std::vector<spClassBodyDeclaration> decls;
+  std::vector<spClassBodyDeclaration> classBodyDecls;
 
   ClassBody() : posLCBrace(0), posRCBrace(0) {}
 };
