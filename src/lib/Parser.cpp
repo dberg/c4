@@ -1251,7 +1251,7 @@ void Parser::parseBlockStatement(spBlockStatement &blockStmt) {
     parseClassOrInterfaceDeclaration(decl);
     if (decl->err == false) {
       blockStmt->opt = BlockStatement::OPT_CLASS_OR_INTERFACE_DECL;
-      blockStmt->decl = decl;
+      blockStmt->classOrIntDecl = decl;
       return;
     }
 
@@ -4618,19 +4618,19 @@ std::vector<spTypeDeclaration> Parser::parseTypeDeclarations(
     modifier->annotations = annotations;
 
     spTypeDeclaration typeDecl = spTypeDeclaration(new TypeDeclaration);
-    typeDecl->decl = spClassOrInterfaceDeclaration(
+    typeDecl->classOrIntDecl = spClassOrInterfaceDeclaration(
       new ClassOrInterfaceDeclaration);
-    typeDecl->decl->modifier = modifier;
+    typeDecl->classOrIntDecl->modifier = modifier;
 
-    parseClassOrInterfaceDeclaration(typeDecl->decl);
+    parseClassOrInterfaceDeclaration(typeDecl->classOrIntDecl);
     typeDecls.push_back(typeDecl);
   }
 
   while (isValidInitTokenOfTypeDeclaration(lexer->getCurToken())) {
     spTypeDeclaration typeDecl = spTypeDeclaration(new TypeDeclaration);
-    typeDecl->decl = spClassOrInterfaceDeclaration(
+    typeDecl->classOrIntDecl = spClassOrInterfaceDeclaration(
       new ClassOrInterfaceDeclaration);
-    parseClassOrInterfaceDeclaration(typeDecl->decl);
+    parseClassOrInterfaceDeclaration(typeDecl->classOrIntDecl);
     typeDecls.push_back(typeDecl);
   }
 

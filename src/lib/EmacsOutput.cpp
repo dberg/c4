@@ -353,8 +353,8 @@ void EmacsOutput::setBlockStatement(const spBlockStatement &blockStmt) {
   }
 
   if (blockStmt->opt == BlockStatement::OPT_CLASS_OR_INTERFACE_DECL) {
-    if (blockStmt->decl) {
-      setClassOrInterfaceDeclaration(blockStmt->decl);
+    if (blockStmt->classOrIntDecl) {
+      setClassOrInterfaceDeclaration(blockStmt->classOrIntDecl);
     }
     return;
   }
@@ -2499,8 +2499,8 @@ void EmacsOutput::setTypeDeclarations(
   const std::vector<spTypeDeclaration> &typeDecls) {
 
   for (std::size_t i = 0; i < typeDecls.size(); i++) {
-    if (typeDecls[i]->decl) {
-      setClassOrInterfaceDeclaration(typeDecls[i]->decl);
+    if (typeDecls[i]->classOrIntDecl) {
+      setClassOrInterfaceDeclaration(typeDecls[i]->classOrIntDecl);
     }
   }
 }

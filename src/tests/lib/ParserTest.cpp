@@ -38,7 +38,7 @@ TEST(Parser, AnnotationElementValueArray) {
   parser.parse();
 
   spClassOrInterfaceDeclaration decl
-    = parser.compilationUnit->typeDecls[0]->decl;
+    = parser.compilationUnit->typeDecls[0]->classOrIntDecl;
   spAnnotationElement elem = decl->modifier->annotations[0]->elem;
   ASSERT_EQ(AnnotationElement::OPT_ELEMENT_VALUE, elem->opt);
   ASSERT_EQ(ElementValue::OPT_ELEMENT_VALUE_ARRAY_INITIALIZER, elem->value->opt);
@@ -509,9 +509,9 @@ TEST(Parser, ArrayCreatorRest) {
   Parser parser(filename, buffer, diag);
   parser.parse();
 
-  spBlockStatement blockStmt = parser.compilationUnit->typeDecls[0]->decl
-    ->classDecl->nClassDecl->classBody->decls[0]->memberDecl->voidMethDeclRest
-    ->block->blockStmts[0];
+  spBlockStatement blockStmt = parser.compilationUnit->typeDecls[0]
+    ->classOrIntDecl->classDecl->nClassDecl->classBody->decls[0]
+    ->memberDecl->voidMethDeclRest->block->blockStmts[0];
   ASSERT_EQ(BlockStatement::OPT_LOCAL_VAR, blockStmt->opt);
 
   ASSERT_EQ(47, blockStmt->localVar->posSemiColon);
@@ -544,7 +544,7 @@ TEST(Parser, Block) {
   parser.parse();
 
   spBlock block = parser.compilationUnit->typeDecls[0]
-    ->decl->classDecl->nClassDecl->classBody->decls[0]->memberDecl
+    ->classOrIntDecl->classDecl->nClassDecl->classBody->decls[0]->memberDecl
     ->methodOrFieldDecl->methodOrFieldRest->methodDeclRest->block;
   ASSERT_EQ(32, block->posLCBracket);
   ASSERT_EQ(61, block->posRCBracket);
@@ -568,7 +568,7 @@ TEST(Parser, ClassConstructor) {
   parser.parse();
 
   spClassBodyDeclaration classBodyDecl = parser.compilationUnit->typeDecls[0]
-    ->decl->classDecl->nClassDecl->classBody->decls[0];
+    ->classOrIntDecl->classDecl->nClassDecl->classBody->decls[0];
   ASSERT_EQ(ClassBodyDeclaration::OPT_MODIFIER_MEMBER_DECL,
     classBodyDecl->opt);
   ASSERT_EQ(MemberDecl::OPT_IDENTIFIER_CONSTRUCTOR_DECLARATOR_REST,
@@ -585,7 +585,7 @@ TEST(Parser, ClassConstructorAnnotationParameter) {
   parser.parse();
 
   spFormalParameterDecls formParamDecls = parser.compilationUnit->typeDecls[0]
-    ->decl->classDecl->nClassDecl->classBody->decls[0]->memberDecl
+    ->classOrIntDecl->classDecl->nClassDecl->classBody->decls[0]->memberDecl
     ->constDeclRest->formParams->formParamDecls;
   ASSERT_EQ(1, formParamDecls->varModifier->annotations.size());
   ASSERT_EQ(16, formParamDecls->varModifier->annotations[0]->posTokAt);
@@ -599,7 +599,7 @@ TEST(Parser, ClassConstructorParameter) {
   parser.parse();
 
   spFormalParameterDecls formParamDecls = parser.compilationUnit->typeDecls[0]
-    ->decl->classDecl->nClassDecl->classBody->decls[0]->memberDecl
+    ->classOrIntDecl->classDecl->nClassDecl->classBody->decls[0]->memberDecl
     ->constDeclRest->formParams->formParamDecls;
   ASSERT_EQ(Type::OPT_BASIC_TYPE, formParamDecls->type->opt);
   ASSERT_EQ(16, formParamDecls->type->basicType->token->pos);
@@ -617,7 +617,7 @@ TEST(Parser, ClassConstructorParameterArray) {
   parser.parse();
 
   spFormalParameterDecls formParamDecls = parser.compilationUnit->typeDecls[0]
-    ->decl->classDecl->nClassDecl->classBody->decls[0]->memberDecl
+    ->classOrIntDecl->classDecl->nClassDecl->classBody->decls[0]->memberDecl
     ->constDeclRest->formParams->formParamDecls;
   ASSERT_EQ(1, formParamDecls->type->arrayDepth.size());
   ASSERT_EQ(0, formParamDecls->formParamDeclsRest->varDeclId->arrayDepth.size());
@@ -631,7 +631,7 @@ TEST(Parser, ClassConstructorParameterEllipsis) {
   parser.parse();
 
   spFormalParameterDeclsRest formParamDeclsRest = parser.compilationUnit
-    ->typeDecls[0]->decl->classDecl->nClassDecl->classBody->decls[0]
+    ->typeDecls[0]->classOrIntDecl->classDecl->nClassDecl->classBody->decls[0]
     ->memberDecl->constDeclRest->formParams->formParamDecls->formParamDeclsRest;
   ASSERT_EQ(FormalParameterDeclsRest::OPT_VAR_ARITY, formParamDeclsRest->opt);
   ASSERT_EQ(24, formParamDeclsRest->varDeclId->id->pos);
@@ -646,7 +646,7 @@ TEST(Parser, ClassConstructorParameters) {
   parser.parse();
 
   spFormalParameterDecls formParamDecls = parser.compilationUnit->typeDecls[0]
-    ->decl->classDecl->nClassDecl->classBody->decls[0]->memberDecl
+    ->classOrIntDecl->classDecl->nClassDecl->classBody->decls[0]->memberDecl
     ->constDeclRest->formParams->formParamDecls;
 
   // param 1
@@ -677,7 +677,7 @@ TEST(Parser, ClassDeclaration) {
   parser.parse();
 
   spClassOrInterfaceDeclaration decl
-    = parser.compilationUnit->typeDecls[0]->decl;
+    = parser.compilationUnit->typeDecls[0]->classOrIntDecl;
 
   ASSERT_EQ(1, parser.compilationUnit->typeDecls.size());
   ASSERT_EQ(1, decl->modifier->annotations.size());
@@ -717,7 +717,7 @@ TEST(Parser, ClassTypeParameters) {
   parser.parse();
 
   spNormalClassDeclaration nClassDecl = parser.compilationUnit->typeDecls[0]
-    ->decl->classDecl->nClassDecl;
+    ->classOrIntDecl->classDecl->nClassDecl;
 
   ASSERT_EQ(7, nClassDecl->typeParams->posLt);
   ASSERT_EQ(11, nClassDecl->typeParams->posGt);
@@ -767,8 +767,8 @@ TEST(Parser, Enum) {
   Parser parser(filename, buffer, diag);
   parser.parse();
 
-  spEnumDeclaration enumDecl = parser.compilationUnit->typeDecls[0]->decl
-    ->classDecl->enumDecl;
+  spEnumDeclaration enumDecl = parser.compilationUnit->typeDecls[0]
+    ->classOrIntDecl->classDecl->enumDecl;
   ASSERT_EQ(0, enumDecl->tokEnum->pos);
   ASSERT_EQ(TOK_KEY_ENUM, enumDecl->tokEnum->type);
   ASSERT_EQ(5, enumDecl->id->pos);
@@ -818,8 +818,8 @@ TEST(Parser, EnumConstructor) {
   Parser parser(filename, buffer, diag);
   parser.parse();
 
-  spEnumDeclaration enumDecl = parser.compilationUnit->typeDecls[0]->decl
-    ->classDecl->enumDecl;
+  spEnumDeclaration enumDecl = parser.compilationUnit->typeDecls[0]
+    ->classOrIntDecl->classDecl->enumDecl;
 
   ASSERT_EQ(7, enumDecl->enumBody->posLCBrace);
   ASSERT_EQ(72, enumDecl->enumBody->posRCBrace);
@@ -895,9 +895,9 @@ TEST(Parser, ExpressionInfixOp) {
   Parser parser(filename, buffer, diag);
   parser.parse();
 
-  spStatement stmt = parser.compilationUnit->typeDecls[0]->decl->classDecl
-    ->nClassDecl->classBody->decls[0]->memberDecl->voidMethDeclRest->block
-    ->blockStmts[0]->stmt;
+  spStatement stmt = parser.compilationUnit->typeDecls[0]->classOrIntDecl
+    ->classDecl->nClassDecl->classBody->decls[0]->memberDecl
+    ->voidMethDeclRest->block->blockStmts[0]->stmt;
   ASSERT_EQ(53, stmt->posSemiColon);
 
   spArguments args = stmt->stmtExpr->expr->expr1->expr2->expr3
@@ -918,8 +918,8 @@ TEST(Parser, Expression2Rest) {
   Parser parser(filename, buffer, diag);
   parser.parse();
 
-  spBlockStatement blockStmt = parser.compilationUnit->typeDecls[0]->decl
-    ->classDecl->nClassDecl->classBody->decls[0]->memberDecl
+  spBlockStatement blockStmt = parser.compilationUnit->typeDecls[0]
+    ->classOrIntDecl->classDecl->nClassDecl->classBody->decls[0]->memberDecl
     ->voidMethDeclRest->block->blockStmts[0];
 
   ASSERT_EQ(BlockStatement::OPT_ID_STMT, blockStmt->opt);
@@ -977,9 +977,9 @@ TEST(Parser, Expression3Opt2) {
   Parser parser(filename, buffer, diag);
   parser.parse();
 
-  spStatement stmt = parser.compilationUnit->typeDecls[0]->decl->classDecl
-    ->nClassDecl->classBody->decls[0]->memberDecl->voidMethDeclRest->block
-    ->blockStmts[0]->stmt;
+  spStatement stmt = parser.compilationUnit->typeDecls[0]->classOrIntDecl
+    ->classDecl->nClassDecl->classBody->decls[0]->memberDecl
+    ->voidMethDeclRest->block->blockStmts[0]->stmt;
 
   ASSERT_EQ(Statement::OPT_STMT_EXPR, stmt->opt);
   ASSERT_EQ(36, stmt->posSemiColon);
@@ -1037,9 +1037,9 @@ TEST(Parser, ExpressionMultipleAssignment) {
   Parser parser(filename, buffer, diag);
   parser.parse();
 
-  spStatement stmt = parser.compilationUnit->typeDecls[0]->decl->classDecl
-    ->nClassDecl->classBody->decls[0]->memberDecl->voidMethDeclRest->block
-    ->blockStmts[0]->stmt;
+  spStatement stmt = parser.compilationUnit->typeDecls[0]->classOrIntDecl
+    ->classDecl->nClassDecl->classBody->decls[0]->memberDecl
+    ->voidMethDeclRest->block->blockStmts[0]->stmt;
   ASSERT_EQ(Statement::OPT_STMT_EXPR, stmt->opt);
 
   // 'a'
@@ -1110,7 +1110,7 @@ TEST(Parser, FieldDeclaratorWithClassBody) {
   parser.parse();
 
   spMethodOrFieldRest methodOrFieldRest = parser.compilationUnit->typeDecls[0]
-    ->decl->classDecl->nClassDecl->classBody->decls[0]->memberDecl
+    ->classOrIntDecl->classDecl->nClassDecl->classBody->decls[0]->memberDecl
     ->methodOrFieldDecl->methodOrFieldRest;
   ASSERT_EQ(MethodOrFieldRest::OPT_FIELD, methodOrFieldRest->opt);
   ASSERT_EQ(30, methodOrFieldRest->posSemiColon);
@@ -1193,9 +1193,9 @@ TEST(Parser, For) {
   Parser parser(filename, buffer, diag);
   parser.parse();
 
-  spStatement stmt = parser.compilationUnit->typeDecls[0]->decl->classDecl
-    ->nClassDecl->classBody->decls[0]->memberDecl->voidMethDeclRest->block
-    ->blockStmts[0]->stmt;
+  spStatement stmt = parser.compilationUnit->typeDecls[0]->classOrIntDecl
+    ->classDecl->nClassDecl->classBody->decls[0]->memberDecl
+    ->voidMethDeclRest->block->blockStmts[0]->stmt;
   ASSERT_EQ(Statement::OPT_FOR, stmt->opt);
   ASSERT_EQ(25, stmt->posLParen);
   ASSERT_EQ(49, stmt->posRParen);
@@ -1223,9 +1223,9 @@ TEST(Parser, ForBreak) {
   Parser parser(filename, buffer, diag);
   parser.parse();
 
-  spStatement stmt = parser.compilationUnit->typeDecls[0]->decl->classDecl
-    ->nClassDecl->classBody->decls[0]->memberDecl->voidMethDeclRest->block
-    ->blockStmts[0]->stmt;
+  spStatement stmt = parser.compilationUnit->typeDecls[0]->classOrIntDecl
+    ->classDecl->nClassDecl->classBody->decls[0]->memberDecl
+    ->voidMethDeclRest->block->blockStmts[0]->stmt;
   ASSERT_EQ(Statement::OPT_FOR, stmt->opt);
 }
 
@@ -1276,9 +1276,9 @@ TEST(Parser, ForExpr) {
   Parser parser(filename, buffer, diag);
   parser.parse();
 
-  spStatement stmt = parser.compilationUnit->typeDecls[0]->decl->classDecl
-    ->nClassDecl->classBody->decls[0]->memberDecl->voidMethDeclRest->block
-    ->blockStmts[0]->stmt;
+  spStatement stmt = parser.compilationUnit->typeDecls[0]->classOrIntDecl
+    ->classDecl->nClassDecl->classBody->decls[0]->memberDecl
+    ->voidMethDeclRest->block->blockStmts[0]->stmt;
 
   ASSERT_EQ(25, stmt->posLParen);
   ASSERT_EQ(55, stmt->posRParen);
@@ -1327,7 +1327,7 @@ TEST(Parser, GenericMethod) {
   Parser parser(filename, buffer, diag);
   parser.parse();
 
-  spMemberDecl memberDecl = parser.compilationUnit->typeDecls[0]->decl
+  spMemberDecl memberDecl = parser.compilationUnit->typeDecls[0]->classOrIntDecl
     ->classDecl->nClassDecl->classBody->decls[0]->memberDecl;
   ASSERT_EQ(MemberDecl::OPT_GENERIC_METHOD_OR_CONSTRUCTOR_DECL,
     memberDecl->opt);
@@ -1413,9 +1413,9 @@ TEST(Parser, Generics) {
   Parser parser(filename, buffer, diag);
   parser.parse();
 
-  spExpression expr = parser.compilationUnit->typeDecls[0]->decl->classDecl
-    ->nClassDecl->classBody->decls[0]->memberDecl->voidMethDeclRest->block
-    ->blockStmts[0]->stmt->stmtExpr->expr;
+  spExpression expr = parser.compilationUnit->typeDecls[0]->classOrIntDecl
+    ->classDecl->nClassDecl->classBody->decls[0]->memberDecl
+    ->voidMethDeclRest->block->blockStmts[0]->stmt->stmtExpr->expr;
   ASSERT_EQ(23, expr->assignOp->tok->pos);
 
   spArguments args = expr->assignExpr->expr1->expr2->expr3->primary->primaryId
@@ -1458,7 +1458,7 @@ TEST(Parser, Interface) {
   parser.parse();
 
   spClassOrInterfaceDeclaration decl
-    = parser.compilationUnit->typeDecls[0]->decl;
+    = parser.compilationUnit->typeDecls[0]->classOrIntDecl;
   ASSERT_EQ(decl->opt, ClassOrInterfaceDeclaration::OPT_INTERFACE);
   ASSERT_EQ(12, decl->interfaceDecl->normalDecl->body->posLCBrace);
   ASSERT_EQ(24, decl->interfaceDecl->normalDecl->body->posRCBrace);
@@ -1494,7 +1494,7 @@ TEST(Parser, InterfaceInnerClassConstructor) {
   Parser parser(filename, buffer, diag);
   parser.parse();
 
-  spInterfaceBody body = parser.compilationUnit->typeDecls[0]->decl
+  spInterfaceBody body = parser.compilationUnit->typeDecls[0]->classOrIntDecl
     ->interfaceDecl->normalDecl->body;
   ASSERT_EQ(12, body->posLCBrace);
   ASSERT_EQ(32, body->posRCBrace);
@@ -1552,9 +1552,9 @@ TEST(Parser, IdentifierSuffix) {
   Parser parser(filename, buffer, diag);
   parser.parse();
 
-  spBlockStatement blockStmt = parser.compilationUnit->typeDecls[0]->decl
-    ->classDecl->nClassDecl->classBody->decls[0]->memberDecl->voidMethDeclRest
-    ->block->blockStmts[0];
+  spBlockStatement blockStmt = parser.compilationUnit->typeDecls[0]
+    ->classOrIntDecl->classDecl->nClassDecl->classBody->decls[0]
+    ->memberDecl->voidMethDeclRest->block->blockStmts[0];
 
   ASSERT_EQ(BlockStatement::OPT_ID_STMT, blockStmt->opt);
   ASSERT_EQ(Statement::OPT_STMT_EXPR, blockStmt->stmt->opt);
@@ -1645,7 +1645,7 @@ TEST(Parser, InnerClass) {
   Parser parser(filename, buffer, diag);
   parser.parse();
 
-  spMemberDecl memberDecl = parser.compilationUnit->typeDecls[0]->decl
+  spMemberDecl memberDecl = parser.compilationUnit->typeDecls[0]->classOrIntDecl
     ->classDecl->nClassDecl->classBody->decls[0]->memberDecl;
   ASSERT_EQ(MemberDecl::OPT_CLASS_DECLARATION, memberDecl->opt);
 }
@@ -1691,8 +1691,8 @@ TEST(Parser, InnerClassInstance) {
   Parser parser(filename, buffer, diag);
   parser.parse();
 
-  spClassBody classBody = parser.compilationUnit->typeDecls[0]->decl->classDecl
-    ->nClassDecl->classBody;
+  spClassBody classBody = parser.compilationUnit->typeDecls[0]->classOrIntDecl
+    ->classDecl->nClassDecl->classBody;
 
   ASSERT_EQ(8, classBody->posLCBrace);
   ASSERT_EQ(59, classBody->posRCBrace);
@@ -1751,7 +1751,7 @@ TEST(Parser, LocalVariableDeclarationStatement) {
   parser.parse();
 
   spMemberDecl memberDecl = parser.compilationUnit
-    ->typeDecls[0]->decl->classDecl->nClassDecl->classBody->decls[0]
+    ->typeDecls[0]->classOrIntDecl->classDecl->nClassDecl->classBody->decls[0]
     ->memberDecl;
 
   ASSERT_EQ(MemberDecl::OPT_VOID_IDENTIFIER_VOID_METHOD_DECLARATOR_REST,
@@ -1792,9 +1792,9 @@ TEST(Parser, LocalVariableTypeArguments) {
   Parser parser(filename, buffer, diag);
   parser.parse();
 
-  spBlockStatement blockStmt = parser.compilationUnit->typeDecls[0]->decl
-    ->classDecl->nClassDecl->classBody->decls[0]->memberDecl->voidMethDeclRest
-    ->block->blockStmts[0];
+  spBlockStatement blockStmt = parser.compilationUnit->typeDecls[0]
+    ->classOrIntDecl->classDecl->nClassDecl->classBody->decls[0]
+    ->memberDecl->voidMethDeclRest->block->blockStmts[0];
   ASSERT_EQ(BlockStatement::OPT_LOCAL_VAR, blockStmt->opt);
   spLocalVariableDeclarationStatement localVar = blockStmt->localVar;
   ASSERT_EQ(Type::OPT_REFERENCE_TYPE, localVar->type->opt);
@@ -1839,9 +1839,9 @@ TEST(Parser, LocalVariableTypeArgumentsArray) {
   Parser parser(filename, buffer, diag);
   parser.parse();
 
-  spBlockStatement blockStmt = parser.compilationUnit->typeDecls[0]->decl
-    ->classDecl->nClassDecl->classBody->decls[0]->memberDecl->voidMethDeclRest
-    ->block->blockStmts[0];
+  spBlockStatement blockStmt = parser.compilationUnit->typeDecls[0]
+    ->classOrIntDecl->classDecl->nClassDecl->classBody->decls[0]
+    ->memberDecl->voidMethDeclRest->block->blockStmts[0];
   ASSERT_EQ(BlockStatement::OPT_LOCAL_VAR, blockStmt->opt);
   spLocalVariableDeclarationStatement localVar = blockStmt->localVar;
   ASSERT_EQ(Type::OPT_REFERENCE_TYPE, localVar->type->opt);
@@ -1875,8 +1875,9 @@ TEST(Parser, MemberDeclInterfaceDeclaration) {
   Parser parser(filename, buffer, diag);
   parser.parse();
 
-//  spMemberDecl memberDecl = parser.compilationUnit->typeDecls[0]->decl
-//    ->classDecl->nClassDecl->classBody->decls[0]->memberDecl;
+//  spMemberDecl memberDecl = parser.compilationUnit->typeDecls[0]
+//    ->classOrIntDecl->classDecl->nClassDecl->classBody->decls[0]->memberDecl;
+//
 //
 //  ASSERT_EQ(MemberDecl::OPT_INTERFACE_DECLARATION, memberDecl->opt);
 }
@@ -1903,8 +1904,8 @@ TEST(Parser, MemberDeclOpt1) {
   Parser parser(filename, buffer, diag);
   parser.parse();
 
-  spClassBody classBody = parser.compilationUnit->typeDecls[0]->decl->classDecl
-    ->nClassDecl->classBody;
+  spClassBody classBody = parser.compilationUnit->typeDecls[0]->classOrIntDecl
+    ->classDecl->nClassDecl->classBody;
   ASSERT_EQ(8, classBody->posLCBrace);
   ASSERT_EQ(32, classBody->posRCBrace);
 
@@ -1930,7 +1931,7 @@ TEST(Parser, MethodOrFieldRestOptField) {
   parser.parse();
 
   spMemberDecl memberDecl = parser.compilationUnit->typeDecls[0]
-    ->decl->classDecl->nClassDecl->classBody->decls[0]->memberDecl;
+    ->classOrIntDecl->classDecl->nClassDecl->classBody->decls[0]->memberDecl;
   ASSERT_EQ(MemberDecl::OPT_METHOD_OR_FIELD_DECL, memberDecl->opt);
 
   // Logger l
@@ -1991,7 +1992,7 @@ TEST(Parser, MethodOrFieldRestOptMethod) {
   parser.parse();
 
   spMethodOrFieldRest methodOrFieldRest = parser.compilationUnit->typeDecls[0]
-    ->decl->classDecl->nClassDecl->classBody->decls[0]->memberDecl
+    ->classOrIntDecl->classDecl->nClassDecl->classBody->decls[0]->memberDecl
     ->methodOrFieldDecl->methodOrFieldRest;
   ASSERT_EQ(MethodOrFieldRest::OPT_METHOD, methodOrFieldRest->opt);
   ASSERT_EQ(47, methodOrFieldRest->methodDeclRest->formParams->posLParen);
@@ -2023,9 +2024,9 @@ TEST(Parser, ParExpression) {
   Parser parser(filename, buffer, diag);
   parser.parse();
 
-  spBlockStatement blockStmt = parser.compilationUnit->typeDecls[0]->decl
-    ->classDecl->nClassDecl->classBody->decls[0]->memberDecl->voidMethDeclRest
-    ->block->blockStmts[0];
+  spBlockStatement blockStmt = parser.compilationUnit->typeDecls[0]
+    ->classOrIntDecl->classDecl->nClassDecl->classBody->decls[0]
+    ->memberDecl->voidMethDeclRest->block->blockStmts[0];
   ASSERT_EQ(BlockStatement::OPT_ID_STMT, blockStmt->opt);
   ASSERT_EQ(Statement::OPT_IF, blockStmt->stmt->opt);
   ASSERT_EQ(21, blockStmt->stmt->tokIf->pos);
@@ -2173,9 +2174,9 @@ TEST(Parser, PrimarySuper) {
   Parser parser(filename, buffer, diag);
   parser.parse();
 
-  spStatement stmt = parser.compilationUnit->typeDecls[0]->decl->classDecl
-    ->nClassDecl->classBody->decls[0]->memberDecl->voidMethDeclRest->block
-    ->blockStmts[0]->stmt;
+  spStatement stmt = parser.compilationUnit->typeDecls[0]->classOrIntDecl
+    ->classDecl->nClassDecl->classBody->decls[0]->memberDecl
+    ->voidMethDeclRest->block->blockStmts[0]->stmt;
 
   ASSERT_EQ(Statement::OPT_STMT_EXPR, stmt->opt);
   spPrimary primary = stmt->stmtExpr->expr->expr1->expr2->expr3->primary;
@@ -2197,9 +2198,9 @@ TEST(Parser, PrimaryThis) {
   Parser parser(filename, buffer, diag);
   parser.parse();
 
-  spStatement stmt = parser.compilationUnit->typeDecls[0]->decl->classDecl
-    ->nClassDecl->classBody->decls[0]->memberDecl->voidMethDeclRest->block
-    ->blockStmts[0]->stmt;
+  spStatement stmt = parser.compilationUnit->typeDecls[0]->classOrIntDecl
+    ->classDecl->nClassDecl->classBody->decls[0]->memberDecl
+    ->voidMethDeclRest->block->blockStmts[0]->stmt;
 
   ASSERT_EQ(Statement::OPT_STMT_EXPR, stmt->opt);
   spPrimary primary = stmt->stmtExpr->expr->expr1->expr2->expr3->primary;
@@ -2259,9 +2260,9 @@ TEST(Parser, Selector) {
   Parser parser(filename, buffer, diag);
   parser.parse();
 
-  spBlockStatement blockStmt = parser.compilationUnit->typeDecls[0]->decl
-    ->classDecl->nClassDecl->classBody->decls[0]->memberDecl->voidMethDeclRest
-    ->block->blockStmts[0];
+  spBlockStatement blockStmt = parser.compilationUnit->typeDecls[0]
+    ->classOrIntDecl->classDecl->nClassDecl->classBody->decls[0]
+    ->memberDecl->voidMethDeclRest->block->blockStmts[0];
   ASSERT_EQ(BlockStatement::OPT_LOCAL_VAR, blockStmt->opt);
   ASSERT_EQ(55, blockStmt->localVar->posSemiColon);
 
@@ -2305,9 +2306,9 @@ TEST(Parser, Statement) {
   Parser parser(filename, buffer, diag);
   parser.parse();
 
-  spStatement stmt = parser.compilationUnit->typeDecls[0]->decl->classDecl
-    ->nClassDecl->classBody->decls[0]->memberDecl->voidMethDeclRest->block
-    ->blockStmts[0]->stmt;
+  spStatement stmt = parser.compilationUnit->typeDecls[0]->classOrIntDecl
+    ->classDecl->nClassDecl->classBody->decls[0]->memberDecl
+    ->voidMethDeclRest->block->blockStmts[0]->stmt;
 
   ASSERT_EQ(stmt->opt, Statement::OPT_TRY_BLOCK);
   ASSERT_EQ(21, stmt->tokTry->pos);
@@ -2343,9 +2344,9 @@ TEST(Parser, StatementContinue) {
   Parser parser(filename, buffer, diag);
   parser.parse();
 
-  spStatement stmt = parser.compilationUnit->typeDecls[0]->decl->classDecl
-    ->nClassDecl->classBody->decls[0]->memberDecl->voidMethDeclRest->block
-    ->blockStmts[0]->stmt;
+  spStatement stmt = parser.compilationUnit->typeDecls[0]->classOrIntDecl
+    ->classDecl->nClassDecl->classBody->decls[0]->memberDecl
+    ->voidMethDeclRest->block->blockStmts[0]->stmt;
 
   ASSERT_EQ(Statement::OPT_WHILE, stmt->opt);
   ASSERT_EQ(27, stmt->parExpr->posLParen);
@@ -2388,9 +2389,9 @@ TEST(Parser, StatementSwitch) {
   Parser parser(filename, buffer, diag);
   parser.parse();
 
-  spStatement stmt = parser.compilationUnit->typeDecls[0]->decl->classDecl
-    ->nClassDecl->classBody->decls[0]->memberDecl->voidMethDeclRest->block
-    ->blockStmts[0]->stmt;
+  spStatement stmt = parser.compilationUnit->typeDecls[0]->classOrIntDecl
+    ->classDecl->nClassDecl->classBody->decls[0]->memberDecl
+    ->voidMethDeclRest->block->blockStmts[0]->stmt;
 
   ASSERT_EQ(stmt->opt, Statement::OPT_SWITCH);
 }
@@ -2411,9 +2412,9 @@ TEST(Parser, StatementSynchronized) {
   Parser parser(filename, buffer, diag);
   parser.parse();
 
-  spStatement stmt = parser.compilationUnit->typeDecls[0]->decl->classDecl
-    ->nClassDecl->classBody->decls[0]->memberDecl->voidMethDeclRest->block
-    ->blockStmts[0]->stmt;
+  spStatement stmt = parser.compilationUnit->typeDecls[0]->classOrIntDecl
+    ->classDecl->nClassDecl->classBody->decls[0]->memberDecl
+    ->voidMethDeclRest->block->blockStmts[0]->stmt;
 
   ASSERT_EQ(stmt->opt, Statement::OPT_SYNC);
   ASSERT_EQ(33, stmt->parExpr->posLParen);
@@ -2445,15 +2446,15 @@ TEST(Parser, StaticInitializer) {
   Parser parser(filename, buffer, diag);
   parser.parse();
 
-  spClassBodyDeclaration decl0 = parser.compilationUnit->typeDecls[0]->decl
-    ->classDecl->nClassDecl->classBody->decls[0];
+  spClassBodyDeclaration decl0 = parser.compilationUnit->typeDecls[0]
+    ->classOrIntDecl->classDecl->nClassDecl->classBody->decls[0];
   ASSERT_EQ(ClassBodyDeclaration::OPT_MODIFIER_MEMBER_DECL, decl0->opt);
   ASSERT_EQ(MemberDecl::OPT_METHOD_OR_FIELD_DECL, decl0->memberDecl->opt);
   ASSERT_EQ(15,
     decl0->memberDecl->methodOrFieldDecl->methodOrFieldRest->posSemiColon);
 
-  spClassBodyDeclaration decl1 = parser.compilationUnit->typeDecls[0]->decl
-    ->classDecl->nClassDecl->classBody->decls[1];
+  spClassBodyDeclaration decl1 = parser.compilationUnit->typeDecls[0]
+    ->classOrIntDecl->classDecl->nClassDecl->classBody->decls[1];
   ASSERT_EQ(ClassBodyDeclaration::OPT_STATIC_BLOCK, decl1->opt);
   ASSERT_EQ(17, decl1->tokStatic->pos);
   ASSERT_EQ(24, decl1->block->posLCBracket);
@@ -2495,9 +2496,9 @@ TEST(Parser, TernaryCond) {
   Parser parser(filename, buffer, diag);
   parser.parse();
 
-  spBlockStatement blockStmt = parser.compilationUnit->typeDecls[0]->decl->classDecl
-    ->nClassDecl->classBody->decls[0]->memberDecl->voidMethDeclRest->block
-    ->blockStmts[0];
+  spBlockStatement blockStmt = parser.compilationUnit->typeDecls[0]
+    ->classOrIntDecl->classDecl->nClassDecl->classBody->decls[0]
+    ->memberDecl->voidMethDeclRest->block->blockStmts[0];
   ASSERT_EQ(BlockStatement::OPT_LOCAL_VAR, blockStmt->opt);
   ASSERT_EQ(43, blockStmt->localVar->posSemiColon);
   ASSERT_EQ(27, blockStmt->localVar->varDecls->varDecl->varDeclRest->posEquals);
@@ -2545,9 +2546,9 @@ TEST(Parser, Throw) {
   Parser parser(filename, buffer, diag);
   parser.parse();
 
-  spStatement stmt = parser.compilationUnit->typeDecls[0]->decl->classDecl
-    ->nClassDecl->classBody->decls[0]->memberDecl->voidMethDeclRest->block
-    ->blockStmts[0]->stmt;
+  spStatement stmt = parser.compilationUnit->typeDecls[0]->classOrIntDecl
+    ->classDecl->nClassDecl->classBody->decls[0]->memberDecl
+    ->voidMethDeclRest->block->blockStmts[0]->stmt;
 
   ASSERT_EQ(Statement::OPT_THROW, stmt->opt);
   ASSERT_EQ(44, stmt->posSemiColon);
@@ -2618,8 +2619,8 @@ TEST(Parser, Throws) {
   parser.parse();
 
   spVoidMethodDeclaratorRest voidMethDeclRest = parser.compilationUnit
-    ->typeDecls[0]->decl->classDecl->nClassDecl->classBody->decls[0]->memberDecl
-    ->voidMethDeclRest;
+    ->typeDecls[0]->classOrIntDecl->classDecl->nClassDecl->classBody
+    ->decls[0]->memberDecl->voidMethDeclRest;
 
   ASSERT_EQ(19, voidMethDeclRest->tokThrows->pos);
   ASSERT_EQ(26, voidMethDeclRest->qualifiedIdList->qualifiedId->id->pos);

@@ -357,7 +357,7 @@ struct PackageDeclaration {
 
 /// TypeDeclaration: ClassOrInterfaceDeclaration ;
 struct TypeDeclaration {
-  spClassOrInterfaceDeclaration decl;
+  spClassOrInterfaceDeclaration classOrIntDecl;
 };
 
 /// ClassOrInterfaceDeclaration:
@@ -1012,7 +1012,7 @@ struct BlockStatement : ASTError {
   spLocalVariableDeclarationStatement localVar;
 
   // (2) ClassOrInterfaceDeclaration
-  spClassOrInterfaceDeclaration decl;
+  spClassOrInterfaceDeclaration classOrIntDecl;
 
   // (3) [Identifier :] Statement
   spIdentifier id;
