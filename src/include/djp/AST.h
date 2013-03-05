@@ -424,7 +424,7 @@ struct ClassDeclaration : ASTError {
 ///                           Super(opt) Interfaces(opt) ClassBody
 struct NormalClassDeclaration : ASTError {
   spTokenExp classTok;
-  spIdentifier identifier;
+  spIdentifier id;
   spTypeParameters typeParams;
   spTokenExp extendsTok;
   spType type;
@@ -696,7 +696,7 @@ struct VariableDeclarators : ASTError {
 
 /// VariableDeclaratorId: Identifier {[]}
 struct VariableDeclaratorId : ASTError {
-  spIdentifier identifier;
+  spIdentifier id;
   ArrayDepth arrayDepth;
 };
 

@@ -4746,7 +4746,7 @@ void Parser::parseNormalClassDeclaration(spNormalClassDeclaration &nClassDecl) {
     return;
   }
 
-  nClassDecl->identifier = spIdentifier(new Identifier(
+  nClassDecl->id = spIdentifier(new Identifier(
     lexer->getCurTokenIni(), lexer->getCurTokenStr()));
 
   st.addSym(ST_IDENTIFIER, lexer->getCurTokenIni(), lexer->getCursor(),
@@ -6109,7 +6109,7 @@ void Parser::parseFormalParameterDeclsRest(
   parseVariableDeclaratorId(formParamDeclsRest->varDeclId);
 
   // Handle error
-  if (formParamDeclsRest->varDeclId->identifier->value.length() == 0) {
+  if (formParamDeclsRest->varDeclId->id->value.length() == 0) {
     diag->addErr(ERR_EXP_IDENTIFIER, lexer->getCurTokenIni(),
       lexer->getCursor());
   }
@@ -6131,7 +6131,7 @@ void Parser::parseVariableDeclaratorId(spVariableDeclaratorId &varDeclId) {
     return;
   }
 
-  varDeclId->identifier = spIdentifier(new Identifier(
+  varDeclId->id = spIdentifier(new Identifier(
     lexer->getCurTokenIni(), lexer->getCurTokenStr()));
   lexer->getNextToken(); // consume Identifier
   parseArrayDepth(varDeclId->arrayDepth);

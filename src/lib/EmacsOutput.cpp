@@ -1852,8 +1852,8 @@ void EmacsOutput::setNormalClassDeclaration(
     setKeyword(nClassDecl->classTok);
   }
 
-  if (nClassDecl->identifier) {
-    setIdentifier(nClassDecl->identifier,
+  if (nClassDecl->id) {
+    setIdentifier(nClassDecl->id,
       EmacsOutput::OPT_IDENTIFIER_REFERENCE_TYPE);
   }
 
@@ -2594,8 +2594,8 @@ void EmacsOutput::setVariableDeclarator(const spVariableDeclarator &varDecl) {
 
 void EmacsOutput::setVariableDeclaratorId(
   const spVariableDeclaratorId &varDeclId) {
-  if (varDeclId->identifier) {
-    setIdentifier(varDeclId->identifier);
+  if (varDeclId->id) {
+    setIdentifier(varDeclId->id);
   }
 }
 
