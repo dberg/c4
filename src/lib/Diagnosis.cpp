@@ -1,4 +1,4 @@
-#include "Diagnosis.h"
+#include "djp/Diagnosis.h"
 
 namespace djp {
 

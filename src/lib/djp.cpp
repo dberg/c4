@@ -1,10 +1,10 @@
 #include <iostream>
 #include <string>
-#include "CmdInput.h"
-#include "Diagnosis.h"
-#include "File.h"
-#include "Parser.h"
-#include "EmacsOutput.h"
+#include "djp/CmdInput.h"
+#include "djp/Diagnosis.h"
+#include "djp/File.h"
+#include "djp/Parser.h"
+#include "djp/EmacsOutput.h"
 using namespace djp;
 
 int main(int argc, const char **argv) {

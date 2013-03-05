@@ -1,4 +1,4 @@
-#include "CmdInput.h"
+#include "djp/CmdInput.h"
 
 namespace djp {
 

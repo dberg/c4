@@ -1,4 +1,4 @@
-#include "EmacsOutput.h"
+#include "djp/EmacsOutput.h"
 
 namespace djp {
 void EmacsOutput::build() {

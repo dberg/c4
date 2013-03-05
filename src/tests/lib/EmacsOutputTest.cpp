@@ -1,8 +1,8 @@
 #include <iostream>
 #include <string>
-#include "Diagnosis.h"
-#include "EmacsOutput.h"
-#include "Parser.h"
+#include "djp/Diagnosis.h"
+#include "djp/EmacsOutput.h"
+#include "djp/Parser.h"
 #include "gtest/gtest.h"
 using namespace djp;
 

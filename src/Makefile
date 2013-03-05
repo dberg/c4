@@ -79,50 +79,50 @@ $(bin)/djp: $(obj)/CmdInput.o \
                $(CFLAGS) $(INC) $(obj)/djp.o -o $@
 
 # modules
-$(obj)/CmdInput.o: $(libdir)/CmdInput.cpp $(incdir)/CmdInput.h
+$(obj)/CmdInput.o: $(libdir)/CmdInput.cpp $(incdir)/djp/CmdInput.h
 	$(CXX) $(CFLAGS) $(INC) -c $< -o $@
 
-$(obj)/Diagnosis.o: $(libdir)/Diagnosis.cpp $(incdir)/Diagnosis.h
+$(obj)/Diagnosis.o: $(libdir)/Diagnosis.cpp $(incdir)/djp/Diagnosis.h
 	$(CXX) $(CFLAGS) $(INC) -c $< -o $@
 
-$(obj)/File.o: $(libdir)/File.cpp $(incdir)/File.h
+$(obj)/File.o: $(libdir)/File.cpp $(incdir)/djp/File.h
 	$(CXX) $(CFLAGS) $(INC) -c $< -o $@
 
 $(obj)/Lexer.o: $(libdir)/Lexer.cpp \
-                $(incdir)/Lexer.h \
-                $(incdir)/AST.h \
-                $(incdir)/Diagnosis.h \
-                $(incdir)/LiteralSupport.h \
-                $(incdir)/ParserState.h \
-                $(incdir)/SourceCodeStream.h \
-                $(incdir)/Token.h
+                $(incdir)/djp/Lexer.h \
+                $(incdir)/djp/AST.h \
+                $(incdir)/djp/Diagnosis.h \
+                $(incdir)/djp/LiteralSupport.h \
+                $(incdir)/djp/ParserState.h \
+                $(incdir)/djp/SourceCodeStream.h \
+                $(incdir)/djp/Token.h
 	$(CXX) $(CFLAGS) $(INC) -c $< -o $@
 
 $(obj)/LiteralSupport.o: $(libdir)/LiteralSupport.cpp \
-                         $(incdir)/LiteralSupport.h
+                         $(incdir)/djp/LiteralSupport.h
 	$(CXX) $(CFLAGS) $(INC) -c $< -o $@
 
 $(obj)/Parser.o: $(libdir)/Parser.cpp \
-                 $(incdir)/Parser.h \
-                 $(incdir)/AST.h \
-                 $(incdir)/ErrorCodes.h \
-                 $(incdir)/ParserState.h \
-                 $(incdir)/Token.h
+                 $(incdir)/djp/Parser.h \
+                 $(incdir)/djp/AST.h \
+                 $(incdir)/djp/ErrorCodes.h \
+                 $(incdir)/djp/ParserState.h \
+                 $(incdir)/djp/Token.h
 	$(CXX) $(CFLAGS) $(INC) -c $< -o $@
 
 $(obj)/EmacsOutput.o: $(libdir)/EmacsOutput.cpp \
-                      $(incdir)/EmacsOutput.h \
-                      $(incdir)/AST.h \
-                      $(incdir)/ErrorCodes.h \
-                      $(incdir)/Token.h
+                      $(incdir)/djp/EmacsOutput.h \
+                      $(incdir)/djp/AST.h \
+                      $(incdir)/djp/ErrorCodes.h \
+                      $(incdir)/djp/Token.h
 	$(CXX) $(CFLAGS) $(INC) -c $< -o $@
 
 $(obj)/SourceCodeStream.o: $(libdir)/SourceCodeStream.cpp \
-	                   $(incdir)/SourceCodeStream.h
+	                   $(incdir)/djp/SourceCodeStream.h
 	$(CXX) $(CFLAGS) $(INC) -c $< -o $@
 
 $(obj)/SymbolTable.o: $(libdir)/SymbolTable.cpp \
-                 $(incdir)/SymbolTable.h
+                 $(incdir)/djp/SymbolTable.h
 	$(CXX) $(CFLAGS) $(INC) -c $< -o $@
 
 $(obj)/djp.o: $(libdir)/djp.cpp

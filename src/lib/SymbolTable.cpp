@@ -1,5 +1,5 @@
-#include "Token.h"
-#include "SymbolTable.h"
+#include "djp/Token.h"
+#include "djp/SymbolTable.h"
 
 namespace djp {
 
