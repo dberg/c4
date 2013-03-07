@@ -659,7 +659,6 @@ struct Type : ASTError {
   ArrayDepth arrayDepth;
 
   Type() : opt(OPT_UNDEFINED) {}
-  bool isEmpty() { return opt == OPT_UNDEFINED; }
 };
 
 /// FormalParameterDeclsRest:

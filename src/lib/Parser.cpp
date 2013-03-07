@@ -3645,6 +3645,7 @@ void Parser::parseReferenceType(spReferenceType &refType) {
   if (lexer->getCurToken() == TOK_OP_LT) {
     refType->typeArgs = spTypeArguments(new TypeArguments);
     parseTypeArguments(refType->typeArgs);
+    if (refType->typeArgs->err) { refType->addErr(-1); }
   }
 
   // { . Identifier [TypeArguments] }
@@ -5600,14 +5601,14 @@ void Parser::parseFormalParameterDecls(spFormalParameterDecls &formParamDecls) {
   // inconsistent state. For example:
   // Constructor(final var) or Constructor(@Annot var).
   if (formParamDecls->varModifier->isEmpty() == false
-    && formParamDecls->type->isEmpty()) {
+    && formParamDecls->type->err) {
     diag->addErr(ERR_EXP_TYPE, lexer->getCurTokenIni(), lexer->getCursor());
   }
 
   // If we have a Type we expect a FormalParameterDeclRest
-  if (formParamDecls->type->isEmpty() == false) {
+  if (formParamDecls->type->err == false) {
     formParamDecls->formParamDeclsRest = spFormalParameterDeclsRest(
-      new FormalParameterDeclsRest());
+      new FormalParameterDeclsRest);
     parseFormalParameterDeclsRest(formParamDecls->formParamDeclsRest);
   }
 }
@@ -5927,6 +5928,7 @@ void Parser::parseType(spType &type) {
     type->opt = Type::OPT_REFERENCE_TYPE;
     type->refType = spReferenceType(new ReferenceType);
     parseReferenceType(type->refType);
+    if (type->refType->err) { type->addErr(-1); }
     parseArrayDepth(type->arrayDepth);
     return;
   }
