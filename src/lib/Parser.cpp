@@ -4527,17 +4527,23 @@ void Parser::parseTypeArguments(spTypeArguments &typeArgs) {
   }
 
   // Additional TypeArgument list
+  State state;
   while (lexer->getCurToken() == TOK_COMMA) {
+    saveState(state);
+
+    // ,
+    unsigned pos = lexer->getCursor() - 1;
     lexer->getNextToken(); // consume ','
 
-    spTypeArgument typeArgTmp = spTypeArgument(new TypeArgument());
+    // TypeArgument
+    spTypeArgument typeArgTmp = spTypeArgument(new TypeArgument);
     parseTypeArgument(typeArgTmp);
-    typeArgs->typeArgs.push_back(typeArgTmp);
-
     if (typeArgTmp->err) {
       typeArgs->addErr(-1);
       return;
     }
+
+    typeArgs->pairs.push_back(std::make_pair(pos, typeArgTmp));
   }
 
   if (lexer->getCurToken() == TOK_OP_GT) {

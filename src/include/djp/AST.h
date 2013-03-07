@@ -951,7 +951,7 @@ struct TypeArguments : ASTError {
   unsigned int posLt;
   unsigned int posGt;
   spTypeArgument typeArg;
-  std::vector<spTypeArgument> typeArgs;
+  std::vector<std::pair<unsigned, spTypeArgument> > pairs;
 
   TypeArguments() : ASTError(), posLt(0), posGt(0) {}
 };

@@ -2490,8 +2490,9 @@ void EmacsOutput::setTypeArguments(const spTypeArguments &typeArgs) {
   if (typeArgs->posLt) { setOp(typeArgs->posLt, 1); }
   if (typeArgs->posGt) { setOp(typeArgs->posGt, 1); }
   if (typeArgs->typeArg) { setTypeArgument(typeArgs->typeArg); }
-  for (unsigned int i = 0; i < typeArgs->typeArgs.size(); i++) {
-    setTypeArgument(typeArgs->typeArgs[i]);
+  for (unsigned int i = 0; i < typeArgs->pairs.size(); i++) {
+    setOp(typeArgs->pairs[i].first);
+    setTypeArgument(typeArgs->pairs[i].second);
   }
 }
 
