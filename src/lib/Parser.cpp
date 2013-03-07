@@ -4737,7 +4737,7 @@ void Parser::parseNormalClassDeclaration(spNormalClassDeclaration &nClassDecl) {
   }
 
   // 'class'
-  nClassDecl->classTok = spTokenExp(new TokenExp(lexer->getCursor()
+  nClassDecl->tokClass = spTokenExp(new TokenExp(lexer->getCursor()
     - tokenUtil.getTokenLength(TOK_KEY_CLASS), lexer->getCurToken()));
   lexer->getNextToken(); // consume 'class'
 
@@ -4768,7 +4768,7 @@ void Parser::parseNormalClassDeclaration(spNormalClassDeclaration &nClassDecl) {
 
   // [extends Type]
   if (lexer->getCurToken() == TOK_KEY_EXTENDS) {
-    nClassDecl->extendsTok = spTokenExp(new TokenExp(lexer->getCursor()
+    nClassDecl->tokExtends = spTokenExp(new TokenExp(lexer->getCursor()
       - tokenUtil.getTokenLength(TOK_KEY_EXTENDS), lexer->getCurToken()));
     lexer->getNextToken(); // consume 'extends'
 

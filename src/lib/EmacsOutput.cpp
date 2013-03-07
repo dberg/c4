@@ -1848,8 +1848,8 @@ void EmacsOutput::setNormalClassDeclaration(
 
   outSH += "(djp-normal-class-declaration ";
 
-  if (nClassDecl->classTok) {
-    setKeyword(nClassDecl->classTok);
+  if (nClassDecl->tokClass) {
+    setKeyword(nClassDecl->tokClass);
   }
 
   if (nClassDecl->id) {
@@ -1861,8 +1861,8 @@ void EmacsOutput::setNormalClassDeclaration(
     setClassBody(nClassDecl->classBody);
   }
 
-  if (nClassDecl->extendsTok) {
-    setKeyword(nClassDecl->extendsTok);
+  if (nClassDecl->tokExtends) {
+    setKeyword(nClassDecl->tokExtends);
     if (nClassDecl->type) {
       setType(nClassDecl->type);
     }

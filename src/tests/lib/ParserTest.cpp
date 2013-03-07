@@ -685,11 +685,11 @@ TEST(Parser, ClassDeclaration) {
   ASSERT_EQ(1, decl->modifier->tokens.size());
   ASSERT_EQ(13, decl->modifier->tokens[0]->pos);
   ASSERT_EQ(TOK_KEY_PUBLIC, decl->modifier->tokens[0]->type);
-  ASSERT_EQ(TOK_KEY_CLASS, decl->classDecl->nClassDecl->classTok->type);
-  ASSERT_EQ(20, decl->classDecl->nClassDecl->classTok->pos);
+  ASSERT_EQ(TOK_KEY_CLASS, decl->classDecl->nClassDecl->tokClass->type);
+  ASSERT_EQ(20, decl->classDecl->nClassDecl->tokClass->pos);
   ASSERT_EQ(26, decl->classDecl->nClassDecl->id->pos);
   ASSERT_EQ("Abc", decl->classDecl->nClassDecl->id->value);
-  ASSERT_EQ(30, decl->classDecl->nClassDecl->extendsTok->pos);
+  ASSERT_EQ(30, decl->classDecl->nClassDecl->tokExtends->pos);
   ASSERT_EQ(Type::OPT_REFERENCE_TYPE, decl->classDecl->nClassDecl->type->opt);
   ASSERT_EQ(38, decl->classDecl->nClassDecl->type->refType->id->pos);
   ASSERT_EQ("Def", decl->classDecl->nClassDecl->type->refType->id->value);

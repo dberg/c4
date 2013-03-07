@@ -421,10 +421,10 @@ struct ClassDeclaration : ASTError {
 /// ClassModifiers(opt) class Identifier TypeParameters(opt)
 ///                           Super(opt) Interfaces(opt) ClassBody
 struct NormalClassDeclaration : ASTError {
-  spTokenExp classTok;
+  spTokenExp tokClass;
   spIdentifier id;
   spTypeParameters typeParams;
-  spTokenExp extendsTok;
+  spTokenExp tokExtends;
   spType type;
   spTokenExp implementsTok;
   spTypeList typeList;
