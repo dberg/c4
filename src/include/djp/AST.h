@@ -984,11 +984,11 @@ struct TypeArgumentOpt2 : ASTError {
 
 /// Block: '{' BlockStatements '}'
 struct Block : ASTError {
-  unsigned posLCBracket;
-  unsigned posRCBracket;
+  unsigned posLCBrace;
+  unsigned posRCBrace;
   std::vector<spBlockStatement> blockStmts;
 
-  Block() : posLCBracket(0), posRCBracket(0) {}
+  Block() : posLCBrace(0), posRCBrace(0) {}
 };
 
 /// BlockStatement:

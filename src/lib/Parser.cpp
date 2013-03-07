@@ -1200,14 +1200,14 @@ void Parser::parseBlock(spBlock &block) {
     return;
   }
 
-  block->posLCBracket = lexer->getCursor() - 1;
+  block->posLCBrace = lexer->getCursor() - 1;
   lexer->getNextToken(); // consume '{'
 
   // BlockStatements
   // Check for a closing curly bracket. This means we don't have a
   // BlockStatement.
   if (lexer->getCurToken() == TOK_RCURLY_BRACKET) {
-    block->posRCBracket = lexer->getCursor() - 1;
+    block->posRCBrace = lexer->getCursor() - 1;
     lexer->getNextToken(); // consume '}'
     return;
   }
@@ -1220,7 +1220,7 @@ void Parser::parseBlock(spBlock &block) {
     return;
   }
 
-  block->posRCBracket = lexer->getCursor() - 1;
+  block->posRCBrace = lexer->getCursor() - 1;
   lexer->getNextToken(); // consume '}'
 }
 
@@ -5240,7 +5240,7 @@ void Parser::parseMethodDeclaratorRest(spMethodDeclaratorRest &methodDeclRest) {
     methodDeclRest->addErr(-1);
   }
 
-  st.updateScopeEnd(methodDeclRest->block->posRCBracket + 1);
+  st.updateScopeEnd(methodDeclRest->block->posRCBrace + 1);
 }
 
 /// MethodOrFieldDecl: Type Identifier MethodOrFieldRest
@@ -5499,7 +5499,7 @@ void Parser::parseConstructorDeclaratorRest(
     constDeclRest->addErr(-1);
   }
 
-  st.updateScopeEnd(constDeclRest->block->posRCBracket + 1);
+  st.updateScopeEnd(constDeclRest->block->posRCBrace + 1);
 }
 
 /// CreatedName:
@@ -5732,7 +5732,7 @@ void Parser::parseVoidMethodDeclaratorRest(
     voidMethDeclRest->addErr(-1);
   }
 
-  st.updateScopeEnd(voidMethDeclRest->block->posRCBracket + 1);
+  st.updateScopeEnd(voidMethDeclRest->block->posRCBrace + 1);
 }
 
 /// SuperSuffix:

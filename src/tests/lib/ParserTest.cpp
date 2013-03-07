@@ -546,8 +546,8 @@ TEST(Parser, Block) {
   spBlock block = parser.compilationUnit->typeDecls[0]
     ->classOrIntDecl->classDecl->nClassDecl->classBody->classBodyDecls[0]
     ->memberDecl->methodOrFieldDecl->methodOrFieldRest->methodDeclRest->block;
-  ASSERT_EQ(32, block->posLCBracket);
-  ASSERT_EQ(61, block->posRCBracket);
+  ASSERT_EQ(32, block->posLCBrace);
+  ASSERT_EQ(61, block->posRCBrace);
   ASSERT_EQ(1, block->blockStmts.size());
 
   spBlockStatement blockStmt1 = block->blockStmts[0];
@@ -1134,9 +1134,9 @@ TEST(Parser, FieldDeclaratorWithClassBody) {
   ASSERT_EQ(ClassBodyDeclaration::OPT_STATIC_BLOCK,
     classCreatorRest->classBody->classBodyDecls[0]->opt);
   ASSERT_EQ(26,
-    classCreatorRest->classBody->classBodyDecls[0]->block->posLCBracket);
+    classCreatorRest->classBody->classBodyDecls[0]->block->posLCBrace);
   ASSERT_EQ(27,
-    classCreatorRest->classBody->classBodyDecls[0]->block->posRCBracket);
+    classCreatorRest->classBody->classBodyDecls[0]->block->posRCBrace);
 }
 
 // -----------------------------------------------------------------------------
@@ -1709,8 +1709,8 @@ TEST(Parser, InnerClassInstance) {
     memberDecl->opt);
 
   spBlock block = memberDecl->voidMethDeclRest->block;
-  ASSERT_EQ(30, block->posLCBracket);
-  ASSERT_EQ(58, block->posRCBracket);
+  ASSERT_EQ(30, block->posLCBrace);
+  ASSERT_EQ(58, block->posRCBrace);
 
   ASSERT_EQ(2, block->blockStmts.size());
 
@@ -2356,8 +2356,8 @@ TEST(Parser, StatementContinue) {
   ASSERT_EQ(27, stmt->parExpr->posLParen);
   ASSERT_EQ(32, stmt->parExpr->posRParen);
   ASSERT_EQ(Statement::OPT_BLOCK, stmt->stmtWhile->opt);
-  ASSERT_EQ(34, stmt->stmtWhile->block->posLCBracket);
-  ASSERT_EQ(46, stmt->stmtWhile->block->posRCBracket);
+  ASSERT_EQ(34, stmt->stmtWhile->block->posLCBrace);
+  ASSERT_EQ(46, stmt->stmtWhile->block->posRCBrace);
   spBlockStatement blockStmt = stmt->stmtWhile->block->blockStmts[0];
   ASSERT_EQ(BlockStatement::OPT_ID_STMT, blockStmt->opt);
   ASSERT_EQ(Statement::OPT_CONTINUE, blockStmt->stmt->opt);
@@ -2461,8 +2461,8 @@ TEST(Parser, StaticInitializer) {
     ->classOrIntDecl->classDecl->nClassDecl->classBody->classBodyDecls[1];
   ASSERT_EQ(ClassBodyDeclaration::OPT_STATIC_BLOCK, decl1->opt);
   ASSERT_EQ(17, decl1->tokStatic->pos);
-  ASSERT_EQ(24, decl1->block->posLCBracket);
-  ASSERT_EQ(34, decl1->block->posRCBracket);
+  ASSERT_EQ(24, decl1->block->posLCBrace);
+  ASSERT_EQ(34, decl1->block->posRCBrace);
 }
 
 // -----------------------------------------------------------------------------

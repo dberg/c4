@@ -335,13 +335,13 @@ void EmacsOutput::setBasicType(const spBasicType &basicType) {
 }
 
 void EmacsOutput::setBlock(const spBlock &block) {
-  if (block->posLCBracket) { setOp(block->posLCBracket); }
+  if (block->posLCBrace) { setOp(block->posLCBrace); }
 
   for (unsigned int i = 0; i < block->blockStmts.size(); i++) {
     setBlockStatement(block->blockStmts[i]);
   }
 
-  if (block->posRCBracket) { setOp(block->posRCBracket); }
+  if (block->posRCBrace) { setOp(block->posRCBrace); }
 }
 
 void EmacsOutput::setBlockStatement(const spBlockStatement &blockStmt) {
