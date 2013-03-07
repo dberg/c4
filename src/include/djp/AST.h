@@ -688,7 +688,7 @@ struct VariableDeclarator : ASTError {
 /// VariableDeclarators: VariableDeclarator { , VariableDeclarator }
 struct VariableDeclarators : ASTError {
   spVariableDeclarator varDecl;
-  std::vector<std::pair<unsigned, spVariableDeclarator> > semiColonAndVarDecls;
+  std::vector<std::pair<unsigned, spVariableDeclarator> > pairs;
 };
 
 /// VariableDeclaratorId: Identifier {[]}

@@ -6209,7 +6209,7 @@ void Parser::parseVariableDeclarators(spVariableDeclarators &varDecls) {
     pair.first = posComma;
     pair.second = varDecl;
 
-    varDecls->semiColonAndVarDecls.push_back(pair);
+    varDecls->pairs.push_back(pair);
   }
 }
 

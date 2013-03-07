@@ -2618,9 +2618,8 @@ void EmacsOutput::setVariableDeclarators(const spVariableDeclarators &varDecls) 
     setVariableDeclarator(varDecls->varDecl);
   }
 
-  for (unsigned i = 0; i < varDecls->semiColonAndVarDecls.size(); i++) {
-    std::pair<unsigned, spVariableDeclarator> pair =
-      varDecls->semiColonAndVarDecls[i];
+  for (unsigned i = 0; i < varDecls->pairs.size(); i++) {
+    std::pair<unsigned, spVariableDeclarator> pair = varDecls->pairs[i];
     setOp(pair.first);
     setVariableDeclarator(pair.second);
   }
