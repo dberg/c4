@@ -706,8 +706,8 @@ struct VariableDeclaratorRest : ASTError {
 
 /// BasicType: byte | short | char | int | long | float | double | boolean
 struct BasicType {
-  spTokenExp token;
-  BasicType(spTokenExp token) : token(token) {}
+  spTokenExp tok;
+  BasicType(spTokenExp tok) : tok(tok) {}
 };
 
 /// ReferenceType:

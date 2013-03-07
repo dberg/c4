@@ -329,8 +329,8 @@ void EmacsOutput::setArrayInitializer(const spArrayInitializer arrayInit) {
 }
 
 void EmacsOutput::setBasicType(const spBasicType &basicType) {
-  if (basicType->token) {
-    setKeyword(basicType->token);
+  if (basicType->tok) {
+    setKeyword(basicType->tok);
   }
 }
 
@@ -619,8 +619,8 @@ void EmacsOutput::setCreator(const spCreator &creator) {
   if (creator->opt == Creator::OPT_BASIC_TYPE) {
     if (!creator->opt3) { return; }
 
-    if (creator->opt3->basicType && creator->opt3->basicType->token) {
-      setKeyword(creator->opt3->basicType->token);
+    if (creator->opt3->basicType && creator->opt3->basicType->tok) {
+      setKeyword(creator->opt3->basicType->tok);
     }
 
     if (creator->opt3->arrayCreatorRest) {
@@ -2453,8 +2453,8 @@ void EmacsOutput::setSwitchLabels(const spSwitchLabels &labels) {
 
 void EmacsOutput::setType(const spType &type) {
   if (type->opt == Type::OPT_BASIC_TYPE) {
-    if (type->basicType->token) {
-      setKeyword(type->basicType->token);
+    if (type->basicType->tok) {
+      setKeyword(type->basicType->tok);
     }
     setArrayDepth(type->arrayDepth);
     return;

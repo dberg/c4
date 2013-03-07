@@ -602,8 +602,8 @@ TEST(Parser, ClassConstructorParameter) {
     ->classOrIntDecl->classDecl->nClassDecl->classBody->classBodyDecls[0]
     ->memberDecl->constDeclRest->formParams->formParamDecls;
   ASSERT_EQ(Type::OPT_BASIC_TYPE, formParamDecls->type->opt);
-  ASSERT_EQ(16, formParamDecls->type->basicType->token->pos);
-  ASSERT_EQ(TOK_KEY_INT, formParamDecls->type->basicType->token->type);
+  ASSERT_EQ(16, formParamDecls->type->basicType->tok->pos);
+  ASSERT_EQ(TOK_KEY_INT, formParamDecls->type->basicType->tok->type);
   ASSERT_EQ(20, formParamDecls->formParamDeclsRest->varDeclId->id->pos);
   ASSERT_EQ("a",
     formParamDecls->formParamDeclsRest->varDeclId->id->value);
@@ -652,8 +652,8 @@ TEST(Parser, ClassConstructorParameters) {
 
   // param 1
   ASSERT_EQ(Type::OPT_BASIC_TYPE, formParamDecls->type->opt);
-  ASSERT_EQ(16, formParamDecls->type->basicType->token->pos);
-  ASSERT_EQ(TOK_KEY_INT, formParamDecls->type->basicType->token->type);
+  ASSERT_EQ(16, formParamDecls->type->basicType->tok->pos);
+  ASSERT_EQ(TOK_KEY_INT, formParamDecls->type->basicType->tok->type);
   ASSERT_EQ(20, formParamDecls->formParamDeclsRest->varDeclId->id->pos);
   ASSERT_EQ("a",
     formParamDecls->formParamDeclsRest->varDeclId->id->value);
@@ -662,8 +662,8 @@ TEST(Parser, ClassConstructorParameters) {
   spFormalParameterDecls formParamDecls2
     = formParamDecls->formParamDeclsRest->formParamDecls;
   ASSERT_EQ(Type::OPT_BASIC_TYPE, formParamDecls2->type->opt);
-  ASSERT_EQ(23, formParamDecls2->type->basicType->token->pos);
-  ASSERT_EQ(TOK_KEY_DOUBLE, formParamDecls2->type->basicType->token->type);
+  ASSERT_EQ(23, formParamDecls2->type->basicType->tok->pos);
+  ASSERT_EQ(TOK_KEY_DOUBLE, formParamDecls2->type->basicType->tok->type);
   ASSERT_EQ(30,
     formParamDecls2->formParamDeclsRest->varDeclId->id->pos);
   ASSERT_EQ("b",
