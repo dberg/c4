@@ -996,7 +996,7 @@ TEST(Parser, Expression3Opt2) {
 
   // 'u.get()'
   ASSERT_EQ(Primary::OPT_IDENTIFIER, expr3->opt2->expr3->primary->opt);
-  ASSERT_EQ(2, expr3->opt2->expr3->primary->primaryId->ids.size());
+  ASSERT_EQ(1, expr3->opt2->expr3->primary->primaryId->pairs.size());
   ASSERT_EQ(34,
     expr3->opt2->expr3->primary->primaryId->idSuffix->args->posLParen);
   ASSERT_EQ(35,
@@ -1045,9 +1045,9 @@ TEST(Parser, ExpressionMultipleAssignment) {
 
   // 'a'
   ASSERT_EQ(21,
-    stmt->stmtExpr->expr->expr1->expr2->expr3->primary->primaryId->ids[0]->pos);
+    stmt->stmtExpr->expr->expr1->expr2->expr3->primary->primaryId->id->pos);
   ASSERT_EQ("a",
-    stmt->stmtExpr->expr->expr1->expr2->expr3->primary->primaryId->ids[0]->value);
+    stmt->stmtExpr->expr->expr1->expr2->expr3->primary->primaryId->id->value);
 
   // '='
   ASSERT_EQ(23, stmt->stmtExpr->expr->assignOp->tok->pos);
@@ -1055,9 +1055,9 @@ TEST(Parser, ExpressionMultipleAssignment) {
 
   // 'b'
   ASSERT_EQ(25, stmt->stmtExpr->expr->assignExpr->expr1->expr2->expr3
-    ->primary->primaryId->ids[0]->pos);
+    ->primary->primaryId->id->pos);
   ASSERT_EQ("b", stmt->stmtExpr->expr->assignExpr->expr1->expr2->expr3
-    ->primary->primaryId->ids[0]->value);
+    ->primary->primaryId->id->value);
 
   // '='
   ASSERT_EQ(27, stmt->stmtExpr->expr->assignExpr->assignOp->tok->pos);
@@ -1766,8 +1766,8 @@ TEST(Parser, LocalVariableDeclarationStatement) {
   ASSERT_EQ(33, varDeclRest->posEquals);
 
   spPrimary primary = varDeclRest->varInit->expr->expr1->expr2->expr3->primary;
-  ASSERT_EQ(35, primary->primaryId->ids[0]->pos);
-  ASSERT_EQ("createExec",  primary->primaryId->ids[0]->value);
+  ASSERT_EQ(35, primary->primaryId->id->pos);
+  ASSERT_EQ("createExec",  primary->primaryId->id->value);
   ASSERT_EQ(45, primary->primaryId->idSuffix->args->posLParen);
   ASSERT_EQ(46, primary->primaryId->idSuffix->args->posRParen);
 }
@@ -1960,7 +1960,7 @@ TEST(Parser, MethodOrFieldRestOptField) {
     varDeclRest->varInit->expr->expr1->expr2->expr3->opt);
   spPrimary primary = varDeclRest->varInit->expr->expr1->expr2->expr3->primary;
   ASSERT_EQ(Primary::OPT_IDENTIFIER, primary->opt);
-  ASSERT_EQ(2, primary->primaryId->ids.size());
+  ASSERT_EQ(1, primary->primaryId->pairs.size());
   ASSERT_EQ(IdentifierSuffix::OPT_ARGUMENTS, primary->primaryId->idSuffix->opt);
 
   // (A.class)
@@ -1974,9 +1974,9 @@ TEST(Parser, MethodOrFieldRestOptField) {
 
   spPrimaryIdentifier primaryId
     = args->expr->expr1->expr2->expr3->primary->primaryId;
-  ASSERT_EQ(1, primaryId->ids.size());
-  ASSERT_EQ(62,primaryId->ids[0]->pos);
-  ASSERT_EQ("A", primaryId->ids[0]->value);
+  ASSERT_EQ(0, primaryId->pairs.size());
+  ASSERT_EQ(62,primaryId->id->pos);
+  ASSERT_EQ("A", primaryId->id->value);
   ASSERT_EQ(IdentifierSuffix::OPT_PERIOD_CLASS,
     primaryId->idSuffix->opt);
   ASSERT_EQ(63, primaryId->idSuffix->posPeriod);

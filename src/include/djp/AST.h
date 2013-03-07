@@ -1751,7 +1751,8 @@ struct PrimaryBasicType : ASTError {
 
 /// Primary: Identifier { . Identifier } [IdentifierSuffix]
 struct PrimaryIdentifier : ASTError {
-  std::vector<spIdentifier> ids;
+  spIdentifier id;
+  std::vector<std::pair<unsigned, spIdentifier> > pairs;
   spIdentifierSuffix idSuffix;
 };
 

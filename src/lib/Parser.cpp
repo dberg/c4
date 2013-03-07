@@ -3379,25 +3379,30 @@ void Parser::parsePrimaryBasicType(spPrimaryBasicType &primaryBasicType) {
 
 /// Primary: Identifier { . Identifier } [IdentifierSuffix]
 void Parser::parsePrimaryIdentifier(spPrimaryIdentifier &primaryId) {
-  State backup;
-  while (lexer->getCurToken() == TOK_IDENTIFIER) {
+
+  // Identifier
+  primaryId->id = spIdentifier(new Identifier(
+      lexer->getCurTokenIni(), lexer->getCurTokenStr()));
+  lexer->getNextToken(); // consume Identifier
+
+  // { . Identifier }
+  State state;
+  while (lexer->getCurToken() == TOK_PERIOD) {
+    saveState(state);
+
+    unsigned pos = lexer->getCursor() - 1;
+    lexer->getNextToken(); // consume '.'
+
+    if (lexer->getCurToken() != TOK_IDENTIFIER) {
+      restoreState(state);
+      break;
+    }
+
     spIdentifier id = spIdentifier(new Identifier(
       lexer->getCurTokenIni(), lexer->getCurTokenStr()));
     lexer->getNextToken(); // consume Identifier
 
-    primaryId->ids.push_back(id);
-
-    if (lexer->getCurToken() != TOK_PERIOD) {
-      break;
-    }
-
-    saveState(backup);
-    lexer->getNextToken(); // consume '.'
-
-    if (lexer->getCurToken() != TOK_IDENTIFIER) {
-      restoreState(backup);
-      break;
-    }
+    primaryId->pairs.push_back(std::make_pair(pos, id));
   }
 
   // [IdentifierSuffix]

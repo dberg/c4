@@ -2060,8 +2060,13 @@ void EmacsOutput::setPrimary(const spPrimary &primary) {
 }
 
 void EmacsOutput::setPrimaryIdentifier(const spPrimaryIdentifier &primaryId) {
-  for (unsigned int i = 0; i < primaryId->ids.size(); i++) {
-    setIdentifier(primaryId->ids[i]);
+  if (primaryId->id) {
+    setIdentifier(primaryId->id);
+  }
+
+  for (unsigned int i = 0; i < primaryId->pairs.size(); i++) {
+    setOp(primaryId->pairs[i].first);
+    setIdentifier(primaryId->pairs[i].second);
   }
 
   if (primaryId->idSuffix) {
