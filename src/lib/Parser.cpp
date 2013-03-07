@@ -2929,20 +2929,22 @@ void Parser::parseExplicitGenericInvocationSuffix(
 
 /// PackageDeclaration: [ [Annotations]  package QualifiedIdentifier ; ]
 spPackageDeclaration Parser::parsePackageDeclaration(
-  std::vector<spAnnotation> &annotations) {
-  spPackageDeclaration pkgDecl = spPackageDeclaration(new PackageDeclaration());
+  std::vector<spAnnotation> &annotations, spPackageDeclaration &pkgDecl) {
+
   // If we have annotations they belong to the package declaration
   if (annotations.size()) {
     pkgDecl->annotations = annotations;
     annotations.clear();
   }
-  pkgDecl->pkgTokPos = lexer->getCursor()
-    - tokenUtil.getTokenLength(TOK_KEY_PACKAGE);
 
+  // package
+  pkgDecl->tokPackage = spTokenExp(new TokenExp(
+    lexer->getCursor() - tokenUtil.getTokenLength(
+      lexer->getCurToken()), lexer->getCurToken()));
   lexer->getNextToken(); // Consume 'package'
 
   if (lexer->getCurToken() != TOK_IDENTIFIER) {
-    pkgDecl->err = true;
+    pkgDecl->addErr(diag->addErr(ERR_EXP_IDENTIFIER, lexer->getCursor() - 1));
     return pkgDecl;
   }
 
@@ -5382,7 +5384,8 @@ void Parser::parseCompilationUnit() {
   }
 
   if (lexer->getCurToken() == TOK_KEY_PACKAGE) {
-    compilationUnit->pkgDecl = parsePackageDeclaration(annotations);
+    compilationUnit->pkgDecl = spPackageDeclaration(new PackageDeclaration);
+    parsePackageDeclaration(annotations, compilationUnit->pkgDecl);
   }
 
   // Import Declaration

@@ -1920,9 +1920,9 @@ void EmacsOutput::setPackageDeclaration(const spPackageDeclaration &pkgDecl) {
   outSH += "(djp-package-declaration ";
   setAnnotations(pkgDecl->annotations);
 
-  // package keyword
-  setKeyword(pkgDecl->pkgTokPos + 1,
-    pkgDecl->pkgTokPos + tokenUtil.getTokenLength(TOK_KEY_PACKAGE) + 1);
+  if (pkgDecl->tokPackage){
+    setKeyword(pkgDecl->tokPackage);
+  }
 
   // package qualified identifier
   if (pkgDecl->qualifiedId) {

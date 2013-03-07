@@ -164,7 +164,7 @@ class Parser {
     spNormalInterfaceDeclaration &normalDecl);
   void parseNullLiteral(spNullLiteral &nullLiteral);
   spPackageDeclaration parsePackageDeclaration(
-    std::vector<spAnnotation> &annotations);
+    std::vector<spAnnotation> &annotations, spPackageDeclaration &pkgDecl);
   void parseParExpression(spParExpression &parExpr);
   void parsePostfixOp(spPostfixOp &postfixOp);
   void parsePrimary(spPrimary &primary);

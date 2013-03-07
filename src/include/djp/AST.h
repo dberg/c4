@@ -347,12 +347,10 @@ struct ConstantDeclaratorsRest : ASTError {
 };
 
 /// PackageDeclaration: [ [Annotations]  package QualifiedIdentifier ; ]
-struct PackageDeclaration {
+struct PackageDeclaration : ASTError {
   std::vector<spAnnotation> annotations;
-  int pkgTokPos;
+  spTokenExp tokPackage;
   spQualifiedIdentifier qualifiedId;
-  bool err;
-  PackageDeclaration() : pkgTokPos(-1), err(false) {}
 };
 
 /// TypeDeclaration: ClassOrInterfaceDeclaration ;
