@@ -2173,7 +2173,7 @@ struct NonWildcardTypeArgumentsOrDiamond : ASTError {
 /// TypeList: ReferenceType { , ReferenceType }
 struct TypeList : ASTError {
   spReferenceType refType;
-  std::vector<spReferenceType> refTypes;
+  std::vector<std::pair<unsigned, spReferenceType> > pairs;
 };
 
 /// TypeList2: Type { , Type }

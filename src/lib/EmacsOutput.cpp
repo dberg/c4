@@ -2516,8 +2516,9 @@ void EmacsOutput::setTypeList(const spTypeList &typeList) {
     setReferenceType(typeList->refType);
   }
 
-  for (unsigned i = 0; i < typeList->refTypes.size(); i++) {
-    setReferenceType(typeList->refTypes[i]);
+  for (unsigned i = 0; i < typeList->pairs.size(); i++) {
+    setOp(typeList->pairs[i].first);
+    setReferenceType(typeList->pairs[i].second);
   }
 }
 

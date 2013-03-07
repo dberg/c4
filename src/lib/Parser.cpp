@@ -5950,31 +5950,34 @@ void Parser::parseType(spType &type) {
 /// TypeList: ReferenceType { , ReferenceType }
 void Parser::parseTypeList(spTypeList &typeList) {
   if (lexer->getCurToken() != TOK_IDENTIFIER) {
-    unsigned int cursor = lexer->getCursor();
-    typeList->addErr(diag->addErr(ERR_EXP_IDENTIFIER, cursor - 1));
+    typeList->addErr(diag->addErr(ERR_EXP_IDENTIFIER, lexer->getCursor() - 1));
     return;
   }
 
   typeList->refType = spReferenceType(new ReferenceType);
   parseReferenceType(typeList->refType);
 
+  // { , ReferenceType }
+  State state;
   while (lexer->getCurToken() == TOK_COMMA) {
+    saveState(state);
+
+    unsigned pos = lexer->getCursor() - 1;
     lexer->getNextToken(); // consume ','
 
     if (lexer->getCurToken() != TOK_IDENTIFIER) {
-      unsigned int cursor = lexer->getCursor();
-      typeList->addErr(diag->addErr(ERR_EXP_IDENTIFIER, cursor - 1));
+      restoreState(state);
       return;
     }
 
     spReferenceType refType = spReferenceType(new ReferenceType);
     parseReferenceType(refType);
-
     if (refType->err) {
+      restoreState(state);
       return;
     }
 
-    typeList->refTypes.push_back(refType);
+    typeList->pairs.push_back(std::make_pair(pos, refType));
   }
 }
 
