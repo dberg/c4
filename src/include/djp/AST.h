@@ -151,6 +151,7 @@ typedef boost::shared_ptr<struct ConstantDeclaratorRest>
 typedef boost::shared_ptr<struct ConstructorDeclaratorRest>
   spConstructorDeclaratorRest;
 typedef boost::shared_ptr<struct CreatedName> spCreatedName;
+typedef boost::shared_ptr<struct CreatedNameTriplet> spCreatedNameTriplet;
 typedef boost::shared_ptr<struct Creator> spCreator;
 typedef boost::shared_ptr<struct CreatorOpt1> spCreatorOpt1;
 typedef boost::shared_ptr<struct CreatorOpt2> spCreatorOpt2;
@@ -2207,7 +2208,16 @@ struct TypeParameters : ASTError {
 struct CreatedName : ASTError {
   spIdentifier id;
   spTypeArgumentsOrDiamond typeArgsOrDiam;
-  std::vector<spCreatedName> createdNames;
+  std::vector<spCreatedNameTriplet> triplets;
+};
+
+/// . Identifier [TypeArgumentsOrDiamond]
+struct CreatedNameTriplet {
+  unsigned posPeriod;
+  spIdentifier id;
+  spTypeArgumentsOrDiamond typeArgsOrDiam;
+
+  CreatedNameTriplet() : posPeriod(0) {}
 };
 
 /// TypeArgumentsOrDiamond:

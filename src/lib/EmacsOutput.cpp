@@ -576,8 +576,10 @@ void EmacsOutput::setCreatedName(const spCreatedName &createdName) {
     setTypeArgumentsOrDiamond(createdName->typeArgsOrDiam);
   }
 
-  for (unsigned i = 0; i < createdName->createdNames.size(); i++) {
-    setCreatedName(createdName->createdNames[i]);
+  for (unsigned i = 0; i < createdName->triplets.size(); i++) {
+    setOp(createdName->triplets[i]->posPeriod);
+    setIdentifier(createdName->triplets[i]->id);
+    setTypeArgumentsOrDiamond(createdName->triplets[i]->typeArgsOrDiam);
   }
 }
 

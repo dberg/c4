@@ -5518,18 +5518,41 @@ void Parser::parseCreatedName(spCreatedName &createdName) {
   }
 
   // { . Identifier [TypeArgumentsOrDiamond] }
+  State state;
   while (lexer->getCurToken() == TOK_PERIOD) {
-    // Comma
+    saveState(state);
+
+    spCreatedNameTriplet triplet = spCreatedNameTriplet(new CreatedNameTriplet);
+
+    // .
+    triplet->posPeriod = lexer->getCursor();
     lexer->getNextToken(); // consume '.'
 
-    spCreatedName createdNameTmp = spCreatedName(new CreatedName);
-    parseCreatedNameHelper(createdNameTmp);
-    createdName->createdNames.push_back(createdNameTmp);
-
-    if (createdNameTmp->err) {
-      createdName->addErr(-1);
+    // Identifier
+    if (lexer->getCurToken() != TOK_IDENTIFIER) {
+      restoreState(state);
       return;
     }
+
+    triplet->id = spIdentifier(new Identifier(
+        lexer->getCurTokenIni(), lexer->getCurTokenStr()));
+    lexer->getNextToken(); // consume identifier
+
+    // TypeArgumentsOrDiamond
+    if (lexer->getCurToken() != TOK_OP_LT) {
+      continue;
+    }
+
+    triplet->typeArgsOrDiam = spTypeArgumentsOrDiamond(
+      new TypeArgumentsOrDiamond);
+    parseTypeArgumentsOrDiamond(createdName->typeArgsOrDiam);
+
+    if (triplet->typeArgsOrDiam->err) {
+      restoreState(state);
+      return;
+    }
+
+    createdName->triplets.push_back(triplet);
   }
 }
 
