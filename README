@@ -35,9 +35,9 @@ Emacs mode (djp-mode) installation
 Parser lib
 -------------------------------------------------------------------------------
 
-The parser from djp is modular and can be embemdded into different projects to
-produce different outputs. The directory sample includes a simple example that
-takes the following java class as input:
+The parser from djp is modular and can be embedded into different projects. The
+directory 'sample' includes a simple example that takes the following java
+class as input:
 
 Class Foo {
     public Foo() {}
@@ -45,8 +45,7 @@ Class Foo {
     public void baz() {}
 }
 
-The sample code ListClassMethods prints a list of method names found int the
-class Foo. Output:
+and prints a list of method names found int the class Foo:
 
 Foo
   Foo (constructor)
