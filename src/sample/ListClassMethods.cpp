@@ -6,7 +6,7 @@ int main() {
   std::string myClass =
     "class Foo {"
     "    public Foo() {}"
-    "    public String bar() {}"
+    "    public String bar() { return ""; }"
     "    public void baz() {}"
     "}";
 
