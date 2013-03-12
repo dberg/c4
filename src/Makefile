@@ -69,14 +69,33 @@ $(bin)/djp: $(obj)/CmdInput.o \
                $(obj)/EmacsOutput.o \
                $(CFLAGS) $(INC) $(obj)/djp.o -o $@ $(obj)/libdjp.a
 
-# modules
+# objects
 $(obj)/CmdInput.o: $(libdir)/CmdInput.cpp $(incdir)/djp/CmdInput.h
 	$(CXX) $(CFLAGS) $(INC) -c $< -o $@
 
-$(obj)/Diagnosis.o: $(libdir)/Diagnosis.cpp $(incdir)/djp/Diagnosis.h
+$(obj)/File.o: $(libdir)/File.cpp $(incdir)/djp/File.h
 	$(CXX) $(CFLAGS) $(INC) -c $< -o $@
 
-$(obj)/File.o: $(libdir)/File.cpp $(incdir)/djp/File.h
+$(obj)/EmacsOutput.o: $(libdir)/EmacsOutput.cpp \
+                      $(incdir)/djp/EmacsOutput.h \
+                      $(incdir)/djp/AST.h \
+                      $(incdir)/djp/ErrorCodes.h \
+                      $(incdir)/djp/Token.h
+	$(CXX) $(CFLAGS) $(INC) -c $< -o $@
+
+$(obj)/djp.o: $(libdir)/djp.cpp
+	$(CXX) $(CFLAGS) $(INC) -c $< -o $@
+
+# objects - libdjp
+$(obj)/libdjp.a: $(obj)/Diagnosis.o \
+                 $(obj)/Lexer.o \
+                 $(obj)/LiteralSupport.o \
+                 $(obj)/Parser.o \
+                 $(obj)/SourceCodeStream.o \
+                 $(obj)/SymbolTable.o
+	ar -rv $@ $+
+
+$(obj)/Diagnosis.o: $(libdir)/Diagnosis.cpp $(incdir)/djp/Diagnosis.h
 	$(CXX) $(CFLAGS) $(INC) -c $< -o $@
 
 $(obj)/Lexer.o: $(libdir)/Lexer.cpp \
@@ -101,13 +120,6 @@ $(obj)/Parser.o: $(libdir)/Parser.cpp \
                  $(incdir)/djp/Token.h
 	$(CXX) $(CFLAGS) $(INC) -c $< -o $@
 
-$(obj)/EmacsOutput.o: $(libdir)/EmacsOutput.cpp \
-                      $(incdir)/djp/EmacsOutput.h \
-                      $(incdir)/djp/AST.h \
-                      $(incdir)/djp/ErrorCodes.h \
-                      $(incdir)/djp/Token.h
-	$(CXX) $(CFLAGS) $(INC) -c $< -o $@
-
 $(obj)/SourceCodeStream.o: $(libdir)/SourceCodeStream.cpp \
 	                   $(incdir)/djp/SourceCodeStream.h
 	$(CXX) $(CFLAGS) $(INC) -c $< -o $@
@@ -115,17 +127,6 @@ $(obj)/SourceCodeStream.o: $(libdir)/SourceCodeStream.cpp \
 $(obj)/SymbolTable.o: $(libdir)/SymbolTable.cpp \
                  $(incdir)/djp/SymbolTable.h
 	$(CXX) $(CFLAGS) $(INC) -c $< -o $@
-
-$(obj)/djp.o: $(libdir)/djp.cpp
-	$(CXX) $(CFLAGS) $(INC) -c $< -o $@
-
-$(obj)/libdjp.a: $(obj)/Diagnosis.o \
-                 $(obj)/Lexer.o \
-                 $(obj)/LiteralSupport.o \
-                 $(obj)/Parser.o \
-                 $(obj)/SourceCodeStream.o \
-                 $(obj)/SymbolTable.o
-	ar -rv $@ $+
 
 # tests
 $(bin)/tests: $(test_libdir)/ParserTest.cpp \
