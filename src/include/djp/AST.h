@@ -1,6 +1,6 @@
 //-*- C++ -*-
-#ifndef __ANNOTATIONS_H__
-#define __ANNOTATIONS_H__
+#ifndef __AST_H__
+#define __AST_H__
 #include <utility>
 #include <vector>
 #include <boost/shared_ptr.hpp>
