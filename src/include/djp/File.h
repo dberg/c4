@@ -6,9 +6,26 @@
 #include <streambuf>
 
 namespace djp {
+
 class File {
+
 public:
-  int read(std::string filename, std::string &buffer);
+  template<class T>
+  int read(std::string filename, T &buffer) {
+    std::ifstream t(filename.c_str());
+    if (t.good() == false) {
+      return -1;
+    }
+
+    t.seekg(0, std::ios::end);
+    buffer.reserve(t.tellg());
+    t.seekg(0, std::ios::beg);
+
+    buffer.assign((std::istreambuf_iterator<char>(t)),
+      std::istreambuf_iterator<char>());
+
+    return 0;
+  }
 };
 
 }

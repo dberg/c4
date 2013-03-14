@@ -7,9 +7,15 @@ namespace djp {
 
 class CmdInput {
 public:
+  int argc;
+  const char **argv;
+
   std::string error;
   std::string filename;
-  int processCmdArgs(int argc, const char **argv);
+
+  CmdInput(int argc, const char **argv) : argc(argc), argv(argv) {}
+  int processCmdArgs();
+  bool binaryFlag();
 };
 
 }

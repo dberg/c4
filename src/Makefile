@@ -58,22 +58,17 @@ directories:
 
 # main djp
 $(bin)/djp: $(obj)/CmdInput.o \
-            $(obj)/File.o \
             $(obj)/EmacsOutput.o \
             $(obj)/SourceCodeStream.o \
             $(obj)/SymbolTable.o \
             $(obj)/djp.o \
             $(obj)/libdjp.a
 	$(CXX) $(obj)/CmdInput.o \
-               $(obj)/File.o \
                $(obj)/EmacsOutput.o \
                $(CFLAGS) $(INC) $(obj)/djp.o -o $@ $(obj)/libdjp.a
 
 # objects
 $(obj)/CmdInput.o: $(libdir)/CmdInput.cpp $(incdir)/djp/CmdInput.h
-	$(CXX) $(CFLAGS) $(INC) -c $< -o $@
-
-$(obj)/File.o: $(libdir)/File.cpp $(incdir)/djp/File.h
 	$(CXX) $(CFLAGS) $(INC) -c $< -o $@
 
 $(obj)/EmacsOutput.o: $(libdir)/EmacsOutput.cpp \
@@ -92,7 +87,8 @@ $(obj)/libdjp.a: $(obj)/Diagnosis.o \
                  $(obj)/LiteralSupport.o \
                  $(obj)/Parser.o \
                  $(obj)/SourceCodeStream.o \
-                 $(obj)/SymbolTable.o
+                 $(obj)/SymbolTable.o \
+                 $(obj)/ParserBin.o
 	ar -rv $@ $+
 
 $(obj)/Diagnosis.o: $(libdir)/Diagnosis.cpp $(incdir)/djp/Diagnosis.h
@@ -126,6 +122,10 @@ $(obj)/SourceCodeStream.o: $(libdir)/SourceCodeStream.cpp \
 
 $(obj)/SymbolTable.o: $(libdir)/SymbolTable.cpp \
                  $(incdir)/djp/SymbolTable.h
+	$(CXX) $(CFLAGS) $(INC) -c $< -o $@
+
+# objects - binary parsing
+$(obj)/ParserBin.o: $(libdir)/ParserBin.cpp $(incdir)/djp/ParserBin.h
 	$(CXX) $(CFLAGS) $(INC) -c $< -o $@
 
 # tests
