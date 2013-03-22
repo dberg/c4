@@ -139,9 +139,8 @@ void ParserBin::parseConstantPool(unsigned poolCount, spCPInfo &constantPool) {
 
 void ParserBin::parseCPMethodref(spCPItem &item) {
   item->cMethodrefInfo = spCMethodrefInfo(new CMethodrefInfo);
-  // TODO:
-  // u2 class_index
-  // u2 name_and_type_index;
+  item->cMethodrefInfo->class_index = getU2();
+  item->cMethodrefInfo->name_and_type_index = getU2();
 }
 
 } // namespace
