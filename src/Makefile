@@ -132,6 +132,7 @@ $(obj)/ParserBin.o: $(libdir)/ParserBin.cpp $(incdir)/djp/ParserBin.h
 $(bin)/tests: $(test_libdir)/ParserTest.cpp \
               $(test_libdir)/SymbolTableTest.cpp \
               $(test_libdir)/EmacsOutputTest.cpp \
+              $(test_libdir)/ParserBinTest.cpp \
               $(obj)/EmacsOutput.o \
               $(obj)/Diagnosis.o \
               $(obj)/libdjp.a \
@@ -141,6 +142,7 @@ $(bin)/tests: $(test_libdir)/ParserTest.cpp \
                                      $(test_libdir)/ParserTest.cpp \
                                      $(test_libdir)/SymbolTableTest.cpp \
                                      $(test_libdir)/EmacsOutputTest.cpp \
+                                     $(test_libdir)/ParserBinTest.cpp \
                                      -o $@ \
                                      $(obj)/libdjp.a \
                                      $(gtest_obj)/libgtest.a \

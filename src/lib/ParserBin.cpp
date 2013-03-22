@@ -72,66 +72,65 @@ void ParserBin::parseConstantPool(unsigned poolCount,
   classFile->constant_pool.reserve(poolCount - 1);
   for (unsigned i = 0; i < poolCount; i++) {
     u1 tag = getU1();
-    // TODO:
-    switch (tag) {
+     switch (tag) {
       case CONSTANT_Class:
-        std::cout << "CONSTANT_Class\n";
+        // TODO:
         break;
 
       case CONSTANT_Fieldref:
-        std::cout << "CONSTANT_Fieldref\n";
+        // TODO:
         break;
 
       case CONSTANT_Methodref:
-        std::cout << "CONSTANT_Methodref\n";
+        // TODO:
         break;
 
       case CONSTANT_InterfaceMethodref:
-        std::cout << "CONSTANT_InterfaceMethodref\n";
+        // TODO:
         break;
 
       case CONSTANT_String:
-        std::cout << "CONSTANT_String\n";
+        // TODO:
         break;
 
       case CONSTANT_Integer:
-        std::cout << "CONSTANT_Integer\n";
+        // TODO:
         break;
 
       case CONSTANT_Float:
-        std::cout << "CONSTANT_Float\n";
+        // TODO:
         break;
 
       case CONSTANT_Long:
-        std::cout << "CONSTANT_Long\n";
+        // TODO:
         break;
 
       case CONSTANT_Double:
-        std::cout << "CONSTANT_Double\n";
+        // TODO:
         break;
 
       case CONSTANT_NameAndType:
-        std::cout << "CONSTANT_NameAndType\n";
+        // TODO:
         break;
 
       case CONSTANT_Utf8:
-        std::cout << "CONSTANT_Utf8\n";
+        // TODO:
         break;
 
       case CONSTANT_MethodHandle:
-        std::cout << "CONSTANT_MethodHandle\n";
+        // TODO:
         break;
 
       case CONSTANT_MethodType:
-        std::cout << "CONSTANT_MethodType\n";
+        // TODO:
         break;
 
       case CONSTANT_InvokeDynamic:
-        std::cout << "CONSTANT_InvokeDynamic\n";
+        // TODO:
         break;
 
       default:
-        std::cout << "Unknown: " << tag << "\n";
+        addErr(ERR_INVALID_CONST_POOL_TAG);
     }
   }
 }

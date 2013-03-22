@@ -11,7 +11,8 @@ namespace djp {
 class ParserBin {
 
   enum ParserBinErr {
-    ERR_INVALID_MAGIC_NUMBER
+    ERR_INVALID_MAGIC_NUMBER,
+    ERR_INVALID_CONST_POOL_TAG,
   };
 
   unsigned pos; // current buffer position
