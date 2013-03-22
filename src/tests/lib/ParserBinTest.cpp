@@ -21,5 +21,7 @@ TEST(ParserBin, HelloWorld) {
   ParserBin parser(filename, buffer);
   parser.parse();
 
-  ASSERT_EQ(parser.classFile->magic, 0xCAFEBABE);
+  ASSERT_EQ(0xCAFEBABE, parser.classFile->magic);
+  spCPItem cpItem = parser.classFile->constant_pool->items[0];
+  ASSERT_EQ(CONSTANT_Methodref, cpItem->tag);
 }

@@ -25,8 +25,8 @@ class ParserBin {
   u2 getU2();
   u4 getU4();
   void parseClassFile();
-  void parseConstantPool(unsigned poolCount,
-    std::vector<spCPInfo> &constantPool);
+  void parseConstantPool(unsigned poolCount, spCPInfo &constantPool);
+  void parseCPMethodref(spCPItem &item);
 
 public:
   ParserBin(const std::string filename,

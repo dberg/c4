@@ -63,16 +63,17 @@ void ParserBin::parseClassFile() {
   classFile->minor_version = getU2();
   classFile->major_version = getU2();
   classFile->constant_pool_count = getU2();
+  classFile->constant_pool = spCPInfo(new CPInfo);
   parseConstantPool(classFile->constant_pool_count, classFile->constant_pool);
 }
 
-void ParserBin::parseConstantPool(unsigned poolCount,
-  std::vector<spCPInfo> &constantPool) {
-
-  classFile->constant_pool.reserve(poolCount - 1);
+void ParserBin::parseConstantPool(unsigned poolCount, spCPInfo &constantPool) {
+  constantPool->items.reserve(poolCount - 1);
   for (unsigned i = 0; i < poolCount; i++) {
     u1 tag = getU1();
-     switch (tag) {
+    spCPItem item = spCPItem(new CPItem);
+    item->tag = tag;
+    switch (tag) {
       case CONSTANT_Class:
         // TODO:
         break;
@@ -82,7 +83,8 @@ void ParserBin::parseConstantPool(unsigned poolCount,
         break;
 
       case CONSTANT_Methodref:
-        // TODO:
+        parseCPMethodref(item);
+        constantPool->items.push_back(item);
         break;
 
       case CONSTANT_InterfaceMethodref:
@@ -133,6 +135,13 @@ void ParserBin::parseConstantPool(unsigned poolCount,
         addErr(ERR_INVALID_CONST_POOL_TAG);
     }
   }
+}
+
+void ParserBin::parseCPMethodref(spCPItem &item) {
+  item->cMethodrefInfo = spCMethodrefInfo(new CMethodrefInfo);
+  // TODO:
+  // u2 class_index
+  // u2 name_and_type_index;
 }
 
 } // namespace

@@ -13,6 +13,8 @@ typedef uint8_t u1;
 typedef boost::shared_ptr<struct ClassFile> spClassFile;
 typedef boost::shared_ptr<struct ConstantPool> spConstantPool;
 typedef boost::shared_ptr<struct CPInfo> spCPInfo;
+typedef boost::shared_ptr<struct CPItem> spCPItem;
+typedef boost::shared_ptr<struct CMethodrefInfo> spCMethodrefInfo;
 
 enum ConstantPoolTag {
   CONSTANT_Class = 7,
@@ -32,29 +34,29 @@ enum ConstantPoolTag {
 };
 
 /// ClassFile {
-///        u4             magic;
-///        u2             minor_version;
-///        u2             major_version;
-///        u2             constant_pool_count;
-///        cp_info        constant_pool[constant_pool_count-1];
-///        u2             access_flags;
-///        u2             this_class;
-///        u2             super_class;
-///        u2             interfaces_count;
-///        u2             interfaces[interfaces_count];
-///        u2             fields_count;
-///        field_info     fields[fields_count];
-///        u2             methods_count;
-///        method_info    methods[methods_count];
-///        u2             attributes_count;
-///        attribute_info attributes[attributes_count];
+///     u4             magic;
+///     u2             minor_version;
+///     u2             major_version;
+///     u2             constant_pool_count;
+///     cp_info        constant_pool[constant_pool_count-1];
+///     u2             access_flags;
+///     u2             this_class;
+///     u2             super_class;
+///     u2             interfaces_count;
+///     u2             interfaces[interfaces_count];
+///     u2             fields_count;
+///     field_info     fields[fields_count];
+///     u2             methods_count;
+///     method_info    methods[methods_count];
+///     u2             attributes_count;
+///     attribute_info attributes[attributes_count];
 /// }
 struct ClassFile {
   u4 magic;
   u2 minor_version;
   u2 major_version;
   u2 constant_pool_count;
-  std::vector<spCPInfo> constant_pool;
+  spCPInfo constant_pool;
   // TODO:
   //u2             access_flags;
   //u2             this_class;
@@ -70,10 +72,40 @@ struct ClassFile {
 };
 
 /// cp_info {
-/// u1 tag;
-/// u1 info[]; }
+///     u1 tag;
+///     u1 info[];
+/// }
 struct CPInfo {
+  std::vector<spCPItem> items;
+};
+
+struct CPItem {
   u1 tag;
+  //spCClass cClass;
+  //spCFieldref cFieldref;
+  spCMethodrefInfo cMethodrefInfo;
+  //spCInterfaceMethodref cInterfaceMethodref;
+  //spCString cString;
+  //spCInteger cInteger;
+  //spCFloat cFloat;
+  //spCLong cLong;
+  //spCDouble cDouble;
+  //spCNameAndType cNameAndType;
+  //spCUtf8 cUtf8;
+  //spCMethodHandle cMethodHandle;
+  //spCMethodType cMethodType;
+  //spCInvokeDynamic cInvokeDynamic;
+};
+
+/// CONSTANT_Methodref_info {
+///     u1 tag;
+///     u2 class_index;
+///     u2 name_and_type_index;
+/// }
+struct CMethodrefInfo {
+  u1 tag;
+  u2 class_index;
+  u2 name_and_type_index;
 };
 
 } // namespace
