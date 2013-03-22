@@ -20,9 +20,12 @@ class ParserBin {
   std::vector<unsigned char> buffer;
 
   void addErr(int errCode) { err = errCode; }
-  unsigned getU4();
-  unsigned getU2();
+  u1 getU1();
+  u2 getU2();
+  u4 getU4();
   void parseClassFile();
+  void parseConstantPool(unsigned poolCount,
+    std::vector<spCPInfo> &constantPool);
 
 public:
   ParserBin(const std::string filename,
