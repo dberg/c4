@@ -6,7 +6,14 @@
 #include <vector>
 using namespace djp;
 
-std::string current_dir = dirname(const_cast<char *>(__FILE__));
+std::string getCurrentDir() {
+  char *filename = strdup(__FILE__);
+  std::string dir = dirname(filename);
+  free(filename);
+  return dir;
+}
+
+std::string current_dir = getCurrentDir();
 
 /// public class HelloWorld {
 ///     public static void main(String[] args) {
