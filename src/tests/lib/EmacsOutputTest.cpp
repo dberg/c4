@@ -12,8 +12,7 @@ TEST(EmacsOutput, PackageDeclaration) {
 
   Parser parser(filename, buffer);
   parser.parse();
-  EmacsOutput output(parser.compilationUnit, parser.comments, parser.st,
-    parser.diag);
+  EmacsOutput output(parser);
   output.build();
   std::string expected =
     "((djp-package-declaration "
@@ -36,8 +35,7 @@ TEST(EmacsOutput, ImportDeclaration) {
 
   Parser parser(filename, buffer);
   parser.parse();
-  EmacsOutput output(parser.compilationUnit, parser.comments, parser.st,
-    parser.diag);
+  EmacsOutput output(parser);
   output.build();
   std::string expected = "((djp-import-declarations "
     "(djp-import-declaration "
@@ -77,8 +75,7 @@ TEST(EmacsOutput, NormalClassDeclaration) {
     "public class Test extends Base {}\n";
   Parser parser(filename, buffer);
   parser.parse();
-  EmacsOutput output(parser.compilationUnit, parser.comments, parser.st,
-    parser.diag);
+  EmacsOutput output(parser);
   output.build();
   std::string expected =
     "((djp-class-or-interface-declaration "
@@ -96,8 +93,7 @@ TEST(EmacsOutput, ClassConstructor) {
   std::string buffer = "class Abc { Abc() {} }";
   Parser parser(filename, buffer);
   parser.parse();
-  EmacsOutput output(parser.compilationUnit, parser.comments, parser.st,
-    parser.diag);
+  EmacsOutput output(parser);
   output.build();
   std::string expected =
     "((djp-class-or-interface-declaration "
@@ -117,8 +113,7 @@ TEST(EmacsOutput, ClassConstructorParameters) {
   std::string buffer = "class Abc { Abc(int a, double b) {} }";
   Parser parser(filename, buffer);
   parser.parse();
-  EmacsOutput output(parser.compilationUnit, parser.comments, parser.st,
-    parser.diag);
+  EmacsOutput output(parser);
   output.build();
   std::string expected =
     "((djp-class-or-interface-declaration "
@@ -142,8 +137,7 @@ TEST(EmacsOutput, Expression2Rest) {
   std::string buffer = "class C { void m() { if (x == null) { return; }}}";
   Parser parser(filename, buffer);
   parser.parse();
-  EmacsOutput output(parser.compilationUnit, parser.comments, parser.st,
-    parser.diag);
+  EmacsOutput output(parser);
   output.build();
   std::string expected =
     "((djp-class-or-interface-declaration "

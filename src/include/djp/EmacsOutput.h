@@ -4,6 +4,7 @@
 #include "AST.h"
 #include "Diagnosis.h"
 #include "ErrorCodes.h"
+#include "Parser.h"
 #include "SymbolTable.h"
 #include "Token.h"
 #include <iostream>
@@ -196,11 +197,10 @@ public:
   std::string outSH; // syntax highlighting
   std::string outST; // symbol table
 
-  EmacsOutput(const spCompilationUnit &_compilationUnit,
-    std::vector<spComment> &_comments, const ST &_st, spDiagnosis &_diag)
-    : compilationUnit(_compilationUnit), comments(_comments), st(_st),
-      diag(_diag) {
-
+  EmacsOutput(const Parser &parser)
+    : compilationUnit(parser.compilationUnit), comments(parser.comments),
+      st(parser.st), diag(parser.diag)
+  {
     // Symbol table types representation in elisp
     stTypes[ST_COMPILATION_UNIT] = "_comp_unit";
     stTypes[ST_CLASS_OR_INTERFACE] = "_class_or_interface";
