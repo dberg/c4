@@ -35,7 +35,7 @@ TEST(SymbolTable, Class) {
     "}";
 
   spDiagnosis diag = spDiagnosis(new Diagnosis());
-  Parser parser(filename, buffer, diag);
+  Parser parser(filename, buffer);
   parser.parse();
 
   ASSERT_EQ(9, parser.st.symbols.size());

@@ -22,9 +22,7 @@ int main(int argc, const char **argv) {
     return 1;
   }
 
-  spDiagnosis diag = spDiagnosis(new Diagnosis);
-
-  Parser parser(ci.filename, buffer, diag);
+  Parser parser(ci.filename, buffer);
   parser.parse();
   if (parser.error) {
     std::cerr << "Error( " << parser.error << "): "
@@ -32,7 +30,8 @@ int main(int argc, const char **argv) {
     return 1;
   }
 
-  EmacsOutput output(parser.compilationUnit, parser.comments, parser.st, diag);
+  EmacsOutput output(parser.compilationUnit, parser.comments,
+    parser.st, parser.diag);
   output.build();
   std::cout << output.outSH << "\n" << output.outST;
 

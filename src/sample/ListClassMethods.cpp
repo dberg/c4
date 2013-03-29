@@ -10,8 +10,7 @@ int main() {
     "    public void baz() {}"
     "}";
 
-  spDiagnosis diag = spDiagnosis(new Diagnosis);
-  Parser parser("MyClass.java", myClass, diag);
+  Parser parser("MyClass.java", myClass);
   parser.parse();
   spNormalClassDeclaration nClassDecl = parser.compilationUnit
     ->typeDecls[0]

@@ -7,6 +7,7 @@
 #include <boost/shared_ptr.hpp>
 #include "AST.h"
 #include "Diagnosis.h"
+#include "Indentation.h"
 #include "LiteralSupport.h"
 #include "ParserState.h"
 #include "SourceCodeStream.h"
@@ -29,11 +30,13 @@ class Lexer {
 
   int curToken;
   std::string curTokenStr;
+  int curIndentationLevel;
   spDiagnosis diag;
   spSourceCodeStream src;
   spLiteralSupport litSupport;
   TokenUtil tokenUtil;
   std::vector<spComment> comments;
+  LineIndentationMap indentMap;
 
   int getToken();
   int getAmpersandToken();
@@ -56,11 +59,16 @@ class Lexer {
   int getRemToken();
   int getStringLiteral();
   int getTokenIdentifier(char c);
+  void processIndentation(unsigned prevLine, unsigned curLine,
+    int prevToken, int curToken);
 
 public:
-  Lexer(spSourceCodeStream &src, spDiagnosis &diag)
-    : curToken(0), curTokenStr(""), diag(diag), src(src),
-      litSupport(spLiteralSupport(new LiteralSupport(src, diag))) {}
+  Lexer(spSourceCodeStream &src, spDiagnosis &diag,
+    LineIndentationMap &indentMap)
+    : curToken(0), curTokenStr(""), curIndentationLevel(0),
+      diag(diag), src(src),
+      litSupport(spLiteralSupport(new LiteralSupport(src, diag))),
+      indentMap(indentMap) {}
 
   void getNextToken();
   int getCurToken() { return curToken; }
