@@ -82,7 +82,7 @@ void Lexer::processIndentation(unsigned prevLine, unsigned curLine,
 
   // Unless the previous statement is a semi-colon we have an offset to the
   // current indentation level.
-  bool offset = (prevToken == TOK_SEMICOLON) ? false : true;
+  bool offset = (prevToken == TOK_SEMICOLON || prevToken >= 0) ? false : true;
   indentMap[curLine] = spIndentation(new Indentation(
     curIndentationLevel, offset));
 }

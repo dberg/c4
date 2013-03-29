@@ -36,7 +36,7 @@ class Lexer {
   spLiteralSupport litSupport;
   TokenUtil tokenUtil;
   std::vector<spComment> comments;
-  LineIndentationMap indentMap;
+  LineIndentationMap& indentMap;
 
   int getToken();
   int getAmpersandToken();
