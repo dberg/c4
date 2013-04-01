@@ -32,7 +32,9 @@ int main(int argc, const char **argv) {
 
   EmacsOutput output(parser);
   output.build();
-  std::cout << output.outSH << "\n" << output.outST;
+  std::cout << output.outSH << std::endl
+    << output.outST << std::endl
+    << output.outIT;
 
   return 0;
 }
