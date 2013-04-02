@@ -98,7 +98,7 @@
 	comment-end "")
   (setq local-abbrev-table djp-mode-abbrev-table)
   (set (make-local-variable 'indent-line-function) #'djp-indent-line)
-  ;;(set (make-local-variable 'indent-region-function) #'djp-indent-region)
+  (set (make-local-variable 'indent-region-function) nil)
 
   ;; We do our own syntax highlighting based on the parse tree.
   ;; However, we want minor modes that add keywords to highlight properly
