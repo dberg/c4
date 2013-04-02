@@ -43,6 +43,12 @@ void Lexer::getNextToken() {
 
 void Lexer::processIndentation(unsigned prevLine, unsigned curLine,
   int prevToken, int curToken) {
+
+  // We should increment or decrement the indentation level when see an opening
+  // or closing curly bracket.
+  if (curToken == TOK_LCURLY_BRACKET) { ++curIndentationLevel; }
+  if (curToken == TOK_RCURLY_BRACKET) { --curIndentationLevel; }
+
   // If there's no line change our job is done. We're only interested in the
   // first token of each line. One special case is the very first token we
   // parse.
@@ -59,30 +65,21 @@ void Lexer::processIndentation(unsigned prevLine, unsigned curLine,
   // }
   if (curToken == TOK_LCURLY_BRACKET) {
     indentMap[curLine] = spIndentation(new Indentation(
-      curIndentationLevel, false));
+      curIndentationLevel - 1, false));
     return;
   }
 
   // If we have a closing curly brace we should decrease the indentation level.
   if (curToken == TOK_RCURLY_BRACKET) {
-    --curIndentationLevel;
     indentMap[curLine] = spIndentation(new Indentation(
       curIndentationLevel, false));
     return;
   }
 
-  // If the previous token is an opening curly bracket we should increase the
-  // indentation level.
-  if (prevToken == TOK_LCURLY_BRACKET) {
-    ++curIndentationLevel;
-    indentMap[curLine] = spIndentation(new Indentation(
-      curIndentationLevel, false));
-    return;
-  }
-
-  // Unless the previous statement is a semi-colon we have an offset to the
-  // current indentation level.
-  bool offset = (prevToken == TOK_SEMICOLON || prevToken >= 0) ? false : true;
+  // Unless the previous statement is a semi-colon or an opening curly bracket
+  // we have an offset to the current indentation level.
+  bool offset = (prevToken == TOK_SEMICOLON || prevToken == TOK_LCURLY_BRACKET
+    || prevToken >= 0) ? false : true;
   indentMap[curLine] = spIndentation(new Indentation(
     curIndentationLevel, offset));
 }
