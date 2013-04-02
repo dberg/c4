@@ -1,6 +1,10 @@
-Djp includes a parser and an emacs mode for Java version 7.
+Djp is a parser and an emacs mode for Java version 7.
 
-The emacs mode is work in progress. It provides syntax highlighting only.
+The emacs mode provides only two features:
+
+- syntax highlighting
+- indentation
+
 
 Emacs mode (djp-mode) installation
 -------------------------------------------------------------------------------
