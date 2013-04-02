@@ -76,10 +76,10 @@ void Lexer::processIndentation(unsigned prevLine, unsigned curLine,
     return;
   }
 
-  // Unless the previous statement is a semi-colon or an opening curly bracket
-  // we have an offset to the current indentation level.
+  // Unless the previous statement is a semi-colon or a curly bracket we have an
+  // offset to the current indentation level.
   bool offset = (prevToken == TOK_SEMICOLON || prevToken == TOK_LCURLY_BRACKET
-    || prevToken >= 0) ? false : true;
+    || prevToken == TOK_RCURLY_BRACKET || prevToken >= 0) ? false : true;
   indentMap[curLine] = spIndentation(new Indentation(
     curIndentationLevel, offset));
 }
