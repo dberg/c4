@@ -99,4 +99,15 @@ TEST(ParserBin, HelloWorld) {
       item->cUtf8Info->bytes.end());
     ASSERT_EQ("<init>", str);
   }
+
+  {
+    // Item 7: CONSTANT_Utf8
+    spCPItem item = parser.classFile->constant_pool->items[7];
+    spCUtf8Info cUtf8Info = item->cUtf8Info;
+    ASSERT_EQ(CONSTANT_Utf8, item->tag);
+    ASSERT_EQ(3, item->cUtf8Info->length);
+    std::string str(item->cUtf8Info->bytes.begin(),
+      item->cUtf8Info->bytes.end());
+    ASSERT_EQ("()V", str);
+  }
 }
