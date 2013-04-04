@@ -78,4 +78,13 @@ TEST(ParserBin, HelloWorld) {
     // TODO: confirm index 21
     ASSERT_EQ(21, cClassInfo->name_index);
   }
+
+  {
+    // Item 5: CONSTANT_Class
+    spCPItem item = parser.classFile->constant_pool->items[5];
+    spCClassInfo cClassInfo = item->cClassInfo;
+    ASSERT_EQ(CONSTANT_Class, item->tag);
+    // TODO: confirm index 22
+    ASSERT_EQ(22, cClassInfo->name_index);
+  }
 }
