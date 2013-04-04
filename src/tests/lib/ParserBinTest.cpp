@@ -87,4 +87,16 @@ TEST(ParserBin, HelloWorld) {
     // TODO: confirm index 22
     ASSERT_EQ(22, cClassInfo->name_index);
   }
+
+  {
+    // Item 6: CONSTANT_Utf8
+    spCPItem item = parser.classFile->constant_pool->items[6];
+    spCUtf8Info cUtf8Info = item->cUtf8Info;
+    ASSERT_EQ(CONSTANT_Utf8, item->tag);
+    ASSERT_EQ(6, item->cUtf8Info->length);
+    ASSERT_EQ(6, item->cUtf8Info->bytes.size());
+    std::string str(item->cUtf8Info->bytes.begin(),
+      item->cUtf8Info->bytes.end());
+    ASSERT_EQ("<init>", str);
+  }
 }

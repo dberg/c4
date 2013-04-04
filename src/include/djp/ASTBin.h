@@ -18,6 +18,7 @@ typedef boost::shared_ptr<struct CClassInfo> spCClassInfo;
 typedef boost::shared_ptr<struct CFieldrefInfo> spCFieldrefInfo;
 typedef boost::shared_ptr<struct CMethodrefInfo> spCMethodrefInfo;
 typedef boost::shared_ptr<struct CStringInfo> spCStringInfo;
+typedef boost::shared_ptr<struct CUtf8Info> spCUtf8Info;
 
 enum ConstantPoolTag {
   CONSTANT_Class = 7,
@@ -94,7 +95,7 @@ struct CPItem {
   //spCLong cLong;
   //spCDouble cDouble;
   //spCNameAndType cNameAndType;
-  //spCUtf8 cUtf8;
+  spCUtf8Info cUtf8Info;
   //spCMethodHandle cMethodHandle;
   //spCMethodType cMethodType;
   //spCInvokeDynamic cInvokeDynamic;
@@ -138,6 +139,16 @@ struct CMethodrefInfo {
 struct CStringInfo {
   //u1 tag; CPItem
   u2 string_index;
+};
+
+/// CONSTANT_Utf8_info {
+///     u length;
+///     u1 bytes[length];
+/// }
+struct CUtf8Info {
+  //u1 tag; CPItem
+  u2 length;
+  std::vector<unsigned char> bytes;
 };
 
 } // namespace

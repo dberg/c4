@@ -30,6 +30,7 @@ class ParserBin {
   void parseCFieldref(spCPItem &item);
   void parseCPMethodref(spCPItem &item);
   void parseCPString(spCPItem &item);
+  void parseCPUtf8(spCPItem &item);
 
 public:
   ParserBin(const std::string filename,

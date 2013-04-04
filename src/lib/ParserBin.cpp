@@ -75,8 +75,8 @@ void ParserBin::parseConstantPool(unsigned poolCount, spCPInfo &constantPool) {
     item->tag = tag;
     switch (tag) {
       case CONSTANT_Class:
-	parseCClass(item);
-	constantPool->items.push_back(item);
+        parseCClass(item);
+        constantPool->items.push_back(item);
         break;
 
       case CONSTANT_Fieldref:
@@ -94,8 +94,8 @@ void ParserBin::parseConstantPool(unsigned poolCount, spCPInfo &constantPool) {
         break;
 
       case CONSTANT_String:
-	parseCPString(item);
-	constantPool->items.push_back(item);
+        parseCPString(item);
+        constantPool->items.push_back(item);
         break;
 
       case CONSTANT_Integer:
@@ -119,7 +119,8 @@ void ParserBin::parseConstantPool(unsigned poolCount, spCPInfo &constantPool) {
         break;
 
       case CONSTANT_Utf8:
-        // TODO:
+        parseCPUtf8(item);
+        constantPool->items.push_back(item);
         break;
 
       case CONSTANT_MethodHandle:
@@ -160,6 +161,15 @@ void ParserBin::parseCPMethodref(spCPItem &item) {
 void ParserBin::parseCPString(spCPItem &item) {
   item->cStringInfo = spCStringInfo(new CStringInfo);
   item->cStringInfo->string_index = getU2();
+}
+
+void ParserBin::parseCPUtf8(spCPItem &item) {
+  item->cUtf8Info = spCUtf8Info(new CUtf8Info);
+  u2 length = getU2();
+  item->cUtf8Info->length = length;
+  for (unsigned i = 0; i < length; i++) {
+    item->cUtf8Info->bytes.push_back(getU1());
+  }
 }
 
 } // namespace
