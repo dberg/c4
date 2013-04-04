@@ -33,9 +33,7 @@ int parseJavaFile(CmdInput &ci) {
     return 1;
   }
 
-  spDiagnosis diag = spDiagnosis(new Diagnosis);
-
-  Parser parser(ci.filename, buffer, diag);
+  Parser parser(ci.filename, buffer);
   parser.parse();
   if (parser.error) {
     std::cerr << "Error( " << parser.error << "): "
@@ -43,9 +41,11 @@ int parseJavaFile(CmdInput &ci) {
     return 1;
   }
 
-  EmacsOutput output(parser.compilationUnit, parser.comments, parser.st, diag);
+  EmacsOutput output(parser);
   output.build();
-  std::cout << output.outSH << "\n" << output.outST;
+  std::cout << output.outSH << std::endl
+    << output.outST << std::endl
+    << output.outIT;
 
   return 0;
 }

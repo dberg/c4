@@ -129,20 +129,22 @@ $(obj)/ParserBin.o: $(libdir)/ParserBin.cpp $(incdir)/djp/ParserBin.h
 	$(CXX) $(CFLAGS) $(INC) -c $< -o $@
 
 # tests
-$(bin)/tests: $(test_libdir)/ParserTest.cpp \
-              $(test_libdir)/SymbolTableTest.cpp \
-              $(test_libdir)/EmacsOutputTest.cpp \
+$(bin)/tests: $(test_libdir)/EmacsOutputTest.cpp \
+              $(test_libdir)/IndentationTest.cpp \
+              $(test_libdir)/ParserTest.cpp \
               $(test_libdir)/ParserBinTest.cpp \
+              $(test_libdir)/SymbolTableTest.cpp \
               $(obj)/EmacsOutput.o \
               $(obj)/Diagnosis.o \
               $(obj)/libdjp.a \
               $(gtest_obj)/libgtest.a
 
 	$(CXX) -g3 $(INC) -I$(gtest_inc) $(obj)/EmacsOutput.o \
-                                     $(test_libdir)/ParserTest.cpp \
-                                     $(test_libdir)/SymbolTableTest.cpp \
                                      $(test_libdir)/EmacsOutputTest.cpp \
+                                     $(test_libdir)/IndentationTest.cpp \
+                                     $(test_libdir)/ParserTest.cpp \
                                      $(test_libdir)/ParserBinTest.cpp \
+                                     $(test_libdir)/SymbolTableTest.cpp \
                                      -o $@ \
                                      $(obj)/libdjp.a \
                                      $(gtest_obj)/libgtest.a \

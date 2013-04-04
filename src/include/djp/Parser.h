@@ -7,6 +7,7 @@
 #include "AST.h"
 #include "Diagnosis.h"
 #include "ErrorCodes.h"
+#include "Indentation.h"
 #include "Lexer.h"
 #include "ParserState.h"
 #include "SourceCodeStream.h"
@@ -39,7 +40,6 @@ bool isVariableModifier(int token);
 class Parser {
   const std::string filename;
   spSourceCodeStream src;
-  spDiagnosis diag;
   spLexer lexer;
   std::vector<std::string> scopes;
   TokenUtil tokenUtil;
@@ -221,15 +221,19 @@ class Parser {
 
 public:
   Parser(
-    const std::string _filename, const std::string &_buffer, spDiagnosis &_diag)
-    : filename(_filename),
-      src(spSourceCodeStream(new SourceCodeStream(_buffer))),
-      diag(_diag), lexer(spLexer(new Lexer(src, _diag))),
+    const std::string filename, const std::string &buffer)
+    : filename(filename), src(spSourceCodeStream(new SourceCodeStream(buffer))),
       compilationUnit(spCompilationUnit(new CompilationUnit)),
-      error(0), error_msg("") {}
+      error(0), error_msg("")
+  {
+    diag = spDiagnosis(new Diagnosis);
+    lexer = spLexer(new Lexer(src, diag, indentMap));
+  }
 
+  spDiagnosis diag;
   spCompilationUnit compilationUnit;
   std::vector<spComment> comments;
+  LineIndentationMap indentMap;
   ST st;
   int error;
   std::string error_msg;

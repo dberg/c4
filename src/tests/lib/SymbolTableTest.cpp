@@ -1,6 +1,4 @@
 #include <iostream>
-#include "djp/Diagnosis.h"
-#include "djp/EmacsOutput.h"
 #include "djp/Parser.h"
 #include "djp/SymbolTable.h"
 #include "gtest/gtest.h"
@@ -34,8 +32,7 @@ TEST(SymbolTable, Class) {
     //TODO:  MemberDecl(6) InterfaceDeclaration
     "}";
 
-  spDiagnosis diag = spDiagnosis(new Diagnosis());
-  Parser parser(filename, buffer, diag);
+  Parser parser(filename, buffer);
   parser.parse();
 
   ASSERT_EQ(9, parser.st.symbols.size());

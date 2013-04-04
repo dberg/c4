@@ -4,6 +4,27 @@ namespace djp {
 void EmacsOutput::build() {
   buildSH();
   buildST();
+  buildIT();
+}
+
+void EmacsOutput::buildIT() {
+  // Identation table
+  // #s(hash-table size N data (LineNumber_N0 (IndentLevel_N0 Offset_N0) ... N)
+  outIT = "#s(hash-table size ";
+  outIT += itos(indentMap.size());
+  outIT += " data (";
+
+  LineIndentationMap::iterator it;
+  for (it = indentMap.begin(); it != indentMap.end(); ++it) {
+    outIT += itos(it->first);
+    outIT += " (";
+    outIT += itos(it->second->level);
+    outIT += " ";
+    outIT += (it->second->offset) ? "1" : "0";
+    outIT += ") ";
+  }
+
+  outIT += "))";
 }
 
 void EmacsOutput::buildSH() {

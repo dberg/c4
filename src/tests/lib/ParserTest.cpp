@@ -33,8 +33,7 @@ using namespace djp;
 TEST(Parser, AnnotationElementValueArray) {
   std::string filename = "Test.java";
   std::string buffer = "@Ann({\"1\", \"2\"}) class A {}";
-  spDiagnosis diag = spDiagnosis(new Diagnosis);
-  Parser parser(filename, buffer, diag);
+  Parser parser(filename, buffer);
   parser.parse();
 
   spClassOrInterfaceDeclaration decl
@@ -51,8 +50,7 @@ TEST(Parser, AnnotationElementValuePairs) {
   std::string buffer =
     "@myinterface(id=10, group=20L)\n"
     "package com.test;";
-  spDiagnosis diag = spDiagnosis(new Diagnosis());
-  Parser parser(filename, buffer, diag);
+  Parser parser(filename, buffer);
   parser.parse();
 
   std::vector<spElementValuePair> pairs = parser.compilationUnit->pkgDecl
@@ -98,8 +96,7 @@ TEST(Parser, AnnotationElementValuePairsBoolean) {
   std::string buffer =
     "@myinterface(v1=true, v2=false)"
     "package com.test;";
-  spDiagnosis diag = spDiagnosis(new Diagnosis());
-  Parser parser(filename, buffer, diag);
+  Parser parser(filename, buffer);
   parser.parse();
 
   std::vector<spElementValuePair> pairs = parser.compilationUnit->pkgDecl
@@ -132,8 +129,7 @@ TEST(Parser, AnnotationElementValuePairsCharacterLiteral) {
     "@myinterface(v1='A', v2='\034', v3='\\uAa89')"
     //               16      24      32
     "package com.test;";
-  spDiagnosis diag = spDiagnosis(new Diagnosis());
-  Parser parser(filename, buffer, diag);
+  Parser parser(filename, buffer);
   parser.parse();
 
   std::vector<spElementValuePair> pairs = parser.compilationUnit->pkgDecl
@@ -177,8 +173,7 @@ TEST(Parser, AnnotationElementValuePairsDecimalFloatingPointLiterals) {
     "v1=12., v2=12.34, v3=12.e34, v4=12.e-34f, v5=12.F,"
     "v6=.1, v7=.1E-23, v8=12e+34d)\n"
     "package com.test;";
-  spDiagnosis diag = spDiagnosis(new Diagnosis());
-  Parser parser(filename, buffer, diag);
+  Parser parser(filename, buffer);
   parser.parse();
 
   std::vector<spElementValuePair> pairs = parser.compilationUnit->pkgDecl
@@ -279,8 +274,7 @@ TEST(Parser, AnnotationElementValuePairsHexadecimalFloatingPointLiterals) {
     "@myinterface("
     "v1=0x12p10, v2=0X34.P56, v3=0x.12p+12F"
     "package com.test;";
-  spDiagnosis diag = spDiagnosis(new Diagnosis());
-  Parser parser(filename, buffer, diag);
+  Parser parser(filename, buffer);
   parser.parse();
 
   std::vector<spElementValuePair> pairs = parser.compilationUnit->pkgDecl
@@ -326,8 +320,7 @@ TEST(Parser, AnnotationElementValuePairsIntegerLiterals) {
     "@myinterface("
     "v1=0b01,v2=0B1_1L,v3=10,v4=2_0L,v5=0xA0,v6=0XF_0L,v7=001,v8=0_76L)\n"
     "package com.test;";
-  spDiagnosis diag = spDiagnosis(new Diagnosis());
-  Parser parser(filename, buffer, diag);
+  Parser parser(filename, buffer);
   parser.parse();
 
   std::vector<spElementValuePair> pairs = parser.compilationUnit->pkgDecl
@@ -427,8 +420,7 @@ TEST(Parser, AnnotationElementValuePairsNull) {
   std::string buffer =
     "@myinterface(v1=null)"
     "package com.test;";
-  spDiagnosis diag = spDiagnosis(new Diagnosis());
-  Parser parser(filename, buffer, diag);
+  Parser parser(filename, buffer);
   parser.parse();
 
   std::vector<spElementValuePair> pairs = parser.compilationUnit->pkgDecl
@@ -451,8 +443,7 @@ TEST(Parser, AnnotationElementValuePairsStringLiteral) {
   std::string buffer =
     "@myinterface(v1=\"Hello, I'm a String!\")"
     "package com.test;";
-  spDiagnosis diag = spDiagnosis(new Diagnosis());
-  Parser parser(filename, buffer, diag);
+  Parser parser(filename, buffer);
   parser.parse();
 
   std::vector<spElementValuePair> pairs = parser.compilationUnit->pkgDecl
@@ -505,8 +496,7 @@ TEST(Parser, AnnotationElementValuePairsStringLiteral) {
 TEST(Parser, ArrayCreatorRest) {
   std::string filename = "Test.java";
   std::string buffer = "class A { void m() { String[] a = new String[0]; }}";
-  spDiagnosis diag = spDiagnosis(new Diagnosis);
-  Parser parser(filename, buffer, diag);
+  Parser parser(filename, buffer);
   parser.parse();
 
   spBlockStatement blockStmt = parser.compilationUnit->typeDecls[0]
@@ -539,8 +529,7 @@ TEST(Parser, Block) {
     "class A { public String hello() {"
     "logger.debug(\"message\", p1);"
     "}";
-  spDiagnosis diag = spDiagnosis(new Diagnosis());
-  Parser parser(filename, buffer, diag);
+  Parser parser(filename, buffer);
   parser.parse();
 
   spBlock block = parser.compilationUnit->typeDecls[0]
@@ -563,8 +552,7 @@ TEST(Parser, Block) {
 TEST(Parser, ClassConstructor) {
   std::string filename = "Test.java";
   std::string buffer = "class Abc { Abc() {} }";
-  spDiagnosis diag = spDiagnosis(new Diagnosis());
-  Parser parser(filename, buffer, diag);
+  Parser parser(filename, buffer);
   parser.parse();
 
   spClassBodyDeclaration classBodyDecl = parser.compilationUnit->typeDecls[0]
@@ -580,8 +568,7 @@ TEST(Parser, ClassConstructor) {
 TEST(Parser, ClassConstructorAnnotationParameter) {
   std::string filename = "Test.java";
   std::string buffer = "class Abc { Abc(@myannotation int a) {} }";
-  spDiagnosis diag = spDiagnosis(new Diagnosis());
-  Parser parser(filename, buffer, diag);
+  Parser parser(filename, buffer);
   parser.parse();
 
   spFormalParameterDecls formParamDecls = parser.compilationUnit->typeDecls[0]
@@ -594,8 +581,7 @@ TEST(Parser, ClassConstructorAnnotationParameter) {
 TEST(Parser, ClassConstructorParameter) {
   std::string filename = "Test.java";
   std::string buffer = "class Abc { Abc(int a) {} }";
-  spDiagnosis diag = spDiagnosis(new Diagnosis());
-  Parser parser(filename, buffer, diag);
+  Parser parser(filename, buffer);
   parser.parse();
 
   spFormalParameterDecls formParamDecls = parser.compilationUnit->typeDecls[0]
@@ -612,8 +598,7 @@ TEST(Parser, ClassConstructorParameter) {
 TEST(Parser, ClassConstructorParameterArray) {
   std::string filename = "Test.java";
   std::string buffer = "class Abc { Abc(int[] a) {} }";
-  spDiagnosis diag = spDiagnosis(new Diagnosis());
-  Parser parser(filename, buffer, diag);
+  Parser parser(filename, buffer);
   parser.parse();
 
   spFormalParameterDecls formParamDecls = parser.compilationUnit->typeDecls[0]
@@ -626,8 +611,7 @@ TEST(Parser, ClassConstructorParameterArray) {
 TEST(Parser, ClassConstructorParameterEllipsis) {
   std::string filename = "Test.java";
   std::string buffer = "class Abc { Abc(int ... a) {} }";
-  spDiagnosis diag = spDiagnosis(new Diagnosis());
-  Parser parser(filename, buffer, diag);
+  Parser parser(filename, buffer);
   parser.parse();
 
   spFormalParameterDeclsRest formParamDeclsRest = parser.compilationUnit
@@ -642,8 +626,7 @@ TEST(Parser, ClassConstructorParameterEllipsis) {
 TEST(Parser, ClassConstructorParameters) {
   std::string filename = "Test.java";
   std::string buffer = "class Abc { Abc(int a, double b) {} }";
-  spDiagnosis diag = spDiagnosis(new Diagnosis());
-  Parser parser(filename, buffer, diag);
+  Parser parser(filename, buffer);
   parser.parse();
 
   spFormalParameterDecls formParamDecls = parser.compilationUnit->typeDecls[0]
@@ -673,8 +656,7 @@ TEST(Parser, ClassConstructorParameters) {
 TEST(Parser, ClassDeclaration) {
   std::string filename = "Test.java";
   std::string buffer = "@myinterface\npublic class Abc extends Def { }";
-  spDiagnosis diag = spDiagnosis(new Diagnosis());
-  Parser parser(filename, buffer, diag);
+  Parser parser(filename, buffer);
   parser.parse();
 
   spClassOrInterfaceDeclaration decl
@@ -713,8 +695,7 @@ TEST(Parser, ClassDeclaration) {
 TEST(Parser, ClassTypeParameters) {
   std::string filename = "Test.java";
   std::string buffer = "class A<T,U> {}";
-  spDiagnosis diag = spDiagnosis(new Diagnosis);
-  Parser parser(filename, buffer, diag);
+  Parser parser(filename, buffer);
   parser.parse();
 
   spNormalClassDeclaration nClassDecl = parser.compilationUnit->typeDecls[0]
@@ -730,8 +711,7 @@ TEST(Parser, Comments) {
     "import org.test; // a single line comment\n"
     "/** a class comment */\n"
     "class A {}";
-  spDiagnosis diag = spDiagnosis(new Diagnosis);
-  Parser parser(filename, buffer, diag);
+  Parser parser(filename, buffer);
   parser.parse();
 
   ASSERT_EQ(2, parser.comments.size());
@@ -764,8 +744,7 @@ TEST(Parser, Comments) {
 TEST(Parser, Enum) {
   std::string filename = "Test.java";
   std::string buffer = "enum E { E1, E2 }";
-  spDiagnosis diag = spDiagnosis(new Diagnosis);
-  Parser parser(filename, buffer, diag);
+  Parser parser(filename, buffer);
   parser.parse();
 
   spEnumDeclaration enumDecl = parser.compilationUnit->typeDecls[0]
@@ -815,8 +794,7 @@ TEST(Parser, EnumConstructor) {
   std::string filename = "Test.java";
   std::string buffer = "enum E { O1(\"a\"), O2(\"b\"); "
     "private String s; E(String s) { this.s = s; }}";
-  spDiagnosis diag = spDiagnosis(new Diagnosis);
-  Parser parser(filename, buffer, diag);
+  Parser parser(filename, buffer);
   parser.parse();
 
   spEnumDeclaration enumDecl = parser.compilationUnit->typeDecls[0]
@@ -846,10 +824,9 @@ TEST(Parser, EnumConstructor) {
 TEST(Parser, Errors) {
   std::string filename = "Test.java";
   std::string buffer = "@";
-  spDiagnosis diag = spDiagnosis(new Diagnosis);
-  Parser parser(filename, buffer, diag);
+  Parser parser(filename, buffer);
   parser.parse();
-  ASSERT_EQ(1, diag->errors.size());
+  ASSERT_EQ(1, parser.diag->errors.size());
 }
 
 // -----------------------------------------------------------------------------
@@ -892,8 +869,7 @@ TEST(Parser, ExpressionInfixOp) {
   std::string filename = "Test.java";
   std::string buffer
     = "public class A { public void m() { M.p(\"a\" + b + \"c\"); }}";
-  spDiagnosis diag = spDiagnosis(new Diagnosis());
-  Parser parser(filename, buffer, diag);
+  Parser parser(filename, buffer);
   parser.parse();
 
   spStatement stmt = parser.compilationUnit->typeDecls[0]->classOrIntDecl
@@ -915,8 +891,7 @@ TEST(Parser, ExpressionInfixOp) {
 TEST(Parser, Expression2Rest) {
   std::string filename = "Test.java";
   std::string buffer = "class C { void m() { if (x == null) { return; }}}";
-  spDiagnosis diag = spDiagnosis(new Diagnosis());
-  Parser parser(filename, buffer, diag);
+  Parser parser(filename, buffer);
   parser.parse();
 
   spBlockStatement blockStmt = parser.compilationUnit->typeDecls[0]
@@ -974,8 +949,7 @@ TEST(Parser, Expression2Rest) {
 TEST(Parser, Expression3Opt2) {
   std::string filename = "Test.java";
   std::string buffer = "class A { void m() { u = (U) e.get(); }}";
-  spDiagnosis diag = spDiagnosis(new Diagnosis);
-  Parser parser(filename, buffer, diag);
+  Parser parser(filename, buffer);
   parser.parse();
 
   spStatement stmt = parser.compilationUnit->typeDecls[0]->classOrIntDecl
@@ -1034,8 +1008,7 @@ TEST(Parser, Expression3Opt2) {
 TEST(Parser, ExpressionMultipleAssignment) {
   std::string filename = "Test.java";
   std::string buffer = "class S { void m() { a = b = 10; }}";
-  spDiagnosis diag = spDiagnosis(new Diagnosis);
-  Parser parser(filename, buffer, diag);
+  Parser parser(filename, buffer);
   parser.parse();
 
   spStatement stmt = parser.compilationUnit->typeDecls[0]->classOrIntDecl
@@ -1106,8 +1079,7 @@ TEST(Parser, ExpressionMultipleAssignment) {
 TEST(Parser, FieldDeclaratorWithClassBody) {
   std::string filename = "Test.java";
   std::string buffer = "class C { C c = new C() { {} }; }";
-  spDiagnosis diag = spDiagnosis(new Diagnosis);
-  Parser parser(filename, buffer, diag);
+  Parser parser(filename, buffer);
   parser.parse();
 
   spMethodOrFieldRest methodOrFieldRest = parser.compilationUnit->typeDecls[0]
@@ -1192,8 +1164,7 @@ TEST(Parser, For) {
   std::string filename = "Test.java";
   std::string buffer
     = "class A { void m() { for (int i = 0; i < max; i++) { ; }}}";
-  spDiagnosis diag = spDiagnosis(new Diagnosis);
-  Parser parser(filename, buffer, diag);
+  Parser parser(filename, buffer);
   parser.parse();
 
   spStatement stmt = parser.compilationUnit->typeDecls[0]->classOrIntDecl
@@ -1222,8 +1193,7 @@ TEST(Parser, For) {
 TEST(Parser, ForBreak) {
   std::string filename = "Test.java";
   std::string buffer = "class S { void m() { for (;;) { break; }}}";
-  spDiagnosis diag = spDiagnosis(new Diagnosis);
-  Parser parser(filename, buffer, diag);
+  Parser parser(filename, buffer);
   parser.parse();
 
   spStatement stmt = parser.compilationUnit->typeDecls[0]->classOrIntDecl
@@ -1275,8 +1245,7 @@ TEST(Parser, ForExpr) {
   std::string filename = "Test.java";
   std::string buffer
     = "class A { void m() { for (int i = 0; (i + 1) < max; i++) {} }}";
-  spDiagnosis diag = spDiagnosis(new Diagnosis);
-  Parser parser(filename, buffer, diag);
+  Parser parser(filename, buffer);
   parser.parse();
 
   spStatement stmt = parser.compilationUnit->typeDecls[0]->classOrIntDecl
@@ -1292,7 +1261,7 @@ TEST(Parser, ForExpr) {
     stmt->forCtrl->varCtrl->forVarCtrlRest->opt);
 
   ASSERT_EQ(50, stmt->forCtrl->varCtrl->forVarCtrlRest->posSemiColon2);
-  ASSERT_EQ(0, diag->errors.size());
+  ASSERT_EQ(0, parser.diag->errors.size());
 }
 
 // -----------------------------------------------------------------------------
@@ -1326,8 +1295,7 @@ TEST(Parser, GenericMethod) {
   std::string filename = "Test.java";
   std::string buffer
     = "class A { private <E> E m(List<T> l) { return l.get(0); }}";
-  spDiagnosis diag = spDiagnosis(new Diagnosis);
-  Parser parser(filename, buffer, diag);
+  Parser parser(filename, buffer);
   parser.parse();
 
   spMemberDecl memberDecl = parser.compilationUnit->typeDecls[0]->classOrIntDecl
@@ -1412,8 +1380,7 @@ TEST(Parser, GenericMethod) {
 TEST(Parser, Generics) {
   std::string filename = "Test.java";
   std::string buffer = "class A { void m() { u = m.r(j, new T<L<G>>() {}); }}";
-  spDiagnosis diag = spDiagnosis(new Diagnosis);
-  Parser parser(filename, buffer, diag);
+  Parser parser(filename, buffer);
   parser.parse();
 
   spExpression expr = parser.compilationUnit->typeDecls[0]->classOrIntDecl
@@ -1456,8 +1423,7 @@ TEST(Parser, Generics) {
 TEST(Parser, Interface) {
   std::string filename = "Test.java";
   std::string buffer = "interface I { void m(); }";
-  spDiagnosis diag = spDiagnosis(new Diagnosis);
-  Parser parser(filename, buffer, diag);
+  Parser parser(filename, buffer);
   parser.parse();
 
   spClassOrInterfaceDeclaration decl
@@ -1493,8 +1459,7 @@ TEST(Parser, Interface) {
 TEST(Parser, InterfaceInnerClassConstructor) {
   std::string filename = "Test.java";
   std::string buffer = "interface A { class B { B() {} }}";
-  spDiagnosis diag = spDiagnosis(new Diagnosis);
-  Parser parser(filename, buffer, diag);
+  Parser parser(filename, buffer);
   parser.parse();
 
   spInterfaceBody body = parser.compilationUnit->typeDecls[0]->classOrIntDecl
@@ -1550,9 +1515,7 @@ TEST(Parser, InterfaceInnerClassConstructor) {
 TEST(Parser, IdentifierSuffix) {
   std::string filename = "Test.java";
   std::string buffer = "class A { void m() { p = s[i]; }}";
-
-  spDiagnosis diag = spDiagnosis(new Diagnosis());
-  Parser parser(filename, buffer, diag);
+  Parser parser(filename, buffer);
   parser.parse();
 
   spBlockStatement blockStmt = parser.compilationUnit->typeDecls[0]
@@ -1583,8 +1546,7 @@ TEST(Parser, ImportDeclarations) {
     "import static com.test3.Test3;\n"
     "import static com.test4.*;\n";
 
-  spDiagnosis diag = spDiagnosis(new Diagnosis());
-  Parser parser(filename, buffer, diag);
+  Parser parser(filename, buffer);
   parser.parse();
   ASSERT_EQ(4, parser.compilationUnit->impDecls->imports.size());
 
@@ -1644,8 +1606,7 @@ TEST(Parser, ImportDeclarations) {
 TEST(Parser, InnerClass) {
   std::string filename = "Test.java";
   std::string buffer = "class A { class B {} }";
-  spDiagnosis diag = spDiagnosis(new Diagnosis);
-  Parser parser(filename, buffer, diag);
+  Parser parser(filename, buffer);
   parser.parse();
 
   spMemberDecl memberDecl = parser.compilationUnit->typeDecls[0]->classOrIntDecl
@@ -1690,8 +1651,7 @@ TEST(Parser, InnerClassInstance) {
   std::string filename = "Test.java";
   std::string buffer
     = "class A { class B {} void m() { A a = new A(); a.new B(); }}";
-  spDiagnosis diag = spDiagnosis(new Diagnosis);
-  Parser parser(filename, buffer, diag);
+  Parser parser(filename, buffer);
   parser.parse();
 
   spClassBody classBody = parser.compilationUnit->typeDecls[0]->classOrIntDecl
@@ -1749,8 +1709,7 @@ TEST(Parser, InnerClassInstance) {
 TEST(Parser, LocalVariableDeclarationStatement) {
   std::string filename = "Test.java";
   std::string buffer = "class A { void test() { Exec exe = createExec(); }}";
-  spDiagnosis diag = spDiagnosis(new Diagnosis());
-  Parser parser(filename, buffer, diag);
+  Parser parser(filename, buffer);
   parser.parse();
 
   spMemberDecl memberDecl = parser.compilationUnit
@@ -1791,8 +1750,7 @@ TEST(Parser, LocalVariableTypeArguments) {
   std::string filename = "Test.java";
   std::string buffer
     = "class C { void m() { List<A> lst = new ArrayList<A>(); }}";
-  spDiagnosis diag = spDiagnosis(new Diagnosis);
-  Parser parser(filename, buffer, diag);
+  Parser parser(filename, buffer);
   parser.parse();
 
   spBlockStatement blockStmt = parser.compilationUnit->typeDecls[0]
@@ -1838,8 +1796,7 @@ TEST(Parser, LocalVariableTypeArgumentsArray) {
   std::string filename = "Test.java";
   std::string buffer
     = "class C { void m() { List<A[]> lst = new ArrayList<A>(); }}";
-  spDiagnosis diag = spDiagnosis(new Diagnosis);
-  Parser parser(filename, buffer, diag);
+  Parser parser(filename, buffer);
   parser.parse();
 
   spBlockStatement blockStmt = parser.compilationUnit->typeDecls[0]
@@ -1874,8 +1831,7 @@ TEST(Parser, LocalVariableTypeArgumentsArray) {
 TEST(Parser, MemberDeclInterfaceDeclaration) {
   std::string filename = "Test.java";
   std::string buffer = "class A { interface I {} }";
-  spDiagnosis diag = spDiagnosis(new Diagnosis);
-  Parser parser(filename, buffer, diag);
+  Parser parser(filename, buffer);
   parser.parse();
 
 //  spMemberDecl memberDecl = parser.compilationUnit->typeDecls[0]
@@ -1903,8 +1859,7 @@ TEST(Parser, MemberDeclInterfaceDeclaration) {
 TEST(Parser, MemberDeclOpt1) {
   std::string filename = "Test.java";
   std::string buffer = "class A { int m1() { return 1; }}";
-  spDiagnosis diag = spDiagnosis(new Diagnosis());
-  Parser parser(filename, buffer, diag);
+  Parser parser(filename, buffer);
   parser.parse();
 
   spClassBody classBody = parser.compilationUnit->typeDecls[0]->classOrIntDecl
@@ -1929,8 +1884,7 @@ TEST(Parser, MethodOrFieldRestOptField) {
   std::string filename = "Test.java";
   std::string buffer =
     "class A { protected static Logger l = LoggerFactory.getLogger(A.class);";
-  spDiagnosis diag = spDiagnosis(new Diagnosis());
-  Parser parser(filename, buffer, diag);
+  Parser parser(filename, buffer);
   parser.parse();
 
   spMemberDecl memberDecl = parser.compilationUnit->typeDecls[0]
@@ -1991,8 +1945,7 @@ TEST(Parser, MethodOrFieldRestOptMethod) {
     "abstract public String hello("
     "@A1 Integer year, @A2(\"name\") String name);"
     "}";
-  spDiagnosis diag = spDiagnosis(new Diagnosis());
-  Parser parser(filename, buffer, diag);
+  Parser parser(filename, buffer);
   parser.parse();
 
   spMethodOrFieldRest methodOrFieldRest = parser.compilationUnit->typeDecls[0]
@@ -2010,8 +1963,7 @@ TEST(Parser, PackageDeclaration) {
   std::string filename = "Test.java";
   std::string buffer = "@myinterface\npackage com.test;";
 
-  spDiagnosis diag = spDiagnosis(new Diagnosis());
-  Parser parser(filename, buffer, diag);
+  Parser parser(filename, buffer);
   parser.parse();
   ASSERT_EQ(1, parser.compilationUnit->pkgDecl->annotations.size());
   ASSERT_EQ(0, parser.compilationUnit->pkgDecl->annotations[0]->posTokAt);
@@ -2024,8 +1976,7 @@ TEST(Parser, ParExpression) {
   std::string buffer
     = "class A { void h() { if (s.equals(\"x\")) { return; }}}";
 
-  spDiagnosis diag = spDiagnosis(new Diagnosis());
-  Parser parser(filename, buffer, diag);
+  Parser parser(filename, buffer);
   parser.parse();
 
   spBlockStatement blockStmt = parser.compilationUnit->typeDecls[0]
@@ -2073,8 +2024,7 @@ TEST(Parser, PrimaryNewCreator) {
     ")"
     "package com.test;";
 
-  spDiagnosis diag = spDiagnosis(new Diagnosis());
-  Parser parser(filename, buffer, diag);
+  Parser parser(filename, buffer);
   parser.parse();
 
   std::vector<spElementValuePair> pairs = parser.compilationUnit->pkgDecl
@@ -2173,9 +2123,7 @@ TEST(Parser, PrimaryNewCreator) {
 TEST(Parser, PrimarySuper) {
   std::string filename = "Test.java";
   std::string buffer = "class A { void m() { super.m(); }}";
-
-  spDiagnosis diag = spDiagnosis(new Diagnosis);
-  Parser parser(filename, buffer, diag);
+  Parser parser(filename, buffer);
   parser.parse();
 
   spStatement stmt = parser.compilationUnit->typeDecls[0]->classOrIntDecl
@@ -2197,9 +2145,7 @@ TEST(Parser, PrimarySuper) {
 TEST(Parser, PrimaryThis) {
   std::string filename = "Test.java";
   std::string buffer = "class A { void m() { this(); }}";
-
-  spDiagnosis diag = spDiagnosis(new Diagnosis);
-  Parser parser(filename, buffer, diag);
+  Parser parser(filename, buffer);
   parser.parse();
 
   spStatement stmt = parser.compilationUnit->typeDecls[0]->classOrIntDecl
@@ -2259,9 +2205,7 @@ TEST(Parser, Selector) {
   std::string filename = "Test.java";
   std::string buffer
     = "class A { void m() { long l = (new Long(i)).longValue(); }}";
-
-  spDiagnosis diag = spDiagnosis(new Diagnosis());
-  Parser parser(filename, buffer, diag);
+  Parser parser(filename, buffer);
   parser.parse();
 
   spBlockStatement blockStmt = parser.compilationUnit->typeDecls[0]
@@ -2305,9 +2249,7 @@ TEST(Parser, Statement) {
   std::string filename = "Test.java";
   std::string buffer = "class X { void x() { "
     "try {} catch (Exception e) {} }}";
-
-  spDiagnosis diag = spDiagnosis(new Diagnosis());
-  Parser parser(filename, buffer, diag);
+  Parser parser(filename, buffer);
   parser.parse();
 
   spStatement stmt = parser.compilationUnit->typeDecls[0]->classOrIntDecl
@@ -2343,9 +2285,7 @@ TEST(Parser, Statement) {
 TEST(Parser, StatementContinue) {
   std::string filename = "Test.java";
   std::string buffer = "class A { void m() { while (true) { continue; }}}";
-
-  spDiagnosis diag = spDiagnosis(new Diagnosis);
-  Parser parser(filename, buffer, diag);
+  Parser parser(filename, buffer);
   parser.parse();
 
   spStatement stmt = parser.compilationUnit->typeDecls[0]->classOrIntDecl
@@ -2388,9 +2328,7 @@ TEST(Parser, StatementSwitch) {
   std::string filename = "Test.java";
   std::string buffer
     = "class C { void m() { switch (getR()) { case R.I: break; default: ; }}}";
-
-  spDiagnosis diag = spDiagnosis(new Diagnosis);
-  Parser parser(filename, buffer, diag);
+  Parser parser(filename, buffer);
   parser.parse();
 
   spStatement stmt = parser.compilationUnit->typeDecls[0]->classOrIntDecl
@@ -2411,9 +2349,7 @@ TEST(Parser, StatementSwitch) {
 TEST(Parser, StatementSynchronized) {
   std::string filename = "Test.java";
   std::string buffer = "class A { void m() { synchronized(x) { }}}";
-
-  spDiagnosis diag = spDiagnosis(new Diagnosis);
-  Parser parser(filename, buffer, diag);
+  Parser parser(filename, buffer);
   parser.parse();
 
   spStatement stmt = parser.compilationUnit->typeDecls[0]->classOrIntDecl
@@ -2445,9 +2381,7 @@ TEST(Parser, StatementSynchronized) {
 TEST(Parser, StaticInitializer) {
   std::string filename = "Test.java";
   std::string buffer = "class A { int a; static { a = 10; }}";
-
-  spDiagnosis diag = spDiagnosis(new Diagnosis);
-  Parser parser(filename, buffer, diag);
+  Parser parser(filename, buffer);
   parser.parse();
 
   spClassBodyDeclaration decl0 = parser.compilationUnit->typeDecls[0]
@@ -2495,9 +2429,7 @@ TEST(Parser, StaticInitializer) {
 TEST(Parser, TernaryCond) {
   std::string filename = "Test.java";
   std::string buffer = "class A { void m() { int a = x == 0 ? 1 : 2; }}";
-
-  spDiagnosis diag = spDiagnosis(new Diagnosis());
-  Parser parser(filename, buffer, diag);
+  Parser parser(filename, buffer);
   parser.parse();
 
   spBlockStatement blockStmt = parser.compilationUnit->typeDecls[0]
@@ -2545,9 +2477,7 @@ TEST(Parser, TernaryCond) {
 TEST(Parser, Throw) {
   std::string filename = "Test.java";
   std::string buffer = "class A { void m() { throw new E(R.Err, \"m\"); }}";
-
-  spDiagnosis diag = spDiagnosis(new Diagnosis());
-  Parser parser(filename, buffer, diag);
+  Parser parser(filename, buffer);
   parser.parse();
 
   spStatement stmt = parser.compilationUnit->typeDecls[0]->classOrIntDecl
@@ -2617,9 +2547,7 @@ TEST(Parser, Throw) {
 TEST(Parser, Throws) {
   std::string filename = "Test.java";
   std::string buffer = "class A { void m() throws E { ; }}";
-
-  spDiagnosis diag = spDiagnosis(new Diagnosis());
-  Parser parser(filename, buffer, diag);
+  Parser parser(filename, buffer);
   parser.parse();
 
   spVoidMethodDeclaratorRest voidMethDeclRest = parser.compilationUnit

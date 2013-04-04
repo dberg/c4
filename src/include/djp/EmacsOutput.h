@@ -4,6 +4,8 @@
 #include "AST.h"
 #include "Diagnosis.h"
 #include "ErrorCodes.h"
+#include "Indentation.h"
+#include "Parser.h"
 #include "SymbolTable.h"
 #include "Token.h"
 #include <iostream>
@@ -19,6 +21,7 @@ class EmacsOutput {
   std::vector<spComment> comments;
   ST st;
   spDiagnosis diag;
+  LineIndentationMap &indentMap;
   TokenUtil tokenUtil;
   ErrorUtil errUtil;
   typedef std::map<int, std::string> STTypes;
@@ -31,6 +34,7 @@ class EmacsOutput {
 
   void buildSH();
   void buildST();
+  void buildIT();
 
   const std::string getSymbolTableType(int type);
   void setAnnotationElement(const spAnnotationElement elem);
@@ -195,12 +199,12 @@ class EmacsOutput {
 public:
   std::string outSH; // syntax highlighting
   std::string outST; // symbol table
+  std::string outIT; // indentation table
 
-  EmacsOutput(const spCompilationUnit &_compilationUnit,
-    std::vector<spComment> &_comments, const ST &_st, spDiagnosis &_diag)
-    : compilationUnit(_compilationUnit), comments(_comments), st(_st),
-      diag(_diag) {
-
+  EmacsOutput(Parser &parser)
+    : compilationUnit(parser.compilationUnit), comments(parser.comments),
+      st(parser.st), diag(parser.diag), indentMap(parser.indentMap)
+  {
     // Symbol table types representation in elisp
     stTypes[ST_COMPILATION_UNIT] = "_comp_unit";
     stTypes[ST_CLASS_OR_INTERFACE] = "_class_or_interface";
@@ -212,6 +216,8 @@ public:
     stTypes[ST_FIELD] = "_field";
     stTypes[ST_IDENTIFIER] = "id";
     stTypes[ST_TYPE] = "type";
+
+    // TODO: we can infer the size of outIT from indentMap
   }
 
   void build();
