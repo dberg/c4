@@ -59,4 +59,14 @@ TEST(ParserBin, HelloWorld) {
     // TODO: confirm index 18
     ASSERT_EQ(18, cStringInfo->string_index);
   }
+
+  {
+    // Item 3: CONSTANT_Methodref
+    spCPItem item = parser.classFile->constant_pool->items[3];
+    spCMethodrefInfo cMethodrefInfo = item->cMethodrefInfo;
+    ASSERT_EQ(CONSTANT_Methodref, item->tag);
+    // TODO: confirm indexes 19 and 20
+    ASSERT_EQ(19, cMethodrefInfo->class_index);
+    ASSERT_EQ(20, cMethodrefInfo->name_and_type_index);
+  }
 }
