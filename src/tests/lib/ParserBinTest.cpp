@@ -29,10 +29,15 @@ TEST(ParserBin, HelloWorld) {
   parser.parse();
 
   ASSERT_EQ(0xCAFEBABE, parser.classFile->magic);
-  spCPItem item = parser.classFile->constant_pool->items[0];
-  spCMethodrefInfo cMethodrefInfo = item->cMethodrefInfo;
-  ASSERT_EQ(CONSTANT_Methodref, item->tag);
-  // TODO: confirm indexes 6 and 15
-  ASSERT_EQ(6, cMethodrefInfo->class_index);
-  ASSERT_EQ(15, cMethodrefInfo->name_and_type_index);
+  ASSERT_EQ(29, parser.classFile->constant_pool_count);
+
+  {
+    // Item 0: CONSTANT_Methodref
+    spCPItem item = parser.classFile->constant_pool->items[0];
+    spCMethodrefInfo cMethodrefInfo = item->cMethodrefInfo;
+    ASSERT_EQ(CONSTANT_Methodref, item->tag);
+    // TODO: confirm indexes 6 and 15
+    ASSERT_EQ(6, cMethodrefInfo->class_index);
+    ASSERT_EQ(15, cMethodrefInfo->name_and_type_index);
+  }
 }

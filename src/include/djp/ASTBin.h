@@ -103,7 +103,7 @@ struct CPItem {
 ///     u2 name_and_type_index;
 /// }
 struct CMethodrefInfo {
-  u1 tag;
+  //u1 tag; CPItem
   u2 class_index;
   u2 name_and_type_index;
 };
