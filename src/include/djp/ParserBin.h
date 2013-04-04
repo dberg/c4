@@ -28,6 +28,7 @@ class ParserBin {
   void parseConstantPool(unsigned poolCount, spCPInfo &constantPool);
   void parseCFieldref(spCPItem &item);
   void parseCPMethodref(spCPItem &item);
+  void parseCPString(spCPItem &item);
 
 public:
   ParserBin(const std::string filename,
