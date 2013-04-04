@@ -26,6 +26,7 @@ class ParserBin {
   u4 getU4();
   void parseClassFile();
   void parseConstantPool(unsigned poolCount, spCPInfo &constantPool);
+  void parseCClass(spCPItem &item);
   void parseCFieldref(spCPItem &item);
   void parseCPMethodref(spCPItem &item);
   void parseCPString(spCPItem &item);

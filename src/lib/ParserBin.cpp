@@ -75,7 +75,8 @@ void ParserBin::parseConstantPool(unsigned poolCount, spCPInfo &constantPool) {
     item->tag = tag;
     switch (tag) {
       case CONSTANT_Class:
-        // TODO:
+	parseCClass(item);
+	constantPool->items.push_back(item);
         break;
 
       case CONSTANT_Fieldref:
@@ -137,6 +138,11 @@ void ParserBin::parseConstantPool(unsigned poolCount, spCPInfo &constantPool) {
         addErr(ERR_INVALID_CONST_POOL_TAG);
     }
   }
+}
+
+void ParserBin::parseCClass(spCPItem &item) {
+  item->cClassInfo = spCClassInfo(new CClassInfo);
+  item->cClassInfo->name_index = getU2();
 }
 
 void ParserBin::parseCFieldref(spCPItem &item) {

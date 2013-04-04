@@ -14,6 +14,7 @@ typedef boost::shared_ptr<struct ClassFile> spClassFile;
 typedef boost::shared_ptr<struct ConstantPool> spConstantPool;
 typedef boost::shared_ptr<struct CPInfo> spCPInfo;
 typedef boost::shared_ptr<struct CPItem> spCPItem;
+typedef boost::shared_ptr<struct CClassInfo> spCClassInfo;
 typedef boost::shared_ptr<struct CFieldrefInfo> spCFieldrefInfo;
 typedef boost::shared_ptr<struct CMethodrefInfo> spCMethodrefInfo;
 typedef boost::shared_ptr<struct CStringInfo> spCStringInfo;
@@ -83,7 +84,7 @@ struct CPInfo {
 
 struct CPItem {
   u1 tag;
-  //spCClass cClass;
+  spCClassInfo cClassInfo;
   spCFieldrefInfo cFieldrefInfo;
   spCMethodrefInfo cMethodrefInfo;
   //spCInterfaceMethodref cInterfaceMethodref;
@@ -97,6 +98,15 @@ struct CPItem {
   //spCMethodHandle cMethodHandle;
   //spCMethodType cMethodType;
   //spCInvokeDynamic cInvokeDynamic;
+};
+
+/// CONSTANT_Class_info {
+///     u1 tag;
+///     u2 name_index;
+/// }
+struct CClassInfo {
+  //u1 tag; CPItem
+  u2 name_index;
 };
 
 /// CONSTANT_Fieldref_info {
