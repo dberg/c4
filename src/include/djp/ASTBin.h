@@ -14,6 +14,7 @@ typedef boost::shared_ptr<struct ClassFile> spClassFile;
 typedef boost::shared_ptr<struct ConstantPool> spConstantPool;
 typedef boost::shared_ptr<struct CPInfo> spCPInfo;
 typedef boost::shared_ptr<struct CPItem> spCPItem;
+typedef boost::shared_ptr<struct CFieldrefInfo> spCFieldrefInfo;
 typedef boost::shared_ptr<struct CMethodrefInfo> spCMethodrefInfo;
 
 enum ConstantPoolTag {
@@ -82,7 +83,7 @@ struct CPInfo {
 struct CPItem {
   u1 tag;
   //spCClass cClass;
-  //spCFieldref cFieldref;
+  spCFieldrefInfo cFieldrefInfo;
   spCMethodrefInfo cMethodrefInfo;
   //spCInterfaceMethodref cInterfaceMethodref;
   //spCString cString;
@@ -95,6 +96,17 @@ struct CPItem {
   //spCMethodHandle cMethodHandle;
   //spCMethodType cMethodType;
   //spCInvokeDynamic cInvokeDynamic;
+};
+
+/// CONSTANT_Fieldref_info {
+///     u1 tag;
+///     u2 class_index;
+///     u2 name_and_type_index;
+/// }
+struct CFieldrefInfo {
+  //u1 tag; CPItem
+  u2 class_index;
+  u2 name_and_type_index;
 };
 
 /// CONSTANT_Methodref_info {

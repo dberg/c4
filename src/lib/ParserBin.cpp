@@ -79,7 +79,8 @@ void ParserBin::parseConstantPool(unsigned poolCount, spCPInfo &constantPool) {
         break;
 
       case CONSTANT_Fieldref:
-        // TODO:
+        parseCFieldref(item);
+        constantPool->items.push_back(item);
         break;
 
       case CONSTANT_Methodref:
@@ -135,6 +136,12 @@ void ParserBin::parseConstantPool(unsigned poolCount, spCPInfo &constantPool) {
         addErr(ERR_INVALID_CONST_POOL_TAG);
     }
   }
+}
+
+void ParserBin::parseCFieldref(spCPItem &item) {
+  item->cFieldrefInfo = spCFieldrefInfo(new CFieldrefInfo);
+  item->cFieldrefInfo->class_index = getU2();
+  item->cFieldrefInfo->name_and_type_index = getU2();
 }
 
 void ParserBin::parseCPMethodref(spCPItem &item) {

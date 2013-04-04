@@ -40,4 +40,14 @@ TEST(ParserBin, HelloWorld) {
     ASSERT_EQ(6, cMethodrefInfo->class_index);
     ASSERT_EQ(15, cMethodrefInfo->name_and_type_index);
   }
+
+  {
+    // Item 1: CONSTANT_Fieldref
+    spCPItem item = parser.classFile->constant_pool->items[1];
+    spCFieldrefInfo cFieldrefInfo = item->cFieldrefInfo;
+    ASSERT_EQ(CONSTANT_Fieldref, item->tag);
+    // TODO: confirm indexes 16 and 17
+    ASSERT_EQ(16, cFieldrefInfo->class_index);
+    ASSERT_EQ(17, cFieldrefInfo->name_and_type_index);
+  }
 }
