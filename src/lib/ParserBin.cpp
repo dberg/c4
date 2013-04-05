@@ -115,7 +115,8 @@ void ParserBin::parseConstantPool(unsigned poolCount, spCPInfo &constantPool) {
         break;
 
       case CONSTANT_NameAndType:
-        // TODO:
+        parseCPNameAndTypeInfo(item);
+        constantPool->items.push_back(item);
         break;
 
       case CONSTANT_Utf8:
@@ -161,6 +162,12 @@ void ParserBin::parseCPMethodref(spCPItem &item) {
 void ParserBin::parseCPString(spCPItem &item) {
   item->cStringInfo = spCStringInfo(new CStringInfo);
   item->cStringInfo->string_index = getU2();
+}
+
+void ParserBin::parseCPNameAndTypeInfo(spCPItem &item) {
+  item->cNameAndTypeInfo = spCNameAndTypeInfo(new CNameAndTypeInfo);
+  item->cNameAndTypeInfo->name_index = getU2();
+  item->cNameAndTypeInfo->descriptor_index = getU2();
 }
 
 void ParserBin::parseCPUtf8(spCPItem &item) {

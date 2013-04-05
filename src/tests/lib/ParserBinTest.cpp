@@ -178,12 +178,13 @@ TEST(ParserBin, HelloWorld) {
   }
 
   {
-    // Item 14: CONSTANT_Class
+    // Item 14: CONSTANT_NameAndType
     spCPItem item = parser.classFile->constant_pool->items[14];
-    ASSERT_EQ(CONSTANT_Class, item->tag);
-    spCClassInfo cClassInfo = item->cClassInfo;
-    // TODO: confirm index 8
-    ASSERT_EQ(8, cClassInfo->name_index);
+    ASSERT_EQ(CONSTANT_NameAndType, item->tag);
+    spCNameAndTypeInfo cNameAndTypeInfo = item->cNameAndTypeInfo;
+    // TODO: confirm index 7 and 8
+    ASSERT_EQ(7, cNameAndTypeInfo->name_index);
+    ASSERT_EQ(8, cNameAndTypeInfo->descriptor_index);
   }
 
   {
@@ -196,8 +197,17 @@ TEST(ParserBin, HelloWorld) {
   }
 
   {
-    // Item 16: CONSTANT_Utf8
+    // Item 16: CONSTANT_NameAndType
     spCPItem item = parser.classFile->constant_pool->items[16];
+    ASSERT_EQ(CONSTANT_NameAndType, item->tag);
+    spCNameAndTypeInfo cNameAndTypeInfo = item->cNameAndTypeInfo;
+    ASSERT_EQ(24, cNameAndTypeInfo->name_index);
+    ASSERT_EQ(25, cNameAndTypeInfo->descriptor_index);
+  }
+
+  {
+    // Item 17: CONSTANT_Utf8
+    spCPItem item = parser.classFile->constant_pool->items[17];
     ASSERT_EQ(CONSTANT_Utf8, item->tag);
     spCUtf8Info cUtf8Info = item->cUtf8Info;
     ASSERT_EQ(8, item->cUtf8Info->length);
@@ -207,8 +217,8 @@ TEST(ParserBin, HelloWorld) {
   }
 
   {
-    // Item 17: CONSTANT_Class
-    spCPItem item = parser.classFile->constant_pool->items[17];
+    // Item 18: CONSTANT_Class
+    spCPItem item = parser.classFile->constant_pool->items[18];
     ASSERT_EQ(CONSTANT_Class, item->tag);
     spCClassInfo cClassInfo = item->cClassInfo;
     // TODO: confirm index 26
