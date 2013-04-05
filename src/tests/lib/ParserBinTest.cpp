@@ -278,4 +278,15 @@ TEST(ParserBin, HelloWorld) {
       item->cUtf8Info->bytes.end());
     ASSERT_EQ("out", str);
   }
+
+  {
+    // Item 24: CONSTANT_Utf8
+    spCPItem item = parser.classFile->constant_pool->items[24];
+    ASSERT_EQ(CONSTANT_Utf8, item->tag);
+    spCUtf8Info cUtf8Info = item->cUtf8Info;
+    ASSERT_EQ(21, item->cUtf8Info->length);
+    std::string str(item->cUtf8Info->bytes.begin(),
+      item->cUtf8Info->bytes.end());
+    ASSERT_EQ("Ljava/io/PrintStream;", str);
+  }
 }
