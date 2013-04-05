@@ -323,4 +323,6 @@ TEST(ParserBin, HelloWorld) {
       item->cUtf8Info->bytes.end());
     ASSERT_EQ("(Ljava/lang/String;)V", str);
   }
+
+  ASSERT_EQ(ACC_PUBLIC | ACC_SUPER, parser.classFile->access_flags);
 }
