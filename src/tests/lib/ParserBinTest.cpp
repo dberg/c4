@@ -289,4 +289,26 @@ TEST(ParserBin, HelloWorld) {
       item->cUtf8Info->bytes.end());
     ASSERT_EQ("Ljava/io/PrintStream;", str);
   }
+
+  {
+    // Item 25: CONSTANT_Utf8
+    spCPItem item = parser.classFile->constant_pool->items[25];
+    ASSERT_EQ(CONSTANT_Utf8, item->tag);
+    spCUtf8Info cUtf8Info = item->cUtf8Info;
+    ASSERT_EQ(19, item->cUtf8Info->length);
+    std::string str(item->cUtf8Info->bytes.begin(),
+      item->cUtf8Info->bytes.end());
+    ASSERT_EQ("java/io/PrintStream", str);
+  }
+
+  {
+    // Item 26: CONSTANT_Utf8
+    spCPItem item = parser.classFile->constant_pool->items[26];
+    ASSERT_EQ(CONSTANT_Utf8, item->tag);
+    spCUtf8Info cUtf8Info = item->cUtf8Info;
+    ASSERT_EQ(7, item->cUtf8Info->length);
+    std::string str(item->cUtf8Info->bytes.begin(),
+      item->cUtf8Info->bytes.end());
+    ASSERT_EQ("println", str);
+  }
 }
