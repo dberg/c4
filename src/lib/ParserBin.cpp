@@ -68,8 +68,10 @@ void ParserBin::parseClassFile() {
 }
 
 void ParserBin::parseConstantPool(unsigned poolCount, spCPInfo &constantPool) {
-  constantPool->items.reserve(poolCount - 1);
-  for (unsigned i = 0; i < poolCount; i++) {
+  unsigned entries = poolCount - 1;
+  constantPool->items.reserve(entries);
+  // Since we start at zero we neet poolCount - 2 entries
+  for (unsigned i = 0; i < entries; i++) {
     u1 tag = getU1();
     spCPItem item = spCPItem(new CPItem);
     item->tag = tag;

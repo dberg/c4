@@ -30,6 +30,7 @@ TEST(ParserBin, HelloWorld) {
 
   ASSERT_EQ(0xCAFEBABE, parser.classFile->magic);
   ASSERT_EQ(29, parser.classFile->constant_pool_count);
+  ASSERT_EQ(28, parser.classFile->constant_pool->items.size());
 
   {
     // Item 0: CONSTANT_Methodref
@@ -310,5 +311,16 @@ TEST(ParserBin, HelloWorld) {
     std::string str(item->cUtf8Info->bytes.begin(),
       item->cUtf8Info->bytes.end());
     ASSERT_EQ("println", str);
+  }
+
+  {
+    // Item 27: CONSTANT_Utf8
+    spCPItem item = parser.classFile->constant_pool->items[27];
+    ASSERT_EQ(CONSTANT_Utf8, item->tag);
+    spCUtf8Info cUtf8Info = item->cUtf8Info;
+    ASSERT_EQ(21, item->cUtf8Info->length);
+    std::string str(item->cUtf8Info->bytes.begin(),
+      item->cUtf8Info->bytes.end());
+    ASSERT_EQ("(Ljava/lang/String;)V", str);
   }
 }
