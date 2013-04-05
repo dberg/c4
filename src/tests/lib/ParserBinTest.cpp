@@ -224,4 +224,58 @@ TEST(ParserBin, HelloWorld) {
     // TODO: confirm index 26
     ASSERT_EQ(26, cClassInfo->name_index);
   }
+
+  {
+    // Item 19: CONSTANT_NameAndType
+    spCPItem item = parser.classFile->constant_pool->items[19];
+    ASSERT_EQ(CONSTANT_NameAndType, item->tag);
+    spCNameAndTypeInfo cNameAndTypeInfo = item->cNameAndTypeInfo;
+    // TODO: confirm index 27 and 28
+    ASSERT_EQ(27, cNameAndTypeInfo->name_index);
+    ASSERT_EQ(28, cNameAndTypeInfo->descriptor_index);
+  }
+
+  {
+    // Item 20: CONSTANT_Utf8
+    spCPItem item = parser.classFile->constant_pool->items[20];
+    ASSERT_EQ(CONSTANT_Utf8, item->tag);
+    spCUtf8Info cUtf8Info = item->cUtf8Info;
+    ASSERT_EQ(10, item->cUtf8Info->length);
+    std::string str(item->cUtf8Info->bytes.begin(),
+      item->cUtf8Info->bytes.end());
+    ASSERT_EQ("HelloWorld", str);
+  }
+
+  {
+    // Item 21: CONSTANT_Utf8
+    spCPItem item = parser.classFile->constant_pool->items[21];
+    ASSERT_EQ(CONSTANT_Utf8, item->tag);
+    spCUtf8Info cUtf8Info = item->cUtf8Info;
+    ASSERT_EQ(16, item->cUtf8Info->length);
+    std::string str(item->cUtf8Info->bytes.begin(),
+      item->cUtf8Info->bytes.end());
+    ASSERT_EQ("java/lang/Object", str);
+  }
+
+  {
+    // Item 22: CONSTANT_Utf8
+    spCPItem item = parser.classFile->constant_pool->items[22];
+    ASSERT_EQ(CONSTANT_Utf8, item->tag);
+    spCUtf8Info cUtf8Info = item->cUtf8Info;
+    ASSERT_EQ(16, item->cUtf8Info->length);
+    std::string str(item->cUtf8Info->bytes.begin(),
+      item->cUtf8Info->bytes.end());
+    ASSERT_EQ("java/lang/System", str);
+  }
+
+  {
+    // Item 23: CONSTANT_Utf8
+    spCPItem item = parser.classFile->constant_pool->items[23];
+    ASSERT_EQ(CONSTANT_Utf8, item->tag);
+    spCUtf8Info cUtf8Info = item->cUtf8Info;
+    ASSERT_EQ(3, item->cUtf8Info->length);
+    std::string str(item->cUtf8Info->bytes.begin(),
+      item->cUtf8Info->bytes.end());
+    ASSERT_EQ("out", str);
+  }
 }
