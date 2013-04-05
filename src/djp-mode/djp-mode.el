@@ -139,6 +139,7 @@
 	      (remove-text-properties (point-min) (point-max) '(syntax-table))
 	      (remove-text-properties (point-min) (point-max) '(face nil))
 	      (djp-remove-overlays)
+	      (djp-clear-face (point-min) (point-max))
 	      (setq interrupted-p
 		    (catch 'interrupted
 		      (djp-parse)
@@ -234,6 +235,11 @@ djp-symbol-table and djp-indentation-table."
   (let ((msg (get-text-property new-point 'help-echo)))
     (if msg
         (message msg))))
+
+(defun djp-clear-face (beg end)
+  (remove-text-properties beg end '(face nil
+                                    help-echo nil
+                                    point-entered nil)))
 
 (defun djp-remove-overlays ()
   "Remove overlays from buffer that have a `djp-error' property."
