@@ -8,8 +8,10 @@ namespace djp {
 
 struct Indentation {
   int level;
-  int offset;
-  Indentation(int level, int offset) : level(level), offset(offset) {}
+  int lineWrap;
+  int token;
+  Indentation(int level, int lineWrap, int token)
+    : level(level), lineWrap(lineWrap), token(token) {}
 };
 
 typedef boost::shared_ptr<Indentation> spIndentation;

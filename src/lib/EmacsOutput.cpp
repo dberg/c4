@@ -20,7 +20,7 @@ void EmacsOutput::buildIT() {
     outIT += " (";
     outIT += itos(it->second->level);
     outIT += " ";
-    outIT += (it->second->offset) ? "1" : "0";
+    outIT += (it->second->lineWrap) ? "1" : "0";
     outIT += ") ";
   }
 

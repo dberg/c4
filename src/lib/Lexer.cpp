@@ -65,23 +65,33 @@ void Lexer::processIndentation(unsigned prevLine, unsigned curLine,
   // }
   if (curToken == TOK_LCURLY_BRACKET) {
     indentMap[curLine] = spIndentation(new Indentation(
-      curIndentationLevel - 1, false));
+      curIndentationLevel - 1, false, curToken));
     return;
   }
 
   // If we have a closing curly brace we should decrease the indentation level.
   if (curToken == TOK_RCURLY_BRACKET) {
     indentMap[curLine] = spIndentation(new Indentation(
-      curIndentationLevel, false));
+      curIndentationLevel, false, curToken));
     return;
   }
 
-  // Unless the previous statement is a semi-colon or a curly bracket we have an
-  // offset to the current indentation level.
-  bool offset = (prevToken == TOK_SEMICOLON || prevToken == TOK_LCURLY_BRACKET
-    || prevToken == TOK_RCURLY_BRACKET || prevToken >= 0) ? false : true;
+  bool lineWrap = isLineWrap(prevToken);
   indentMap[curLine] = spIndentation(new Indentation(
-    curIndentationLevel, offset));
+    curIndentationLevel, lineWrap, curToken));
+}
+
+bool Lexer::isLineWrap(int prevToken) {
+  if (prevToken == TOK_SEMICOLON) { return false; }
+  if (prevToken == TOK_LCURLY_BRACKET) { return false; }
+  if (prevToken == TOK_RCURLY_BRACKET) { return false; }
+  if (prevToken >= 0) { return false; }
+  if (!indentMap.empty()) {
+    if (indentMap[indentMap.rbegin()->first]->token == TOK_ANNOTATION) {
+      return false;
+    }
+  }
+  return false;
 }
 
 int Lexer::getToken() {
