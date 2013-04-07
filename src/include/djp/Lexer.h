@@ -61,6 +61,7 @@ class Lexer {
   int getTokenIdentifier(char c);
   void processIndentation(unsigned prevLine, unsigned curLine,
     int prevToken, int curToken);
+  bool isLineWrap(int prevToken);
 
 public:
   Lexer(spSourceCodeStream &src, spDiagnosis &diag,
