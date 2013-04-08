@@ -103,11 +103,13 @@ void ParserBin::parseConstantPool(unsigned poolCount, spCPInfo &constantPool) {
         break;
 
       case CONSTANT_Integer:
-        // TODO:
+        parseCPInteger(item);
+        constantPool->items.push_back(item);
         break;
 
       case CONSTANT_Float:
-        // TODO:
+        parseCPFloat(item);
+        constantPool->items.push_back(item);
         break;
 
       case CONSTANT_Long:
@@ -173,6 +175,16 @@ void ParserBin::parseCPInterfaceMethodref(spCPItem &item) {
 void ParserBin::parseCPString(spCPItem &item) {
   item->cStringInfo = spCStringInfo(new CStringInfo);
   item->cStringInfo->string_index = getU2();
+}
+
+void ParserBin::parseCPInteger(spCPItem &item) {
+  item->cIntegerInfo = spCIntegerInfo(new CIntegerInfo);
+  item->cIntegerInfo->bytes = getU4();
+}
+
+void ParserBin::parseCPFloat(spCPItem &item) {
+  item->cFloatInfo = spCFloatInfo(new CFloatInfo);
+  item->cFloatInfo->bytes = getU4();
 }
 
 void ParserBin::parseCPNameAndTypeInfo(spCPItem &item) {
