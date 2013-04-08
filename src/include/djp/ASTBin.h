@@ -16,7 +16,8 @@ typedef boost::shared_ptr<struct CPInfo> spCPInfo;
 typedef boost::shared_ptr<struct CPItem> spCPItem;
 typedef boost::shared_ptr<struct CClassInfo> spCClassInfo;
 typedef boost::shared_ptr<struct CFieldrefInfo> spCFieldrefInfo;
-typedef boost::shared_ptr<struct CInterfaceMethodrefInfo> spCInterfaceMethodrefInfo;
+typedef boost::shared_ptr<struct CInterfaceMethodrefInfo>
+  spCInterfaceMethodrefInfo;
 typedef boost::shared_ptr<struct CMethodrefInfo> spCMethodrefInfo;
 typedef boost::shared_ptr<struct CStringInfo> spCStringInfo;
 typedef boost::shared_ptr<struct CIntegerInfo> spCIntegerInfo;
@@ -26,6 +27,8 @@ typedef boost::shared_ptr<struct CDoubleInfo> spCDoubleInfo;
 typedef boost::shared_ptr<struct CNameAndTypeInfo> spCNameAndTypeInfo;
 typedef boost::shared_ptr<struct CUtf8Info> spCUtf8Info;
 typedef boost::shared_ptr<struct CMethodHandleInfo> spCMethodHandleInfo;
+typedef boost::shared_ptr<struct CMethodTypeInfo> spCMethodTypeInfo;
+typedef boost::shared_ptr<struct CInvokeDynamicInfo> spCInvokeDynamicInfo;
 
 enum ConstantPoolTag {
   CONSTANT_Class = 7,
@@ -124,8 +127,8 @@ struct CPItem {
   spCNameAndTypeInfo cNameAndTypeInfo;
   spCUtf8Info cUtf8Info;
   spCMethodHandleInfo cMethodHandleInfo;
-  //spCMethodType cMethodType;
-  //spCInvokeDynamic cInvokeDynamic;
+  spCMethodTypeInfo cMethodTypeInfo;
+  spCInvokeDynamicInfo cInvokeDynamicInfo;
 };
 
 /// CONSTANT_Class_info {
@@ -249,6 +252,24 @@ struct CMethodHandleInfo {
   u2 reference_index;
 };
 
+/// CONSTANT_MethodType_info {
+///     u1 reference_kind;
+///     u2 reference_index;
+/// }
+struct CMethodTypeInfo {
+  //u1 tag; CPItem
+  u2 descriptor_index;
+};
+
+/// CONSTANT_InvokeDynamic_info {
+///     u2 bootstrap_method_attr_index;
+///     u2 name_and_type_index;
+/// }
+struct CInvokeDynamicInfo {
+  //u1 tag; CPItem
+  u2 bootstrap_method_attr_index;
+  u2 name_and_type_index;
+};
 
 } // namespace
 #endif

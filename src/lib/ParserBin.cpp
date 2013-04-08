@@ -138,11 +138,13 @@ void ParserBin::parseConstantPool(unsigned poolCount, spCPInfo &constantPool) {
         break;
 
       case CONSTANT_MethodType:
-        // TODO:
+        parseCPMethodType(item);
+        constantPool->items.push_back(item);
         break;
 
       case CONSTANT_InvokeDynamic:
-        // TODO:
+        parseCPInvokeDynamic(item);
+        constantPool->items.push_back(item);
         break;
 
       default:
@@ -221,6 +223,17 @@ void ParserBin::parseCPMethodHandle(spCPItem &item) {
   item->cMethodHandleInfo = spCMethodHandleInfo(new CMethodHandleInfo);
   item->cMethodHandleInfo->reference_kind = getU1();
   item->cMethodHandleInfo->reference_index = getU2();
+}
+
+void ParserBin::parseCPMethodType(spCPItem &item) {
+  item->cMethodTypeInfo = spCMethodTypeInfo(new CMethodTypeInfo);
+  item->cMethodTypeInfo->descriptor_index = getU2();
+}
+
+void ParserBin::parseCPInvokeDynamic(spCPItem &item) {
+  item->cInvokeDynamicInfo = spCInvokeDynamicInfo(new CInvokeDynamicInfo);
+  item->cInvokeDynamicInfo->bootstrap_method_attr_index = getU2();
+  item->cInvokeDynamicInfo->name_and_type_index = getU2();
 }
 
 } // namespace

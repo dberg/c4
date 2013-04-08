@@ -38,6 +38,8 @@ class ParserBin {
   void parseCPNameAndTypeInfo(spCPItem &item);
   void parseCPUtf8(spCPItem &item);
   void parseCPMethodHandle(spCPItem &item);
+  void parseCPMethodType(spCPItem &item);
+  void parseCPInvokeDynamic(spCPItem &item);
 
 public:
   ParserBin(const std::string filename,
