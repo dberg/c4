@@ -33,6 +33,8 @@ class ParserBin {
   void parseCPString(spCPItem &item);
   void parseCPInteger(spCPItem &item);
   void parseCPFloat(spCPItem &item);
+  void parseCPLong(spCPItem &item);
+  void parseCPDouble(spCPItem &item);
   void parseCPNameAndTypeInfo(spCPItem &item);
   void parseCPUtf8(spCPItem &item);
 

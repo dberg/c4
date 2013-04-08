@@ -21,6 +21,8 @@ typedef boost::shared_ptr<struct CMethodrefInfo> spCMethodrefInfo;
 typedef boost::shared_ptr<struct CStringInfo> spCStringInfo;
 typedef boost::shared_ptr<struct CIntegerInfo> spCIntegerInfo;
 typedef boost::shared_ptr<struct CFloatInfo> spCFloatInfo;
+typedef boost::shared_ptr<struct CLongInfo> spCLongInfo;
+typedef boost::shared_ptr<struct CDoubleInfo> spCDoubleInfo;
 typedef boost::shared_ptr<struct CNameAndTypeInfo> spCNameAndTypeInfo;
 typedef boost::shared_ptr<struct CUtf8Info> spCUtf8Info;
 
@@ -116,8 +118,8 @@ struct CPItem {
   spCStringInfo cStringInfo;
   spCIntegerInfo cIntegerInfo;
   spCFloatInfo cFloatInfo;
-  //spCLong cLong;
-  //spCDouble cDouble;
+  spCLongInfo cLongInfo;
+  spCDoubleInfo cDoubleInfo;
   spCNameAndTypeInfo cNameAndTypeInfo;
   spCUtf8Info cUtf8Info;
   //spCMethodHandle cMethodHandle;
@@ -192,6 +194,28 @@ struct CIntegerInfo {
 struct CFloatInfo {
   //u1 tag; CPItem
   u4 bytes;
+};
+
+/// CONSTANT_Long_info {
+///     u1 tag;
+///     u4 high_bytes;
+///     u4 low_bytes;
+/// }
+struct CLongInfo {
+  //u1 tag; CPItem
+  u4 high_bytes;
+  u4 low_bytes;
+};
+
+/// CONSTANT_Double_info {
+///     u1 tag;
+///     u4 high_bytes;
+///     u4 low_bytes;
+/// }
+struct CDoubleInfo {
+  //u1 tag; CPItem
+  u4 high_bytes;
+  u4 low_bytes;
 };
 
 /// CONSTANT_NameAndType_info {
