@@ -133,7 +133,8 @@ void ParserBin::parseConstantPool(unsigned poolCount, spCPInfo &constantPool) {
         break;
 
       case CONSTANT_MethodHandle:
-        // TODO:
+        parseCPMethodHandle(item);
+        constantPool->items.push_back(item);
         break;
 
       case CONSTANT_MethodType:
@@ -214,6 +215,12 @@ void ParserBin::parseCPUtf8(spCPItem &item) {
   for (unsigned i = 0; i < length; i++) {
     item->cUtf8Info->bytes.push_back(getU1());
   }
+}
+
+void ParserBin::parseCPMethodHandle(spCPItem &item) {
+  item->cMethodHandleInfo = spCMethodHandleInfo(new CMethodHandleInfo);
+  item->cMethodHandleInfo->reference_kind = getU1();
+  item->cMethodHandleInfo->reference_index = getU2();
 }
 
 } // namespace
