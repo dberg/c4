@@ -93,7 +93,8 @@ void ParserBin::parseConstantPool(unsigned poolCount, spCPInfo &constantPool) {
         break;
 
       case CONSTANT_InterfaceMethodref:
-        // TODO:
+        parseCPInterfaceMethodref(item);
+        constantPool->items.push_back(item);
         break;
 
       case CONSTANT_String:
@@ -160,6 +161,13 @@ void ParserBin::parseCPMethodref(spCPItem &item) {
   item->cMethodrefInfo = spCMethodrefInfo(new CMethodrefInfo);
   item->cMethodrefInfo->class_index = getU2();
   item->cMethodrefInfo->name_and_type_index = getU2();
+}
+
+void ParserBin::parseCPInterfaceMethodref(spCPItem &item) {
+  item->cInterfaceMethodrefInfo = spCInterfaceMethodrefInfo(
+    new CInterfaceMethodrefInfo);
+  item->cInterfaceMethodrefInfo->class_index = getU2();
+  item->cInterfaceMethodrefInfo->name_and_type_index = getU2();
 }
 
 void ParserBin::parseCPString(spCPItem &item) {
