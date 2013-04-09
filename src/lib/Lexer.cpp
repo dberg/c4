@@ -237,10 +237,13 @@ int Lexer::getCharacterLiteral() {
 /// A forward slash character indicates a comment, divisor or an assignment
 /// operation. Comments are pre-processed but since we do all parsing in one
 /// pass we store the comments data in the lexer and call getToken() again.
+/// We also update the indentation table here.
 int Lexer::getCommentOrDivToken() {
   // We peek 1 char ahead to confirm it's a comment,
   // and which type of comment this is.
   if (src->peekChar() == '/') {
+    addIndentationIfAbsent(indentMap, src->getLine(),
+      curIndentationLevel, false, 0);
     spComment comment = spComment(new Comment);
     comment->opt = Comment::OPT_ONE_LINE;
     comment->posIni = getCursor() - 1;

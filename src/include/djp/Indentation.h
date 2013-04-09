@@ -20,6 +20,9 @@ typedef std::map<int, spIndentation> LineIndentationMap;
 void addIndentation(LineIndentationMap &indentMap, int line, int level,
   bool lineWrap, int token = 0);
 
+void addIndentationIfAbsent(LineIndentationMap &indentMap, int line, int level,
+  bool lineWrap, int token = 0);
+
 } // namespace
 
 #endif
