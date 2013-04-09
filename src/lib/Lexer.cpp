@@ -91,7 +91,7 @@ bool Lexer::isLineWrap(int prevToken) {
       return false;
     }
   }
-  return false;
+  return true;
 }
 
 int Lexer::getToken() {
