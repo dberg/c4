@@ -17,6 +17,9 @@ struct Indentation {
 typedef boost::shared_ptr<Indentation> spIndentation;
 typedef std::map<int, spIndentation> LineIndentationMap;
 
+void addIndentation(LineIndentationMap &indentMap, int line, int level,
+  bool lineWrap, int token = 0);
+
 } // namespace
 
 #endif

@@ -64,21 +64,19 @@ void Lexer::processIndentation(unsigned prevLine, unsigned curLine,
   //   // ...
   // }
   if (curToken == TOK_LCURLY_BRACKET) {
-    indentMap[curLine] = spIndentation(new Indentation(
-      curIndentationLevel - 1, false, curToken));
+    addIndentation(
+      indentMap, curLine, curIndentationLevel - 1, false, curToken);
     return;
   }
 
   // If we have a closing curly brace we should decrease the indentation level.
   if (curToken == TOK_RCURLY_BRACKET) {
-    indentMap[curLine] = spIndentation(new Indentation(
-      curIndentationLevel, false, curToken));
+    addIndentation(indentMap, curLine, curIndentationLevel, false, curToken);
     return;
   }
 
   bool lineWrap = isLineWrap(prevToken);
-  indentMap[curLine] = spIndentation(new Indentation(
-    curIndentationLevel, lineWrap, curToken));
+  addIndentation(indentMap, curLine, curIndentationLevel, lineWrap, curToken);
 }
 
 bool Lexer::isLineWrap(int prevToken) {
@@ -238,7 +236,7 @@ int Lexer::getCharacterLiteral() {
 
 /// A forward slash character indicates a comment, divisor or an assignment
 /// operation. Comments are pre-processed but since we do all parsing in one
-//// pass we store the comments data in the lexer and call getToken() again.
+/// pass we store the comments data in the lexer and call getToken() again.
 int Lexer::getCommentOrDivToken() {
   // We peek 1 char ahead to confirm it's a comment,
   // and which type of comment this is.

@@ -88,6 +88,7 @@ $(obj)/djp.o: $(libdir)/djp.cpp
 
 # objects - libdjp
 $(obj)/libdjp.a: $(obj)/Diagnosis.o \
+                 $(obj)/Indentation.o \
                  $(obj)/Lexer.o \
                  $(obj)/LiteralSupport.o \
                  $(obj)/Parser.o \
@@ -96,6 +97,9 @@ $(obj)/libdjp.a: $(obj)/Diagnosis.o \
 	ar -rv $@ $+
 
 $(obj)/Diagnosis.o: $(libdir)/Diagnosis.cpp $(incdir)/djp/Diagnosis.h
+	$(CXX) $(CFLAGS) $(INC) -c $< -o $@
+
+$(obj)/Indentation.o: $(libdir)/Indentation.cpp $(incdir)/djp/Indentation.h
 	$(CXX) $(CFLAGS) $(INC) -c $< -o $@
 
 $(obj)/Lexer.o: $(libdir)/Lexer.cpp \
