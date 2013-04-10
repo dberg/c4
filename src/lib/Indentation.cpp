@@ -3,8 +3,9 @@
 namespace djp {
 
 void addIndentation(LineIndentationMap &indentMap, int line, int level,
-  bool lineWrap, int token) {
-  indentMap[line] = spIndentation(new Indentation(level, lineWrap, token));
+  bool lineWrap, int token, int offset) {
+  indentMap[line] = spIndentation(new Indentation(
+    level, lineWrap, token, offset));
 }
 
 void addIndentationIfAbsent(LineIndentationMap &indentMap, int line, int level,

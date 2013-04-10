@@ -255,11 +255,21 @@ int Lexer::getCommentOrDivToken() {
   }
 
   if (src->peekChar() == '*') {
+    addIndentationIfAbsent(indentMap, src->getLine(),
+      curIndentationLevel, false, 0);
+
     spComment comment = spComment(new Comment);
     comment->opt = Comment::OPT_MULTIPLE_LINES;
     comment->posIni = getCursor() - 1;
+
+    int offset = src->peekChar(1) == '*' ? 1 : 0; // javadoc offset
     char c = src->getChar(); // consume '*'
     while ((c = src->getChar())) {
+      if (c == '\n') {
+        addIndentation(indentMap, src->getLine(),
+          curIndentationLevel, false, 0, offset);
+      }
+
       if (c == '*' && src->peekChar() == '/') {
         src->getChar(); // consume final '/'
         comment->posEnd = getCursor() - 1;

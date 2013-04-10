@@ -10,7 +10,7 @@
 ;; Indentation
 (defvar djp-indentation-char ?\s)
 (defvar djp-indentation-count 4)
-(defvar djp-indentation-offset 8)
+(defvar djp-indentation-linewrap 8)
 
 ;; Font faces
 (defvar djp-face-annotation-tok-at 'nil)
@@ -62,8 +62,10 @@
 	(save-excursion
 	  (beginning-of-line)
 	  (fixup-whitespace)
-	  (setq indent-value (+ (* (car indent) djp-indentation-count)
-				(* (car (cdr indent)) djp-indentation-offset)))
+	  (setq indent-value
+                (+ (* (car indent) djp-indentation-count)
+                   (* (cadr indent) djp-indentation-linewrap)
+                   (car (cddr indent))))
 	  (insert (make-string indent-value djp-indentation-char))))))
 
 ;; djp-mode
