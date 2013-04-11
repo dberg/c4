@@ -66,13 +66,18 @@ void ParserBin::parseClassFile() {
   classFile->constant_pool = spCPInfo(new CPInfo);
   parseConstantPool(classFile->constant_pool_count, classFile->constant_pool);
   classFile->access_flags = getU2();
+  classFile->this_class = getU2();
 }
 
 void ParserBin::parseConstantPool(unsigned poolCount, spCPInfo &constantPool) {
-  unsigned entries = poolCount - 1;
+  // The constant pool index is not zero based so we create a vector with
+  // size equals to the poolCount and not poolCount - 1. The first entry in the
+  // vector is a dummy value.
+  unsigned entries = poolCount;
   constantPool->items.reserve(entries);
-  // Since we start at zero we neet poolCount - 2 entries
-  for (unsigned i = 0; i < entries; i++) {
+  constantPool->items.push_back(spCPItem(new CPItem)); // dummy value
+
+  for (unsigned i = 1; i < entries; i++) {
     u1 tag = getU1();
     spCPItem item = spCPItem(new CPItem);
     item->tag = tag;

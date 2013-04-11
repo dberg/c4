@@ -92,8 +92,8 @@ struct ClassFile {
   u2 constant_pool_count;
   spCPInfo constant_pool;
   u2 access_flags;
+  u2 this_class;
   // TODO:
-  //u2             this_class;
   //u2             super_class;
   //u2             interfaces_count;
   //u2             interfaces[interfaces_count];
