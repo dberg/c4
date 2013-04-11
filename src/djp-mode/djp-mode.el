@@ -10,7 +10,7 @@
 ;; Indentation
 (defvar djp-indentation-char ?\s)
 (defvar djp-indentation-count 4)
-(defvar djp-indentation-offset 8)
+(defvar djp-indentation-linewrap 8)
 
 ;; Font faces
 (defvar djp-face-annotation-tok-at 'nil)
@@ -56,15 +56,25 @@
 ;; indentation
 (defun djp-indent-line ()
   (let* ((line (line-number-at-pos))
-	 (indent (gethash (- line 1) djp-indentation-table))
-	 (indent-value 0))
+         (indent (gethash (- line 1) djp-indentation-table))
+         (indent-value 0)
+         ini end indent-str)
     (if indent
-	(save-excursion
-	  (beginning-of-line)
-	  (fixup-whitespace)
-	  (setq indent-value (+ (* (car indent) djp-indentation-count)
-				(* (car (cdr indent)) djp-indentation-offset)))
-	  (insert (make-string indent-value djp-indentation-char))))))
+        (save-excursion
+          (beginning-of-line)
+          (setq ini (point))
+          (skip-chars-forward " \t")
+          (setq end (point))
+          (setq indent-value
+                (+ (* (car indent) djp-indentation-count)
+                   (* (cadr indent) djp-indentation-linewrap)
+                   (car (cddr indent))))
+          (setq indent-str (make-string indent-value djp-indentation-char))
+          (if (not (string= (buffer-substring-no-properties ini end) indent-str))
+              (progn
+                (delete-horizontal-space)
+                (insert indent-str)))))))
+
 
 ;; djp-mode
 (defvar djp-mode-syntax-table

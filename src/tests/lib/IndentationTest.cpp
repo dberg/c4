@@ -11,12 +11,15 @@ TEST(Indentation, Class) {
     "    void m() {}\n"
     "    @Ann\n"
     "    void n() {}\n"
+    "    void x(int a,\n"
+    "            int b) {\n"
+    "    }\n"
     "}\n";
 
   Parser parser(filename, buffer);
   parser.parse();
 
-  ASSERT_EQ(5, parser.indentMap.size());
+  ASSERT_EQ(8, parser.indentMap.size());
 
   {
     // class A{\n
@@ -47,8 +50,29 @@ TEST(Indentation, Class) {
   }
 
   {
-    // }\n
+    // void x(int a,\n
     spIndentation indent = parser.indentMap[4];
+    ASSERT_EQ(1, indent->level);
+    ASSERT_FALSE(indent->lineWrap);
+  }
+
+  {
+    // int b) {\n
+    spIndentation indent = parser.indentMap[5];
+    ASSERT_EQ(1, indent->level);
+    ASSERT_TRUE(indent->lineWrap);
+  }
+
+  {
+    // }\n
+    spIndentation indent = parser.indentMap[6];
+    ASSERT_EQ(1, indent->level);
+    ASSERT_FALSE(indent->lineWrap);
+  }
+
+  {
+    // }\n
+    spIndentation indent = parser.indentMap[7];
     ASSERT_EQ(0, indent->level);
     ASSERT_FALSE(indent->lineWrap);
   }
