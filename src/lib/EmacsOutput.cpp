@@ -9,7 +9,8 @@ void EmacsOutput::build() {
 
 void EmacsOutput::buildIT() {
   // Identation table
-  // #s(hash-table size N data (LineNumber_N0 (IndentLevel_N0 LineWrap_N0 Offset_N0) ... N)
+  // #s(hash-table size N data
+  //   (LineNumber_N0 (IndentLevel_N0 LineWrap_N0 Offset_N0) ... N)
   outIT = "#s(hash-table size ";
   outIT += itos(indentMap.size());
   outIT += " data (";
@@ -1653,12 +1654,13 @@ void EmacsOutput::setLiteral(const spLiteral &literal) {
 
   if (literal->opt == Literal::OPT_BOOLEAN) {
     if (literal->boolLiteral) {
+      int pos = literal->boolLiteral->pos;
       if (literal->boolLiteral->val) {
         // true
-        setKeyword(literal->boolLiteral->pos, literal->boolLiteral->pos + 5);
+        setKeyword(pos + 1, pos + 5);
       } else {
         // false
-        setKeyword(literal->boolLiteral->pos, literal->boolLiteral->pos + 6);
+        setKeyword(pos + 1, pos + 6);
       }
     }
     return;
