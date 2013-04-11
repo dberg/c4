@@ -76,8 +76,8 @@ TEST(ParserBin, HelloWorld) {
     spCPItem item = parser.classFile->constant_pool->items[5];
     ASSERT_EQ(CONSTANT_Class, item->tag);
     spCClassInfo cClassInfo = item->cClassInfo;
-    // TODO: confirm index 21
     ASSERT_EQ(21, cClassInfo->name_index);
+    ASSERT_EQ(CONSTANT_Utf8, parser.classFile->constant_pool->items[21]->tag);
   }
 
   {
@@ -85,8 +85,8 @@ TEST(ParserBin, HelloWorld) {
     spCPItem item = parser.classFile->constant_pool->items[6];
     ASSERT_EQ(CONSTANT_Class, item->tag);
     spCClassInfo cClassInfo = item->cClassInfo;
-    // TODO: confirm index 22
     ASSERT_EQ(22, cClassInfo->name_index);
+    ASSERT_EQ(CONSTANT_Utf8, parser.classFile->constant_pool->items[22]->tag);
   }
 
   {
@@ -328,4 +328,8 @@ TEST(ParserBin, HelloWorld) {
 
   ASSERT_EQ(5, parser.classFile->this_class);
   ASSERT_EQ(CONSTANT_Class, parser.classFile->constant_pool->items[5]->tag);
+
+  // Our class inherits from java.lang.Object
+  ASSERT_EQ(6, parser.classFile->super_class);
+  ASSERT_EQ(CONSTANT_Class, parser.classFile->constant_pool->items[6]->tag);
 }

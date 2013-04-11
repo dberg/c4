@@ -67,6 +67,7 @@ void ParserBin::parseClassFile() {
   parseConstantPool(classFile->constant_pool_count, classFile->constant_pool);
   classFile->access_flags = getU2();
   classFile->this_class = getU2();
+  classFile->super_class = getU2();
 }
 
 void ParserBin::parseConstantPool(unsigned poolCount, spCPInfo &constantPool) {
