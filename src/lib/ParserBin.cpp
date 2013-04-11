@@ -68,6 +68,10 @@ void ParserBin::parseClassFile() {
   classFile->access_flags = getU2();
   classFile->this_class = getU2();
   classFile->super_class = getU2();
+
+  u2 interfaces_count = getU2();
+  classFile->interfaces_count = interfaces_count;
+  parseInterfaces(interfaces_count);
 }
 
 void ParserBin::parseConstantPool(unsigned poolCount, spCPInfo &constantPool) {
@@ -240,6 +244,17 @@ void ParserBin::parseCPInvokeDynamic(spCPItem &item) {
   item->cInvokeDynamicInfo = spCInvokeDynamicInfo(new CInvokeDynamicInfo);
   item->cInvokeDynamicInfo->bootstrap_method_attr_index = getU2();
   item->cInvokeDynamicInfo->name_and_type_index = getU2();
+}
+
+void ParserBin::parseInterfaces(u2 interfaces_count) {
+  if (!interfaces_count) {
+    return;
+  }
+
+  classFile->interfaces.reserve(interfaces_count);
+  for (unsigned i = 0; i < interfaces_count; i++) {
+    classFile->interfaces.push_back(getU2());
+  }
 }
 
 } // namespace

@@ -332,4 +332,6 @@ TEST(ParserBin, HelloWorld) {
   // Our class inherits from java.lang.Object
   ASSERT_EQ(6, parser.classFile->super_class);
   ASSERT_EQ(CONSTANT_Class, parser.classFile->constant_pool->items[6]->tag);
+
+  ASSERT_EQ(0, parser.classFile->interfaces_count);
 }

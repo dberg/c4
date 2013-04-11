@@ -94,9 +94,9 @@ struct ClassFile {
   u2 access_flags;
   u2 this_class;
   u2 super_class;
+  u2 interfaces_count;
+  std::vector<u2> interfaces;
   // TODO:
-  //u2             interfaces_count;
-  //u2             interfaces[interfaces_count];
   //u2             fields_count;
   //field_info     fields[fields_count];
   //u2             methods_count;
