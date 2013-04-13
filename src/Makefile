@@ -8,13 +8,24 @@
 #         clean: remove directory out.
 #                    Ex.: make clean
 #
+# The default compiler on linux is g++. To use clang override the CXX variable
+# make CXX=clang++
+# On osx the default compiler is clang.
+#
 ###############################################################################
 MAKEFLAGS=-r
 
 CXX ?= g++
 BUILDTYPE ?= Debug
 
-CXX11FLAGS = -std=c++11 -stdlib=libc++
+# Darwin:
+UNAME := $(shell uname)
+ifeq ($(UNAME), Darwin)
+  CXX = clang++
+  CXX11FLAGS = -std=c++11 -stdlib=libc++
+endif
+
+CXX11FLAGS ?= -std=c++11
 
 # Release type
 ifeq ($(BUILDTYPE),Release)
