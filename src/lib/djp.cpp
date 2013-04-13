@@ -1,7 +1,6 @@
 #include <iostream>
 #include <string>
 #include "djp/CmdInput.h"
-#include "djp/Diagnosis.h"
 #include "djp/File.h"
 #include "djp/Parser.h"
 #include "djp/EmacsOutput.h"

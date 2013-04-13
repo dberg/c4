@@ -1,8 +1,8 @@
 //-*- C++ -*-
 #ifndef __INDENTATION_H__
 #define __INDENTATION_H__
+#include <memory>
 #include <map>
-#include <boost/shared_ptr.hpp>
 
 namespace djp {
 
@@ -15,7 +15,7 @@ struct Indentation {
     : level(level), lineWrap(lineWrap), token(token), offset(offset) {}
 };
 
-typedef boost::shared_ptr<Indentation> spIndentation;
+typedef std::shared_ptr<Indentation> spIndentation;
 typedef std::map<int, spIndentation> LineIndentationMap;
 
 void addIndentation(LineIndentationMap &indentMap, int line, int level,

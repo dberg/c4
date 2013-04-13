@@ -1,13 +1,13 @@
 //-*- C++ -*-
 #ifndef __SOURCE_CODE_STREAM_H_
 #define __SOURCE_CODE_STREAM_H_
+#include <memory>
 #include <string>
-#include <boost/shared_ptr.hpp>
 
 namespace djp {
 
 class SourceCodeStream;
-typedef boost::shared_ptr<SourceCodeStream> spSourceCodeStream;
+typedef std::shared_ptr<SourceCodeStream> spSourceCodeStream;
 
 class SourceCodeStream {
 

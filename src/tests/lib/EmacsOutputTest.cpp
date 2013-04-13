@@ -1,6 +1,5 @@
 #include <iostream>
 #include <string>
-#include "djp/Diagnosis.h"
 #include "djp/EmacsOutput.h"
 #include "djp/Parser.h"
 #include "gtest/gtest.h"
