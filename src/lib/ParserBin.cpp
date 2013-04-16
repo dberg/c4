@@ -72,6 +72,14 @@ void ParserBin::parseClassFile() {
   u2 interfaces_count = getU2();
   classFile->interfaces_count = interfaces_count;
   parseInterfaces(interfaces_count);
+
+  u2 fields_count = getU2();
+  classFile->fields_count = fields_count;
+  parseFields(fields_count);
+
+  u2 methods_count = getU2();
+  classFile->methods_count = methods_count;
+  parseMethods(methods_count);
 }
 
 void ParserBin::parseConstantPool(unsigned poolCount, spCPInfo &constantPool) {
@@ -254,6 +262,41 @@ void ParserBin::parseInterfaces(u2 interfaces_count) {
   classFile->interfaces.reserve(interfaces_count);
   for (unsigned i = 0; i < interfaces_count; i++) {
     classFile->interfaces.push_back(getU2());
+  }
+}
+
+void ParserBin::parseFields(u2 fields_count) {
+  // TODO:
+}
+
+void ParserBin::parseMethods(u2 methods_count) {
+  for (unsigned i = 0; i < methods_count; i++) {
+    spMethodInfo method = spMethodInfo(new MethodInfo);
+    method->access_flags = getU2();
+    method->name_index = getU2();
+    method->descriptor_index = getU2();
+    u2 attributesCount = getU2();
+    method->attributes_count = attributesCount;
+    parseAttributes(attributesCount, method->attributes);
+    classFile->methods.push_back(method);
+  }
+}
+
+void ParserBin::parseAttributes(u2 attributesCount,
+  std::vector<spAttributeInfo> &attributes) {
+
+  attributes.reserve(attributesCount);
+  for (unsigned i = 0; i < attributesCount; i++) {
+    spAttributeInfo info = spAttributeInfo(new AttributeInfo);
+    info->attribute_name_index = getU2();
+    u4 length = getU4();
+    info->attribute_length = length;
+    info->info.reserve(length);
+    for (unsigned j = 0; j < length; j++) {
+      info->info.push_back(getU1());
+    }
+
+    attributes.push_back(info);
   }
 }
 

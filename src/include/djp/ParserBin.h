@@ -41,6 +41,10 @@ class ParserBin {
   void parseCPMethodType(spCPItem &item);
   void parseCPInvokeDynamic(spCPItem &item);
   void parseInterfaces(u2 interfaces_count);
+  void parseFields(u2 fields_count);
+  void parseMethods(u2 methods_count);
+  void parseAttributes(u2 attributesCount,
+    std::vector<spAttributeInfo> &attributes);
 
 public:
   ParserBin(const std::string filename,

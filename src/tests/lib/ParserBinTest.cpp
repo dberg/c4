@@ -324,7 +324,7 @@ TEST(ParserBin, HelloWorld) {
     ASSERT_EQ("(Ljava/lang/String;)V", str);
   }
 
-  ASSERT_EQ(ACC_PUBLIC | ACC_SUPER, parser.classFile->access_flags);
+  ASSERT_EQ(CLASS_ACC_PUBLIC | CLASS_ACC_SUPER, parser.classFile->access_flags);
 
   ASSERT_EQ(5, parser.classFile->this_class);
   ASSERT_EQ(CONSTANT_Class, parser.classFile->constant_pool->items[5]->tag);
@@ -334,4 +334,60 @@ TEST(ParserBin, HelloWorld) {
   ASSERT_EQ(CONSTANT_Class, parser.classFile->constant_pool->items[6]->tag);
 
   ASSERT_EQ(0, parser.classFile->interfaces_count);
+
+  ASSERT_EQ(0, parser.classFile->fields_count);
+
+  // TODO: 2 methods?
+  ASSERT_EQ(2, parser.classFile->methods_count);
+  ASSERT_EQ(2, parser.classFile->methods.size());
+
+  {
+    // Method 1
+    spMethodInfo method = parser.classFile->methods[0];
+    ASSERT_EQ(METHOD_ACC_PUBLIC, method->access_flags);
+
+    // name - <init>
+    ASSERT_EQ(7, method->name_index);
+    ASSERT_EQ(CONSTANT_Utf8, parser.classFile->constant_pool->items[7]->tag);
+
+    // descriptor - ()V
+    ASSERT_EQ(8, method->descriptor_index);
+    ASSERT_EQ(CONSTANT_Utf8, parser.classFile->constant_pool->items[7]->tag);
+
+    // attributes - Code
+    ASSERT_EQ(1, method->attributes_count);
+    ASSERT_EQ(1, method->attributes.size());
+    spAttributeInfo info = method->attributes[0];
+    ASSERT_EQ(9, info->attribute_name_index);
+    ASSERT_EQ(CONSTANT_Utf8, parser.classFile->constant_pool->items[9]->tag);
+    ASSERT_EQ(29, info->attribute_length);
+
+    // TODO: check attribute info
+    ASSERT_EQ(29, info->info.size());
+  }
+
+  {
+    // Method 2
+    spMethodInfo method = parser.classFile->methods[1];
+    ASSERT_EQ(METHOD_ACC_PUBLIC | METHOD_ACC_STATIC, method->access_flags);
+
+    // name - main
+    ASSERT_EQ(11, method->name_index);
+    ASSERT_EQ(CONSTANT_Utf8, parser.classFile->constant_pool->items[11]->tag);
+
+    // descriptor - ([Ljava/lang/String;)V
+    ASSERT_EQ(12, method->descriptor_index);
+    ASSERT_EQ(CONSTANT_Utf8, parser.classFile->constant_pool->items[12]->tag);
+
+    // attributes - Code
+    ASSERT_EQ(1, method->attributes_count);
+    ASSERT_EQ(1, method->attributes.size());
+    spAttributeInfo info = method->attributes[0];
+    ASSERT_EQ(9, info->attribute_name_index);
+    ASSERT_EQ(CONSTANT_Utf8, parser.classFile->constant_pool->items[9]->tag);
+    ASSERT_EQ(37, info->attribute_length);
+
+    // TODO: check attribute info
+    ASSERT_EQ(37, info->info.size());
+  }
 }
