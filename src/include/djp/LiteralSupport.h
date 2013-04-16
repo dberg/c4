@@ -1,8 +1,8 @@
 //-*- C++ -*-
 #ifndef __LITERAL_SUPPORT_H__
 #define __LITERAL_SUPPORT_H__
+#include <memory>
 #include <sstream>
-#include <boost/shared_ptr.hpp>
 #include "Diagnosis.h"
 #include "SourceCodeStream.h"
 #include "Token.h"
@@ -10,7 +10,7 @@
 namespace djp {
 
 class LiteralSupport;
-typedef boost::shared_ptr<LiteralSupport> spLiteralSupport;
+typedef std::shared_ptr<LiteralSupport> spLiteralSupport;
 
 class LiteralSupport {
 

@@ -1,14 +1,14 @@
 //-*- C++ -*-
 #ifndef __DIAGNOSIS_H__
 #define __DIAGNOSIS_H__
+#include <memory>
 #include <vector>
-#include <boost/shared_ptr.hpp>
 #include "ErrorCodes.h"
 
 namespace djp {
 
 class Diagnosis;
-typedef boost::shared_ptr<Diagnosis> spDiagnosis;
+typedef std::shared_ptr<Diagnosis> spDiagnosis;
 
 class Diagnosis {
 public:

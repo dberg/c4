@@ -4,7 +4,7 @@
 #include <cctype>
 #include <string>
 #include <sstream>
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include "AST.h"
 #include "Diagnosis.h"
 #include "Indentation.h"
@@ -24,7 +24,7 @@ bool isJavaLetter(char c);
 bool isJavaLetterOrDigit(char c);
 
 class Lexer;
-typedef boost::shared_ptr<Lexer> spLexer;
+typedef std::shared_ptr<Lexer> spLexer;
 
 class Lexer {
 

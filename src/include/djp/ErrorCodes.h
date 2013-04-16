@@ -2,7 +2,8 @@
 #ifndef __ERROR_CODES__
 #define __ERROR_CODES__
 #include <map>
-#include <boost/shared_ptr.hpp>
+#include <memory>
+#include <string>
 
 namespace djp {
 
@@ -14,7 +15,7 @@ struct Error {
     : type(type), ini(ini), end(end) {}
 };
 
-typedef boost::shared_ptr<struct Error> spError;
+typedef std::shared_ptr<struct Error> spError;
 
 enum ErrorCode {
   ERR_EXP_ARGUMENTS,

@@ -1,8 +1,8 @@
 //-*- C++ -*-
 #ifndef __SYMBOL_TABLE_H__
 #define __SYMBOL_TABLE_H__
-#include <boost/smart_ptr.hpp>
 #include <cassert>
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -36,7 +36,7 @@ struct Symbol {
       metadata(metadata) {}
 };
 
-typedef boost::shared_ptr<struct Symbol> spSymbol;
+typedef std::shared_ptr<struct Symbol> spSymbol;
 
 class ST {
   bool isNewScope(int type);

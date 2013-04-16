@@ -8,20 +8,30 @@
 #         clean: remove directory out.
 #                    Ex.: make clean
 #
-# LIBRARIES: boost
-# OSX: We rely in the Boost installation from MacPorts for OSX:
-#      /opt/local/include
+# The default compiler on linux is g++. To use clang override the CXX variable
+# make CXX=clang++
+# On osx the default compiler is clang.
+#
 ###############################################################################
 MAKEFLAGS=-r
 
 CXX ?= g++
 BUILDTYPE ?= Debug
 
+# Darwin:
+UNAME := $(shell uname)
+ifeq ($(UNAME), Darwin)
+  CXX = clang++
+  CXX11FLAGS = -std=c++11 -stdlib=libc++
+endif
+
+CXX11FLAGS ?= -std=c++11
+
 # Release type
 ifeq ($(BUILDTYPE),Release)
-    CFLAGS = -Wall -Wextra -O3
+    CFLAGS = -Wall -Wextra -O3 $(CXX11FLAGS)
 else
-    CFLAGS = -Wall -Wextra -g3
+    CFLAGS = -Wall -Wextra -g3 $(CXX11FLAGS)
 endif
 
 builddir_name = out
@@ -32,18 +42,14 @@ incdir := include
 libdir := lib
 INC = -I$(incdir)
 
-# Darwin
-UNAME := $(shell uname)
-ifeq ($(UNAME), Darwin)
-INC = -I$(incdir) -I/opt/local/include
-endif
-
 # Tests
+# Google Test r652
+# http://code.google.com/p/googletest/
 gtest_dir = third_party/gtest
 gtest_obj = $(builddir)/third_party/gtest
 gtest_inc = $(gtest_dir)/include
-
 test_libdir = tests/lib
+CXXTESTFLAGS = -g3 $(CXX11FLAGS)
 
 .PHONY: all
 all: directories $(bin)/djp $(bin)/tests
@@ -143,7 +149,7 @@ $(bin)/tests: $(test_libdir)/EmacsOutputTest.cpp \
               $(obj)/libdjp.a \
               $(gtest_obj)/libgtest.a
 
-	$(CXX) -g3 $(INC) -I$(gtest_inc) $(obj)/EmacsOutput.o \
+	$(CXX) $(CXXTESTFLAGS) $(INC) -I$(gtest_inc) $(obj)/EmacsOutput.o \
                                      $(test_libdir)/EmacsOutputTest.cpp \
                                      $(test_libdir)/IndentationTest.cpp \
                                      $(test_libdir)/ParserTest.cpp \
@@ -158,5 +164,5 @@ $(gtest_obj)/libgtest.a: $(gtest_obj)/gtest-all.o
 	ar -rv $@ $<
 
 $(gtest_obj)/gtest-all.o: $(gtest_dir)/src/gtest-all.cc
-	$(CXX) -g3 -I$(gtest_dir)/include -I$(gtest_dir) \
+	$(CXX) $(CXXTESTFLAGS) -I$(gtest_dir)/include -I$(gtest_dir) \
                -c $< -o $@
