@@ -114,10 +114,8 @@ struct ClassFile {
   //field_info fields[fields_count];
   u2 methods_count;
   std::vector<spMethodInfo> methods;
-  //method_info    methods[methods_count];
-  // TODO:
-  //u2             attributes_count;
-  //attribute_info attributes[attributes_count];
+  u2 attributes_count;
+  std::vector<spAttributeInfo> attributes;
 };
 
 /// cp_info {

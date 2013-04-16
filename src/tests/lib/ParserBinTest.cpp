@@ -337,7 +337,7 @@ TEST(ParserBin, HelloWorld) {
 
   ASSERT_EQ(0, parser.classFile->fields_count);
 
-  // TODO: 2 methods?
+  // 2 methods: <init> and main
   ASSERT_EQ(2, parser.classFile->methods_count);
   ASSERT_EQ(2, parser.classFile->methods.size());
 
@@ -390,4 +390,14 @@ TEST(ParserBin, HelloWorld) {
     // TODO: check attribute info
     ASSERT_EQ(37, info->info.size());
   }
+
+  // attributes - SourceFile
+  ASSERT_EQ(1, parser.classFile->attributes_count);
+  ASSERT_EQ(1, parser.classFile->attributes.size());
+  spAttributeInfo info = parser.classFile->attributes[0];
+  ASSERT_EQ(13, info->attribute_name_index);
+  ASSERT_EQ(CONSTANT_Utf8, parser.classFile->constant_pool->items[13]->tag);
+  ASSERT_EQ(2, info->attribute_length);
+
+  // TODO: check attribute info
 }

@@ -80,6 +80,10 @@ void ParserBin::parseClassFile() {
   u2 methods_count = getU2();
   classFile->methods_count = methods_count;
   parseMethods(methods_count);
+
+  u2 attributes_count = getU2();
+  classFile->attributes_count = attributes_count;
+  parseAttributes(attributes_count, classFile->attributes);
 }
 
 void ParserBin::parseConstantPool(unsigned poolCount, spCPInfo &constantPool) {
