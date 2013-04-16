@@ -2,7 +2,7 @@
 #ifndef __ASTBIN_H__
 #define __ASTBIN_H__
 #include <stdint.h> // cstdint
-#include <boost/shared_ptr.hpp>
+#include <memory>
 
 namespace djp {
 
@@ -10,25 +10,25 @@ typedef uint32_t u4;
 typedef uint16_t u2;
 typedef uint8_t u1;
 
-typedef boost::shared_ptr<struct ClassFile> spClassFile;
-typedef boost::shared_ptr<struct ConstantPool> spConstantPool;
-typedef boost::shared_ptr<struct CPInfo> spCPInfo;
-typedef boost::shared_ptr<struct CPItem> spCPItem;
-typedef boost::shared_ptr<struct CClassInfo> spCClassInfo;
-typedef boost::shared_ptr<struct CFieldrefInfo> spCFieldrefInfo;
-typedef boost::shared_ptr<struct CInterfaceMethodrefInfo>
+typedef std::shared_ptr<struct ClassFile> spClassFile;
+typedef std::shared_ptr<struct ConstantPool> spConstantPool;
+typedef std::shared_ptr<struct CPInfo> spCPInfo;
+typedef std::shared_ptr<struct CPItem> spCPItem;
+typedef std::shared_ptr<struct CClassInfo> spCClassInfo;
+typedef std::shared_ptr<struct CFieldrefInfo> spCFieldrefInfo;
+typedef std::shared_ptr<struct CInterfaceMethodrefInfo>
   spCInterfaceMethodrefInfo;
-typedef boost::shared_ptr<struct CMethodrefInfo> spCMethodrefInfo;
-typedef boost::shared_ptr<struct CStringInfo> spCStringInfo;
-typedef boost::shared_ptr<struct CIntegerInfo> spCIntegerInfo;
-typedef boost::shared_ptr<struct CFloatInfo> spCFloatInfo;
-typedef boost::shared_ptr<struct CLongInfo> spCLongInfo;
-typedef boost::shared_ptr<struct CDoubleInfo> spCDoubleInfo;
-typedef boost::shared_ptr<struct CNameAndTypeInfo> spCNameAndTypeInfo;
-typedef boost::shared_ptr<struct CUtf8Info> spCUtf8Info;
-typedef boost::shared_ptr<struct CMethodHandleInfo> spCMethodHandleInfo;
-typedef boost::shared_ptr<struct CMethodTypeInfo> spCMethodTypeInfo;
-typedef boost::shared_ptr<struct CInvokeDynamicInfo> spCInvokeDynamicInfo;
+typedef std::shared_ptr<struct CMethodrefInfo> spCMethodrefInfo;
+typedef std::shared_ptr<struct CStringInfo> spCStringInfo;
+typedef std::shared_ptr<struct CIntegerInfo> spCIntegerInfo;
+typedef std::shared_ptr<struct CFloatInfo> spCFloatInfo;
+typedef std::shared_ptr<struct CLongInfo> spCLongInfo;
+typedef std::shared_ptr<struct CDoubleInfo> spCDoubleInfo;
+typedef std::shared_ptr<struct CNameAndTypeInfo> spCNameAndTypeInfo;
+typedef std::shared_ptr<struct CUtf8Info> spCUtf8Info;
+typedef std::shared_ptr<struct CMethodHandleInfo> spCMethodHandleInfo;
+typedef std::shared_ptr<struct CMethodTypeInfo> spCMethodTypeInfo;
+typedef std::shared_ptr<struct CInvokeDynamicInfo> spCInvokeDynamicInfo;
 
 enum ConstantPoolTag {
   CONSTANT_Class = 7,
