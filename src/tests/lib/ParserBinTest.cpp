@@ -197,7 +197,7 @@ TEST(ParserBin, HelloWorld) {
 
   {
     // Item 15: CONSTANT_NameAndType.
-    // Method <init> and descriptor V()
+    // Method <init> and descriptor ()V
     spCPItem item = parser.classFile->constant_pool->items[15];
     ASSERT_EQ(CONSTANT_NameAndType, item->tag);
     spCNameAndTypeInfo cNameAndTypeInfo = item->cNameAndTypeInfo;
@@ -240,7 +240,6 @@ TEST(ParserBin, HelloWorld) {
     spCPItem item = parser.classFile->constant_pool->items[19];
     ASSERT_EQ(CONSTANT_Class, item->tag);
     spCClassInfo cClassInfo = item->cClassInfo;
-    // TODO: confirm index 26
     ASSERT_EQ(26, cClassInfo->name_index);
   }
 
