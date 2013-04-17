@@ -270,7 +270,16 @@ void ParserBin::parseInterfaces(u2 interfaces_count) {
 }
 
 void ParserBin::parseFields(u2 fields_count) {
-  // TODO:
+  for (unsigned i = 0; i < fields_count; i++) {
+    spFieldInfo field = spFieldInfo(new FieldInfo);
+    field->access_flags = getU2();
+    field->name_index = getU2();
+    field->descriptor_index = getU2();
+    u2 attributesCount = getU2();
+    field->attributes_count = attributesCount;
+    parseAttributes(attributesCount, field->attributes);
+    classFile->fields.push_back(field);
+  }
 }
 
 void ParserBin::parseMethods(u2 methods_count) {

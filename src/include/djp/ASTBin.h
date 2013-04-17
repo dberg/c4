@@ -29,6 +29,7 @@ typedef std::shared_ptr<struct CUtf8Info> spCUtf8Info;
 typedef std::shared_ptr<struct CMethodHandleInfo> spCMethodHandleInfo;
 typedef std::shared_ptr<struct CMethodTypeInfo> spCMethodTypeInfo;
 typedef std::shared_ptr<struct CInvokeDynamicInfo> spCInvokeDynamicInfo;
+typedef std::shared_ptr<struct FieldInfo> spFieldInfo;
 typedef std::shared_ptr<struct MethodInfo> spMethodInfo;
 typedef std::shared_ptr<struct AttributeInfo> spAttributeInfo;
 
@@ -110,8 +111,7 @@ struct ClassFile {
   u2 interfaces_count;
   std::vector<u2> interfaces;
   u2 fields_count;
-  // TODO:
-  //field_info fields[fields_count];
+  std::vector<spFieldInfo> fields;
   u2 methods_count;
   std::vector<spMethodInfo> methods;
   u2 attributes_count;
@@ -282,6 +282,21 @@ struct CInvokeDynamicInfo {
   //u1 tag; CPItem
   u2 bootstrap_method_attr_index;
   u2 name_and_type_index;
+};
+
+///  field_info {
+///        u2             access_flags;
+///        u2             name_index;
+///        u2             descriptor_index;
+///        u2             attributes_count;
+///        attribute_info attributes[attributes_count];
+/// }
+struct FieldInfo {
+  u2 access_flags;
+  u2 name_index;
+  u2 descriptor_index;
+  u2 attributes_count;
+  std::vector<spAttributeInfo> attributes;
 };
 
 /// method_info {
