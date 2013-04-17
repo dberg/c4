@@ -34,12 +34,17 @@ TEST(ParserBin, HelloWorld) {
 
   {
     // Item 1: CONSTANT_Methodref
+    // Method <init> from class java.lang.Object
     spCPItem item = parser.classFile->constant_pool->items[1];
     ASSERT_EQ(CONSTANT_Methodref, item->tag);
     spCMethodrefInfo cMethodrefInfo = item->cMethodrefInfo;
-    // TODO: confirm indexes 6 and 15
     ASSERT_EQ(6, cMethodrefInfo->class_index);
     ASSERT_EQ(15, cMethodrefInfo->name_and_type_index);
+
+    // Assert that index 6 is a class and 15 is a name and type info
+    ASSERT_EQ(CONSTANT_Class, parser.classFile->constant_pool->items[6]->tag);
+    ASSERT_EQ(CONSTANT_NameAndType,
+      parser.classFile->constant_pool->items[15]->tag);
   }
 
   {
@@ -47,9 +52,14 @@ TEST(ParserBin, HelloWorld) {
     spCPItem item = parser.classFile->constant_pool->items[2];
     ASSERT_EQ(CONSTANT_Fieldref, item->tag);
     spCFieldrefInfo cFieldrefInfo = item->cFieldrefInfo;
-    // TODO: confirm indexes 16 and 17
     ASSERT_EQ(16, cFieldrefInfo->class_index);
     ASSERT_EQ(17, cFieldrefInfo->name_and_type_index);
+
+    // Assert that index 16 is a class (java.lang.System) and that
+    // index 17 is a NameAndType constant ("out").
+    ASSERT_EQ(CONSTANT_Class, parser.classFile->constant_pool->items[16]->tag);
+    ASSERT_EQ(CONSTANT_NameAndType,
+      parser.classFile->constant_pool->items[17]->tag);
   }
 
   {
@@ -57,22 +67,29 @@ TEST(ParserBin, HelloWorld) {
     spCPItem item = parser.classFile->constant_pool->items[3];
     ASSERT_EQ(CONSTANT_String, item->tag);
     spCStringInfo cStringInfo = item->cStringInfo;
-    // TODO: confirm index 18
     ASSERT_EQ(18, cStringInfo->string_index);
+    // Assert that index 18 is a CONSTANT_Utf8 ("Oi mundo")
+    ASSERT_EQ(CONSTANT_Utf8, parser.classFile->constant_pool->items[18]->tag);
   }
 
   {
     // Item 4: CONSTANT_Methodref
+    // Method println from class java.io.PrintStream
     spCPItem item = parser.classFile->constant_pool->items[4];
     ASSERT_EQ(CONSTANT_Methodref, item->tag);
     spCMethodrefInfo cMethodrefInfo = item->cMethodrefInfo;
-    // TODO: confirm indexes 19 and 20
     ASSERT_EQ(19, cMethodrefInfo->class_index);
     ASSERT_EQ(20, cMethodrefInfo->name_and_type_index);
+
+    // Assert that index 19 is a CONSTANT_Class and index 20 is 
+    // CONSTANT_NameAndType "(Ljava/lang/String;)V
+    ASSERT_EQ(CONSTANT_Class, parser.classFile->constant_pool->items[19]->tag);
+    ASSERT_EQ(CONSTANT_NameAndType,
+      parser.classFile->constant_pool->items[20]->tag);
   }
 
   {
-    // Item 5: CONSTANT_Class
+    // Item 5: CONSTANT_Class HelloWorld
     spCPItem item = parser.classFile->constant_pool->items[5];
     ASSERT_EQ(CONSTANT_Class, item->tag);
     spCClassInfo cClassInfo = item->cClassInfo;
@@ -81,7 +98,7 @@ TEST(ParserBin, HelloWorld) {
   }
 
   {
-    // Item 6: CONSTANT_Class
+    // Item 6: CONSTANT_Class java.lang.Object
     spCPItem item = parser.classFile->constant_pool->items[6];
     ASSERT_EQ(CONSTANT_Class, item->tag);
     spCClassInfo cClassInfo = item->cClassInfo;
@@ -179,21 +196,20 @@ TEST(ParserBin, HelloWorld) {
   }
 
   {
-    // Item 15: CONSTANT_NameAndType
+    // Item 15: CONSTANT_NameAndType.
+    // Method <init> and descriptor V()
     spCPItem item = parser.classFile->constant_pool->items[15];
     ASSERT_EQ(CONSTANT_NameAndType, item->tag);
     spCNameAndTypeInfo cNameAndTypeInfo = item->cNameAndTypeInfo;
-    // TODO: confirm index 7 and 8
-    ASSERT_EQ(7, cNameAndTypeInfo->name_index);
-    ASSERT_EQ(8, cNameAndTypeInfo->descriptor_index);
+    ASSERT_EQ(7, cNameAndTypeInfo->name_index); // "<init>"
+    ASSERT_EQ(8, cNameAndTypeInfo->descriptor_index); // "()V"
   }
 
   {
-    // Item 16: CONSTANT_Class
+    // Item 16: CONSTANT_Class java.lang.System
     spCPItem item = parser.classFile->constant_pool->items[16];
     ASSERT_EQ(CONSTANT_Class, item->tag);
     spCClassInfo cClassInfo = item->cClassInfo;
-    // TODO: confirm index 23
     ASSERT_EQ(23, cClassInfo->name_index);
   }
 
@@ -202,7 +218,9 @@ TEST(ParserBin, HelloWorld) {
     spCPItem item = parser.classFile->constant_pool->items[17];
     ASSERT_EQ(CONSTANT_NameAndType, item->tag);
     spCNameAndTypeInfo cNameAndTypeInfo = item->cNameAndTypeInfo;
+    // "out"
     ASSERT_EQ(24, cNameAndTypeInfo->name_index);
+    // "Ljava/io/PrintStream;"
     ASSERT_EQ(25, cNameAndTypeInfo->descriptor_index);
   }
 
@@ -218,7 +236,7 @@ TEST(ParserBin, HelloWorld) {
   }
 
   {
-    // Item 19: CONSTANT_Class
+    // Item 19: CONSTANT_Class "java/io/PrintStream"
     spCPItem item = parser.classFile->constant_pool->items[19];
     ASSERT_EQ(CONSTANT_Class, item->tag);
     spCClassInfo cClassInfo = item->cClassInfo;
@@ -231,8 +249,9 @@ TEST(ParserBin, HelloWorld) {
     spCPItem item = parser.classFile->constant_pool->items[20];
     ASSERT_EQ(CONSTANT_NameAndType, item->tag);
     spCNameAndTypeInfo cNameAndTypeInfo = item->cNameAndTypeInfo;
-    // TODO: confirm index 27 and 28
+    // "println"
     ASSERT_EQ(27, cNameAndTypeInfo->name_index);
+    // "(Ljava/lang/String;)V"
     ASSERT_EQ(28, cNameAndTypeInfo->descriptor_index);
   }
 
