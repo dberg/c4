@@ -21,6 +21,9 @@ void Lexer::saveState(State &state) {
   state.line = src->getLine();
   state.token = curToken;
   state.tokenStr = curTokenStr;
+
+  state.indentationLevel = curIndentationLevel;
+  state.indentationMapSize = indentMap.size();
 }
 
 void Lexer::restoreState(State &state) {
@@ -28,6 +31,11 @@ void Lexer::restoreState(State &state) {
   src->setLine(state.line);
   curToken = state.token;
   curTokenStr = state.tokenStr;
+
+  curIndentationLevel = state.indentationLevel;
+  while (indentMap.size() > state.indentationMapSize) {
+    indentMap.erase(std::prev(indentMap.end()));
+  }
 }
 
 void Lexer::getNextToken() {
