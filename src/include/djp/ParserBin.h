@@ -46,6 +46,11 @@ class ParserBin {
   void parseAttributes(u2 attributesCount,
     std::vector<spAttributeInfo> &attributes);
 
+  // Helpers
+  AttributeType getAttributeType(u2 attributeNameIndex);
+  void parseCodeAttribute(spCodeAttribute &code);
+  void parseLineNumberTable(spLineNumberTable &table);
+
 public:
   ParserBin(const std::string filename,
     const std::vector<unsigned char> &buffer)

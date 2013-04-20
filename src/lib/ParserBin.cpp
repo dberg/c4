@@ -301,15 +301,99 @@ void ParserBin::parseAttributes(u2 attributesCount,
   attributes.reserve(attributesCount);
   for (unsigned i = 0; i < attributesCount; i++) {
     spAttributeInfo info = spAttributeInfo(new AttributeInfo);
-    info->attribute_name_index = getU2();
+    u2 attributeNameIndex = getU2();
+    info->attribute_name_index = attributeNameIndex;
+
+    AttributeType type = getAttributeType(attributeNameIndex);
+    info->type = type;
+
     u4 length = getU4();
     info->attribute_length = length;
-    info->info.reserve(length);
-    for (unsigned j = 0; j < length; j++) {
-      info->info.push_back(getU1());
+
+    switch (type) {
+      case ATTRIBUTE_TYPE_CODE:
+        info->code = spCodeAttribute(new CodeAttribute);
+        parseCodeAttribute(info->code);
+        break;
+      case ATTRIBUTE_TYPE_LINE_NUMBER_TABLE:
+        info->table = spLineNumberTable(new LineNumberTable);
+        parseLineNumberTable(info->table);
+        break;
+      case ATTRIBUTE_TYPE_SOURCE_FILE:
+        info->sourcefile_index = getU2();
+        break;
+      default:
+        info->info.reserve(length);
+        for (unsigned j = 0; j < length; j++) {
+          info->info.push_back(getU1());
+        }
     }
 
     attributes.push_back(info);
+  }
+}
+
+AttributeType ParserBin::getAttributeType(u2 attributeNameIndex) {
+  // Check if it's 'Code'
+  spCPItem item = classFile->constant_pool->items[attributeNameIndex];
+  if (item->tag == CONSTANT_Utf8) {
+    std::string str(item->cUtf8Info->bytes.begin(),
+      item->cUtf8Info->bytes.end());
+
+    if (str.compare("Code") == 0) {
+      return ATTRIBUTE_TYPE_CODE;
+    }
+
+    if (str.compare("LineNumberTable") == 0) {
+      return ATTRIBUTE_TYPE_LINE_NUMBER_TABLE;
+    }
+
+    if (str.compare("SourceFile") == 0) {
+      return ATTRIBUTE_TYPE_SOURCE_FILE;
+    }
+  }
+
+  return ATTRIBUTE_TYPE_UNKNOWN;
+}
+
+void ParserBin::parseCodeAttribute(spCodeAttribute &code) {
+  code->max_stack = getU2();
+  code->max_locals = getU2();
+
+  u4 code_length = getU4();
+  code->code_length = code_length;
+
+  code->code.reserve(code_length);
+  for (u4 i = 0; i < code_length; i++) {
+    code->code.push_back(getU1());
+  }
+
+  u2 exception_table_length = getU2();
+  code->exception_table_length = exception_table_length;
+  for (u2 i = 0; i < exception_table_length; i++) {
+    spExceptionInfo e = spExceptionInfo(new ExceptionInfo);
+    e->start_pc = getU2();
+    e->end_pc = getU2();
+    e->handler_pc = getU2();
+    e->catch_type = getU2();
+    code->exceptions.push_back(e);
+  }
+
+  u2 attributes_count = getU2();
+  code->attributes_count = attributes_count;
+  parseAttributes(attributes_count, code->attributes);
+}
+
+void ParserBin::parseLineNumberTable(spLineNumberTable &table) {
+  u2 length = getU2();
+  table->line_number_table_length = length;
+
+  // LineNumberTable Info
+  for (u4 i = 0; i < length; i++) {
+    spLineNumberTableInfo entry = spLineNumberTableInfo(new LineNumberTableInfo);
+    entry->start_pc = getU2();
+    entry->line_number = getU2();
+    table->table.push_back(entry);
   }
 }
 

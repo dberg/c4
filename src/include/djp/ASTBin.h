@@ -11,7 +11,6 @@ typedef uint16_t u2;
 typedef uint8_t u1;
 
 typedef std::shared_ptr<struct ClassFile> spClassFile;
-typedef std::shared_ptr<struct ConstantPool> spConstantPool;
 typedef std::shared_ptr<struct CPInfo> spCPInfo;
 typedef std::shared_ptr<struct CPItem> spCPItem;
 typedef std::shared_ptr<struct CClassInfo> spCClassInfo;
@@ -32,6 +31,10 @@ typedef std::shared_ptr<struct CInvokeDynamicInfo> spCInvokeDynamicInfo;
 typedef std::shared_ptr<struct FieldInfo> spFieldInfo;
 typedef std::shared_ptr<struct MethodInfo> spMethodInfo;
 typedef std::shared_ptr<struct AttributeInfo> spAttributeInfo;
+typedef std::shared_ptr<struct CodeAttribute> spCodeAttribute;
+typedef std::shared_ptr<struct ExceptionInfo> spExceptionInfo;
+typedef std::shared_ptr<struct LineNumberTable> spLineNumberTable;
+typedef std::shared_ptr<struct LineNumberTableInfo> spLineNumberTableInfo;
 
 enum ConstantPoolTag {
   CONSTANT_Class = 7,
@@ -79,6 +82,13 @@ enum MethodAccessAndPropertyFlags {
   METHOD_ACC_ABSTRACT = 0x0400,
   METHOD_ACC_STRICT = 0x0800,
   METHOD_ACC_SYNTHETIC = 0x1000,
+};
+
+enum AttributeType {
+  ATTRIBUTE_TYPE_UNKNOWN,
+  ATTRIBUTE_TYPE_CODE,
+  ATTRIBUTE_TYPE_LINE_NUMBER_TABLE,
+  ATTRIBUTE_TYPE_SOURCE_FILE,
 };
 
 /// ClassFile {
@@ -284,12 +294,12 @@ struct CInvokeDynamicInfo {
   u2 name_and_type_index;
 };
 
-///  field_info {
-///        u2             access_flags;
-///        u2             name_index;
-///        u2             descriptor_index;
-///        u2             attributes_count;
-///        attribute_info attributes[attributes_count];
+/// field_info {
+///     u2             access_flags;
+///     u2             name_index;
+///     u2             descriptor_index;
+///     u2             attributes_count;
+///     attribute_info attributes[attributes_count];
 /// }
 struct FieldInfo {
   u2 access_flags;
@@ -320,9 +330,76 @@ struct MethodInfo {
 ///     u1 info[attribute_length];
 /// }
 struct AttributeInfo {
+  AttributeType type;
   u2 attribute_name_index;
   u4 attribute_length;
+
+  // type == Unknown Attribute
   std::vector<u1> info;
+
+  // type == Code Attribute
+  spCodeAttribute code;
+
+  // type == LineNumberTable
+  spLineNumberTable table;
+
+  // type == SourceFile
+  u2 sourcefile_index;
+};
+
+/// Code_attribute {
+///     u2 attribute_name_index;
+///     u4 attribute_length;
+///     u2 max_stack;
+///     u2 max_locals;
+///     u4 code_length;
+///     u1 code[code_length];
+///     u2 exception_table_length;
+///     {   u2 start_pc;
+///         u2 end_pc;
+///         u2 handler_pc;
+///         u2 catch_type;
+///     } exception_table[exception_table_length];
+///     u2 attributes_count;
+///     attribute_info attributes[attributes_count];
+/// }
+struct CodeAttribute {
+  // AttributeInfo
+  //u2 attribute_name_index;
+  //u4 attribute_length;
+  u2 max_stack;
+  u2 max_locals;
+  u4 code_length;
+  std::vector<u1> code;
+  u2 exception_table_length;
+  std::vector<spExceptionInfo> exceptions;
+  u2 attributes_count;
+  std::vector<spAttributeInfo> attributes;
+};
+
+struct ExceptionInfo {
+  u2 start_pc;
+  u2 end_pc;
+  u2 handler_pc;
+  u2 catch_type;
+};
+
+/// LineNumberTable_attribute {
+///     u2 attribute_name_index;
+///     u4 attribute_length;
+///     u2 line_number_table_length;
+///     {   u2 start_pc;
+///         u2 line_number;
+///     } line_number_table[line_number_table_length];
+/// }
+struct LineNumberTable {
+  u2 line_number_table_length;
+  std::vector<spLineNumberTableInfo> table;
+};
+
+struct LineNumberTableInfo {
+  u2 start_pc;
+  u2 line_number;
 };
 
 } // namespace

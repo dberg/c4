@@ -376,12 +376,38 @@ TEST(ParserBin, HelloWorld) {
     ASSERT_EQ(1, method->attributes_count);
     ASSERT_EQ(1, method->attributes.size());
     spAttributeInfo info = method->attributes[0];
-    ASSERT_EQ(9, info->attribute_name_index);
+    ASSERT_EQ(ATTRIBUTE_TYPE_CODE, info->type);
+    ASSERT_EQ(9, info->attribute_name_index); // Code
     ASSERT_EQ(CONSTANT_Utf8, parser.classFile->constant_pool->items[9]->tag);
     ASSERT_EQ(29, info->attribute_length);
 
-    // TODO: check attribute info
-    ASSERT_EQ(29, info->info.size());
+    // attribute info
+    spCodeAttribute code = info->code;
+    ASSERT_EQ(1, code->max_stack);
+    ASSERT_EQ(1, code->max_locals);
+    ASSERT_EQ(5, code->code_length);
+    ASSERT_EQ(5, code->code.size());
+    ASSERT_EQ(0, code->exception_table_length);
+    ASSERT_EQ(0, code->exceptions.size());
+
+    // code
+    ASSERT_EQ(0x2A, code->code[0]); // aload_0
+    ASSERT_EQ(0xB7, code->code[1]); // invoke_special
+    // index in constant pool
+    // CONSTANT_Methodref <init>
+    ASSERT_EQ(1, (code->code[2] << 8 | code->code[3]));
+    ASSERT_EQ(0xB1, code->code[4]); // return
+
+    ASSERT_EQ(1, code->attributes_count);
+    ASSERT_EQ(1, code->attributes.size());
+    spAttributeInfo codeInfo = code->attributes[0];
+    ASSERT_EQ(ATTRIBUTE_TYPE_LINE_NUMBER_TABLE, codeInfo->type);
+    ASSERT_EQ(10, codeInfo->attribute_name_index); // LineNumberTable
+    ASSERT_EQ(6, codeInfo->attribute_length);
+    ASSERT_EQ(1, codeInfo->table->line_number_table_length);
+    ASSERT_EQ(1, codeInfo->table->table.size());
+    ASSERT_EQ(0, codeInfo->table->table[0]->start_pc);
+    ASSERT_EQ(1, codeInfo->table->table[0]->line_number);
   }
 
   {
@@ -405,17 +431,52 @@ TEST(ParserBin, HelloWorld) {
     ASSERT_EQ(CONSTANT_Utf8, parser.classFile->constant_pool->items[9]->tag);
     ASSERT_EQ(37, info->attribute_length);
 
-    // TODO: check attribute info
-    ASSERT_EQ(37, info->info.size());
+    // attribute info
+    spCodeAttribute code = info->code;
+    ASSERT_EQ(2, code->max_stack);
+    ASSERT_EQ(1, code->max_locals);
+    ASSERT_EQ(9, code->code_length);
+    ASSERT_EQ(9, code->code.size());
+    ASSERT_EQ(0, code->exception_table_length);
+    ASSERT_EQ(0, code->exceptions.size());
+
+    // code
+    ASSERT_EQ(0xB2, code->code[0]); // getstatic
+    // index in constant pool
+    // CONSTANT_Fieldref "out"
+    ASSERT_EQ(2, (code->code[1] << 8 | code->code[2]));
+    ASSERT_EQ(0x12, code->code[3]); // ldc
+    // index, ref to a string literal "Oi mundo"
+    ASSERT_EQ(3, code->code[4]);
+    ASSERT_EQ(0xB6, code->code[5]); // invokevirtual
+    // index, CONSTANT_Methodref println
+    ASSERT_EQ(4, (code->code[6] << 8 | code->code[7]));
+    ASSERT_EQ(0xB1, code->code[8]); // return
+
+    ASSERT_EQ(1, code->attributes_count);
+    ASSERT_EQ(1, code->attributes.size());
+    spAttributeInfo codeInfo = code->attributes[0];
+    ASSERT_EQ(ATTRIBUTE_TYPE_LINE_NUMBER_TABLE, codeInfo->type);
+    ASSERT_EQ(ATTRIBUTE_TYPE_LINE_NUMBER_TABLE, codeInfo->type);
+    ASSERT_EQ(10, codeInfo->attribute_name_index); // LineNumberTable
+    ASSERT_EQ(10, codeInfo->attribute_length);
+    ASSERT_EQ(2, codeInfo->table->line_number_table_length);
+    ASSERT_EQ(2, codeInfo->table->table.size());
+    ASSERT_EQ(0, codeInfo->table->table[0]->start_pc);
+    ASSERT_EQ(3, codeInfo->table->table[0]->line_number);
+    ASSERT_EQ(8, codeInfo->table->table[1]->start_pc);
+    ASSERT_EQ(4, codeInfo->table->table[1]->line_number);
   }
 
   // attributes - SourceFile
   ASSERT_EQ(1, parser.classFile->attributes_count);
   ASSERT_EQ(1, parser.classFile->attributes.size());
   spAttributeInfo info = parser.classFile->attributes[0];
+  ASSERT_EQ(ATTRIBUTE_TYPE_SOURCE_FILE, info->type);
   ASSERT_EQ(13, info->attribute_name_index);
   ASSERT_EQ(CONSTANT_Utf8, parser.classFile->constant_pool->items[13]->tag);
   ASSERT_EQ(2, info->attribute_length);
 
-  // TODO: check attribute info
+  // CONSTANT_Utf8 "HelloWorld.java"
+  ASSERT_EQ(14, info->sourcefile_index);
 }
