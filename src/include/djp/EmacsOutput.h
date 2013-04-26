@@ -17,24 +17,31 @@ namespace djp {
 /// Emacs output for syntax highlighing.
 /// The first position in the buffer is 1.
 class EmacsOutput {
+
+  // Lexer and Parser products:
   spCompilationUnit compilationUnit;
   std::vector<spComment> comments;
   ST st;
   spDiagnosis diag;
   LineIndentationMap &indentMap;
+
   TokenUtil tokenUtil;
   ErrorUtil errUtil;
+
+  // Symbol table types translation to elisp
   typedef std::map<int, std::string> STTypes;
   STTypes stTypes;
 
+  // We distinguish references identifiers from other identifiers like variable
+  // or method names for syntax highlighting.
   enum IdentifierOpt {
     OPT_UNDEFINED,
     OPT_IDENTIFIER_REFERENCE_TYPE,
   };
 
-  void buildSH();
-  void buildST();
-  void buildIT();
+  void buildSH(); // syntax highlighting
+  void buildST(); // symbol table
+  void buildIT(); // indentation table
 
   const std::string getSymbolTableType(int type);
   void setAnnotationElement(const spAnnotationElement elem);
