@@ -39,7 +39,8 @@ class EmacsOutput {
     OPT_IDENTIFIER_REFERENCE_TYPE,
   };
 
-  void buildSH(); // syntax highlighting
+  void buildSyntaxHighlighting();
+  void buildErrors();
   void buildST(); // symbol table
   void buildIT(); // indentation table
 
@@ -204,7 +205,9 @@ class EmacsOutput {
   const std::string itos(int i);
 
 public:
+  // Output sent to emacs
   std::string outSH; // syntax highlighting
+  std::string outErr;
   std::string outST; // symbol table
   std::string outIT; // indentation table
 
