@@ -2926,7 +2926,6 @@ void Parser::parseExplicitGenericInvocationSuffix(
     ERR_NVAL_EXPLICIT_GENERIC_INVOCATION_SUFFIX, lexer->getCursor() - 1));
 }
 
-
 /// PackageDeclaration: [ [Annotations]  package QualifiedIdentifier ; ]
 spPackageDeclaration Parser::parsePackageDeclaration(
   std::vector<spAnnotation> &annotations, spPackageDeclaration &pkgDecl) {
@@ -2944,7 +2943,8 @@ spPackageDeclaration Parser::parsePackageDeclaration(
   lexer->getNextToken(); // Consume 'package'
 
   if (lexer->getCurToken() != TOK_IDENTIFIER) {
-    pkgDecl->addErr(diag->addErr(ERR_EXP_IDENTIFIER, lexer->getCursor() - 1));
+    pkgDecl->addErr(diag->addErr(ERR_EXP_IDENTIFIER,
+      lexer->getCurTokenIni(), lexer->getCursor()));
     return pkgDecl;
   }
 
