@@ -4,8 +4,8 @@ namespace djp {
 void EmacsOutput::build() {
   buildSyntaxHighlighting();
   buildErrors();
-  buildST();
-  buildIT();
+  buildSymbolTable();
+  buildIndentationTable();
 }
 
 void EmacsOutput::buildErrors() {
@@ -14,7 +14,7 @@ void EmacsOutput::buildErrors() {
   outErr += "]";
 }
 
-void EmacsOutput::buildIT() {
+void EmacsOutput::buildIndentationTable() {
   // Identation table
   // #s(hash-table size N data
   //   (LineNumber_N0 (IndentLevel_N0 LineWrap_N0 Offset_N0) ... N)
@@ -56,7 +56,7 @@ void EmacsOutput::buildSyntaxHighlighting() {
   outSH += "]";
 }
 
-void EmacsOutput::buildST() {
+void EmacsOutput::buildSymbolTable() {
   outST = "[";
   for (unsigned i = 0; i < st.symbols.size(); i++) {
     outST += "("

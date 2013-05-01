@@ -41,8 +41,8 @@ class EmacsOutput {
 
   void buildSyntaxHighlighting();
   void buildErrors();
-  void buildST(); // symbol table
-  void buildIT(); // indentation table
+  void buildSymbolTable();
+  void buildIndentationTable();
 
   const std::string getSymbolTableType(int type);
   void setAnnotationElement(const spAnnotationElement elem);
