@@ -2950,9 +2950,14 @@ spPackageDeclaration Parser::parsePackageDeclaration(
 
   pkgDecl->qualifiedId = spQualifiedIdentifier(new QualifiedIdentifier);
   parseQualifiedIdentifier(pkgDecl->qualifiedId);
+  st.addSym(ST_PACKAGE, lexer->getCurTokenIni(), lexer->getCursor(),
+    src->getLine(), lexer->getCurTokenStr());
+
   if (lexer->getCurToken() != TOK_SEMICOLON) {
     pkgDecl->addErr(diag->addErr(ERR_EXP_SEMICOLON,
       lexer->getCurTokenIni(), lexer->getCursor()));
+    // A package start a new scope, we should close it if there's an error
+    st.scopePop();
     return pkgDecl;
   }
 

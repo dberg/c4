@@ -217,6 +217,7 @@ public:
   {
     // Symbol table types representation in elisp
     stTypes[ST_COMPILATION_UNIT] = "_comp_unit";
+    stTypes[ST_PACKAGE] = "_package";
     stTypes[ST_CLASS_OR_INTERFACE] = "_class_or_interface";
     stTypes[ST_MEMBER_DECL] = "_member_decl";
     stTypes[ST_CLASS] = "_class";

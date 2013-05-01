@@ -11,6 +11,7 @@ namespace djp {
 enum SymbolType {
   // Logical units
   ST_COMPILATION_UNIT,
+  ST_PACKAGE,
   // overwritten by ST_CLASS, ST_INTERFACE or ST_ENUM
   ST_CLASS_OR_INTERFACE,
   // overwritten by ST_METHOD or ST_FIELD
