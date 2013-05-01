@@ -2951,7 +2951,8 @@ spPackageDeclaration Parser::parsePackageDeclaration(
   pkgDecl->qualifiedId = spQualifiedIdentifier(new QualifiedIdentifier);
   parseQualifiedIdentifier(pkgDecl->qualifiedId);
   if (lexer->getCurToken() != TOK_SEMICOLON) {
-    pkgDecl->err = true;
+    pkgDecl->addErr(diag->addErr(ERR_EXP_SEMICOLON,
+      lexer->getCurTokenIni(), lexer->getCursor()));
     return pkgDecl;
   }
 
