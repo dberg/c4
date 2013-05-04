@@ -6,7 +6,7 @@ void BinOutput::build() {
   // TODO:
   out = "I'm a happy binary file.\n";
   out += "Magic: ";
-  out += itos(parser.classFile->magic);
+  out += itos_hex(parser.classFile->magic);
   out += "\n";
   out += "Minor: ";
   out += itos(parser.classFile->minor_version);

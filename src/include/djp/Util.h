@@ -4,7 +4,8 @@
 #include <sstream>
 
 namespace djp {
-const std::string itos(int i);
+const std::string itos(unsigned long l);
+const std::string itos_hex(unsigned long l);
 } // namespace
 
 #endif
