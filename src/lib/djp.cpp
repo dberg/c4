@@ -66,7 +66,7 @@ int parseClassFile(CmdInput &ci) {
 
   BinOutput output(parser);
   output.build();
-  std::cout << output.out << std::endl;
+  std::cout << output.out.str() << std::endl;
 
   return 0;
 }

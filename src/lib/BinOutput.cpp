@@ -3,17 +3,18 @@
 namespace djp {
 
 void BinOutput::build() {
-  // TODO:
-  out = "I'm a happy binary file.\n";
-  out += "Magic: ";
-  out += itos_hex(parser.classFile->magic);
-  out += "\n";
-  out += "Minor: ";
-  out += itos(parser.classFile->minor_version);
-  out += "\n";
-  out += "Major: ";
-  out += itos(parser.classFile->major_version);
-  out += "\n";
+  buildHeader();
+}
+
+void BinOutput::buildHeader() {
+  out << "Magic: 0x"
+    // add hex and uppercase
+    << std::uppercase << std::hex
+    << parser.classFile->magic << std::endl
+    // remove hex and uppercase
+    << std::nouppercase << std::dec
+    << "Minor: " << parser.classFile->minor_version << std::endl
+    << "Major: " << parser.classFile->major_version << std::endl;
 }
 
 } // namespace
