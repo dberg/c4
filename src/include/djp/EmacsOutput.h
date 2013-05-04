@@ -8,6 +8,7 @@
 #include "Parser.h"
 #include "SymbolTable.h"
 #include "Token.h"
+#include "Util.h"
 #include <iostream>
 #include <map>
 #include <sstream>
@@ -200,9 +201,6 @@ class EmacsOutput {
     const spVoidInterfaceMethodDeclaratorRest &voidMethDeclRest);
   void setVoidMethodDeclaratorRest(
     const spVoidMethodDeclaratorRest &voidMethDeclRest);
-
-  // Helper methods
-  const std::string itos(int i);
 
 public:
   // Output sent to emacs

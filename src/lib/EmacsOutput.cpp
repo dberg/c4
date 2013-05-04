@@ -2696,12 +2696,4 @@ void EmacsOutput::setVoidMethodDeclaratorRest(
     setOp(voidMethDeclRest->posSemiColon);
   }
 }
-
-// Helper methods
-const std::string EmacsOutput::itos(int i) {
-  std::stringstream s;
-  s << i;
-  return s.str();
-}
-
 } // namespace

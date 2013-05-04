@@ -4,6 +4,7 @@
 #include "djp/File.h"
 #include "djp/Parser.h"
 #include "djp/ParserBin.h"
+#include "djp/BinOutput.h"
 #include "djp/EmacsOutput.h"
 using namespace djp;
 
@@ -63,11 +64,10 @@ int parseClassFile(CmdInput &ci) {
   ParserBin parser(ci.filename, buffer);
   parser.parse();
 
-  // TODO:
-  std::cout << "I'm a happy binary file." << std::endl;
-  std::cout << "Magic: " << parser.classFile->magic << std::endl;
-  std::cout << "Minor: " << parser.classFile->minor_version << std::endl;
-  std::cout << "Major: " << parser.classFile->major_version << std::endl;
+  BinOutput output(parser);
+  output.build();
+  std::cout << output.out << std::endl;
+
   return 0;
 }
 

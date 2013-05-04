@@ -64,17 +64,24 @@ directories:
 
 # main djp
 $(bin)/djp: $(obj)/CmdInput.o \
+            $(obj)/BinOutput.o \
             $(obj)/EmacsOutput.o \
             $(obj)/SourceCodeStream.o \
             $(obj)/SymbolTable.o \
             $(obj)/djp.o \
             $(obj)/libdjp.a
 	$(CXX) $(obj)/CmdInput.o \
+               $(obj)/BinOutput.o \
                $(obj)/EmacsOutput.o \
                $(CFLAGS) $(INC) $(obj)/djp.o -o $@ $(obj)/libdjp.a
 
 # objects
 $(obj)/CmdInput.o: $(libdir)/CmdInput.cpp $(incdir)/djp/CmdInput.h
+	$(CXX) $(CFLAGS) $(INC) -c $< -o $@
+
+$(obj)/BinOutput.o: $(libdir)/BinOutput.cpp \
+                    $(incdir)/djp/BinOutput.h \
+                    $(incdir)/djp/ParserBin.h
 	$(CXX) $(CFLAGS) $(INC) -c $< -o $@
 
 $(obj)/EmacsOutput.o: $(libdir)/EmacsOutput.cpp \
@@ -88,7 +95,8 @@ $(obj)/djp.o: $(libdir)/djp.cpp
 	$(CXX) $(CFLAGS) $(INC) -c $< -o $@
 
 # objects - libdjp
-$(obj)/libdjp.a: $(obj)/Diagnosis.o \
+$(obj)/libdjp.a: $(obj)/Util.o \
+                 $(obj)/Diagnosis.o \
                  $(obj)/Indentation.o \
                  $(obj)/Lexer.o \
                  $(obj)/LiteralSupport.o \
@@ -97,6 +105,9 @@ $(obj)/libdjp.a: $(obj)/Diagnosis.o \
                  $(obj)/SymbolTable.o \
                  $(obj)/ParserBin.o
 	ar -rv $@ $+
+
+$(obj)/Util.o: $(libdir)/Util.cpp $(incdir)/djp/Util.h
+	$(CXX) $(CFLAGS) $(INC) -c $< -o $@
 
 $(obj)/Diagnosis.o: $(libdir)/Diagnosis.cpp $(incdir)/djp/Diagnosis.h
 	$(CXX) $(CFLAGS) $(INC) -c $< -o $@
