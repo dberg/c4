@@ -21,7 +21,7 @@ TEST(EmacsOutput, PackageDeclaration) {
     "(djp-sh-identifier 22 25)"
     "(djp-sh-op 25 26)"
     "(djp-sh-identifier 26 30)]";
-  ASSERT_EQ(expected, output.outSH);
+  ASSERT_EQ(expected, output.outSH.str());
 }
 
 TEST(EmacsOutput, ImportDeclaration) {
@@ -62,7 +62,7 @@ TEST(EmacsOutput, ImportDeclaration) {
     "(djp-sh-op 93 94)"
     "(djp-sh-identifier 94 99)"
     "(djp-sh-op 99 101)]";
-  ASSERT_EQ(expected, output.outSH);
+  ASSERT_EQ(expected, output.outSH.str());
 }
 
 TEST(EmacsOutput, NormalClassDeclaration) {
@@ -80,7 +80,7 @@ TEST(EmacsOutput, NormalClassDeclaration) {
     "(djp-sh-reference-type-id 14 18)"
     "(djp-sh-keyword 19 26)"
     "(djp-sh-reference-type-id 27 31)]";
-  ASSERT_EQ(expected, output.outSH);
+  ASSERT_EQ(expected, output.outSH.str());
 }
 
 TEST(EmacsOutput, ClassConstructor) {
@@ -97,7 +97,7 @@ TEST(EmacsOutput, ClassConstructor) {
     "(djp-sh-identifier 13 16)"
     "(djp-sh-op 19 20)"
     "(djp-sh-op 20 21)]";
-  ASSERT_EQ(expected, output.outSH);
+  ASSERT_EQ(expected, output.outSH.str());
 }
 
 TEST(EmacsOutput, ClassConstructorParameters) {
@@ -118,7 +118,7 @@ TEST(EmacsOutput, ClassConstructorParameters) {
     "(djp-sh-identifier 31 32)"
     "(djp-sh-op 34 35)"
     "(djp-sh-op 35 36)]";
-  ASSERT_EQ(expected, output.outSH);
+  ASSERT_EQ(expected, output.outSH.str());
 }
 
 TEST(EmacsOutput, Expression2Rest) {
@@ -149,6 +149,6 @@ TEST(EmacsOutput, Expression2Rest) {
     "(djp-sh-op 47 48)" // }
     "(djp-sh-op 48 49)]"; // }
 
-  ASSERT_EQ(expected, output.outSH);
+  ASSERT_EQ(expected, output.outSH.str());
 }
 

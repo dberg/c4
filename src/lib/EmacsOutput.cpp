@@ -9,36 +9,29 @@ void EmacsOutput::build() {
 }
 
 void EmacsOutput::buildErrors() {
-  outErr = "[";
+  outErr << "[";
   setErrors(diag->errors);
-  outErr += "]";
+  outErr << "]";
 }
 
 void EmacsOutput::buildIT() {
   // Identation table
   // #s(hash-table size N data
   //   (LineNumber_N0 (IndentLevel_N0 LineWrap_N0 Offset_N0) ... N)
-  outIT = "#s(hash-table size ";
-  outIT += itos(indentMap.size());
-  outIT += " data (";
+  outIT << "#s(hash-table size " << indentMap.size() << " data (";
 
   LineIndentationMap::iterator it;
   for (it = indentMap.begin(); it != indentMap.end(); ++it) {
-    outIT += itos(it->first);
-    outIT += " (";
-    outIT += itos(it->second->level);
-    outIT += " ";
-    outIT += (it->second->lineWrap) ? "1" : "0";
-    outIT += " ";
-    outIT += itos(it->second->offset);
-    outIT += ") ";
+    outIT << it->first << " (" << it->second->level << " "
+      << ((it->second->lineWrap) ? "1" : "0") << " "
+      << it->second->offset << ") ";
   }
 
-  outIT += "))";
+  outIT << "))";
 }
 
 void EmacsOutput::buildSyntaxHighlighting() {
-  outSH = "[";
+  outSH << "[";
   if (compilationUnit->pkgDecl) {
     setPackageDeclaration(compilationUnit->pkgDecl);
   }
@@ -53,24 +46,24 @@ void EmacsOutput::buildSyntaxHighlighting() {
 
   setComments();
 
-  outSH += "]";
+  outSH << "]";
 }
 
 void EmacsOutput::buildST() {
-  outST = "[";
+  outST << "[";
   for (unsigned i = 0; i < st.symbols.size(); i++) {
-    outST += "("
-      + getSymbolTableType(st.symbols[i]->type) + " "
-      + itos(st.symbols[i]->scope) + " "
-      + itos(st.symbols[i]->pos) + " "
-      + itos(st.symbols[i]->end) + " "
-      + itos(st.symbols[i]->line);
+    outST << "("
+      << getSymbolTableType(st.symbols[i]->type) << " "
+      << st.symbols[i]->scope << " "
+      << st.symbols[i]->pos << " "
+      << st.symbols[i]->end << " "
+      << st.symbols[i]->line;
     if (st.symbols[i]->metadata.size()) {
-      outST += " " + st.symbols[i]->metadata;
+      outST << " " << st.symbols[i]->metadata;
     }
-    outST += ")";
+    outST << ")";
   }
-  outST += "]";
+  outST << "]";
 }
 
 const std::string EmacsOutput::getSymbolTableType(int type) {
@@ -101,8 +94,8 @@ void EmacsOutput::setAnnotation(const spAnnotation &annotation) {
   if (annotation->qualifiedId) {
     // '@'
     unsigned pos = annotation->posTokAt + 1;
-    outSH += "(djp-sh-annotation-tok-at "
-      + itos(pos) + " " + itos(pos + 1) + ")";
+    outSH << "(djp-sh-annotation-tok-at "
+          << pos << " " << (pos + 1) << ")";
     setQualifiedId(annotation->qualifiedId);
   }
 
@@ -182,10 +175,8 @@ void EmacsOutput::setAnnotationTypeDeclaration(
 
   if (annotationDecl->posAt) {
     unsigned pos = annotationDecl->posAt + 1;
-    outSH +=
-      "(djp-sh-annotation-tok-at "
-      + itos(pos) + " " + itos(pos + 1)
-      + ")";
+    outSH << "(djp-sh-annotation-tok-at "
+      << pos << " " << (pos + 1) << ")";
   }
 
   if (annotationDecl->tokInterface) {
@@ -444,11 +435,10 @@ void EmacsOutput::setCatchType(const spCatchType &catchType) {
 
 void EmacsOutput::setCharacterLiteral(const spCharacterLiteral &charLiteral) {
   if (charLiteral->pos && charLiteral->val.size()) {
-    outSH += "(djp-sh-literal-char "
-      + itos(charLiteral->pos + 1)
-      + " "
-      + itos(charLiteral->pos + charLiteral->val.size() + 1);
-    outSH += ")";
+    outSH << "(djp-sh-literal-char "
+      << charLiteral->pos + 1 << " "
+      << (charLiteral->pos + charLiteral->val.size() + 1);
+    outSH << ")";
   }
 }
 
@@ -534,8 +524,8 @@ void EmacsOutput::setComments() {
   if (comments.size() == 0) { return; }
 
   for (unsigned int i = 0; i < comments.size(); i++) {
-    outSH += "(djp-sh-comment " + itos(comments[i]->posIni + 1)
-      + " " + itos(comments[i]->posEnd + 2) + ")";
+    outSH << "(djp-sh-comment " << (comments[i]->posIni + 1) << " "
+      << (comments[i]->posEnd + 2) << ")";
   }
 }
 
@@ -787,10 +777,10 @@ void EmacsOutput::setEnumDeclaration(spEnumDeclaration &enumDecl) {
 
 void EmacsOutput::setErrors(const std::vector<spError> &errors) {
   for (std::size_t i = 0; i < errors.size(); i++) {
-    outErr += "("
-      + itos(errors[i]->ini + 1) + " "
-      + itos(errors[i]->end + 1) + " \""
-      + errUtil.getMessage(errors[i]->type) + "\")";
+    outErr << "("
+      << (errors[i]->ini + 1) << " "
+      << (errors[i]->end + 1) << " \""
+      << errUtil.getMessage(errors[i]->type) << "\")";
   }
 }
 
@@ -994,11 +984,9 @@ void EmacsOutput::setFloatingPointLiteral(
   const spFloatingPointLiteral &fpLiteral) {
 
   if (fpLiteral->pos && fpLiteral->value.size()) {
-    outSH += "(djp-sh-literal-number "
-      + itos(fpLiteral->pos + 1)
-      + " "
-      + itos(fpLiteral->pos + fpLiteral->value.size() + 1);
-    outSH += ")";
+    outSH << "(djp-sh-literal-number "
+      << (fpLiteral->pos + 1) << " "
+      << (fpLiteral->pos + fpLiteral->value.size() + 1) << ")";
   }
 }
 
@@ -1231,12 +1219,12 @@ void EmacsOutput::setIdentifier(const spIdentifier &identifier, IdentifierOpt op
   int end = ini + identifier->value.length();
 
   if (opt == EmacsOutput::OPT_IDENTIFIER_REFERENCE_TYPE) {
-    outSH += "(djp-sh-reference-type-id "
-      + itos(ini) + " " + itos(end) + ")";
+    outSH << "(djp-sh-reference-type-id "
+      << ini << " " << end << ")";
     return;
   }
 
-  outSH += "(djp-sh-identifier " + itos(ini) + " " + itos(end) + ")";
+  outSH << "(djp-sh-identifier " << ini << " " << end << ")";
 }
 
 void EmacsOutput::setIdentifierSuffix(const spIdentifierSuffix &idSuffix) {
@@ -1404,11 +1392,9 @@ void EmacsOutput::setInnerCreator(const spInnerCreator &innerCreator) {
 
 void EmacsOutput::setIntegerLiteral(const spIntegerLiteral &intLiteral) {
   if (intLiteral->pos && intLiteral->value.size()) {
-    outSH += "(djp-sh-literal-number "
-      + itos(intLiteral->pos + 1)
-      + " "
-      + itos(intLiteral->pos + intLiteral->value.size() + 1);
-    outSH += ")";
+    outSH << "(djp-sh-literal-number "
+      << (intLiteral->pos + 1) << " "
+      << (intLiteral->pos + intLiteral->value.size() + 1) << ")";
   }
 }
 
@@ -1601,7 +1587,7 @@ void EmacsOutput::setKeyword(const spTokenExp &token) {
 }
 
 void EmacsOutput::setKeyword(int ini, int end) {
-  outSH += "(djp-sh-keyword " + itos(ini) + " " + itos(end) + ")";
+  outSH << "(djp-sh-keyword " << ini << " " << end << ")";
 }
 
 void EmacsOutput::setLiteral(const spLiteral &literal) {
@@ -1917,7 +1903,7 @@ void EmacsOutput::setNormalInterfaceDeclaration(
 void EmacsOutput::setOp(unsigned int ini, int len) {
   ini++;
   unsigned int end = ini + len;
-  outSH += "(djp-sh-op " + itos(ini) + " " + itos(end) + ")";
+  outSH << "(djp-sh-op " << ini << " " << end << ")";
 }
 
 void EmacsOutput::setPackageDeclaration(const spPackageDeclaration &pkgDecl) {
@@ -2381,8 +2367,7 @@ void EmacsOutput::setStatementExpression(const spStatementExpression &stmtExpr) 
 void EmacsOutput::setStringLiteral(const spStringLiteral &strLiteral) {
   unsigned ini = strLiteral->pos + 1;
   unsigned end = ini + strLiteral->val.length();
-  outSH += "(djp-sh-string-literal "
-    + itos(ini) + " " + itos(end) + ")";
+  outSH << "(djp-sh-string-literal " << ini << " " << end << ")";
 }
 
 void EmacsOutput::setSuperSuffix(const spSuperSuffix &superSuffix) {

@@ -44,10 +44,10 @@ int parseJavaFile(CmdInput &ci) {
   EmacsOutput output(parser);
   output.build();
   std::cout
-    << output.outSH << std::endl
-    << output.outErr << std::endl
-    << output.outST << std::endl
-    << output.outIT;
+    << output.outSH.str() << std::endl
+    << output.outErr.str() << std::endl
+    << output.outST.str() << std::endl
+    << output.outIT.str();
 
   return 0;
 }

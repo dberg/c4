@@ -8,7 +8,6 @@
 #include "Parser.h"
 #include "SymbolTable.h"
 #include "Token.h"
-#include "Util.h"
 #include <iostream>
 #include <map>
 #include <sstream>
@@ -204,10 +203,10 @@ class EmacsOutput {
 
 public:
   // Output sent to emacs
-  std::string outSH; // syntax highlighting
-  std::string outErr;
-  std::string outST; // symbol table
-  std::string outIT; // indentation table
+  std::stringstream outSH; // syntax highlighting
+  std::stringstream outErr;
+  std::stringstream outST; // symbol table
+  std::stringstream outIT; // indentation table
 
   EmacsOutput(Parser &parser)
     : compilationUnit(parser.compilationUnit), comments(parser.comments),
