@@ -4,6 +4,7 @@ namespace djp {
 
 void BinOutput::build() {
   buildHeader();
+  buildConstantPool();
 }
 
 void BinOutput::buildHeader() {
@@ -15,6 +16,17 @@ void BinOutput::buildHeader() {
     << std::nouppercase << std::dec
     << "Minor: " << parser.classFile->minor_version << std::endl
     << "Major: " << parser.classFile->major_version << std::endl;
+}
+
+void BinOutput::buildConstantPool() {
+  u2 poolCount = parser.classFile->constant_pool_count;
+  out << "Constant Pool size: " << poolCount << std::endl;
+
+  std::vector<spCPItem> &items = parser.classFile->constant_pool->items;
+  for (u2 i = 1; i < poolCount; i++) {
+    spCPItem item = items[i];
+    out << "#" << i << " " << tags[item->tag] << std::endl;
+  }
 }
 
 } // namespace
