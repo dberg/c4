@@ -75,61 +75,72 @@ void BinOutput::buildConstantPool() {
 }
 
 void BinOutput::buildCPClassInfo(spCClassInfo& cClassInfo) {
-  out << " TODO";
+  out << " name_index #" << cClassInfo->name_index;
 }
 
 void BinOutput::buildCPFieldrefInfo(spCFieldrefInfo& cFieldrefInfo) {
-  out << " TODO";
+  out << " class_index #" << cFieldrefInfo->class_index
+    << " name_and_type_index #" << cFieldrefInfo->name_and_type_index;
 }
 
 void BinOutput::buildCPMethodrefInfo(spCMethodrefInfo& cMethodrefInfo) {
-  out << " TODO";
+  out << " class_index #" << cMethodrefInfo->class_index
+    << " name_and_type_index #" << cMethodrefInfo->name_and_type_index;
 }
 
 void BinOutput::buildCPInterfaceMethodrefInfo(
   spCInterfaceMethodrefInfo& cInterfaceMethodrefInfo) {
-  out << " TODO";
+  out << " class_index #" << cInterfaceMethodrefInfo->class_index
+    << " name_and_type_index #"
+    << cInterfaceMethodrefInfo->name_and_type_index;
 }
 
 void BinOutput::buildCPStringInfo(spCStringInfo& cStringInfo) {
-  out << " TODO";
+  out << " string_index #" << cStringInfo->string_index;
 }
 
 void BinOutput::buildCPIntegerInfo(spCIntegerInfo& cIntegerInfo) {
-  out << " TODO";
+  out << " bytes " << cIntegerInfo->bytes;
 }
 
 void BinOutput::buildCPFloatInfo(spCFloatInfo& cFloatInfo) {
-  out << " TODO";
+  out << " bytes " << cFloatInfo->bytes;
 }
 
 void BinOutput::buildCPLongInfo(spCLongInfo& cLongInfo) {
-  out << " TODO";
+  out << " high_bytes " << cLongInfo->high_bytes
+    << " low_bytes " << cLongInfo->low_bytes;
 }
 
 void BinOutput::buildCPDoubleInfo(spCDoubleInfo& cDoubleInfo) {
-  out << " TODO";
+  out << " high_bytes " << cDoubleInfo->high_bytes
+    << " low_bytes " << cDoubleInfo->low_bytes;
 }
 
 void BinOutput::buildCPNameAndTypeInfo(spCNameAndTypeInfo& cNameAndTypeInfo) {
-  out << " TODO";
+  out << " name_index #" << cNameAndTypeInfo->name_index
+    << " descriptor_index #" << cNameAndTypeInfo->descriptor_index;
 }
 
 void BinOutput::buildUtf8Info(spCUtf8Info& cUtf8Info) {
-  out << " TODO";
+  out << " " << std::string(cUtf8Info->bytes.begin(), cUtf8Info->bytes.end());
 }
 
 void BinOutput::buildMethodHandleInfo(spCMethodHandleInfo& cMethodHandleInfo) {
-  out << " TODO";
+  out << " reference_kind #" << cMethodHandleInfo->reference_kind
+    << " reference_index #" << cMethodHandleInfo->reference_index;
 }
 
 void BinOutput::buildCPMethodTypeInfo(spCMethodTypeInfo& cMethodTypeInfo) {
-  out << " TODO";
+  out << " descriptor_index #" << cMethodTypeInfo->descriptor_index;
 }
 
 void BinOutput::buildCPInvokeDynamicInfo(
   spCInvokeDynamicInfo& cInvokeDynamicInfo) {
-  out << " TODO";
+  out << " bootstrap_method_attr_index #"
+    << cInvokeDynamicInfo->bootstrap_method_attr_index
+    << " name_and_type_index #"
+    << cInvokeDynamicInfo->name_and_type_index;
 }
 
 } // namespace
