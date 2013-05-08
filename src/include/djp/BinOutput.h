@@ -16,6 +16,21 @@ class BinOutput {
 
   void buildHeader();
   void buildConstantPool();
+  void buildCPClassInfo(spCClassInfo& cClassInfo);
+  void buildCPFieldrefInfo(spCFieldrefInfo& cFieldrefInfo);
+  void buildCPMethodrefInfo(spCMethodrefInfo& cMethodrefInfo);
+  void buildCPInterfaceMethodrefInfo(
+    spCInterfaceMethodrefInfo& cInterfaceMethodrefInfo);
+  void buildCPStringInfo(spCStringInfo& cStringInfo);
+  void buildCPIntegerInfo(spCIntegerInfo& cIntegerInfo);
+  void buildCPFloatInfo(spCFloatInfo& cFloatInfo);
+  void buildCPLongInfo(spCLongInfo& cLongInfo);
+  void buildCPDoubleInfo(spCDoubleInfo& cDoubleInfo);
+  void buildCPNameAndTypeInfo(spCNameAndTypeInfo& cNameAndTypeInfo);
+  void buildUtf8Info(spCUtf8Info& cUtf8Info);
+  void buildMethodHandleInfo(spCMethodHandleInfo& cMethodHandleInfo);
+  void buildCPMethodTypeInfo(spCMethodTypeInfo& cMethodTypeInfo);
+  void buildCPInvokeDynamicInfo(spCInvokeDynamicInfo& cInvokeDynamicInfo);
 
 public:
   BinOutput(ParserBin &parser) : parser(parser) {
