@@ -6,6 +6,12 @@ void BinOutput::build() {
   buildHeader();
   buildConstantPool();
   buildClassInfo();
+  // TODO:
+  //buildInterfaces();
+  //buildFields();
+  buildMethods();
+  // TODO:
+  // buildAttributes();
 }
 
 void BinOutput::buildHeader() {
@@ -156,6 +162,28 @@ void BinOutput::buildClassInfo() {
   out << "this_class #" << parser.classFile->this_class
     << " super_class #" << parser.classFile->super_class
     << std::endl << std::endl;
+}
+
+void BinOutput::buildMethods() {
+  out << "Methods count " << parser.classFile->methods_count << std::endl;
+  std::vector<spMethodInfo> &methods = parser.classFile->methods;
+  for (u2 i = 0; i < methods.size(); i++) {
+    buildMethod(methods[i]);
+  }
+}
+
+void BinOutput::buildMethod(spMethodInfo &method) {
+  for (auto it = classModifiers.begin(); it != classModifiers.end(); it++) {
+    if (it->first & method->access_flags) {
+      out << it->second << " ";
+    }
+  }
+
+  // TODO: add attributes
+  out << "name_index #" << method->name_index
+    << " descriptor_index #" << method->descriptor_index
+    << " attributes_count #" << method->attributes_count
+    << std::endl;
 }
 
 } // namespace

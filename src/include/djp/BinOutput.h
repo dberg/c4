@@ -14,6 +14,7 @@ class BinOutput {
   ParserBin &parser;
   std::unordered_map<int, std::string> tags;
   std::unordered_map<int, std::string> classModifiers;
+  std::unordered_map<int, std::string> methodFlags;
 
   void buildHeader();
 
@@ -35,6 +36,8 @@ class BinOutput {
   void buildCPInvokeDynamicInfo(spCInvokeDynamicInfo& cInvokeDynamicInfo);
 
   void buildClassInfo();
+  void buildMethods();
+  void buildMethod(spMethodInfo &method);
 
 public:
   BinOutput(ParserBin &parser) : parser(parser) {
@@ -65,6 +68,21 @@ public:
       { CLASS_ACC_ANNOTATION, "annotation" },
       { CLASS_ACC_ENUM, "enum" },
     };
+
+    methodFlags = {
+      { METHOD_ACC_PUBLIC, "public" },
+      { METHOD_ACC_PRIVATE, "private" },
+      { METHOD_ACC_PROTECTED, "protected" },
+      { METHOD_ACC_STATIC, "static" },
+      { METHOD_ACC_FINAL, "final" },
+      { METHOD_ACC_SYNCHRONIZED, "synchronized" },
+      { METHOD_ACC_BRIDGE, "bridge" },
+      { METHOD_ACC_VARARGS, "varargs" },
+      { METHOD_ACC_NATIVE, "native" },
+      { METHOD_ACC_ABSTRACT, "abstract" },
+      { METHOD_ACC_STRICT, "strict" },
+      { METHOD_ACC_SYNTHETIC, "synthetic" },
+  };
   }
 
   void build();
