@@ -5,6 +5,7 @@ namespace djp {
 void BinOutput::build() {
   buildHeader();
   buildConstantPool();
+  buildClassInfo();
 }
 
 void BinOutput::buildHeader() {
@@ -15,7 +16,7 @@ void BinOutput::buildHeader() {
     // remove hex and uppercase
     << std::nouppercase << std::dec
     << "Minor: " << parser.classFile->minor_version << std::endl
-    << "Major: " << parser.classFile->major_version << std::endl;
+    << "Major: " << parser.classFile->major_version << std::endl << std::endl;
 }
 
 void BinOutput::buildConstantPool() {
@@ -72,6 +73,8 @@ void BinOutput::buildConstantPool() {
     }
     out << std::endl;
   }
+
+  out << std::endl;
 }
 
 void BinOutput::buildCPClassInfo(spCClassInfo& cClassInfo) {
@@ -141,6 +144,18 @@ void BinOutput::buildCPInvokeDynamicInfo(
     << cInvokeDynamicInfo->bootstrap_method_attr_index
     << " name_and_type_index #"
     << cInvokeDynamicInfo->name_and_type_index;
+}
+
+void BinOutput::buildClassInfo() {
+  for (auto it = classModifiers.begin(); it != classModifiers.end(); it++) {
+    if (it->first & parser.classFile->access_flags) {
+      out << it->second << " ";
+    }
+  }
+
+  out << "this_class #" << parser.classFile->this_class
+    << " super_class #" << parser.classFile->super_class
+    << std::endl << std::endl;
 }
 
 } // namespace

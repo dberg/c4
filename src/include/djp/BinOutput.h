@@ -13,8 +13,10 @@ namespace djp {
 class BinOutput {
   ParserBin &parser;
   std::unordered_map<int, std::string> tags;
+  std::unordered_map<int, std::string> classModifiers;
 
   void buildHeader();
+
   void buildConstantPool();
   void buildCPClassInfo(spCClassInfo& cClassInfo);
   void buildCPFieldrefInfo(spCFieldrefInfo& cFieldrefInfo);
@@ -31,6 +33,8 @@ class BinOutput {
   void buildMethodHandleInfo(spCMethodHandleInfo& cMethodHandleInfo);
   void buildCPMethodTypeInfo(spCMethodTypeInfo& cMethodTypeInfo);
   void buildCPInvokeDynamicInfo(spCInvokeDynamicInfo& cInvokeDynamicInfo);
+
+  void buildClassInfo();
 
 public:
   BinOutput(ParserBin &parser) : parser(parser) {
@@ -49,6 +53,17 @@ public:
       { CONSTANT_MethodHandle, "MethodHandle" },
       { CONSTANT_MethodType, "MethodType" },
       { CONSTANT_InvokeDynamic, "InvokeDynamic"}
+    };
+
+    classModifiers = {
+      { CLASS_ACC_PUBLIC, "public" },
+      { CLASS_ACC_FINAL, "final" },
+      { CLASS_ACC_SUPER, "super" },
+      { CLASS_ACC_INTERFACE, "interface" },
+      { CLASS_ACC_ABSTRACT, "abstract" },
+      { CLASS_ACC_SYNTHETIC, "synthetic" },
+      { CLASS_ACC_ANNOTATION, "annotation" },
+      { CLASS_ACC_ENUM, "enum" },
     };
   }
 
