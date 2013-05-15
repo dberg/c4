@@ -4056,6 +4056,10 @@ void Parser::parseStatement(spStatement &stmt) {
       return;
     }
 
+    // We need to decrease it after leaving a switch statement even if
+    // there's an error while parsing it.
+    lexer->increaseIndentLevel();
+
     stmt->posLCBrace = lexer->getCursor() - 1;
     lexer->getNextToken(); // consume '{'
 
@@ -4065,6 +4069,7 @@ void Parser::parseStatement(spStatement &stmt) {
     parseSwitchBlockStatementGroups(stmt->switchStmtGroups);
     if (stmt->switchStmtGroups->err) {
       stmt->addErr(-1);
+      lexer->decreaseIndentLevel();
       return;
     }
 
@@ -4072,8 +4077,13 @@ void Parser::parseStatement(spStatement &stmt) {
     if (lexer->getCurToken() != TOK_RCURLY_BRACKET) {
       stmt->addErr(diag->addErr(
         ERR_EXP_RCURLY_BRACKET, lexer->getCursor() - 1));
+      lexer->decreaseIndentLevel();
       return;
     }
+
+    // We have to do this before we consume the next token
+    lexer->decreaseIndentLevel();
+    lexer->adjustClosingCurlyBracketIndentation();
 
     stmt->posRCBrace = lexer->getCursor() - 1;
     lexer->getNextToken(); // consume '}'
@@ -5862,6 +5872,7 @@ void Parser::parseSwitchLabel(spSwitchLabel &label) {
     }
 
     label->posColon = lexer->getCursor() - 1;
+    lexer->setPrevTokenSwitchLabelColon(true);
     lexer->getNextToken(); // consume ':'
     return;
   }
@@ -5890,6 +5901,7 @@ void Parser::parseSwitchLabel(spSwitchLabel &label) {
       label->enumConstName = spEnumConstantName(new EnumConstantName);
       label->enumConstName->id = id;
       label->posColon = lexer->getCursor() - 1;
+      lexer->setPrevTokenSwitchLabelColon(true);
       lexer->getNextToken(); // consume ':'
       return;
     }
@@ -5914,6 +5926,7 @@ void Parser::parseSwitchLabel(spSwitchLabel &label) {
   }
 
   label->posColon = lexer->getCursor() - 1;
+  lexer->setPrevTokenSwitchLabelColon(true);
   lexer->getNextToken(); // consume ':'
 }
 

@@ -49,13 +49,32 @@ void Lexer::getNextToken() {
   processIndentation(line, src->getLine(), token, curToken);
 }
 
+// We can process almost all indent information from the lexer but we need help
+// from the parser when dealing with switch statements. The parser performs 3
+// actions to help the lexer to process indentation data:
+//
+// 1) The parser will increase the indentation level by one after seeing an
+// opening curly brace of a switch statement. This gives switch statements two
+// indentation levels but we subtract it by one when we have 'case' and
+// 'default' tokens starting a line.
+//
+// 2) After seeing a closing curly bracket of a switch statement the parser will
+// ask the lexer to adjust the indentation level of the last line. See the
+// method adjustClosingCurlyBracketIndentation.
+//
+// 3) After seeing a token colon in a switch label production rule the parser
+// will signal the lexer about this token. This is necessary to avoid the next
+// line to be interpreted as a line wrap. The lexer will take care of resetting
+// this flag.
 void Lexer::processIndentation(unsigned prevLine, unsigned curLine,
   int prevToken, int curToken) {
 
+  if (prevToken != TOK_OP_COLON) { setPrevTokenSwitchLabelColon(false); }
+
   // We should increment or decrement the indentation level when see an opening
   // or closing curly bracket.
-  if (curToken == TOK_LCURLY_BRACKET) { ++curIndentationLevel; }
-  if (curToken == TOK_RCURLY_BRACKET) { --curIndentationLevel; }
+  if (curToken == TOK_LCURLY_BRACKET) { increaseIndentLevel(); }
+  if (curToken == TOK_RCURLY_BRACKET) { decreaseIndentLevel(); }
 
   // If there's no line change our job is done. We're only interested in the
   // first token of each line. One special case is the very first token we
@@ -77,7 +96,18 @@ void Lexer::processIndentation(unsigned prevLine, unsigned curLine,
     return;
   }
 
-  // If we have a closing curly brace we should decrease the indentation level.
+  // Switch statements add two indentation levels and if the current token
+  // is a case or default token we add the indentation information level
+  // decreased by one.
+  if (curToken == TOK_KEY_CASE || curToken == TOK_KEY_DEFAULT) {
+    addIndentation(
+      indentMap, curLine, curIndentationLevel - 1, false, curToken);
+    return;
+  }
+
+  // If we have a closing curly brace the indentation level has been decreased
+  // and we can just add the indent information and exit. If this is a closing
+  // curly bracket from a switch statement it will be adjusted by the parser.
   if (curToken == TOK_RCURLY_BRACKET) {
     addIndentation(indentMap, curLine, curIndentationLevel, false, curToken);
     return;
@@ -89,6 +119,7 @@ void Lexer::processIndentation(unsigned prevLine, unsigned curLine,
 
 bool Lexer::isLineWrap(int prevToken) {
   if (prevToken == TOK_SEMICOLON) { return false; }
+  if (isPrevTokenSwitchLabelColon) { return false; }
   if (prevToken == TOK_LCURLY_BRACKET) { return false; }
   if (prevToken == TOK_RCURLY_BRACKET) { return false; }
   if (prevToken >= 0) { return false; }
@@ -98,6 +129,14 @@ bool Lexer::isLineWrap(int prevToken) {
     }
   }
   return true;
+}
+
+// See processIndentation method.
+void Lexer::adjustClosingCurlyBracketIndentation() {
+  auto it = indentMap.rbegin();
+  if (it->second->token == TOK_RCURLY_BRACKET) {
+    --it->second->level;
+  }
 }
 
 int Lexer::getToken() {
