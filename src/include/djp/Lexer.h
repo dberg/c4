@@ -30,6 +30,7 @@ class Lexer {
 
   int curToken;
   std::string curTokenStr;
+  bool isPrevTokenSwitchLabelColon;
   int curIndentationLevel;
   spDiagnosis diag;
   spSourceCodeStream src;
@@ -66,8 +67,8 @@ class Lexer {
 public:
   Lexer(spSourceCodeStream &src, spDiagnosis &diag,
     LineIndentationMap &indentMap)
-    : curToken(0), curTokenStr(""), curIndentationLevel(0),
-      diag(diag), src(src),
+    : curToken(0), curTokenStr(""), isPrevTokenSwitchLabelColon(false),
+      curIndentationLevel(0), diag(diag), src(src),
       litSupport(spLiteralSupport(new LiteralSupport(src, diag))),
       indentMap(indentMap) {}
 
@@ -83,6 +84,14 @@ public:
 
   void saveState(State &state);
   void restoreState(State &state);
+
+  void adjustClosingCurlyBracketIndentation();
+  void increaseIndentLevel() { ++curIndentationLevel; }
+  void decreaseIndentLevel() { --curIndentationLevel; }
+
+  void setPrevTokenSwitchLabelColon(bool isColonToken) {
+    isPrevTokenSwitchLabelColon = isColonToken;
+  }
 };
 } // namespace
 

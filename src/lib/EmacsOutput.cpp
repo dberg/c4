@@ -2427,7 +2427,7 @@ void EmacsOutput::setSwitchLabel(const spSwitchLabel &label) {
   }
 
   if (label->opt == SwitchLabel::OPT_DEFAULT) {
-    if (label->tokCase) { setKeyword(label->tokCase); }
+    if (label->tokDefault) { setKeyword(label->tokDefault); }
     if (label->posColon) { setOp(label->posColon); }
   }
 }
