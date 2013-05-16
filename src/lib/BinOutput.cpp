@@ -179,11 +179,60 @@ void BinOutput::buildMethod(spMethodInfo &method) {
     }
   }
 
-  // TODO: add attributes
   out << "name_index #" << method->name_index
     << " descriptor_index #" << method->descriptor_index
     << " attributes_count #" << method->attributes_count
     << std::endl;
+
+  buildAttributes(method->attributes);
+}
+
+void BinOutput::buildAttributes(std::vector<spAttributeInfo> &attributes) {
+  for (u2 i = 0; i < attributes.size(); i++) {
+    buildAttributeInfo(attributes[i]);
+  }
+}
+
+void BinOutput::buildAttributeInfo(spAttributeInfo &attribute) {
+  switch (attribute->type) {
+    case ATTRIBUTE_TYPE_CODE:
+      buildAttributeCode(attribute);
+      break;
+    case ATTRIBUTE_TYPE_LINE_NUMBER_TABLE:
+      // TODO:
+      // buildAttributeLineNumberTable();
+      break;
+    case ATTRIBUTE_TYPE_SOURCE_FILE:
+      // TODO:
+      //buildAttributeSourceFile():
+      break;
+    case ATTRIBUTE_TYPE_UNKNOWN:
+      // TODO:
+      //buildAttributeUnknown();
+      break;
+  }
+}
+
+void BinOutput::buildAttributeCode(spAttributeInfo &attribute) {
+  out << "attribute_name_index #" << attribute->attribute_name_index
+    << " attribute_length " << attribute->attribute_length << std::endl;
+  buildCodeAttribute(attribute->code);
+}
+
+void BinOutput::buildCodeAttribute(spCodeAttribute &code) {
+  out << "max_stack " << code->max_stack << " max_locals " << code->max_locals
+    << std::endl;
+  buildCode(code->code);
+  out << std::endl;
+  // TODO:
+  // exceptions
+  // attributes
+}
+
+void BinOutput::buildCode(std::vector<u1> &code) {
+  // TODO:
+  //for (u4 i = 0; i < code.size(); i++) {
+  //}
 }
 
 } // namespace

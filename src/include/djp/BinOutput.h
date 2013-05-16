@@ -36,8 +36,13 @@ class BinOutput {
   void buildCPInvokeDynamicInfo(spCInvokeDynamicInfo& cInvokeDynamicInfo);
 
   void buildClassInfo();
-  void buildMethods();
   void buildMethod(spMethodInfo &method);
+  void buildMethods();
+  void buildAttributeInfo(spAttributeInfo &attribute);
+  void buildAttributes(std::vector<spAttributeInfo> &attributes);
+  void buildAttributeCode(spAttributeInfo &attribute);
+  void buildCodeAttribute(spCodeAttribute &code);
+  void buildCode(std::vector<u1> &code);
 
 public:
   BinOutput(ParserBin &parser) : parser(parser) {
