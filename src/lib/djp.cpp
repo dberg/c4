@@ -8,21 +8,6 @@
 #include "djp/EmacsOutput.h"
 using namespace djp;
 
-/*
-
-Usage:
-  djp [-b, --binary] | [--emacs] filename
-
-  --emacs          Parse java files
-  - b, --binary    Parse binary .class files
-
-Examples:
-
-  djp --emacs MyClass.java
-  djp -b MyClass.class
-
-*/
-
 int parseJavaFile(CmdInput &ci) {
   std::string buffer;
 
@@ -77,9 +62,13 @@ int main(int argc, const char **argv) {
     return 1;
   }
 
-  if (ci.isOptBinary()) {
+  if (ci.isOptHelp()) {
+    std::cout << ci.help << std::endl;
+  } else if (ci.isOptBinary()) {
     return parseClassFile(ci);
+  } else if (ci.isOptEmacs()) {
+    return parseJavaFile(ci);
   }
 
-  return parseJavaFile(ci);
+  return 0;
 }

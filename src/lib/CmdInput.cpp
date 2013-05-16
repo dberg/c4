@@ -5,11 +5,20 @@ namespace djp {
 int CmdInput::processCmdArgs() {
   for (int i = 1; i < argc; i++) {
     std::string arg = argv[i];
+
+    // help option
+    if (arg.compare("-h") == 0 || arg.compare("--help") == 0) {
+      optHelp = true;
+      return 0;
+    }
+
+    // binary option
     if (arg.compare("-b") == 0 || arg.compare("--binary") == 0) {
       optBinary = true;
       continue;
     }
 
+    // emacs option
     if (arg.compare("--emacs") == 0) {
       optEmacs = true;
       continue;
