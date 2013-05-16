@@ -6,16 +6,26 @@
 namespace djp {
 
 class CmdInput {
-public:
+
   int argc;
   const char **argv;
-
   std::string error;
+
+  // options
+  bool optBinary;
+  bool optEmacs;
   std::string filename;
 
-  CmdInput(int argc, const char **argv) : argc(argc), argv(argv) {}
+public:
+
+  CmdInput(int argc, const char **argv)
+    : argc(argc), argv(argv), optBinary(false), optEmacs(false), filename("") {}
+
   int processCmdArgs();
-  bool binaryFlag();
+  bool isOptBinary() { return optBinary; }
+  bool isOptEmacs() { return optEmacs; }
+  std::string getFilename() { return filename; }
+  std::string getError() { return error; }
 };
 
 }

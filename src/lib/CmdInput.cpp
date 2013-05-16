@@ -3,26 +3,41 @@
 namespace djp {
 
 int CmdInput::processCmdArgs() {
-  if (argc < 2) {
-    error = "Invalid filename";
+  for (int i = 1; i < argc; i++) {
+    std::string arg = argv[i];
+    if (arg.compare("-b") == 0 || arg.compare("--binary") == 0) {
+      optBinary = true;
+      continue;
+    }
+
+    if (arg.compare("--emacs") == 0) {
+      optEmacs = true;
+      continue;
+    }
+
+    if (arg[0] == '-') {
+      error = "Invalid option: " + arg;
+      return 1;
+    }
+
+    if (filename.size() > 0) {
+      error = "More than one filename provided.";
+      return 1;
+    }
+
+    filename = argv[i];
+  }
+
+  if (filename.size() == 0) {
+    error = "No filename provided.";
     return 1;
   }
 
-  filename = argv[1];
+  if (!optBinary && !optEmacs) {
+    // Default to emacs
+    optEmacs = true;
+  }
+
   return 0;
 }
-
-bool CmdInput::binaryFlag() {
-  if (argc < 3) {
-    return false;
-  }
-
-  std::string arg = argv[2];
-  if (arg.compare("-b") == 0) {
-    return true;
-  }
-
-  return false;
-}
-
 } // namespace

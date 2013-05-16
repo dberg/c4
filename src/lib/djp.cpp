@@ -11,16 +11,15 @@ using namespace djp;
 /*
 
 Usage:
-  djp filename [-b]
+  djp [-b, --binary] | [--emacs] filename
 
-Where filename can be a java class (ex.: MyClass.java) or a binary class file
-(ex.: MyClass.class). If the file is a binary class file the parameter '-b' is
-mandatory.
+  --emacs          Parse java files
+  - b, --binary    Parse binary .class files
 
 Examples:
 
-  djp MyClass.java
-  djp MyClass.class -b
+  djp --emacs MyClass.java
+  djp -b MyClass.class
 
 */
 
@@ -28,12 +27,12 @@ int parseJavaFile(CmdInput &ci) {
   std::string buffer;
 
   File file;
-  if (file.read(ci.filename, buffer)) {
-    std::cerr << "Error: Failed to read file:" << ci.filename << std::endl;
+  if (file.read(ci.getFilename(), buffer)) {
+    std::cerr << "Error: Failed to read file:" << ci.getFilename() << std::endl;
     return 1;
   }
 
-  Parser parser(ci.filename, buffer);
+  Parser parser(ci.getFilename(), buffer);
   parser.parse();
   if (parser.error) {
     std::cerr << "Error( " << parser.error << "): "
@@ -56,12 +55,12 @@ int parseClassFile(CmdInput &ci) {
   std::vector<unsigned char> buffer;
 
   File file;
-  if (file.read(ci.filename, buffer)) {
-    std::cerr << "Error: Failed to read file:" << ci.filename << std::endl;
+  if (file.read(ci.getFilename(), buffer)) {
+    std::cerr << "Error: Failed to read file:" << ci.getFilename() << std::endl;
     return 1;
   }
 
-  ParserBin parser(ci.filename, buffer);
+  ParserBin parser(ci.getFilename(), buffer);
   parser.parse();
 
   BinOutput output(parser);
@@ -74,12 +73,11 @@ int parseClassFile(CmdInput &ci) {
 int main(int argc, const char **argv) {
   CmdInput ci(argc, argv);
   if (ci.processCmdArgs()) {
-    std::cerr << "Error: " << ci.error << std::endl;
+    std::cerr << "Error: " << ci.getError() << std::endl;
     return 1;
   }
 
-  // Flag -b
-  if (ci.binaryFlag()) {
+  if (ci.isOptBinary()) {
     return parseClassFile(ci);
   }
 
