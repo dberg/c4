@@ -240,16 +240,18 @@ void BinOutput::buildCode(std::vector<u1> &code) {
       out << label << std::endl;
       break;
     case OPERAND_1BYTE:
-      out << label << " " << code[++i] << std::endl;
+      out << label << " " << (unsigned) code[++i] << std::endl;
       break;
     case OPERAND_2BYTES:
       out << label << " " << ((code[++i] << 8) | code[++i]) << std::endl;
       break;
     case OPERAND_IINC:
-      out << "TODO!" << std::endl;
+      out << label << " " << (unsigned) code[++i] << " "
+        << (unsigned) code[++i] << std::endl;
       break;
     case OPERAND_MULTIANEWARRAY:
-      out << "TODO!" << std::endl;
+      out << label << " " << ((code[++i] << 8) | code[++i]) << " "
+        << (unsigned) code[++i] << std::endl;
       break;
     case OPERAND_4BYTES:
       out << label << " "
