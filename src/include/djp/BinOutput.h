@@ -7,10 +7,12 @@
 #include <vector>
 #include "djp/ASTBin.h"
 #include "djp/ParserBin.h"
+#include "djp/OpCodes.h"
 
 namespace djp {
 
 class BinOutput {
+  OpCodes opcodes;
   ParserBin &parser;
   std::unordered_map<int, std::string> tags;
   std::unordered_map<int, std::string> classModifiers;
