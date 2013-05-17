@@ -13,21 +13,21 @@ void ParserBin::parse() {
 // Helpers
 // -----------------------------------------------------------------------------
 u1 ParserBin::getU1() {
-  uint8_t u1 = buffer[pos++];
-  return u1;
+  u1 byte = buffer[pos++];
+  return byte;
 }
 
 u2 ParserBin::getU2() {
-  uint16_t u2 = (buffer[pos++] << 8) | buffer[pos++];
-  return u2;
+  u2 bytes = (buffer[pos++] << 8) | buffer[pos++];
+  return bytes;
 }
 
 u4 ParserBin::getU4() {
-  uint32_t u4 = (buffer[pos++] << 24)
+  u4 bytes = (buffer[pos++] << 24)
     | (buffer[pos++] << 16)
     | (buffer[pos++] << 8)
     | buffer[pos++];
-  return u4;
+  return bytes;
 }
 
 // -----------------------------------------------------------------------------
