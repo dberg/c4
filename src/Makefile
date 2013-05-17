@@ -150,7 +150,13 @@ $(obj)/ParserBin.o: $(libdir)/ParserBin.cpp $(incdir)/djp/ParserBin.h
 	$(CXX) $(CFLAGS) $(INC) -c $< -o $@
 
 # tests
-$(bin)/tests: $(test_libdir)/EmacsOutputTest.cpp \
+.PHONY: test-classes
+test-classes:
+	mkdir -p $(bin)/test-classes
+	cp tests/test-classes/*.class $(bin)/test-classes
+
+$(bin)/tests: test-classes \
+              $(test_libdir)/EmacsOutputTest.cpp \
               $(test_libdir)/IndentationTest.cpp \
               $(test_libdir)/ParserTest.cpp \
               $(test_libdir)/ParserBinTest.cpp \

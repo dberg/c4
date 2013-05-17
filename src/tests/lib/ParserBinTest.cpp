@@ -1,16 +1,25 @@
-#include "djp/File.h"
-#include "djp/ParserBin.h"
-#include "gtest/gtest.h"
+#include <dlfcn.h>
+#include <stdint.h>
 #include <libgen.h>
 #include <string>
 #include <vector>
+#include "djp/File.h"
+#include "djp/ParserBin.h"
+#include "gtest/gtest.h"
 using namespace djp;
 
 std::string getCurrentDir() {
-  char *filename = strdup(__FILE__);
-  std::string dir = dirname(filename);
-  free(filename);
-  return dir;
+  Dl_info dlinfo;
+  void *p = (void *) (intptr_t) getCurrentDir;
+  if (dladdr(p, &dlinfo)) {
+    char *filename = strdup(dlinfo.dli_fname);
+    std::string dir = dirname(filename);
+    free(filename);
+    return dir;
+  }
+
+  // failed to get current directory
+  return "";
 }
 
 std::string current_dir = getCurrentDir();
@@ -23,7 +32,7 @@ std::string current_dir = getCurrentDir();
 TEST(ParserBin, HelloWorld) {
   std::vector<unsigned char> buffer;
   File file;
-  std::string filename =  current_dir + "/../classes/HelloWorld.class";
+  std::string filename =  current_dir + "/test-classes/HelloWorld.class";
   ASSERT_EQ(file.read(filename, buffer), 0);
   ParserBin parser(filename, buffer);
   parser.parse();
