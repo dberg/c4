@@ -6,13 +6,13 @@
 #include <unordered_map>
 #include <vector>
 #include "djp/ASTBin.h"
+#include "djp/BinOutputCode.h"
+#include "djp/Opcodes.h"
 #include "djp/ParserBin.h"
-#include "djp/OpCodes.h"
 
 namespace djp {
 
 class BinOutput {
-  OpCodes opcodes;
   ParserBin &parser;
   std::unordered_map<int, std::string> tags;
   std::unordered_map<int, std::string> classModifiers;
@@ -44,7 +44,7 @@ class BinOutput {
   void buildAttributes(std::vector<spAttributeInfo> &attributes);
   void buildAttributeCode(spAttributeInfo &attribute);
   void buildCodeAttribute(spCodeAttribute &code);
-  void buildCode(std::vector<u1> &code);
+  void buildCode(std::vector<u1> &code, unsigned long codeIdxGlobal);
 
 public:
   BinOutput(ParserBin &parser) : parser(parser) {

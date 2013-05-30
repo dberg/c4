@@ -375,6 +375,11 @@ struct CodeAttribute {
   std::vector<spExceptionInfo> exceptions;
   u2 attributes_count;
   std::vector<spAttributeInfo> attributes;
+
+  // lookupswitch is a variable-length instruction and it needs the byte
+  // position for padding. We store the index of the first code byte found
+  // in the .class file.
+  unsigned long codeIdxGlobal;
 };
 
 struct ExceptionInfo {

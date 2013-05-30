@@ -222,61 +222,16 @@ void BinOutput::buildAttributeCode(spAttributeInfo &attribute) {
 void BinOutput::buildCodeAttribute(spCodeAttribute &code) {
   out << "max_stack " << code->max_stack << " max_locals " << code->max_locals
     << std::endl;
-  buildCode(code->code);
+  buildCode(code->code, code->codeIdxGlobal);
   out << std::endl;
   // TODO:
   // exceptions
   // attributes
 }
 
-void BinOutput::buildCode(std::vector<u1> &code) {
-  for (u4 i = 0; i < code.size(); i++) {
-    u1 opcode = code[i];
-    PairOpNameAndType pair = opcodes.info[opcode];
-    std::string label = pair.first;
-    OperandType type = pair.second;
-    switch (type) {
-    case OPERAND_NONE:
-      out << label << std::endl;
-      break;
-    case OPERAND_1BYTE:
-      out << label << " " << (unsigned) code[++i] << std::endl;
-      break;
-    case OPERAND_2BYTES:
-      out << label << " " << ((code[++i] << 8) | code[++i]) << std::endl;
-      break;
-    case OPERAND_IINC:
-      out << label << " " << (unsigned) code[++i] << " "
-        << (unsigned) code[++i] << std::endl;
-      break;
-    case OPERAND_MULTIANEWARRAY:
-      out << label << " " << ((code[++i] << 8) | code[++i]) << " "
-        << (unsigned) code[++i] << std::endl;
-      break;
-    case OPERAND_4BYTES:
-      out << label << " "
-        << ((code[++i] << 24) | (code[++i] << 16)
-        | (code[++i] << 8) | code[++i]) << std::endl;
-      break;
-    case OPERAND_INVOKE_DYNAMIC:
-      out << "TODO!" << std::endl;
-      break;
-    case OPERAND_INVOKE_INTERFACE:
-      out << "TODO!" << std::endl;
-      break;
-    case OPERAND_WIDE:
-      out << "TODO!" << std::endl;
-      break;
-    case OPERAND_LOOKUPSWITCH:
-      out << "TODO!" << std::endl;
-      break;
-    case OPERAND_TABLESWITCH:
-      out << "TODO!" << std::endl;
-      break;
-    default:
-      out << "ERROR" << std::endl;
-    }
-  }
+void BinOutput::buildCode(std::vector<u1> &code, unsigned long codeIdxGlobal) {
+  BinOutputCode outCode(code, codeIdxGlobal, out);
+  outCode.build();
 }
 
 } // namespace

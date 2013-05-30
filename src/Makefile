@@ -65,6 +65,7 @@ directories:
 # main djp
 $(bin)/djp: $(obj)/CmdInput.o \
             $(obj)/BinOutput.o \
+            $(obj)/BinOutputCode.o \
             $(obj)/EmacsOutput.o \
             $(obj)/SourceCodeStream.o \
             $(obj)/SymbolTable.o \
@@ -72,6 +73,7 @@ $(bin)/djp: $(obj)/CmdInput.o \
             $(obj)/libdjp.a
 	$(CXX) $(obj)/CmdInput.o \
                $(obj)/BinOutput.o \
+               $(obj)/BinOutputCode.o \
                $(obj)/EmacsOutput.o \
                $(CFLAGS) $(INC) $(obj)/djp.o -o $@ $(obj)/libdjp.a
 
@@ -82,6 +84,10 @@ $(obj)/CmdInput.o: $(libdir)/CmdInput.cpp $(incdir)/djp/CmdInput.h
 $(obj)/BinOutput.o: $(libdir)/BinOutput.cpp \
                     $(incdir)/djp/BinOutput.h \
                     $(incdir)/djp/ParserBin.h
+	$(CXX) $(CFLAGS) $(INC) -c $< -o $@
+
+$(obj)/BinOutputCode.o: $(libdir)/BinOutputCode.cpp \
+                        $(incdir)/djp/BinOutputCode.h
 	$(CXX) $(CFLAGS) $(INC) -c $< -o $@
 
 $(obj)/EmacsOutput.o: $(libdir)/EmacsOutput.cpp \

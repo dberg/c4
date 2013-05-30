@@ -363,6 +363,7 @@ void ParserBin::parseCodeAttribute(spCodeAttribute &code) {
   u4 code_length = getU4();
   code->code_length = code_length;
 
+  code->codeIdxGlobal = pos;
   code->code.reserve(code_length);
   for (u4 i = 0; i < code_length; i++) {
     code->code.push_back(getU1());
