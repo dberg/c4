@@ -13,52 +13,67 @@ u2 BinOutputCode::getCodeU2() {
   return (code[++idx] << 8) | code[++idx];
 }
 
+std::string BinOutputCode::codeIdxInfo(size_t maxLineWidth) {
+  std::stringstream idxColon;
+  idxColon << "  " << idx << ":";
+
+  std::stringstream idxWithFillIn;
+  idxWithFillIn << std::left << std::setw(maxLineWidth + 4)
+    << std::setfill(' ') << idxColon.str();
+
+  return idxWithFillIn.str();
+}
+
 void BinOutputCode::build() {
+  std::stringstream ss; ss << code.size();
+  size_t maxLineWidth = ss.str().size();
+
   for (idx = 0; idx < code.size(); idx++) {
     u1 opcode = code[idx];
     PairOpNameAndType pair = opcodes.info[opcode];
     std::string label = pair.first;
     OperandType type = pair.second;
+
+    out << codeIdxInfo(maxLineWidth) << label << " ";
+
     switch (type) {
     case OPERAND_NONE:
-      out << label << std::endl;
+      out << std::endl;
       break;
     case OPERAND_1BYTE:
-      out << label << " " << (unsigned) code[++idx] << std::endl;
+      out << (unsigned) code[++idx] << std::endl;
       break;
     case OPERAND_2BYTES:
-      out << label << " " << getCodeU2() << std::endl;
+      out << getCodeU2() << std::endl;
       break;
     case OPERAND_IINC:
-      out << label << " "
-          << (unsigned) code[++idx] << " "
-          << (unsigned) code[++idx] << std::endl;
+      out << (unsigned) code[++idx] << " "
+        << (unsigned) code[++idx] << std::endl;
       break;
     case OPERAND_MULTIANEWARRAY:
-      out << label << " " << getCodeU2() << " "
+      out << getCodeU2() << " "
           << (unsigned) code[++idx] << std::endl;
       break;
     case OPERAND_4BYTES:
-      out << label << " " << getCodeU4() << std::endl;
+      out << getCodeU4() << std::endl;
       break;
     case OPERAND_INVOKE_DYNAMIC:
-      out << label << " " <<  getCodeU2() << " "
+      out <<  getCodeU2() << " "
           << (unsigned) code[++idx] << " "
           << (unsigned) code[++idx] << std::endl;
       break;
     case OPERAND_INVOKE_INTERFACE:
-      out << label << " " << getCodeU2() << " "
+      out << getCodeU2() << " "
           << (unsigned) code[++idx]
           << (unsigned) code[++idx] << std::endl;
       break;
 
     case OPERAND_WIDE: {
-      out << label << " ";
       u1 wideOpcode = code[++idx];
       if (isWideFormat1(wideOpcode)) {
         // format 1
         PairOpNameAndType widePair = opcodes.info[wideOpcode];
-        out << widePair.first << ((code[++idx] << 8) | code[++idx]) << std::endl;
+        out << widePair.first << getCodeU2() << std::endl;
       } else if (wideOpcode == 0x84 /*iinc*/) {
         // format 2
         out << "iinc " << ((code[++idx] << 8) | code[++idx]) << " "
@@ -72,12 +87,10 @@ void BinOutputCode::build() {
     }
 
     case OPERAND_LOOKUPSWITCH: {
-      out << label;
-
       u4 switchIdxLocal = idx;
       unsigned long switchIdxGlobal = codeIdxGlobal + switchIdxLocal;
       int padding = (switchIdxGlobal % 4) ? (4 - (switchIdxGlobal % 4)) : 0;
-      out << " padding " << padding;
+      out << "padding " << padding;
       for (int p = 1; p <= padding; p++) { ++idx; }
 
       unsigned long defaultGoto = getCodeU4() + switchIdxLocal;
@@ -87,10 +100,12 @@ void BinOutputCode::build() {
       for (u4 j = 0; j < npairs; j++) {
         unsigned long caseLabel = getCodeU4();
         unsigned long caseGoto = getCodeU4() + switchIdxLocal;
-        out << "  pair_" << (j + 1) << " "
+        out << std::setw(maxLineWidth + 8) << std::setfill(' ') << " "
             << caseLabel << ": " << caseGoto << std::endl;
       }
-      out << "  default: " << defaultGoto << std::endl;
+
+      out << std::setw(maxLineWidth + 8) << std::setfill(' ') << " "
+        << "default: " << defaultGoto << std::endl;
 
       break;
     }

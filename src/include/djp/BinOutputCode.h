@@ -1,6 +1,7 @@
 //-*- C++ -*-
 #ifndef __BIN_OUTPUT_CODE_H__
 #define __BIN_OUTPUT_CODE_H__
+#include <iomanip>
 #include <iostream>
 #include <sstream>
 #include "djp/ASTBin.h"
@@ -20,6 +21,8 @@ class BinOutputCode {
 
   u4 getCodeU4();
   u2 getCodeU2();
+
+  std::string codeIdxInfo(size_t maxLineWidth);
 
 public:
   BinOutputCode(std::vector<u1> &code, unsigned long codeIdxGlobal,

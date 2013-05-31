@@ -165,7 +165,9 @@ void BinOutput::buildClassInfo() {
 }
 
 void BinOutput::buildMethods() {
-  out << "Methods count " << parser.classFile->methods_count << std::endl;
+  out << "Methods count " << parser.classFile->methods_count
+    << std::endl << std::endl;
+
   std::vector<spMethodInfo> &methods = parser.classFile->methods;
   for (u2 i = 0; i < methods.size(); i++) {
     buildMethod(methods[i]);
