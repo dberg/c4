@@ -29,7 +29,7 @@ CXX11FLAGS ?= -std=c++11
 
 # Release type
 ifeq ($(BUILDTYPE),Release)
-    CFLAGS = -Wall -Wextra -O3 $(CXX11FLAGS)
+    CFLAGS = -Wall -Wextra -Os $(CXX11FLAGS)
 else
     CFLAGS = -Wall -Wextra -g3 $(CXX11FLAGS)
 endif
