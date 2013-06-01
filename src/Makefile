@@ -173,15 +173,15 @@ $(bin)/tests: test-classes \
               $(gtest_obj)/libgtest.a
 
 	$(CXX) $(CXXTESTFLAGS) $(INC) -I$(gtest_inc) $(obj)/EmacsOutput.o \
-                                     $(test_libdir)/EmacsOutputTest.cpp \
-                                     $(test_libdir)/IndentationTest.cpp \
-                                     $(test_libdir)/ParserTest.cpp \
-                                     $(test_libdir)/ParserBinTest.cpp \
-                                     $(test_libdir)/SymbolTableTest.cpp \
-                                     -o $@ \
-                                     $(obj)/libdjp.a \
-                                     $(gtest_obj)/libgtest.a \
-                                     -lpthread
+                                      $(test_libdir)/EmacsOutputTest.cpp \
+                                      $(test_libdir)/IndentationTest.cpp \
+                                      $(test_libdir)/ParserTest.cpp \
+                                      $(test_libdir)/ParserBinTest.cpp \
+                                      $(test_libdir)/SymbolTableTest.cpp \
+                                      -o $@ \
+                                      $(obj)/libdjp.a \
+                                      $(gtest_obj)/libgtest.a \
+                                      -lpthread -ldl
 
 $(gtest_obj)/libgtest.a: $(gtest_obj)/gtest-all.o
 	ar -rv $@ $<
