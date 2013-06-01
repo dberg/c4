@@ -357,7 +357,7 @@ int Lexer::getEqualsToken() {
 ///   \"
 ///   \'
 ///   \\
-///   OctalEscape /* \u0000 to \u00ff: from octal value */
+///   OctalEscape \u0000 to \u00ff: from octal value
 ///
 /// OctalEscape:
 ///   \ OctalDigit

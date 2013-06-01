@@ -18,15 +18,15 @@ u1 ParserBin::getU1() {
 }
 
 u2 ParserBin::getU2() {
-  u2 bytes = (buffer[pos++] << 8) | buffer[pos++];
+  u2 bytes = (getU1() << 8) | getU1();
   return bytes;
 }
 
 u4 ParserBin::getU4() {
-  u4 bytes = (buffer[pos++] << 24)
-    | (buffer[pos++] << 16)
-    | (buffer[pos++] << 8)
-    | buffer[pos++];
+  u4 bytes = (getU1() << 24)
+    | (getU1() << 16)
+    | (getU1() << 8)
+    | getU1();
   return bytes;
 }
 

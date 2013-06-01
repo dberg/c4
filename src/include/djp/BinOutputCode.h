@@ -21,6 +21,7 @@ class BinOutputCode {
 
   u4 getCodeU4();
   u2 getCodeU2();
+  u1 getCodeU1();
 
   std::string codeIdxInfo(size_t maxLineWidth);
 

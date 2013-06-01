@@ -3,14 +3,21 @@
 namespace djp {
 
 u4 BinOutputCode::getCodeU4() {
-  return ((code[++idx] << 24)
-    | (code[++idx] << 16)
-    | (code[++idx] << 8)
-    | code[++idx]);
+  u4 result = getCodeU1() << 24;
+  result |= getCodeU1() << 16;
+  result |= getCodeU1() << 8;
+  result |= getCodeU1();
+  return result;
 }
 
 u2 BinOutputCode::getCodeU2() {
-  return (code[++idx] << 8) | code[++idx];
+  u2 result = getCodeU1() << 8;
+  result |= getCodeU1();
+  return result;
+}
+
+u1 BinOutputCode::getCodeU1() {
+  return code[++idx];
 }
 
 std::string BinOutputCode::codeIdxInfo(size_t maxLineWidth) {
@@ -41,43 +48,39 @@ void BinOutputCode::build() {
       out << std::endl;
       break;
     case OPERAND_1BYTE:
-      out << (unsigned) code[++idx] << std::endl;
+      out << (unsigned) getCodeU1() << std::endl;
       break;
     case OPERAND_2BYTES:
       out << getCodeU2() << std::endl;
       break;
     case OPERAND_IINC:
-      out << (unsigned) code[++idx] << " "
-        << (unsigned) code[++idx] << std::endl;
+      out << (unsigned) getCodeU1() << " "
+        << (unsigned) getCodeU1() << std::endl;
       break;
     case OPERAND_MULTIANEWARRAY:
-      out << getCodeU2() << " "
-          << (unsigned) code[++idx] << std::endl;
+      out << getCodeU2() << " " << (unsigned) getCodeU1() << std::endl;
       break;
     case OPERAND_4BYTES:
       out << getCodeU4() << std::endl;
       break;
     case OPERAND_INVOKE_DYNAMIC:
-      out <<  getCodeU2() << " "
-          << (unsigned) code[++idx] << " "
-          << (unsigned) code[++idx] << std::endl;
+      out <<  getCodeU2() << " " << (unsigned) getCodeU1() << " "
+        << (unsigned) getCodeU1() << std::endl;
       break;
     case OPERAND_INVOKE_INTERFACE:
-      out << getCodeU2() << " "
-          << (unsigned) code[++idx]
-          << (unsigned) code[++idx] << std::endl;
+      out << getCodeU2() << " " << (unsigned) getCodeU1() << " "
+        << (unsigned) getCodeU1() << std::endl;
       break;
 
     case OPERAND_WIDE: {
-      u1 wideOpcode = code[++idx];
+      u1 wideOpcode = getCodeU1();
       if (isWideFormat1(wideOpcode)) {
         // format 1
         PairOpNameAndType widePair = opcodes.info[wideOpcode];
         out << widePair.first << getCodeU2() << std::endl;
       } else if (wideOpcode == 0x84 /*iinc*/) {
         // format 2
-        out << "iinc " << ((code[++idx] << 8) | code[++idx]) << " "
-          << ((code[++idx] << 8) | code[++idx]) << std::endl;
+        out << "iinc " << getCodeU2() << " " << getCodeU2() << std::endl;
       } else {
         // error
         out << "ERROR!" << std::endl;
