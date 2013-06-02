@@ -91,7 +91,7 @@ void BinOutputCode::build() {
 
     case OPERAND_LOOKUPSWITCH: {
       unsigned switchStart = idx;
-      idx = ((idx + 3) & ~3) - 1;
+      idx += 3 - (idx & 3);
       out << "padding " << idx - switchStart;
 
       unsigned long defaultGoto = getCodeU4() + switchStart;
