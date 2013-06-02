@@ -111,9 +111,28 @@ void BinOutputCode::build() {
       break;
     }
 
-    case OPERAND_TABLESWITCH:
-      out << "TODO!" << std::endl;
+    case OPERAND_TABLESWITCH: {
+      unsigned switchStart = idx;
+      idx += 3 - (idx & 3);
+      out << "padding " << idx - switchStart;
+
+      unsigned long defaultGoto = getCodeU4() + switchStart;
+      unsigned long lowByte = getCodeU4();
+      unsigned long highByte = getCodeU4();
+      out << " " << lowByte << " to " << highByte << std::endl;
+
+      for (unsigned long i = lowByte; i <= highByte; i++) {
+        unsigned long jumpOffset = getCodeU4() + switchStart;
+        out << std::setw(maxLineWidth + 8) << std::setfill(' ') << " "
+            << i << ": " << jumpOffset << std::endl;
+      }
+
+      out << std::setw(maxLineWidth + 8) << std::setfill(' ') << " "
+        << "default: " << defaultGoto << std::endl;
+
       break;
+    }
+
     default:
       out << "ERROR" << std::endl;
     }
