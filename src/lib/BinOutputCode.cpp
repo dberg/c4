@@ -90,19 +90,17 @@ void BinOutputCode::build() {
     }
 
     case OPERAND_LOOKUPSWITCH: {
-      u4 switchIdxLocal = idx;
-      unsigned long switchIdxGlobal = codeIdxGlobal + switchIdxLocal;
-      int padding = (switchIdxGlobal % 4) ? (4 - (switchIdxGlobal % 4)) : 0;
-      out << "padding " << padding;
-      for (int p = 1; p <= padding; p++) { ++idx; }
+      unsigned switchStart = idx;
+      idx = ((idx + 3) & ~3) - 1;
+      out << "padding " << idx - switchStart;
 
-      unsigned long defaultGoto = getCodeU4() + switchIdxLocal;
+      unsigned long defaultGoto = getCodeU4() + switchStart;
 
       u4 npairs = getCodeU4();
       out << " npairs " << npairs << std::endl;
       for (u4 j = 0; j < npairs; j++) {
         unsigned long caseLabel = getCodeU4();
-        unsigned long caseGoto = getCodeU4() + switchIdxLocal;
+        unsigned long caseGoto = getCodeU4() + switchStart;
         out << std::setw(maxLineWidth + 8) << std::setfill(' ') << " "
             << caseLabel << ": " << caseGoto << std::endl;
       }
