@@ -14,7 +14,6 @@ bool isWideFormat1(u1 opcode);
 class BinOutputCode {
   std::vector<u1> &code;
   u4 idx; // index inside the code vector
-  unsigned long codeIdxGlobal; // idx of first byte relative to the .class file
   std::stringstream &out;
 
   OpCodes opcodes;
@@ -26,9 +25,8 @@ class BinOutputCode {
   std::string codeIdxInfo(size_t maxLineWidth);
 
 public:
-  BinOutputCode(std::vector<u1> &code, unsigned long codeIdxGlobal,
-    std::stringstream &out)
-    : code(code), idx(0), codeIdxGlobal(codeIdxGlobal), out(out) {}
+  BinOutputCode(std::vector<u1> &code, std::stringstream &out)
+    : code(code), idx(0), out(out) {}
   void build();
 };
 

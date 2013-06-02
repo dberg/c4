@@ -44,7 +44,7 @@ class BinOutput {
   void buildAttributes(std::vector<spAttributeInfo> &attributes);
   void buildAttributeCode(spAttributeInfo &attribute);
   void buildCodeAttribute(spCodeAttribute &code);
-  void buildCode(std::vector<u1> &code, unsigned long codeIdxGlobal);
+  void buildCode(std::vector<u1> &code);
 
 public:
   BinOutput(ParserBin &parser) : parser(parser) {

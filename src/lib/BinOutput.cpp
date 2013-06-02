@@ -224,15 +224,15 @@ void BinOutput::buildAttributeCode(spAttributeInfo &attribute) {
 void BinOutput::buildCodeAttribute(spCodeAttribute &code) {
   out << "max_stack " << code->max_stack << " max_locals " << code->max_locals
     << std::endl;
-  buildCode(code->code, code->codeIdxGlobal);
+  buildCode(code->code);
   out << std::endl;
   // TODO:
   // exceptions
   // attributes
 }
 
-void BinOutput::buildCode(std::vector<u1> &code, unsigned long codeIdxGlobal) {
-  BinOutputCode outCode(code, codeIdxGlobal, out);
+void BinOutput::buildCode(std::vector<u1> &code) {
+  BinOutputCode outCode(code, out);
   outCode.build();
 }
 
