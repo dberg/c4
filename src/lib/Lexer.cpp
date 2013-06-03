@@ -302,7 +302,8 @@ int Lexer::getCommentOrDivToken() {
     spComment comment = spComment(new Comment);
     comment->opt = Comment::OPT_ONE_LINE;
     comment->posIni = getCursor() - 1;
-    char c = src->getChar(); // consume 2nd '/'
+    src->getChar(); // consume 2nd '/'
+    char c;
     while ((c = src->getChar()) && c != '\n') ;
     comment->posEnd = getCursor() - 1;
     comments.push_back(comment);
@@ -318,7 +319,8 @@ int Lexer::getCommentOrDivToken() {
     comment->posIni = getCursor() - 1;
 
     int offset = src->peekChar(1) == '*' ? 1 : 0; // javadoc offset
-    char c = src->getChar(); // consume '*'
+    src->getChar(); // consume '*'
+    char c;
     while ((c = src->getChar())) {
       if (c == '\n') {
         addIndentation(indentMap, src->getLine(),
