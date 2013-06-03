@@ -2,9 +2,9 @@
 
 namespace djp {
 
-///-----------------------------------------------------------------------------
-/// Helpers
-///-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+// Helpers
+//-----------------------------------------------------------------------------
 bool isBinaryDigit(char c) {
   return (c == '0' || c == '1');
 }
@@ -45,9 +45,9 @@ bool isSign(char c) {
   return (c == '+' || c == '-');
 }
 
-///-----------------------------------------------------------------------------
-/// LiteralSupport Class
-///-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+// LiteralSupport Class
+//-----------------------------------------------------------------------------
 int LiteralSupport::getLiteralNumber(char c, std::stringstream &ss) {
   if (c == '0') {
     return getTokWithLeadingZero(ss);
@@ -57,10 +57,12 @@ int LiteralSupport::getLiteralNumber(char c, std::stringstream &ss) {
   return getDecimalNumeralOrDecimalFloatingPoint(c, ss);
 }
 
-/// We handle the special case of the production rule:
-/// Digits ExponentPart(opt) FloatTypeSuffix(opt)
-/// The strings tream already have '.' at this point and we know by
-/// previously peeking ahead that we have at least one digit.
+/**
+ * We handle the special case of the production rule:
+ * Digits ExponentPart(opt) FloatTypeSuffix(opt)
+ * The strings tream already have '.' at this point and we know by
+ * previously peeking ahead that we have at least one digit.
+ */
 int LiteralSupport::getDecimalFloatingPointStartingWithAPeriod(
   std::stringstream &ss) {
 
@@ -80,10 +82,12 @@ int LiteralSupport::getDecimalFloatingPointStartingWithAPeriod(
   return TOK_DECIMAL_FLOATING_POINT_LITERAL;
 }
 
-/// We identify a DecimalLiteral and the possibility of promoting it to a
-/// FloatingPointLiteral. We leave the floating point production rule that
-/// starts with a period to be parsed by its own method.
-/// See getDecimalFloatingPointStartingWithAPeriod.
+/**
+ * We identify a DecimalLiteral and the possibility of promoting it to a
+ * FloatingPointLiteral. We leave the floating point production rule that
+ * starts with a period to be parsed by its own method.
+ * See getDecimalFloatingPointStartingWithAPeriod.
+ */
 int LiteralSupport::getDecimalNumeralOrDecimalFloatingPoint(
   char previous_c, std::stringstream &ss) {
 
@@ -144,13 +148,15 @@ int LiteralSupport::getDecimalNumeralOrDecimalFloatingPoint(
   return TOK_DECIMAL_FLOATING_POINT_LITERAL;
 }
 
-/// ----------------------------------------------------------------------------
-/// Integer Literal
-/// ----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
+// Integer Literal
+// ----------------------------------------------------------------------------
 
-/// The string stream contains the value '0b' or '0B'.
-/// Returns TOK_BINARY_NUMERAL | TOK_BINARY_NUMERAL_WITH_INT_TYPE_SUFFIX |
-/// TOK_ERROR.
+/**
+ * The string stream contains the value '0b' or '0B'.
+ * Returns TOK_BINARY_NUMERAL | TOK_BINARY_NUMERAL_WITH_INT_TYPE_SUFFIX |
+ * TOK_ERROR.
+ */
 int LiteralSupport::getBinaryNumeral(std::stringstream &ss) {
   // Lookahead and confirm that we have valid binary digit.
   char c = src->getChar();
@@ -175,7 +181,9 @@ int LiteralSupport::getBinaryNumeral(std::stringstream &ss) {
   return TOK_BINARY_NUMERAL;
 }
 
-/// Returns TOK_DECIMAL_NUMERAL | TOK_DECIMAL_NUMERAL_WITH_INT_TYPE_SUFFIX
+/**
+ * Returns TOK_DECIMAL_NUMERAL | TOK_DECIMAL_NUMERAL_WITH_INT_TYPE_SUFFIX
+ */
 int LiteralSupport::getDecimalNumeral(std::stringstream &ss) {
   consumeDigitsPOrUnderscores(ss, isDecimalDigit);
 
@@ -189,12 +197,14 @@ int LiteralSupport::getDecimalNumeral(std::stringstream &ss) {
   return TOK_DECIMAL_NUMERAL;
 }
 
-/// The string stream contains the value '0x' or '0X'.
-/// Returns
-/// TOK_HEX_NUMERAL
-/// TOK_HEX_NUMERAL_WITH_INT_TYPE_SUFFIX
-/// TOK_HEXADECIMAL_FLOATING_POINT_LITERAL
-/// TOK_ERROR
+/**
+ * The string stream contains the value '0x' or '0X'.
+ * Returns
+ * TOK_HEX_NUMERAL
+ * TOK_HEX_NUMERAL_WITH_INT_TYPE_SUFFIX
+ * TOK_HEXADECIMAL_FLOATING_POINT_LITERAL
+ * TOK_ERROR
+ */
 int LiteralSupport::getHexNumeral(std::stringstream &ss) {
   // We save the start position of the numeral for error diagnosis.
   int start = src->getCursor() - 2;
@@ -275,7 +285,9 @@ int LiteralSupport::getHexNumeral(std::stringstream &ss) {
   return TOK_HEXADECIMAL_FLOATING_POINT_LITERAL;
 }
 
-/// Returns TOK_OCTAL_NUMERAL | TOK_OCTAL_NUMERAL_WITH_INT_TYPE_SUFFIX
+/**
+ * Returns TOK_OCTAL_NUMERAL | TOK_OCTAL_NUMERAL_WITH_INT_TYPE_SUFFIX
+ */
 int LiteralSupport::getOctalNumeral(std::stringstream &ss) {
   consumeDigitsPOrUnderscores(ss, isOctalDigit);
 
@@ -293,9 +305,11 @@ int LiteralSupport::getOctalNumeral(std::stringstream &ss) {
 // Helpers
 // -----------------------------------------------------------------------------
 
-/// We consume any digits or underscores while making sure that the end of the
-/// stream contains a digit.
-/// Returns the count of chars consumed.
+/**
+ * We consume any digits or underscores while making sure that the end of the
+ * stream contains a digit.
+ * Returns the count of chars consumed.
+ */
 int LiteralSupport::consumeDigitsPOrUnderscores(
   std::stringstream &ss, bool (*fnDigitP) (char)) {
 
@@ -329,11 +343,13 @@ int LiteralSupport::consumeDigitsPOrUnderscores(
   return src->getMarkOffset();
 }
 
-/// ExponentPart: ExponentIndicator SignedInteger
-/// ExponentIndicator: one of e E
-/// SignedInteger: Sign(opt) Digits
-/// Sign: one of + -
-/// Returns the count of chars consumed.
+/**
+ * ExponentPart: ExponentIndicator SignedInteger
+ * ExponentIndicator: one of e E
+ * SignedInteger: Sign(opt) Digits
+ * Sign: one of + -
+ * Returns the count of chars consumed.
+ */
 int LiteralSupport::consumeExponentPart(std::stringstream &ss) {
   src->mark();
   ss << src->getChar(); // consume ExponentIndicator

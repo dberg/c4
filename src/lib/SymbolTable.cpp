@@ -15,7 +15,9 @@ void ST::addSym(int type, unsigned pos, unsigned end, unsigned line,
   }
 }
 
-/// We match the identifier name with our current scope name.
+/**
+ * We match the identifier name with our current scope name.
+ */
 bool ST::isConstructor(const std::string identifier) {
   // If the current scope is of type ST_MEMBER_DECL the previous scope should be
   // of type ST_CLASS or ST_ENUM. Given that the first scope is a compilation

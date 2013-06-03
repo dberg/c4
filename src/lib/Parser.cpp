@@ -123,9 +123,11 @@ bool isClassOrInterfaceDeclarationCandidate(int token) {
   return false;
 }
 
-/// ClassModifier: one of
-///   Annotation public protected private
-///   abstract static final strictfp
+/*
+ * ClassModifier: one of
+ *   Annotation public protected private
+ *   abstract static final strictfp
+ */
 bool isClassOrInterfaceModifier(int token) {
   if (TOK_ANNOTATION == token
     || TOK_KEY_PUBLIC == token
@@ -141,22 +143,24 @@ bool isClassOrInterfaceModifier(int token) {
   return false;
 }
 
-/// ConstructorModifier: one of
-///   Annotation public protected private
-///
-/// Modifier:
-///   Annotation
-///   public
-///   protected
-///   private
-///   static
-///   abstract
-///   final
-///   native
-///   synchronized
-///   transient
-///   volatile
-///   strictfp
+/*
+ * ConstructorModifier: one of
+ *   Annotation public protected private
+ *
+ * Modifier:
+ *   Annotation
+ *   public
+ *   protected
+ *   private
+ *   static
+ *   abstract
+ *   final
+ *   native
+ *   synchronized
+ *   transient
+ *   volatile
+ *   strictfp
+ */
 bool isModifierToken(int token) {
   if (TOK_KEY_PUBLIC == token
     || TOK_KEY_PROTECTED == token
@@ -301,7 +305,9 @@ void Parser::restoreState(State &state) {
   lexer->restoreState(state);
 }
 
-/// Annotation: @ QualifiedIdentifier [ ( [AnnotationElement] ) ]
+/*
+ * Annotation: @ QualifiedIdentifier [ ( [AnnotationElement] ) ]
+ */
 spAnnotation Parser::parseAnnotation() {
   spAnnotation annotation = spAnnotation(new Annotation);
   annotation->posTokAt = lexer->getCursor() - 1;
@@ -347,7 +353,9 @@ spAnnotation Parser::parseAnnotation() {
   return annotation;
 }
 
-/// AnnotationElement: ElementValuePairs | ElementValue
+/**
+ * AnnotationElement: ElementValuePairs | ElementValue
+ */
 void Parser::parseAnnotationElement(spAnnotationElement &elem) {
   // ElementValuePairs
   parseElementValuePairs(elem->pairs);
@@ -362,9 +370,11 @@ void Parser::parseAnnotationElement(spAnnotationElement &elem) {
   parseElementValue(elem->value);
 }
 
-/// AnnotationMethodOrConstantRest:
-///   AnnotationMethodRest
-///   ConstantDeclaratorsRest
+/**
+ * AnnotationMethodOrConstantRest:
+ *   AnnotationMethodRest
+ *   ConstantDeclaratorsRest
+ */
 void Parser::parseAnnotationMethodOrConstantRest(
   spAnnotationMethodOrConstantRest &methodOrConstRest) {
 
@@ -402,8 +412,10 @@ void Parser::parseAnnotationMethodOrConstantRest(
   methodOrConstRest->addErr(-1);
 }
 
-/// AnnotationMethodRest:
-///   '()' ['[]'] [default ElementValue]
+/**
+ * AnnotationMethodRest:
+ *   '()' ['[]'] [default ElementValue]
+ */
 void Parser::parseAnnotationMethodRest(spAnnotationMethodRest &methRest) {
   // '('
   if (lexer->getCurToken() != TOK_LPAREN) {
@@ -453,7 +465,9 @@ void Parser::parseAnnotationMethodRest(spAnnotationMethodRest &methRest) {
   }
 }
 
-/// Annotations.
+/**
+ * Annotations.
+ */
 void Parser::parseAnnotations(std::vector<spAnnotation> &annotations) {
   while (lexer->getCurToken() == TOK_ANNOTATION) {
     spAnnotation annotation = parseAnnotation();
@@ -461,8 +475,10 @@ void Parser::parseAnnotations(std::vector<spAnnotation> &annotations) {
   }
 }
 
-/// AnnotationTypeBody:
-///   [AnnotationTypeElementDeclarations]
+/**
+ * AnnotationTypeBody:
+ *   [AnnotationTypeElementDeclarations]
+ */
 void Parser::parseAnnotationTypeBody(spAnnotationTypeBody &annTypeBody) {
   annTypeBody->elemDecls = spAnnotationTypeElementDeclarations(
     new AnnotationTypeElementDeclarations);
@@ -484,8 +500,10 @@ void Parser::parseAnnotationTypeBody(spAnnotationTypeBody &annTypeBody) {
   }
 }
 
-/// AnnotationTypeDeclaration:
-///   @ interface Identifier AnnotationTypeBody
+/**
+ * AnnotationTypeDeclaration:
+ *   @ interface Identifier AnnotationTypeBody
+ */
 void Parser::parseAnnotationTypeDeclaration(
   spAnnotationTypeDeclaration &annotationDecl) {
 
@@ -520,8 +538,10 @@ void Parser::parseAnnotationTypeDeclaration(
   }
 }
 
-/// AnnotationTypeElementDeclaration:
-///   {Modifier} AnnotationTypeElementRest
+/**
+ * AnnotationTypeElementDeclaration:
+ *   {Modifier} AnnotationTypeElementRest
+ */
 void Parser::parseAnnotationTypeElementDeclaration(
   spAnnotationTypeElementDeclaration &elemDecl) {
 
@@ -536,12 +556,14 @@ void Parser::parseAnnotationTypeElementDeclaration(
   }
 }
 
-/// AnnotationTypeElementRest:
-///   (1) Type Identifier AnnotationMethodOrConstantRest ;
-///   (2) ClassDeclaration
-///   (3) InterfaceDeclaration
-///   (4) EnumDeclaration
-///   (5) AnnotationTypeDeclaration
+/**
+ * AnnotationTypeElementRest:
+ *   (1) Type Identifier AnnotationMethodOrConstantRest ;
+ *   (2) ClassDeclaration
+ *   (3) InterfaceDeclaration
+ *   (4) EnumDeclaration
+ *   (5) AnnotationTypeDeclaration
+ */
 void Parser::parseAnnotationTypeElementRest(
   spAnnotationTypeElementRest &elemRest) {
 
@@ -633,7 +655,9 @@ void Parser::parseAnnotationTypeElementRest(
   elemRest->addErr(-1);
 }
 
-/// Arguments: '(' [ Expression { , Expression }] ')'
+/**
+ * Arguments: '(' [ Expression { , Expression }] ')'
+ */
 void Parser::parseArguments(spArguments &args) {
   if (lexer->getCurToken() != TOK_LPAREN) {
     args->addErr(diag->addErr(ERR_EXP_ARGUMENTS, lexer->getCursor() - 1));
@@ -684,12 +708,14 @@ void Parser::parseArguments(spArguments &args) {
     lexer->getCurTokenIni(), lexer->getCursor()));
 }
 
-/// ArrayCreatorRest:
-///   '['
-///     ( ']' { '[]' } ArrayInitializer |
-///       Expression ']' { '[' Expression ']' } { '[]' } )
-///
-/// Non-terminals are enclosed in square brackets.
+/**
+ * ArrayCreatorRest:
+ *   '['
+ *     ( ']' { '[]' } ArrayInitializer |
+ *       Expression ']' { '[' Expression ']' } { '[]' } )
+ *
+ * Non-terminals are enclosed in square brackets.
+ */
 void Parser::parseArrayCreatorRest(spArrayCreatorRest &arrayCreatorRest) {
   // We look ahead to decide if we have option 1 or option 2
   State openBracketState;
@@ -718,8 +744,10 @@ void Parser::parseArrayCreatorRest(spArrayCreatorRest &arrayCreatorRest) {
   }
 }
 
-/// ArrayCreatorRestOpt1:
-///   '[' ']' { '[]' } ArrayInitializer
+/**
+ * ArrayCreatorRestOpt1:
+ *   '[' ']' { '[]' } ArrayInitializer
+ */
 void Parser::parseArrayCreatorRestOpt1(spArrayCreatorRestOpt1 &opt1) {
   // Array Depth
   parseArrayDepth(opt1->arrayDepth);
@@ -741,8 +769,10 @@ void Parser::parseArrayCreatorRestOpt1(spArrayCreatorRestOpt1 &opt1) {
   if (opt1->arrayInitializer->err) { opt1->addErr(-1); }
 }
 
-/// ArrayCreatorRestOpt2:
-///   '[' Expression ']' { '[' Expression ']' } { '[]' }
+/**
+ * ArrayCreatorRestOpt2:
+ *   '[' Expression ']' { '[' Expression ']' } { '[]' }
+ */
 void Parser::parseArrayCreatorRestOpt2(spArrayCreatorRestOpt2 &opt2) {
   // '[' Expression ']'
   opt2->exprInBrackets = spExpressionInBrackets(new ExpressionInBrackets);
@@ -811,7 +841,9 @@ void Parser::parseArrayCreatorRestOpt2(spArrayCreatorRestOpt2 &opt2) {
   }
 }
 
-/// {[]}
+/**
+ * {[]}
+ */
 void Parser::parseArrayDepth(ArrayDepth &arrayDepth) {
   while (lexer->getCurToken() == TOK_LBRACKET) {
     State state;
@@ -834,8 +866,10 @@ void Parser::parseArrayDepth(ArrayDepth &arrayDepth) {
   }
 }
 
-/// ArrayInitializer:
-///   '{' [ VariableInitializer { , VariableInitializer } [,] ] '}'
+/**
+ * ArrayInitializer:
+ *   '{' [ VariableInitializer { , VariableInitializer } [,] ] '}'
+ */
 void Parser::parseArrayInitializer(spArrayInitializer &arrayInit) {
   // '{'
   if (lexer->getCurToken() != TOK_LCURLY_BRACKET) {
@@ -910,7 +944,9 @@ void Parser::parseArrayInitializer(spArrayInitializer &arrayInit) {
   lexer->getNextToken(); // consume '}'
 }
 
-/// ElementValue: Annotation | Expression1 | ElementValueArrayInitializer
+/**
+ * ElementValue: Annotation | Expression1 | ElementValueArrayInitializer
+ */
 void Parser::parseElementValue(spElementValue &value) {
   if (lexer->getCurToken() == TOK_ANNOTATION) {
     value->opt = ElementValue::OPT_ANNOTATION;
@@ -942,8 +978,10 @@ void Parser::parseElementValue(spElementValue &value) {
   value->addErr(-1);
 }
 
-/// ElementValues:
-///   ElementValue { , ElementValue }
+/**
+ * ElementValues:
+ *   ElementValue { , ElementValue }
+ */
 void Parser::parseElementValues(spElementValues &values) {
   values->elemVal = spElementValue(new ElementValue);
   parseElementValue(values->elemVal);
@@ -969,7 +1007,9 @@ void Parser::parseElementValues(spElementValues &values) {
   }
 }
 
-/// ElementValueArrayInitializer: '{' [ElementValues] [,] '}'
+/**
+ * ElementValueArrayInitializer: '{' [ElementValues] [,] '}'
+ */
 void Parser::parseElementValueArrayInitializer(
   spElementValueArrayInitializer &elemValArrayInit) {
 
@@ -1010,8 +1050,10 @@ void Parser::parseElementValueArrayInitializer(
   lexer->getNextToken(); // consume '}'
 }
 
-/// EnumBody:
-///   '{' [EnumConstants] [,] [EnumBodyDeclarations] '}'
+/**
+ * EnumBody:
+ *   '{' [EnumConstants] [,] [EnumBodyDeclarations] '}'
+ */
 void Parser::parseEnumBody(spEnumBody &enumBody) {
   // '{'
   if (lexer->getCurToken() != TOK_LCURLY_BRACKET) {
@@ -1061,8 +1103,10 @@ void Parser::parseEnumBody(spEnumBody &enumBody) {
   lexer->getNextToken(); // consume '}'
 }
 
-/// EnumBodyDeclarations:
-///   ; {ClassBodyDeclaration}
+/**
+ * EnumBodyDeclarations:
+ *   ; {ClassBodyDeclaration}
+ */
 void Parser::parseEnumBodyDeclarations(spEnumBodyDeclarations &bodyDecls) {
   // ';'
   if (lexer->getCurToken() != TOK_SEMICOLON) {
@@ -1077,8 +1121,10 @@ void Parser::parseEnumBodyDeclarations(spEnumBodyDeclarations &bodyDecls) {
   parseClassBodyDeclarationsHelper(bodyDecls->classBodyDecls);
 }
 
-/// EnumConstant:
-///   [Annotations] Identifier [Arguments] [ClassBody]
+/**
+ * EnumConstant:
+ *   [Annotations] Identifier [Arguments] [ClassBody]
+ */
 void Parser::parseEnumConstant(spEnumConstant &enumConst) {
   // [Annotations]
   parseAnnotations(enumConst->annotations);
@@ -1114,9 +1160,11 @@ void Parser::parseEnumConstant(spEnumConstant &enumConst) {
   }
 }
 
-/// EnumConstants:
-///   EnumConstant
-///   EnumConstants , EnumConstant
+/**
+ * EnumConstants:
+ *   EnumConstant
+ *   EnumConstants , EnumConstant
+ */
 void Parser::parseEnumConstants(spEnumConstants &enumConsts) {
   enumConsts->enumConst = spEnumConstant(new EnumConstant);
   parseEnumConstant(enumConsts->enumConst);
@@ -1142,8 +1190,10 @@ void Parser::parseEnumConstants(spEnumConstants &enumConsts) {
   }
 }
 
-/// EnumDeclaration:
-///   enum Identifier [implements TypeList] EnumBody
+/**
+ * EnumDeclaration:
+ *   enum Identifier [implements TypeList] EnumBody
+ */
 void Parser::parseEnumDeclaration(spEnumDeclaration &enumDecl) {
   // enum
   if (lexer->getCurToken() != TOK_KEY_ENUM) {
@@ -1192,7 +1242,9 @@ void Parser::parseEnumDeclaration(spEnumDeclaration &enumDecl) {
   }
 }
 
-/// Block: '{' BlockStatements '}'
+/**
+ * Block: '{' BlockStatements '}'
+ */
 void Parser::parseBlock(spBlock &block) {
   // '{'
   if (lexer->getCurToken() != TOK_LCURLY_BRACKET) {
@@ -1224,10 +1276,12 @@ void Parser::parseBlock(spBlock &block) {
   lexer->getNextToken(); // consume '}'
 }
 
-/// BlockStatement:
-///   LocalVariableDeclarationStatement
-///   ClassOrInterfaceDeclaration
-///   [Identifier :] Statement
+/**
+ * BlockStatement:
+ *   LocalVariableDeclarationStatement
+ *   ClassOrInterfaceDeclaration
+ *   [Identifier :] Statement
+ */
 void Parser::parseBlockStatement(spBlockStatement &blockStmt) {
   // LocalVariableDeclarationStatement
   State state;
@@ -1286,7 +1340,9 @@ void Parser::parseBlockStatement(spBlockStatement &blockStmt) {
   blockStmt->stmt = stmt;
 }
 
-/// BlockStatements: { BlockStatement }
+/**
+ * BlockStatements: { BlockStatement }
+ */
 void Parser::parseBlockStatements(std::vector<spBlockStatement> &blockStmts) {
   unsigned pos = 0;
   while (lexer->getCurToken() != TOK_RCURLY_BRACKET
@@ -1314,8 +1370,10 @@ void Parser::parseBooleanLiteral(spBooleanLiteral &boolLit) {
   lexer->getNextToken(); // consume 'true' or 'false'
 }
 
-/// Bound:
-///   ReferenceType { & ReferenceType }
+/**
+ * Bound:
+ *   ReferenceType { & ReferenceType }
+ */
 void Parser::parseBound(spBound &bound) {
   bound->refType = spReferenceType(new ReferenceType);
   parseReferenceType(bound->refType);
@@ -1339,8 +1397,10 @@ void Parser::parseBound(spBound &bound) {
   }
 }
 
-/// CatchClause:
-///   catch '(' {VariableModifier} CatchType Identifier ')' Block
+/**
+ * CatchClause:
+ *   catch '(' {VariableModifier} CatchType Identifier ')' Block
+ */
 void Parser::parseCatchClause(spCatchClause &catchClause) {
   // 'catch'
   if (lexer->getCurToken() != TOK_KEY_CATCH) {
@@ -1403,7 +1463,9 @@ void Parser::parseCatchClause(spCatchClause &catchClause) {
   }
 }
 
-/// Catches: CatchClause { CatchClause }
+/**
+ * Catches: CatchClause { CatchClause }
+ */
 void Parser::parseCatches(spCatches &catches) {
   catches->catchClause = spCatchClause(new CatchClause);
   parseCatchClause(catches->catchClause);
@@ -1423,7 +1485,9 @@ void Parser::parseCatches(spCatches &catches) {
   }
 }
 
-/// CatchType: QualifiedIdentifier { '|' QualifiedIdentifier }
+/**
+ * CatchType: QualifiedIdentifier { '|' QualifiedIdentifier }
+ */
 void Parser::parseCatchType(spCatchType &catchType) {
   // QualifiedIdentifier
   if (lexer->getCurToken() != TOK_IDENTIFIER) {
@@ -1460,11 +1524,13 @@ void Parser::parseCharacterLiteral(spCharacterLiteral &charLit) {
   lexer->getNextToken(); // consume character literal
 }
 
-/// Creator:
-///   NonWildcardTypeArguments CreatedName ClassCreatorRest
-///   CreatedName ( ClassCreatorRest | ArrayCreatorRest )
-///   BasicType ArrayCreatorRest
-/// See notes in AST.h
+/**
+ * Creator:
+ *   NonWildcardTypeArguments CreatedName ClassCreatorRest
+ *   CreatedName ( ClassCreatorRest | ArrayCreatorRest )
+ *   BasicType ArrayCreatorRest
+ * See notes in AST.h
+ */
 void Parser::parseCreator(spCreator &creator) {
   // Option 1
   if (lexer->getCurToken() == TOK_OP_LT) {
@@ -1491,7 +1557,9 @@ void Parser::parseCreator(spCreator &creator) {
   parseCreatorOpt2(creator->opt2);
 }
 
-/// CreatorOpt1: NonWildcardTypeArguments CreatedName ClassCreatorRest
+/**
+ * CreatorOpt1: NonWildcardTypeArguments CreatedName ClassCreatorRest
+ */
 void Parser::parseCreatorOpt1(spCreatorOpt1 &opt1) {
   // NonWildcardTypeArguments
   opt1->nonWildcardTypeArguments = spNonWildcardTypeArguments(
@@ -1523,7 +1591,9 @@ void Parser::parseCreatorOpt1(spCreatorOpt1 &opt1) {
   }
 }
 
-/// CreatorOpt2: CreatedName ( ClassCreatorRest | ArrayCreatorRest )
+/**
+ * CreatorOpt2: CreatedName ( ClassCreatorRest | ArrayCreatorRest )
+ */
 void Parser::parseCreatorOpt2(spCreatorOpt2 &opt2) {
   // CreatedName
   opt2->createdName = spCreatedName(new CreatedName);
@@ -1554,7 +1624,9 @@ void Parser::parseCreatorOpt2(spCreatorOpt2 &opt2) {
     ERR_EXP_CLASS_OR_ARRAY_CREATOR_REST, lexer->getCursor() - 1));
 }
 
-/// CreatorOpt3: BasicType ArrayCreatorRest
+/**
+ * CreatorOpt3: BasicType ArrayCreatorRest
+ */
 void Parser::parseCreatorOpt3(spCreatorOpt3 &opt3) {
   spTokenExp token = spTokenExp(new TokenExp(lexer->getCursor()
     - tokenUtil.getTokenLength(lexer->getCurToken()), lexer->getCurToken()));
@@ -1573,7 +1645,9 @@ void Parser::parseCreatorOpt3(spCreatorOpt3 &opt3) {
   }
 }
 
-/// Expression: Expression1 [ AssignmentOperator Expression ]
+/**
+ * Expression: Expression1 [ AssignmentOperator Expression ]
+ */
 void Parser::parseExpression(spExpression &expr) {
   spExpression1 expr1 = spExpression1(new Expression1);
   parseExpression1(expr1);
@@ -1607,7 +1681,9 @@ void Parser::parseExpression(spExpression &expr) {
   }
 }
 
-/// Expression1: Expression2 [Expression1Rest]
+/**
+ * Expression1: Expression2 [Expression1Rest]
+ */
 void Parser::parseExpression1(spExpression1 &expr1) {
   spExpression2 expr2 = spExpression2(new Expression2);
   parseExpression2(expr2);
@@ -1632,8 +1708,10 @@ void Parser::parseExpression1(spExpression1 &expr1) {
   }
 }
 
-/// Expression1Rest:
-///   ? Expression : Expression1
+/**
+ * Expression1Rest:
+ *   ? Expression : Expression1
+ */
 void Parser::parseExpression1Rest(spExpression1Rest &expr1Rest) {
   // '?'
   expr1Rest->posQuestionMark = lexer->getCursor() - 1;
@@ -1663,7 +1741,9 @@ void Parser::parseExpression1Rest(spExpression1Rest &expr1Rest) {
   }
 }
 
-/// Expression2: Expression3 [ Expression2Rest ]
+/**
+ * Expression2: Expression3 [ Expression2Rest ]
+ */
 void Parser::parseExpression2(spExpression2 &expr2) {
   spExpression3 expr3 = spExpression3(new Expression3);
   parseExpression3(expr3);
@@ -1681,9 +1761,11 @@ void Parser::parseExpression2(spExpression2 &expr2) {
   }
 }
 
-/// Expression2Rest:
-///   { InfixOp Expression3 | instanceof Type }
-/// See notes in AST.h
+/**
+ * Expression2Rest:
+ *   { InfixOp Expression3 | instanceof Type }
+ * See notes in AST.h
+ */
 void Parser::parseExpression2Rest(spExpression2Rest &expr2Rest) {
   State state;
   while (lexer->getCurToken() == TOK_KEY_INSTANCEOF
@@ -1732,15 +1814,17 @@ void Parser::parseExpression2Rest(spExpression2Rest &expr2Rest) {
   }
 }
 
-/// Expression3:
-///   (1) PrefixOp Expression3
-///   (2) '(' Type ')' Expression3
-///   (3) '(' Expression ')' Expression3
-///   (4) Primary { Selector } { PostfixOp }
-///
-/// The first option is recursive only if the prefixes are '!' and '~'.
-/// For example: !!a; ~~b; are legal expressions but ++++a; is invalid
-/// while ~++c; is valid;
+/**
+ * Expression3:
+ *   (1) PrefixOp Expression3
+ *   (2) '(' Type ')' Expression3
+ *   (3) '(' Expression ')' Expression3
+ *   (4) Primary { Selector } { PostfixOp }
+ *
+ * The first option is recursive only if the prefixes are '!' and '~'.
+ * For example: !!a; ~~b; are legal expressions but ++++a; is invalid
+ * while ~++c; is valid;
+ */
 void Parser::parseExpression3(spExpression3 &expr3) {
   // (1) PrefixOp Expression3
   if (isPrefixOp(lexer->getCurToken())) {
@@ -1883,7 +1967,9 @@ void Parser::parseExpression3Opt3(spExpression3Opt3 &opt3) {
   }
 }
 
-/// Finally: finally Block
+/**
+ * Finally: finally Block
+ */
 void Parser::parseFinally(spFinally &finally) {
   // 'finally'
   if (lexer->getCurToken() != TOK_KEY_FINALLY) {
@@ -1904,7 +1990,9 @@ void Parser::parseFinally(spFinally &finally) {
   }
 }
 
-/// FieldDeclaratorsRest: VariableDeclaratorRest { , VariableDeclarator }
+/**
+ * FieldDeclaratorsRest: VariableDeclaratorRest { , VariableDeclarator }
+ */
 void Parser::parseFieldDeclaratorsRest(spFieldDeclaratorsRest &fieldDeclsRest) {
   // VariableDeclaratorRest
   fieldDeclsRest->varDeclRest
@@ -1932,9 +2020,11 @@ void Parser::parseFieldDeclaratorsRest(spFieldDeclaratorsRest &fieldDeclsRest) {
   }
 }
 
-/// ForControl
-///   (1) ForVarControl
-///   (2) [ForInit] ; [Expression] ; [ForUpdate]
+/**
+ * ForControl
+ *   (1) ForVarControl
+ *   (2) [ForInit] ; [Expression] ; [ForUpdate]
+ */
 void Parser::parseForControl(spForControl &forCtrl) {
   State state;
   saveState(state);
@@ -1994,9 +2084,11 @@ void Parser::parseForControl(spForControl &forCtrl) {
   }
 }
 
-/// ForInit:
-/// ForUpdate:
-///   StatementExpression { , StatementExpression }
+/**
+ * ForInit:
+ * ForUpdate:
+ *   StatementExpression { , StatementExpression }
+ */
 void Parser::parseForInit(spForInit &forInit) {
   forInit->stmtExpr = spStatementExpression(new StatementExpression);
   parseStatementExpression(forInit->stmtExpr);
@@ -2023,15 +2115,19 @@ void Parser::parseForInit(spForInit &forInit) {
   }
 }
 
-/// ForInit:
-/// ForUpdate:
-///   StatementExpression { , StatementExpression }
+/**
+ * ForInit:
+ * ForUpdate:
+ *   StatementExpression { , StatementExpression }
+ */
 void Parser::parseForUpdate(spForUpdate &forUpdate) {
   parseForInit(forUpdate);
 }
 
-/// ForVarControl
-///   {VariableModifier} Type VariableDeclaratorId ForVarControlRest
+/**
+ * ForVarControl
+ *   {VariableModifier} Type VariableDeclaratorId ForVarControlRest
+ */
 void Parser::parseForVarControl(spForVarControl &forVarCtrl) {
   // {VariableModifier}
   forVarCtrl->varMod = spVariableModifier(new VariableModifier);
@@ -2060,9 +2156,11 @@ void Parser::parseForVarControl(spForVarControl &forVarCtrl) {
   }
 }
 
-/// ForVarControlRest
-///   (1) ForVariableDeclaratorsRest ; [Expression] ; [ForUpdate]
-///   (2) : Expression
+/**
+ * ForVarControlRest
+ *   (1) ForVariableDeclaratorsRest ; [Expression] ; [ForUpdate]
+ *   (2) : Expression
+ */
 void Parser::parseForVarControlRest(spForVarControlRest &forVarCtrlRest) {
   // (2) : Expression
   if (lexer->getCurToken() == TOK_OP_COLON) {
@@ -2125,8 +2223,10 @@ void Parser::parseForVarControlRest(spForVarControlRest &forVarCtrlRest) {
   }
 }
 
-/// ForVariableDeclaratorsRest
-///   [ = VariableInitializer ] { , VariableDeclarator }
+/**
+ * ForVariableDeclaratorsRest
+ *   [ = VariableInitializer ] { , VariableDeclarator }
+ */
 void Parser::parseForVariableDeclaratorsRest(
   spForVariableDeclaratorsRest &forVarDeclsRest) {
 
@@ -2162,8 +2262,10 @@ void Parser::parseForVariableDeclaratorsRest(
   }
 }
 
-/// GenericMethodOrConstructorDecl:
-/// TypeParameters GenericMethodOrConstructorRest
+/**
+ * GenericMethodOrConstructorDecl:
+ * TypeParameters GenericMethodOrConstructorRest
+ */
 void Parser::parseGenericMethodOrConstructorDecl(
   spGenericMethodOrConstructorDecl &genMethodOrConstDecl) {
 
@@ -2182,10 +2284,12 @@ void Parser::parseGenericMethodOrConstructorDecl(
   }
 }
 
-/// GenericMethodOrConstructorRest:
-/// (1) Type Identifier MethodDeclaratorRest
-/// (2) void Identifier MethodDeclaratorRest
-/// (3) Identifier ConstructorDeclaratorRest
+/**
+ * GenericMethodOrConstructorRest:
+ * (1) Type Identifier MethodDeclaratorRest
+ * (2) void Identifier MethodDeclaratorRest
+ * (3) Identifier ConstructorDeclaratorRest
+ */
 void Parser::parseGenericMethodOrConstructorRest(
   spGenericMethodOrConstructorRest &rest) {
 
@@ -2267,8 +2371,10 @@ void Parser::parseGenericMethodOrConstructorRest(
   }
 }
 
-/// InterfaceBody:
-///   '{' { InterfaceBodyDeclaration } '}'
+/**
+ * InterfaceBody:
+ *   '{' { InterfaceBodyDeclaration } '}'
+ */
 void Parser::parseInterfaceBody(spInterfaceBody &body) {
   // '{'
   if (lexer->getCurToken() != TOK_LCURLY_BRACKET) {
@@ -2309,9 +2415,11 @@ void Parser::parseInterfaceBody(spInterfaceBody &body) {
   lexer->getNextToken(); // consume '}'
 }
 
-/// InterfaceBodyDeclaration:
-///   (1) ;
-///   (2) {Modifier} InterfaceMemberDecl
+/**
+ * InterfaceBodyDeclaration:
+ *   (1) ;
+ *   (2) {Modifier} InterfaceMemberDecl
+ */
 void Parser::parseInterfaceBodyDeclaration(
   spInterfaceBodyDeclaration &bodyDecl) {
 
@@ -2336,9 +2444,11 @@ void Parser::parseInterfaceBodyDeclaration(
   st.scopePop();
 }
 
-/// InterfaceDeclaration:
-///   NormalInterfaceDeclaration
-///   AnnotationTypeDeclaration
+/**
+ * InterfaceDeclaration:
+ *   NormalInterfaceDeclaration
+ *   AnnotationTypeDeclaration
+ */
 void Parser::parseInterfaceDeclaration(spInterfaceDeclaration &interfaceDecl) {
   // AnnotationTypeDeclaration
   if (lexer->getCurToken() == TOK_ANNOTATION_TYPE_DECLARATION) {
@@ -2369,8 +2479,10 @@ void Parser::parseInterfaceDeclaration(spInterfaceDeclaration &interfaceDecl) {
   interfaceDecl->addErr(-1);
 }
 
-/// InterfaceGenericMethodDecl:
-///   TypeParameters (Type | void) Identifier InterfaceMethodDeclaratorRest
+/**
+ * InterfaceGenericMethodDecl:
+ *   TypeParameters (Type | void) Identifier InterfaceMethodDeclaratorRest
+ */
 void Parser::parseInterfaceGenericMethodDecl(
   spInterfaceGenericMethodDecl &genMethDecl) {
 
@@ -2417,12 +2529,14 @@ void Parser::parseInterfaceGenericMethodDecl(
   }
 }
 
-/// InterfaceMemberDecl:
-///   (1) InterfaceMethodOrFieldDecl
-///   (2) void Identifier VoidInterfaceMethodDeclaratorRest
-///   (3) InterfaceGenericMethodDecl
-///   (4) ClassDeclaration
-///   (5) InterfaceDeclaration
+/**
+ * InterfaceMemberDecl:
+ *   (1) InterfaceMethodOrFieldDecl
+ *   (2) void Identifier VoidInterfaceMethodDeclaratorRest
+ *   (3) InterfaceGenericMethodDecl
+ *   (4) ClassDeclaration
+ *   (5) InterfaceDeclaration
+ */
 void Parser::parseInterfaceMemberDecl(spInterfaceMemberDecl &memberDecl) {
   // (1) InterfaceMethodOrFieldDecl
   if (isBasicType(lexer->getCurToken())
@@ -2519,8 +2633,10 @@ void Parser::parseInterfaceMemberDecl(spInterfaceMemberDecl &memberDecl) {
   memberDecl->addErr(-1);
 }
 
-/// InterfaceMethodDeclaratorRest:
-///   FormalParameters {'[]'} [throws QualifiedIdentifierList] ;
+/**
+ * InterfaceMethodDeclaratorRest:
+ *   FormalParameters {'[]'} [throws QualifiedIdentifierList] ;
+ */
 void Parser::parseInterfaceMethodDeclaratorRest(
   spInterfaceMethodDeclaratorRest &methDeclRest) {
   // FormalParameters
@@ -2561,8 +2677,10 @@ void Parser::parseInterfaceMethodDeclaratorRest(
   lexer->getNextToken(); // consume ';'
 }
 
-/// InterfaceMethodOrFieldDecl:
-///   Type Identifier InterfaceMethodOrFieldRest
+/**
+ * InterfaceMethodOrFieldDecl:
+ *   Type Identifier InterfaceMethodOrFieldRest
+ */
 void Parser::parseInterfaceMethodOrFieldDecl(
   spInterfaceMethodOrFieldDecl &methodOrFieldDecl) {
 
@@ -2594,9 +2712,11 @@ void Parser::parseInterfaceMethodOrFieldDecl(
   }
 }
 
-/// InterfaceMethodOrFieldRest
-///   ConstantDeclaratorsRest ;
-///   InterfaceMethodDeclaratorRest
+/**
+ * InterfaceMethodOrFieldRest
+ *   ConstantDeclaratorsRest ;
+ *   InterfaceMethodDeclaratorRest
+ */
 void Parser::parseInterfaceMethodOrFieldRest(
   spInterfaceMethodOrFieldRest &rest) {
   // ConstantDeclaratorsRest ;
@@ -2642,11 +2762,13 @@ void Parser::parseInterfaceMethodOrFieldRest(
   rest->addErr(-1);
 }
 
-/// IdentifierSuffix:
-///   '[' ( ']' {'[]'} . class | Expression ']' )
-///   Arguments
-///   . ( class | ExplicitGenericInvocation | this | super Arguments |
-///       new [NonWildcardTypeArguments] InnerCreator )
+/**
+ * IdentifierSuffix:
+ *   '[' ( ']' {'[]'} . class | Expression ']' )
+ *   Arguments
+ *   . ( class | ExplicitGenericInvocation | this | super Arguments |
+ *       new [NonWildcardTypeArguments] InnerCreator )
+ */
 void Parser::parseIdentifierSuffix(spIdentifierSuffix &idSuffix) {
   // opt1-2
   if (lexer->getCurToken() == TOK_LBRACKET) {
@@ -2810,8 +2932,10 @@ void Parser::parseIdentifierSuffix(spIdentifierSuffix &idSuffix) {
     ERR_NVAL_IDENTIFIER_SUFFIX, lexer->getCursor() - 1));
 }
 
-/// ElementValuePairs: ElementValuePair {, ElementValuePair }
-/// ElementValuePair: Identifier = ElementValue
+/**
+ * ElementValuePairs: ElementValuePair {, ElementValuePair }
+ * ElementValuePair: Identifier = ElementValue
+ */
 void Parser::parseElementValuePairs(std::vector<spElementValuePair> &pairs) {
   if (lexer->getCurToken() != TOK_IDENTIFIER) {
     return;
@@ -2850,8 +2974,10 @@ void Parser::parseElementValuePairs(std::vector<spElementValuePair> &pairs) {
   }
 }
 
-/// ExplicitGenericInvocation:
-///   NonWildcardTypeArguments ExplicitGenericInvocationSuffix
+/**
+ * ExplicitGenericInvocation:
+ *   NonWildcardTypeArguments ExplicitGenericInvocationSuffix
+ */
 void Parser::parseExplicitGenericInvocation(
   spExplicitGenericInvocation &explGenInvocation) {
 
@@ -2873,9 +2999,11 @@ void Parser::parseExplicitGenericInvocation(
   }
 }
 
-/// ExplicitGenericInvocationSuffix:
-///   super SuperSuffix
-///   Identifier Arguments
+/**
+ * ExplicitGenericInvocationSuffix:
+ *   super SuperSuffix
+ *   Identifier Arguments
+ */
 void Parser::parseExplicitGenericInvocationSuffix(
   spExplicitGenericInvocationSuffix &explGen) {
 
@@ -2927,7 +3055,9 @@ void Parser::parseExplicitGenericInvocationSuffix(
 }
 
 
-/// PackageDeclaration: [ [Annotations]  package QualifiedIdentifier ; ]
+/**
+ * PackageDeclaration: [ [Annotations]  package QualifiedIdentifier ; ]
+ */
 spPackageDeclaration Parser::parsePackageDeclaration(
   std::vector<spAnnotation> &annotations, spPackageDeclaration &pkgDecl) {
 
@@ -2959,7 +3089,9 @@ spPackageDeclaration Parser::parsePackageDeclaration(
   return pkgDecl;
 }
 
-/// PostfixOp: ++ | --
+/**
+ * PostfixOp: ++ | --
+ */
 void Parser::parsePostfixOp(spPostfixOp &postfixOp) {
   if (lexer->getCurToken() == TOK_OP_MINUS_MINUS) {
     postfixOp->opt = PostfixOp::OPT_MINUS_MINUS;
@@ -2976,10 +3108,12 @@ void Parser::parsePostfixOp(spPostfixOp &postfixOp) {
   }
 }
 
-/// ImportDeclarations:
-///   ImportDeclaration
-///   ImportDeclarations ImportDeclaration
-/// ImportDeclaration: import [static] QualifiedId [.*] ';'
+/**
+ * ImportDeclarations:
+ *   ImportDeclaration
+ *   ImportDeclarations ImportDeclaration
+ * ImportDeclaration: import [static] QualifiedId [.*] ';'
+ */
 spImportDeclarations Parser::parseImportDeclarations() {
   std::vector<spImportDeclaration> imports;
   while (lexer->getCurToken() == TOK_KEY_IMPORT) {
@@ -3042,8 +3176,10 @@ spImportDeclaration Parser::parseImportDeclaration() {
   return import;
 }
 
-/// InnerCreator:
-///   Identifier [NonWildcardTypeArgumentsOrDiamond] ClassCreatorRest
+/**
+ * InnerCreator:
+ *   Identifier [NonWildcardTypeArgumentsOrDiamond] ClassCreatorRest
+ */
 void Parser::parseInnerCreator(spInnerCreator &innerCreator) {
   // Error: expected Identifier
   if (lexer->getCurToken() != TOK_IDENTIFIER) {
@@ -3078,11 +3214,13 @@ void Parser::parseInnerCreator(spInnerCreator &innerCreator) {
   }
 }
 
-/// IntegerLiteral:
-///   DecimalIntegerLiteral
-///   HexIntegerLiteral
-///   OctalIntegerLiteral
-///   BinaryIntegerLiteral
+/**
+ * IntegerLiteral:
+ *   DecimalIntegerLiteral
+ *   HexIntegerLiteral
+ *   OctalIntegerLiteral
+ *   BinaryIntegerLiteral
+ */
 void Parser::parseIntegerLiteral(spIntegerLiteral &intLiteral) {
   if (isDecimalIntegerLiteral(lexer->getCurToken())) {
     intLiteral->opt = IntegerLiteral::OPT_DECIMAL;
@@ -3133,9 +3271,11 @@ void Parser::parseIntegerLiteral(spIntegerLiteral &intLiteral) {
   }
 }
 
-/// FloatingPointLiteral:
-///   DecimalFloatingPointLiteral
-///   HexFloatingPointLiteral
+/**
+ * FloatingPointLiteral:
+ *   DecimalFloatingPointLiteral
+ *   HexFloatingPointLiteral
+ */
 void Parser::parseFloatingPointLiteral(spFloatingPointLiteral &fpLiteral) {
   if (lexer->getCurToken() == TOK_DECIMAL_FLOATING_POINT_LITERAL) {
     fpLiteral->opt = FloatingPointLiteral::OPT_DECIMAL;
@@ -3154,13 +3294,15 @@ void Parser::parseFloatingPointLiteral(spFloatingPointLiteral &fpLiteral) {
   }
 }
 
-/// Literal:
-///   IntegerLiteral
-///   FloatingPointLiteral
-///   CharacterLiteral
-///   StringLiteral
-///   BooleanLiteral
-///   NullLiteral
+/**
+ * Literal:
+ *   IntegerLiteral
+ *   FloatingPointLiteral
+ *   CharacterLiteral
+ *   StringLiteral
+ *   BooleanLiteral
+ *   NullLiteral
+ */
 void Parser::parseLiteral(spLiteral &literal) {
   if (isIntegerLiteral(lexer->getCurToken())) {
     literal->opt = Literal::OPT_INTEGER;
@@ -3206,8 +3348,10 @@ void Parser::parseLiteral(spLiteral &literal) {
   }
 }
 
-/// LocalVariableDeclarationStatement:
-///   { VariableModifier } Type VariableDeclarators ;
+/**
+ * LocalVariableDeclarationStatement:
+ *   { VariableModifier } Type VariableDeclarators ;
+ */
 void Parser::parseLocalVariableDeclarationStatement(
   spLocalVariableDeclarationStatement &localVar) {
 
@@ -3246,17 +3390,19 @@ void Parser::parseLocalVariableDeclarationStatement(
   localVar->addErr(diag->addErr(ERR_EXP_SEMICOLON, lexer->getCursor() - 1));
 }
 
-/// Primary:
-///   (1) Literal
-///   (2) ParExpression
-///   (3) this [Arguments]
-///   (4) super SuperSuffix
-///   (5) new Creator
-///   (6) NonWildcardTypeArguments
-///     ( ExplicitGenericInvocationSuffix | this Arguments )
-///   (7) Identifier { . Identifier } [IdentifierSuffix]
-///   (8) BasicType {[]} . class
-///   (9) void . class
+/**
+ * Primary:
+ *   (1) Literal
+ *   (2) ParExpression
+ *   (3) this [Arguments]
+ *   (4) super SuperSuffix
+ *   (5) new Creator
+ *   (6) NonWildcardTypeArguments
+ *     ( ExplicitGenericInvocationSuffix | this Arguments )
+ *   (7) Identifier { . Identifier } [IdentifierSuffix]
+ *   (8) BasicType {[]} . class
+ *   (9) void . class
+ */
 void Parser::parsePrimary(spPrimary &primary) {
   // (6) NonWildcardTypeArguments
   if (lexer->getCurToken() == TOK_OP_LT) {
@@ -3343,7 +3489,9 @@ void Parser::parsePrimary(spPrimary &primary) {
   }
 }
 
-/// Primary: BasicType {[]} . class
+/**
+ * Primary: BasicType {[]} . class
+ */
 void Parser::parsePrimaryBasicType(spPrimaryBasicType &primaryBasicType) {
   // Basic Type
   spTokenExp token = spTokenExp(new TokenExp(lexer->getCursor()
@@ -3377,7 +3525,9 @@ void Parser::parsePrimaryBasicType(spPrimaryBasicType &primaryBasicType) {
   lexer->getNextToken(); // consume 'class'
 }
 
-/// Primary: Identifier { . Identifier } [IdentifierSuffix]
+/**
+ * Primary: Identifier { . Identifier } [IdentifierSuffix]
+ */
 void Parser::parsePrimaryIdentifier(spPrimaryIdentifier &primaryId) {
 
   // Identifier
@@ -3418,7 +3568,9 @@ void Parser::parsePrimaryIdentifier(spPrimaryIdentifier &primaryId) {
   }
 }
 
-/// Primary: this [Arguments]
+/**
+ * Primary: this [Arguments]
+ */
 void Parser::parsePrimaryThisArguments(
   spPrimaryThisArguments &primaryThisArgs) {
 
@@ -3436,7 +3588,9 @@ void Parser::parsePrimaryThisArguments(
   }
 }
 
-/// Primary: super SuperSuffix
+/**
+ * Primary: super SuperSuffix
+ */
 void Parser::parsePrimarySuperSuperSuffix(
   spPrimarySuperSuperSuffix &primarySuperSuperSuffix) {
 
@@ -3455,7 +3609,9 @@ void Parser::parsePrimarySuperSuperSuffix(
   }
 }
 
-/// Primary: new Creator
+/**
+ * Primary: new Creator
+ */
 void Parser::parsePrimaryNewCreator(spPrimaryNewCreator &primaryNewCreator) {
   // Token 'new'
   primaryNewCreator->tokNew = spTokenExp(new TokenExp(
@@ -3469,9 +3625,11 @@ void Parser::parsePrimaryNewCreator(spPrimaryNewCreator &primaryNewCreator) {
   parseCreator(primaryNewCreator->creator);
 }
 
-/// Primary:
-///   NonWildcardTypeArguments
-///     ( ExplicitGenericInvocationSuffix | this Arguments )
+/**
+ * Primary:
+ *   NonWildcardTypeArguments
+ *     ( ExplicitGenericInvocationSuffix | this Arguments )
+ */
 void Parser::parsePrimaryNonWildcardTypeArguments(
   spPrimaryNonWildcardTypeArguments &primaryNonWildcard) {
 
@@ -3529,7 +3687,9 @@ void Parser::parsePrimaryNonWildcardTypeArguments(
   primaryNonWildcard->addErr(-1);
 }
 
-/// Primary: void . class
+/**
+ * Primary: void . class
+ */
 void Parser::parsePrimaryVoidClass(spPrimaryVoidClass &primaryVoidClass) {
   if (lexer->getCurToken() != TOK_KEY_VOID) {
     primaryVoidClass->addErr(diag->addErr(
@@ -3566,7 +3726,9 @@ void Parser::parsePrimaryVoidClass(spPrimaryVoidClass &primaryVoidClass) {
   lexer->getNextToken(); // consume 'class'
 }
 
-/// QualifiedIdentifier: Identifier { . Identifier }
+/**
+ * QualifiedIdentifier: Identifier { . Identifier }
+ */
 void Parser::parseQualifiedIdentifier(
   spQualifiedIdentifier &qualifiedId) {
 
@@ -3602,8 +3764,10 @@ void Parser::parseQualifiedIdentifier(
   }
 }
 
-/// QualifiedIdentifierList:
-///   QualifiedIdentifier { , QualifiedIdentifier }
+/**
+ * QualifiedIdentifierList:
+ *   QualifiedIdentifier { , QualifiedIdentifier }
+ */
 void Parser::parseQualifiedIdentifierList(
   spQualifiedIdentifierList &qualifiedIdList) {
 
@@ -3638,8 +3802,10 @@ void Parser::parseQualifiedIdentifierList(
   }
 }
 
-/// ReferenceType:
-///    Identifier [TypeArguments] { . Identifier [TypeArguments] }
+/**
+ * ReferenceType:
+ *    Identifier [TypeArguments] { . Identifier [TypeArguments] }
+ */
 void Parser::parseReferenceType(spReferenceType &refType) {
   // indentifier
   refType->id = spIdentifier(new Identifier(
@@ -3688,8 +3854,10 @@ void Parser::parseReferenceType(spReferenceType &refType) {
   }
 }
 
-/// Resource:
-///   {VariableModifier} ReferenceType VariableDeclaratorId = Expression
+/**
+ * Resource:
+ *   {VariableModifier} ReferenceType VariableDeclaratorId = Expression
+ */
 void Parser::parseResource(spResource &res) {
   // {VariableModifier}
   res->varModifier = spVariableModifier(new VariableModifier);
@@ -3723,8 +3891,10 @@ void Parser::parseResource(spResource &res) {
   }
 }
 
-/// Resources:
-///   Resource { ; Resource }
+/**
+ * Resources:
+ *   Resource { ; Resource }
+ */
 void Parser::parseResources(spResources &resources) {
   // Resource
   resources->res = spResource(new Resource);
@@ -3753,8 +3923,10 @@ void Parser::parseResources(spResources &resources) {
   }
 }
 
-/// ResourceSpecification:
-///   '(' Resources [;] ')'
+/**
+ * ResourceSpecification:
+ *   '(' Resources [;] ')'
+ */
 void Parser::parseResourceSpecification(spResourceSpecification &resSpec) {
   // '('
   if (lexer->getCurToken() != TOK_LPAREN) {
@@ -3789,13 +3961,15 @@ void Parser::parseResourceSpecification(spResourceSpecification &resSpec) {
   lexer->getNextToken(); // consume ')'
 }
 
-/// Selector:
-///   . Identifier [Arguments]
-///   . ExplicitGenericInvocation
-///   . this
-///   . super SuperSuffix
-///   . new [NonWildcardTypeArguments] InnerCreator
-///   '[' Expression ']'
+/**
+ * Selector:
+ *   . Identifier [Arguments]
+ *   . ExplicitGenericInvocation
+ *   . this
+ *   . super SuperSuffix
+ *   . new [NonWildcardTypeArguments] InnerCreator
+ *   '[' Expression ']'
+ */
 void Parser::parseSelector(spSelector &selector) {
   if (lexer->getCurToken() == TOK_PERIOD) {
     selector->posPeriod = lexer->getCursor() - 1;
@@ -3838,7 +4012,7 @@ void Parser::parseSelector(spSelector &selector) {
       return;
     }
 
-    /// . super SuperSuffix
+    // . super SuperSuffix
     if (lexer->getCurToken() == TOK_KEY_SUPER) {
       selector->opt = Selector::OPT_SUPER_SUPER_SUFFIX;
       selector->tokSuper = spTokenExp(new TokenExp(
@@ -3853,7 +4027,7 @@ void Parser::parseSelector(spSelector &selector) {
       return;
     }
 
-    /// . new [NonWildcardTypeArguments] InnerCreator
+    // . new [NonWildcardTypeArguments] InnerCreator
     if (lexer->getCurToken() == TOK_KEY_NEW) {
       selector->opt = Selector::OPT_NEW;
       selector->tokNew = spTokenExp(new TokenExp(
@@ -3880,7 +4054,7 @@ void Parser::parseSelector(spSelector &selector) {
     }
   }
 
-  /// '[' Expression ']'
+  // '[' Expression ']'
   if (lexer->getCurToken() == TOK_LBRACKET) {
     selector->opt = Selector::OPT_EXPRESSION;
 
@@ -3910,24 +4084,26 @@ void Parser::parseSelector(spSelector &selector) {
   selector->addErr(diag->addErr(ERR_NVAL_SELECTOR, lexer->getCursor() - 1));
 }
 
-/// Statement:
-///   (1) Block
-///   (2) ;
-///   (3) Identifier : Statement
-///   (4) StatementExpression ;
-///   (5) if ParExpression Statement [else Statement]
-///   (6) assert Expression [: Expression] ;
-///   (7) switch ParExpression '{' SwitchBlockStatementGroups '}'
-///   (8) while ParExpression Statement
-///   (9) do Statement while ParExpression ;
-///   (10) for '(' ForControl ')' Statement
-///   (11) break [Identifier] ;
-///   (12) continue [Identifier] ;
-///   (13) return [Expression] ;
-///   (14) throw Expression ;
-///   (15) synchronized ParExpression Block
-///   (16) try Block ( Catches | [Catches] Finally )
-///   (17) try ResourceSpecification Block [Catches] [Finally]
+/**
+ * Statement:
+ *   (1) Block
+ *   (2) ;
+ *   (3) Identifier : Statement
+ *   (4) StatementExpression ;
+ *   (5) if ParExpression Statement [else Statement]
+ *   (6) assert Expression [: Expression] ;
+ *   (7) switch ParExpression '{' SwitchBlockStatementGroups '}'
+ *   (8) while ParExpression Statement
+ *   (9) do Statement while ParExpression ;
+ *   (10) for '(' ForControl ')' Statement
+ *   (11) break [Identifier] ;
+ *   (12) continue [Identifier] ;
+ *   (13) return [Expression] ;
+ *   (14) throw Expression ;
+ *   (15) synchronized ParExpression Block
+ *   (16) try Block ( Catches | [Catches] Finally )
+ *   (17) try ResourceSpecification Block [Catches] [Finally]
+ */
 void Parser::parseStatement(spStatement &stmt) {
   // (1) Block
   if (lexer->getCurToken() == TOK_LCURLY_BRACKET) {
@@ -4467,16 +4643,20 @@ void Parser::parseStatement(spStatement &stmt) {
   lexer->getNextToken(); // consume ';'
 }
 
-/// StatementExpression: Expression
+/**
+ * StatementExpression: Expression
+ */
 void Parser::parseStatementExpression(spStatementExpression &stmtExpr) {
   stmtExpr->expr = spExpression(new Expression);
   parseExpression(stmtExpr->expr);
   if (stmtExpr->expr->isEmpty()) { stmtExpr->addErr(-1); }
 }
 
-/// TypeArgument:
-///   Type
-///   ? [(extends|super) Type]
+/**
+ * TypeArgument:
+ *   Type
+ *   ? [(extends|super) Type]
+ */
 void Parser::parseTypeArgument(spTypeArgument &typeArg) {
   // option 1
   if (lexer->getCurToken() == TOK_IDENTIFIER
@@ -4500,7 +4680,9 @@ void Parser::parseTypeArgument(spTypeArgument &typeArg) {
   typeArg->addErr(diag->addErr(ERR_NVAL_TYPE_ARGUMENT, lexer->getCursor() - 1));
 }
 
-/// TypeArgument: ? [(extends|super) Type ]
+/**
+ * TypeArgument: ? [(extends|super) Type ]
+ */
 void Parser::parseTypeArgumentOpt2(spTypeArgumentOpt2 &opt2) {
   opt2->posQuestionMark = lexer->getCursor() - 1;
   lexer->getNextToken(); // consume '?'
@@ -4528,7 +4710,9 @@ void Parser::parseTypeArgumentOpt2(spTypeArgumentOpt2 &opt2) {
   // TODO: it's an error if we have a non-array basic type
 }
 
-/// TypeArguments: < TypeArgument { , TypeArgument } >
+/**
+ * TypeArguments: < TypeArgument { , TypeArgument } >
+ */
 void Parser::parseTypeArguments(spTypeArguments &typeArgs) {
   typeArgs->posLt = lexer->getCursor() - 1;
   lexer->getNextToken(); // consume '<'
@@ -4587,9 +4771,11 @@ void Parser::parseTypeArguments(spTypeArguments &typeArgs) {
   typeArgs->addErr(diag->addErr(ERR_EXP_OP_GT, lexer->getCursor() - 1));
 }
 
-/// TypeArgumentsOrDiamond:
-///   < >
-///   TypeArguments
+/**
+ * TypeArgumentsOrDiamond:
+ *   < >
+ *   TypeArguments
+ */
 void Parser::parseTypeArgumentsOrDiamond(
   spTypeArgumentsOrDiamond &typeArgsOrDiam) {
 
@@ -4630,8 +4816,10 @@ void Parser::parseTypeArgumentsOrDiamond(
   }
 }
 
-/// TypeDeclarations: { TypeDeclaration }
-/// TypeDeclaration: ClassOrInterfaceDeclaration ;
+/**
+ * TypeDeclarations: { TypeDeclaration }
+ * TypeDeclaration: ClassOrInterfaceDeclaration ;
+ */
 std::vector<spTypeDeclaration> Parser::parseTypeDeclarations(
   std::vector<spAnnotation> &annotations) {
 
@@ -4661,8 +4849,10 @@ std::vector<spTypeDeclaration> Parser::parseTypeDeclarations(
   return typeDecls;
 }
 
-/// ClassOrInterfaceDeclaration:
-///   {Modifier} (ClassDeclaration | InterfaceDeclaration)
+/**
+ * ClassOrInterfaceDeclaration:
+ *   {Modifier} (ClassDeclaration | InterfaceDeclaration)
+ */
 void Parser::parseClassOrInterfaceDeclaration(
   spClassOrInterfaceDeclaration& decl) {
 
@@ -4728,7 +4918,9 @@ void Parser::parseModifier(spModifier &modifier) {
   }
 }
 
-/// ClassDeclaration: NormalClassDeclaration | EnumDeclaration
+/**
+ * ClassDeclaration: NormalClassDeclaration | EnumDeclaration
+ */
 void Parser::parseClassDeclaration(spClassDeclaration &classDecl) {
   // NormalClassDeclaration
   if (lexer->getCurToken() == TOK_KEY_CLASS) {
@@ -4749,9 +4941,11 @@ void Parser::parseClassDeclaration(spClassDeclaration &classDecl) {
   classDecl->addErr(-1);
 }
 
-/// NormalClassDeclaration:
-///   class Identifier [TypeParameters] [extends Type] [implements TypeList]
-///     ClassBody
+/**
+ * NormalClassDeclaration:
+ *   class Identifier [TypeParameters] [extends Type] [implements TypeList]
+ *     ClassBody
+ */
 void Parser::parseNormalClassDeclaration(spNormalClassDeclaration &nClassDecl) {
   if (lexer->getCurToken() != TOK_KEY_CLASS) {
     nClassDecl->addErr(diag->addErr(ERR_EXP_CLASS, lexer->getCursor() - 1));
@@ -4826,8 +5020,10 @@ void Parser::parseNormalClassDeclaration(spNormalClassDeclaration &nClassDecl) {
   parseClassBody(nClassDecl->classBody);
 }
 
-/// NormalInterfaceDeclaration:
-///   interface Identifier [TypeParameters] [extends TypeList] InterfaceBody
+/**
+ * NormalInterfaceDeclaration:
+ *   interface Identifier [TypeParameters] [extends TypeList] InterfaceBody
+ */
 void Parser::parseNormalInterfaceDeclaration(
   spNormalInterfaceDeclaration &normalDecl) {
 
@@ -4892,7 +5088,9 @@ void Parser::parseNullLiteral(spTokenExp &nullLiteral) {
   lexer->getNextToken(); // consume 'null'
 }
 
-/// ParExpression: '(' Expression ')'
+/**
+ * ParExpression: '(' Expression ')'
+ */
 void Parser::parseParExpression(spParExpression &parExpr) {
   // '('
   if (lexer->getCurToken() != TOK_LPAREN) {
@@ -4921,8 +5119,10 @@ void Parser::parseParExpression(spParExpression &parExpr) {
   lexer->getNextToken(); // consume ')'
 }
 
-/// ClassBody:
-///   '{' { ClassBodyDeclaration } '}'
+/**
+ * ClassBody:
+ *   '{' { ClassBodyDeclaration } '}'
+ */
 void Parser::parseClassBody(spClassBody &classBody) {
   // '{'
   if (lexer->getCurToken() != TOK_LCURLY_BRACKET) {
@@ -4949,7 +5149,9 @@ void Parser::parseClassBody(spClassBody &classBody) {
   lexer->getNextToken(); // consume '}'
 }
 
-/// { ClassBodyDeclaration }
+/**
+ * { ClassBodyDeclaration }
+ */
 void Parser::parseClassBodyDeclarationsHelper(
   std::vector<spClassBodyDeclaration> &classBodyDecls) {
 
@@ -4970,10 +5172,12 @@ void Parser::parseClassBodyDeclarationsHelper(
   }
 }
 
-/// ClassBodyDeclaration:
-///   (1) ;
-///   (2) {Modifier} MemberDecl
-///   (3) [static] Block
+/**
+ * ClassBodyDeclaration:
+ *   (1) ;
+ *   (2) {Modifier} MemberDecl
+ *   (3) [static] Block
+ */
 void Parser::parseClassBodyDeclaration(spClassBodyDeclaration &decl) {
 
   // The keyword 'static' is ambiguous. It can lead to option (2) or (3).
@@ -5042,7 +5246,9 @@ void Parser::parseClassBodyDeclaration(spClassBodyDeclaration &decl) {
   decl->addErr(-1);
 }
 
-/// ClassCreatorRest: Arguments [ClassBody]
+/**
+ * ClassCreatorRest: Arguments [ClassBody]
+ */
 void Parser::parseClassCreatorRest(spClassCreatorRest &classCreatorRest) {
   // Arguments
   spArguments args = spArguments(new Arguments);
@@ -5060,13 +5266,15 @@ void Parser::parseClassCreatorRest(spClassCreatorRest &classCreatorRest) {
   }
 }
 
-/// MemberDecl:
-///   (1) MethodOrFieldDecl
-///   (2) void Identifier VoidMethodDeclaratorRest
-///   (3) Identifier ConstructorDeclaratorRest
-///   (4) GenericMethodOrConstructorDecl
-///   (5) ClassDeclaration
-///   (6) InterfaceDeclaration
+/**
+ * MemberDecl:
+ *   (1) MethodOrFieldDecl
+ *   (2) void Identifier VoidMethodDeclaratorRest
+ *   (3) Identifier ConstructorDeclaratorRest
+ *   (4) GenericMethodOrConstructorDecl
+ *   (5) ClassDeclaration
+ *   (6) InterfaceDeclaration
+ */
 void Parser::parseMemberDecl(spMemberDecl &memberDecl) {
   // We have an Identifier but we have to discern between a TypeParameter and a
   // Constructor Identifier. For example, the identifier we found can represent
@@ -5206,8 +5414,10 @@ void Parser::parseMemberDecl(spMemberDecl &memberDecl) {
   memberDecl->addErr(-1);
 }
 
-/// MethodDeclaratorRest:
-///  FormalParameters {'[' ']'} [throws QualifiedIdentifierList] (Block | ;)
+/**
+ * MethodDeclaratorRest:
+ *  FormalParameters {'[' ']'} [throws QualifiedIdentifierList] (Block | ;)
+ */
 void Parser::parseMethodDeclaratorRest(spMethodDeclaratorRest &methodDeclRest) {
   // FormalParameters
   methodDeclRest->formParams = spFormalParameters(new FormalParameters);
@@ -5258,7 +5468,9 @@ void Parser::parseMethodDeclaratorRest(spMethodDeclaratorRest &methodDeclRest) {
   st.updateScopeEnd(methodDeclRest->block->posRCBrace + 1);
 }
 
-/// MethodOrFieldDecl: Type Identifier MethodOrFieldRest
+/**
+ * MethodOrFieldDecl: Type Identifier MethodOrFieldRest
+ */
 void Parser::parseMethodOrFieldDecl(spMethodOrFieldDecl &methodOrFieldDecl) {
   // Type
   methodOrFieldDecl->type = spType(new Type);
@@ -5290,9 +5502,11 @@ void Parser::parseMethodOrFieldDecl(spMethodOrFieldDecl &methodOrFieldDecl) {
   }
 }
 
-/// MethodOrFieldRest:
-///   (1) FieldDeclaratorsRest ;
-///   (2) MethodDeclaratorRest
+/**
+ * MethodOrFieldRest:
+ *   (1) FieldDeclaratorsRest ;
+ *   (2) MethodDeclaratorRest
+ */
 void Parser::parseMethodOrFieldRest(spMethodOrFieldRest &methodOrFieldRest) {
   // (2) MethodDeclaratorRest
   if (lexer->getCurToken() == TOK_LPAREN) {
@@ -5331,7 +5545,9 @@ void Parser::parseMethodOrFieldRest(spMethodOrFieldRest &methodOrFieldRest) {
   lexer->getNextToken(); // consume ';'
 }
 
-/// NonWildcardTypeArguments: < TypeList2 >
+/**
+ * NonWildcardTypeArguments: < TypeList2 >
+ */
 void Parser::parseNonWildcardTypeArguments(
   spNonWildcardTypeArguments &nonWildcardTypeArguments) {
 
@@ -5363,9 +5579,11 @@ void Parser::parseNonWildcardTypeArguments(
   lexer->getNextToken(); // consume '>'
 }
 
-/// NonWildcardTypeArgumentsOrDiamond:
-///   < >
-///   NonWildcardTypeArguments
+/**
+ * NonWildcardTypeArgumentsOrDiamond:
+ *   < >
+ *   NonWildcardTypeArguments
+ */
 void Parser::parseNonWildcardTypeArgumentsOrDiamond(
   spNonWildcardTypeArgumentsOrDiamond &nonWildcardOrDiam) {
   if (lexer->getCurToken() != TOK_OP_LT) {
@@ -5397,8 +5615,10 @@ void Parser::parseNonWildcardTypeArgumentsOrDiamond(
   }
 }
 
-/// CompilationUnit: Top level parsing.
-///   [PackageDeclaration] [ImportDeclaration] [TypeDeclarations]
+/**
+ * CompilationUnit: Top level parsing.
+ *   [PackageDeclaration] [ImportDeclaration] [TypeDeclarations]
+ */
 void Parser::parseCompilationUnit() {
   std::vector<spAnnotation> annotations;
   if (lexer->getCurToken() == TOK_ANNOTATION) {
@@ -5425,8 +5645,10 @@ void Parser::parseCompilationUnit() {
   compilationUnit->typeDecls = parseTypeDeclarations(annotations);
 }
 
-/// ConstantDeclaratorRest:
-///   {'[]'} = VariableInitializer
+/**
+ * ConstantDeclaratorRest:
+ *   {'[]'} = VariableInitializer
+ */
 void Parser::parseConstantDeclaratorRest(
   spConstantDeclaratorRest &constDeclRest) {
 
@@ -5450,8 +5672,10 @@ void Parser::parseConstantDeclaratorRest(
   }
 }
 
-/// ConstantDeclaratorsRest:
-///   ConstantDeclaratorRest { , ConstantDeclarator }
+/**
+ * ConstantDeclaratorsRest:
+ *   ConstantDeclaratorRest { , ConstantDeclarator }
+ */
 void Parser::parseConstantDeclaratorsRest(
   spConstantDeclaratorsRest &constDeclsRest) {
 
@@ -5481,8 +5705,10 @@ void Parser::parseConstantDeclaratorsRest(
   }
 }
 
-/// ConstructorDeclaratorRest:
-///   FormalParameters [throws QualifiedIdentifierList] Block
+/**
+ * ConstructorDeclaratorRest:
+ *   FormalParameters [throws QualifiedIdentifierList] Block
+ */
 void Parser::parseConstructorDeclaratorRest(
   spConstructorDeclaratorRest &constDeclRest) {
 
@@ -5517,9 +5743,11 @@ void Parser::parseConstructorDeclaratorRest(
   st.updateScopeEnd(constDeclRest->block->posRCBrace + 1);
 }
 
-/// CreatedName:
-///   Identifier [TypeArgumentsOrDiamond]
-///     { . Identifier [TypeArgumentsOrDiamond] }
+/**
+ * CreatedName:
+ *   Identifier [TypeArgumentsOrDiamond]
+ *     { . Identifier [TypeArgumentsOrDiamond] }
+ */
 void Parser::parseCreatedName(spCreatedName &createdName) {
   // Identifier [TypeArgumentsOrDiamond]
   parseCreatedNameHelper(createdName);
@@ -5599,7 +5827,9 @@ void Parser::parseCreatedNameHelper(spCreatedName &createdName) {
   }
 }
 
-/// FormalParameters: '(' [FormalParameterDecls] ')'
+/**
+ * FormalParameters: '(' [FormalParameterDecls] ')'
+ */
 void Parser::parseFormalParameters(spFormalParameters &formParams) {
   if (lexer->getCurToken() != TOK_LPAREN) {
     formParams->addErr(diag->addErr(
@@ -5631,7 +5861,9 @@ void Parser::parseFormalParameters(spFormalParameters &formParams) {
   lexer->getNextToken(); // consume ')'
 }
 
-/// FormalParameterDecls: {VariableModifier} Type FormalParameterDeclsRest
+/**
+ * FormalParameterDecls: {VariableModifier} Type FormalParameterDeclsRest
+ */
 void Parser::parseFormalParameterDecls(spFormalParameterDecls &formParamDecls) {
   // {VariableModifier}
   formParamDecls->varModifier = spVariableModifier(new VariableModifier);
@@ -5657,10 +5889,12 @@ void Parser::parseFormalParameterDecls(spFormalParameterDecls &formParamDecls) {
   }
 }
 
-/// VariableModifier:
-///   final
-///   Annotation
-/// One 'final' keyword is allowed, while we can have zero or more annotations.
+/**
+ * VariableModifier:
+ *   final
+ *   Annotation
+ * One 'final' keyword is allowed, while we can have zero or more annotations.
+ */
 void Parser::parseVariableModifier(spVariableModifier &varModifier) {
   while (isVariableModifier(lexer->getCurToken())) {
     if (lexer->getCurToken() == TOK_KEY_FINAL) {
@@ -5685,8 +5919,10 @@ void Parser::parseVariableModifier(spVariableModifier &varModifier) {
   }
 }
 
-/// VoidInterfaceMethodDeclaratorRest:
-///   FormalParameters [throws QualifiedIdentifierList] ;
+/**
+ * VoidInterfaceMethodDeclaratorRest:
+ *   FormalParameters [throws QualifiedIdentifierList] ;
+ */
 void Parser::parseVoidInterfaceMethodDeclaratorRest(
   spVoidInterfaceMethodDeclaratorRest &voidMethDeclRest) {
 
@@ -5725,8 +5961,10 @@ void Parser::parseVoidInterfaceMethodDeclaratorRest(
   lexer->getNextToken(); // consume ';'
 }
 
-/// VoidMethodDeclaratorRest:
-///   FormalParameters [throws QualifiedIdentifierList] (Block | ;)
+/**
+ * VoidMethodDeclaratorRest:
+ *   FormalParameters [throws QualifiedIdentifierList] (Block | ;)
+ */
 void Parser::parseVoidMethodDeclaratorRest(
   spVoidMethodDeclaratorRest &voidMethDeclRest) {
 
@@ -5773,9 +6011,11 @@ void Parser::parseVoidMethodDeclaratorRest(
   st.updateScopeEnd(voidMethDeclRest->block->posRCBrace + 1);
 }
 
-/// SuperSuffix:
-///   Arguments
-///   . Identifier [Arguments]
+/**
+ * SuperSuffix:
+ *   Arguments
+ *   . Identifier [Arguments]
+ */
 void Parser::parseSuperSuffix(spSuperSuffix &superSuffix) {
   // 1st option - Arguments
   if (lexer->getCurToken() == TOK_LPAREN) {
@@ -5810,8 +6050,10 @@ void Parser::parseSuperSuffix(spSuperSuffix &superSuffix) {
   }
 }
 
-/// SwitchBlockStatementGroups:
-///   { SwitchBlockStatementGroup }
+/**
+ * SwitchBlockStatementGroups:
+ *   { SwitchBlockStatementGroup }
+ */
 void Parser::parseSwitchBlockStatementGroups(
   spSwitchBlockStatementGroups &switchStmtGroups) {
 
@@ -5835,8 +6077,10 @@ void Parser::parseSwitchBlockStatementGroups(
 
 }
 
-/// SwitchBlockStatementGroup:
-///   SwitchLabels BlockStatements
+/**
+ * SwitchBlockStatementGroup:
+ *   SwitchLabels BlockStatements
+ */
 void Parser::parseSwitchBlockStatementGroup(
   spSwitchBlockStatementGroup &group) {
 
@@ -5851,10 +6095,12 @@ void Parser::parseSwitchBlockStatementGroup(
   parseBlockStatements(group->blockStmts);
 }
 
-/// SwitchLabel:
-///   (1) case Expression :
-///   (2) case EnumConstantName :
-///   (3) default :
+/**
+ * SwitchLabel:
+ *   (1) case Expression :
+ *   (2) case EnumConstantName :
+ *   (3) default :
+ */
 void Parser::parseSwitchLabel(spSwitchLabel &label) {
   // (3) default :
   if (lexer->getCurToken() == TOK_KEY_DEFAULT) {
@@ -5930,8 +6176,10 @@ void Parser::parseSwitchLabel(spSwitchLabel &label) {
   lexer->getNextToken(); // consume ':'
 }
 
-/// SwitchLabels:
-///   SwitchLabel { SwitchLabel }
+/**
+ * SwitchLabels:
+ *   SwitchLabel { SwitchLabel }
+ */
 void Parser::parseSwitchLabels(spSwitchLabels &labels) {
   // SwtichLabel
   labels->label = spSwitchLabel(new SwitchLabel);
@@ -5956,9 +6204,11 @@ void Parser::parseSwitchLabels(spSwitchLabels &labels) {
   }
 }
 
-/// Type:
-///   BasicType {[]}
-///   ReferenceType {[]}
+/**
+ * Type:
+ *   BasicType {[]}
+ *   ReferenceType {[]}
+ */
 void Parser::parseType(spType &type) {
   if (isBasicType(lexer->getCurToken())) {
     spTokenExp token = spTokenExp(new TokenExp(lexer->getCursor()
@@ -5983,7 +6233,9 @@ void Parser::parseType(spType &type) {
   type->addErr(-1);
 }
 
-/// TypeList: ReferenceType { , ReferenceType }
+/**
+ * TypeList: ReferenceType { , ReferenceType }
+ */
 void Parser::parseTypeList(spTypeList &typeList) {
   if (lexer->getCurToken() != TOK_IDENTIFIER) {
     typeList->addErr(diag->addErr(ERR_EXP_IDENTIFIER, lexer->getCursor() - 1));
@@ -6017,7 +6269,9 @@ void Parser::parseTypeList(spTypeList &typeList) {
   }
 }
 
-/// TypeList2: Type { , Type }
+/**
+ * TypeList2: Type { , Type }
+ */
 void Parser::parseTypeList2(spTypeList2 &typeList2) {
 
   typeList2->type = spType(new Type);
@@ -6046,8 +6300,10 @@ void Parser::parseTypeList2(spTypeList2 &typeList2) {
   }
 }
 
-/// TypeParameter:
-///   Identifier [extends Bound]
+/**
+ * TypeParameter:
+ *   Identifier [extends Bound]
+ */
 void Parser::parseTypeParameter(spTypeParameter &typeParam) {
   // Identifier
   if (lexer->getCurToken() != TOK_IDENTIFIER) {
@@ -6077,8 +6333,10 @@ void Parser::parseTypeParameter(spTypeParameter &typeParam) {
   }
 }
 
-/// TypeParameters:
-///   < TypeParameter { , TypeParameter } >
+/**
+ * TypeParameters:
+ *   < TypeParameter { , TypeParameter } >
+ */
 void Parser::parseTypeParameters(spTypeParameters &typeParams) {
   if (lexer->getCurToken() != TOK_OP_LT) {
     typeParams->addErr(diag->addErr(ERR_EXP_OP_LT, lexer->getCursor() - 1));
@@ -6127,9 +6385,11 @@ void Parser::parseStringLiteral(spStringLiteral &strLit) {
   lexer->getNextToken(); // consume string literal
 }
 
-/// FormalParameterDeclsRest:
-///   VariableDeclaratorId [ , FormalParameterDecls ]
-///   ... VariableDeclaratorId
+/**
+ * FormalParameterDeclsRest:
+ *   VariableDeclaratorId [ , FormalParameterDecls ]
+ *   ... VariableDeclaratorId
+ */
 void Parser::parseFormalParameterDeclsRest(
   spFormalParameterDeclsRest &formParamDeclsRest) {
 
@@ -6179,7 +6439,9 @@ void Parser::parseFormalParameterDeclsRest(
   }
 }
 
-/// VariableDeclaratorId: Identifier {[]}
+/**
+ * VariableDeclaratorId: Identifier {[]}
+ */
 void Parser::parseVariableDeclaratorId(spVariableDeclaratorId &varDeclId) {
   if (lexer->getCurToken() != TOK_IDENTIFIER) {
     varDeclId->addErr(diag->addErr(ERR_EXP_IDENTIFIER, lexer->getCursor() - 1));
@@ -6192,7 +6454,9 @@ void Parser::parseVariableDeclaratorId(spVariableDeclaratorId &varDeclId) {
   parseArrayDepth(varDeclId->arrayDepth);
 }
 
-///  VariableDeclaratorRest: {'[' ']'} [ = VariableInitializer ]
+/**
+ *  VariableDeclaratorRest: {'[' ']'} [ = VariableInitializer ]
+ */
 void Parser::parseVariableDeclaratorRest(spVariableDeclaratorRest &varDeclRest) {
   // {'[' ']'}
   parseArrayDepth(varDeclRest->arrayDepth);
@@ -6210,7 +6474,9 @@ void Parser::parseVariableDeclaratorRest(spVariableDeclaratorRest &varDeclRest) 
   }
 }
 
-/// VariableDeclarator: Identifier VariableDeclaratorRest
+/**
+ * VariableDeclarator: Identifier VariableDeclaratorRest
+ */
 void Parser::parseVariableDeclarator(spVariableDeclarator &varDecl) {
   if (lexer->getCurToken() != TOK_IDENTIFIER) {
     varDecl->addErr(diag->addErr(ERR_EXP_IDENTIFIER, lexer->getCursor() - 1));
@@ -6231,7 +6497,9 @@ void Parser::parseVariableDeclarator(spVariableDeclarator &varDecl) {
   }
 }
 
-/// VariableDeclarators: VariableDeclarator { , VariableDeclarator }
+/**
+ * VariableDeclarators: VariableDeclarator { , VariableDeclarator }
+ */
 void Parser::parseVariableDeclarators(spVariableDeclarators &varDecls) {
   // VariableDeclarator
   varDecls->varDecl = spVariableDeclarator(new VariableDeclarator);
@@ -6263,9 +6531,11 @@ void Parser::parseVariableDeclarators(spVariableDeclarators &varDecls) {
   }
 }
 
-/// VariableInitializer:
-///   ArrayInitializer
-///   Expression
+/**
+ * VariableInitializer:
+ *   ArrayInitializer
+ *   Expression
+ */
 void Parser::parseVariableInitializer(spVariableInitializer &varInit) {
   // ArrayInitializer
   if (lexer->getCurToken() == TOK_LCURLY_BRACKET) {

@@ -14,8 +14,10 @@
 
 namespace djp {
 
-/// Emacs output for syntax highlighing.
-/// The first position in the buffer is 1.
+/**
+ * Emacs output for syntax highlighing.
+ * The first position in the buffer is 1.
+ */
 class EmacsOutput {
 
   // Lexer and Parser products:

@@ -2,7 +2,9 @@
 
 namespace djp {
 
-/// Return the next char in the buffer or '\0' if we hit the end of the buffer.
+/**
+ * Return the next char in the buffer or '\0' if we hit the end of the buffer.
+ */
 char SourceCodeStream::getChar() {
   if (cursor > buffer.length()) {
     return '\0';
@@ -63,8 +65,10 @@ unsigned int SourceCodeStream::getMarkOffset() {
   return getCursor() - cursorMark;
 }
 
-/// We check if the next token is the keyword 'interface'.
-/// We assume that any whitespace has been previously consumed.
+/**
+ * We check if the next token is the keyword 'interface'.
+ * We assume that any whitespace has been previously consumed.
+ */
 bool SourceCodeStream::lookaheadInterface(int point) {
   std::string result = std::string(buffer, point, 9);
   if (result == "interface") return true;

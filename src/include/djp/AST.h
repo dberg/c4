@@ -7,105 +7,107 @@
 #include "Token.h"
 #include "ErrorCodes.h"
 
-/// We have to modify a few production rules from the grammar.
-///
-/// 1. Expression2Rest is defined in the grammar as follows
-/// Expression2Rest:
-///   (1) { InfixOp Expression3 }
-///   (2) instanceof Type
-/// but it doesn't take into account cases like
-///   if (x == 1 && y instanceof String) { ... }
-/// Our version
-/// Expression2Rest:
-///   { InfixOp Expression3 | instanceof Type }
-///
-/// 2. Expression3:
-///   (1) PrefixOp Expression3
-///   (2) '(' Type ')' Expression3
-///   (3) '(' Expression ')' Expression3
-///   (4) Primary { Selector } { PostfixOp }
-/// The italicized parentheses are probably a typo in the grammar.
-/// We treat them as terminals.
-///
-/// 3. CatchType is defined in the grammar as follows
-/// CatchType:
-///   Identifier { '|' Identifier }
-/// Our version
-/// CatchType:
-///   QualifiedIdentifier { '|' QualifiedIdentifier }
-///
-/// 4. Creator is defined in the grammar as follows
-/// Creator:
-///   NonWildcardTypeArguments CreatedName ClassCreatorRest
-///   CreatedName ( ClassCreatorRest | ArrayCreatorRest )
-/// We have to take into account primitive arrays and we add one more production
-/// rule to Creator. For example
-///   int[] a = new int[1];
-/// Our version
-/// Creator:
-///   NonWildcardTypeArguments CreatedName ClassCreatorRest
-///   CreatedName ( ClassCreatorRest | ArrayCreatorRest )
-///   BasicType ArrayCreatorRest
-///
-/// 5. NonWildcardTypeArguments is defined in the grammar as follows
-/// NonWildcardTypeArguments:
-///   < TypeList >
-/// And TypeList expands to
-/// TypeList:
-///   ReferenceType { , ReferenceType }
-///
-/// The problem is that it won't take into account arrays. Examples:
-///   <String[]>
-///   <int[]>
-/// Our version
-/// NonWildcardTypeArguments:
-///   < TypeList2 >
-/// TypeList2:
-///   Type { , Type }
-/// The parser or the output code has to check for the invalid input of
-/// primitives that are not arrays. This is INVALID: <int>
-///
-/// 6. TypeArgument is defined in the grammar as follows
-/// TypeArgument:
-///   ReferenceType
-///   ? [ ( extends | super ) ReferenceType ]
-/// Like NonWildcardTypeArguments, this production rule doesn't take into
-/// account arrays, including basic type arrays.
-/// Our version
-/// TypeArgument:
-///   Type
-///   ? [ ( extends | super ) Type ]
-///
-/// 7. ForControl is defined in the grammar as follows
-/// ForControl:
-///   ForVarControl
-///   ForInit ; [Expression] ; [ForUpdate]
-/// We have to make ForInit optional to handle this case
-///   for (;;) { ... }
-/// Our version
-/// ForControl:
-///   ForVarControl
-///   [ForInit] ; [Expression] ; [ForUpdate]
-///
-/// 8. Expression is defined in the grammas as follows
-/// Expression:
-///   Expression1 [ AssignmentOperator Expression1 ]
-/// This prevents multiple assignments like a = b = 1
-/// Our version
-/// Expression:
-///   Expression1 [ AssignmentOperator Expression ]
-///
-/// 9. IdentifierSuffix. The first production rule option is defined as follows:
-/// IdentifierSuffix:
-///   '[' ( {'[]'} . class | Expression ) ']'
-/// Our version
-/// IdentifierSuffix:
-///   '[' ( ']' {'[]'} . class | Expression ']' )
-///
-/// 10. AnnotationTypeBody. Our version
-/// AnnotationTypeBody:
-///   [AnnotationTypeElementDeclarations]
-/// See note in the top of this file.
+/**
+ * We have to modify a few production rules from the grammar.
+ *
+ * 1. Expression2Rest is defined in the grammar as follows
+ * Expression2Rest:
+ *   (1) { InfixOp Expression3 }
+ *   (2) instanceof Type
+ * but it doesn't take into account cases like
+ *   if (x == 1 && y instanceof String) { ... }
+ * Our version
+ * Expression2Rest:
+ *   { InfixOp Expression3 | instanceof Type }
+ *
+ * 2. Expression3:
+ *   (1) PrefixOp Expression3
+ *   (2) '(' Type ')' Expression3
+ *   (3) '(' Expression ')' Expression3
+ *   (4) Primary { Selector } { PostfixOp }
+ * The italicized parentheses are probably a typo in the grammar.
+ * We treat them as terminals.
+ *
+ * 3. CatchType is defined in the grammar as follows
+ * CatchType:
+ *   Identifier { '|' Identifier }
+ * Our version
+ * CatchType:
+ *   QualifiedIdentifier { '|' QualifiedIdentifier }
+ *
+ * 4. Creator is defined in the grammar as follows
+ * Creator:
+ *   NonWildcardTypeArguments CreatedName ClassCreatorRest
+ *   CreatedName ( ClassCreatorRest | ArrayCreatorRest )
+ * We have to take into account primitive arrays and we add one more production
+ * rule to Creator. For example
+ *   int[] a = new int[1];
+ * Our version
+ * Creator:
+ *   NonWildcardTypeArguments CreatedName ClassCreatorRest
+ *   CreatedName ( ClassCreatorRest | ArrayCreatorRest )
+ *   BasicType ArrayCreatorRest
+ *
+ * 5. NonWildcardTypeArguments is defined in the grammar as follows
+ * NonWildcardTypeArguments:
+ *   < TypeList >
+ * And TypeList expands to
+ * TypeList:
+ *   ReferenceType { , ReferenceType }
+ *
+ * The problem is that it won't take into account arrays. Examples:
+ *   <String[]>
+ *   <int[]>
+ * Our version
+ * NonWildcardTypeArguments:
+ *   < TypeList2 >
+ * TypeList2:
+ *   Type { , Type }
+ * The parser or the output code has to check for the invalid input of
+ * primitives that are not arrays. This is INVALID: <int>
+ *
+ * 6. TypeArgument is defined in the grammar as follows
+ * TypeArgument:
+ *   ReferenceType
+ *   ? [ ( extends | super ) ReferenceType ]
+ * Like NonWildcardTypeArguments, this production rule doesn't take into
+ * account arrays, including basic type arrays.
+ * Our version
+ * TypeArgument:
+ *   Type
+ *   ? [ ( extends | super ) Type ]
+ *
+ * 7. ForControl is defined in the grammar as follows
+ * ForControl:
+ *   ForVarControl
+ *   ForInit ; [Expression] ; [ForUpdate]
+ * We have to make ForInit optional to handle this case
+ *   for (;;) { ... }
+ * Our version
+ * ForControl:
+ *   ForVarControl
+ *   [ForInit] ; [Expression] ; [ForUpdate]
+ *
+ * 8. Expression is defined in the grammas as follows
+ * Expression:
+ *   Expression1 [ AssignmentOperator Expression1 ]
+ * This prevents multiple assignments like a = b = 1
+ * Our version
+ * Expression:
+ *   Expression1 [ AssignmentOperator Expression ]
+ *
+ * 9. IdentifierSuffix. The first production rule option is defined as follows:
+ * IdentifierSuffix:
+ *   '[' ( {'[]'} . class | Expression ) ']'
+ * Our version
+ * IdentifierSuffix:
+ *   '[' ( ']' {'[]'} . class | Expression ']' )
+ *
+ * 10. AnnotationTypeBody. Our version
+ * AnnotationTypeBody:
+ *   [AnnotationTypeElementDeclarations]
+ * See note in the top of this file.
+ */
 namespace djp {
 
 typedef std::shared_ptr<struct Annotation> spAnnotation;
@@ -320,18 +322,22 @@ struct Comment {
   Comment() : opt(OPT_UNDEFINED), posIni(0), posEnd(0) {}
 };
 
-/// CompilationUnit:
-///   [PackageDeclaration]
-///   {ImportDeclarations}
-///   {TypeDeclarations}
+/**
+ * CompilationUnit:
+ *   [PackageDeclaration]
+ *   {ImportDeclarations}
+ *   {TypeDeclarations}
+ */
 struct CompilationUnit {
   spPackageDeclaration pkgDecl;
   spImportDeclarations impDecls;
   std::vector<spTypeDeclaration> typeDecls;
 };
 
-/// ConstantDeclaratorRest:
-///   {'[]'} = VariableInitializer
+/**
+ * ConstantDeclaratorRest:
+ *   {'[]'} = VariableInitializer
+ */
 struct ConstantDeclaratorRest : ASTError {
   unsigned posEquals;
   ArrayDepth arrayDepth;
@@ -340,27 +346,35 @@ struct ConstantDeclaratorRest : ASTError {
   ConstantDeclaratorRest() : posEquals(0) {}
 };
 
-/// ConstantDeclaratorsRest:
-///   ConstantDeclaratorRest { , ConstantDeclarator }
+/**
+ * ConstantDeclaratorsRest:
+ *   ConstantDeclaratorRest { , ConstantDeclarator }
+ */
 struct ConstantDeclaratorsRest : ASTError {
   spConstantDeclaratorRest constDeclRest;
   std::vector<std::pair<unsigned, spConstantDeclaratorRest> > pairs;
 };
 
-/// PackageDeclaration: [ [Annotations]  package QualifiedIdentifier ; ]
+/**
+ * PackageDeclaration: [ [Annotations]  package QualifiedIdentifier ; ]
+ */
 struct PackageDeclaration : ASTError {
   std::vector<spAnnotation> annotations;
   spTokenExp tokPackage;
   spQualifiedIdentifier qualifiedId;
 };
 
-/// TypeDeclaration: ClassOrInterfaceDeclaration ;
+/**
+ * TypeDeclaration: ClassOrInterfaceDeclaration ;
+ */
 struct TypeDeclaration {
   spClassOrInterfaceDeclaration classOrIntDecl;
 };
 
-/// ClassOrInterfaceDeclaration:
-///   {Modifier} (ClassDeclaration | InterfaceDeclaration)
+/**
+ * ClassOrInterfaceDeclaration:
+ *   {Modifier} (ClassDeclaration | InterfaceDeclaration)
+ */
 struct ClassOrInterfaceDeclaration : ASTError {
   enum ClassOrInterfaceDeclarationOpt {
     OPT_UNDEFINED,
@@ -383,25 +397,29 @@ struct TokenExp {
   TokenExp(int pos = -1, int type = -1) : pos(pos), type(type) {}
 };
 
-/// Modifier:
-///   Annotations
-///   public
-///   protected
-///   private
-///   static
-///   abstract
-///   final
-///   native
-///   synchronized
-///   transient
-///   volatile
-///   strictfp
+/**
+ * Modifier:
+ *   Annotations
+ *   public
+ *   protected
+ *   private
+ *   static
+ *   abstract
+ *   final
+ *   native
+ *   synchronized
+ *   transient
+ *   volatile
+ *   strictfp
+ */
 struct Modifier {
   std::vector<spAnnotation> annotations;
   std::vector<spTokenExp> tokens;
 };
 
-/// PrefixOp: ++ -- ! ~ + -
+/**
+ * PrefixOp: ++ -- ! ~ + -
+ */
 struct PrefixOp {
   int pos;
   int token;
@@ -409,18 +427,22 @@ struct PrefixOp {
   PrefixOp(unsigned int pos, int token) : pos(pos), token(token) {}
 };
 
-/// ClassDeclaration: NormalClassDeclaration | EnumDeclaration
+/**
+ * ClassDeclaration: NormalClassDeclaration | EnumDeclaration
+ */
 struct ClassDeclaration : ASTError {
   spNormalClassDeclaration nClassDecl;
   spEnumDeclaration enumDecl;
 };
 
-/// NormalClassDeclaration:
-///   class Identifier [TypeParameters] [extends Type] [implements TypeList]
-///     ClassBody
-/// Detailed reference:
-/// ClassModifiers(opt) class Identifier TypeParameters(opt)
-///                           Super(opt) Interfaces(opt) ClassBody
+/**
+ * NormalClassDeclaration:
+ *   class Identifier [TypeParameters] [extends Type] [implements TypeList]
+ *     ClassBody
+ * Detailed reference:
+ * ClassModifiers(opt) class Identifier TypeParameters(opt)
+ *                           Super(opt) Interfaces(opt) ClassBody
+ */
 struct NormalClassDeclaration : ASTError {
   spTokenExp tokClass;
   spIdentifier id;
@@ -432,8 +454,10 @@ struct NormalClassDeclaration : ASTError {
   spClassBody classBody;
 };
 
-/// NormalInterfaceDeclaration:
-///   interface Identifier [TypeParameters] [extends TypeList] InterfaceBody
+/**
+ * NormalInterfaceDeclaration:
+ *   interface Identifier [TypeParameters] [extends TypeList] InterfaceBody
+ */
 struct NormalInterfaceDeclaration : ASTError {
   spTokenExp tokInterface;
   spIdentifier id;
@@ -443,7 +467,9 @@ struct NormalInterfaceDeclaration : ASTError {
   spInterfaceBody body;
 };
 
-/// ClassBody: '{' {ClassBodyDeclaration} '}'
+/**
+ * ClassBody: '{' {ClassBodyDeclaration} '}'
+ */
 struct ClassBody : ASTError {
   unsigned posLCBrace;
   unsigned posRCBrace;
@@ -452,19 +478,21 @@ struct ClassBody : ASTError {
   ClassBody() : posLCBrace(0), posRCBrace(0) {}
 };
 
-/// ClassBodyDeclaration:
-///   (1) ;
-///   (2) {Modifier} MemberDecl
-///   (3) [static] Block
-/// Our Modifier structure defines an array of annotation and tokens so we treat
-/// {Modifier} as spModifier.
-///
-/// For further reference.
-/// ClassBodyDeclaration:
-///   ClassMemberDeclaration
-///   InstanceInitializer
-///   StaticInitializer
-///   ConstructorDeclaration
+/**
+ * ClassBodyDeclaration:
+ *   (1) ;
+ *   (2) {Modifier} MemberDecl
+ *   (3) [static] Block
+ * Our Modifier structure defines an array of annotation and tokens so we treat
+ * {Modifier} as spModifier.
+ *
+ * For further reference.
+ * ClassBodyDeclaration:
+ *   ClassMemberDeclaration
+ *   InstanceInitializer
+ *   StaticInitializer
+ *   ConstructorDeclaration
+ */
 struct ClassBodyDeclaration : ASTError {
   enum ClassBodyDeclarationOpt {
     OPT_UNDEFINED,
@@ -489,13 +517,15 @@ struct ClassBodyDeclaration : ASTError {
   ClassBodyDeclaration() : opt(OPT_UNDEFINED), posSemiColon(0) {}
 };
 
-/// MemberDecl:
-///   (1) MethodOrFieldDecl
-///   (2) void Identifier VoidMethodDeclaratorRest
-///   (3) Identifier ConstructorDeclaratorRest
-///   (4) GenericMethodOrConstructorDecl
-///   (5) ClassDeclaration
-///   (6) InterfaceDeclaration
+/**
+ * MemberDecl:
+ *   (1) MethodOrFieldDecl
+ *   (2) void Identifier VoidMethodDeclaratorRest
+ *   (3) Identifier ConstructorDeclaratorRest
+ *   (4) GenericMethodOrConstructorDecl
+ *   (5) ClassDeclaration
+ *   (6) InterfaceDeclaration
+ */
 struct MemberDecl : ASTError {
   enum MemberDeclOpt {
     OPT_UNDEFINED,
@@ -534,8 +564,10 @@ struct MemberDecl : ASTError {
   MemberDecl() : opt(OPT_UNDEFINED) {}
 };
 
-/// MethodDeclaratorRest:
-///  FormalParameters {'[' ']'} [throws QualifiedIdentifierList] (Block | ;)
+/**
+ * MethodDeclaratorRest:
+ *  FormalParameters {'[' ']'} [throws QualifiedIdentifierList] (Block | ;)
+ */
 struct MethodDeclaratorRest : ASTError {
   spFormalParameters formParams;
   ArrayDepth arrayDepth;
@@ -549,16 +581,20 @@ struct MethodDeclaratorRest : ASTError {
   MethodDeclaratorRest() : posSemiColon(0) {}
 };
 
-/// MethodOrFieldDecl: Type Identifier MethodOrFieldRest
+/**
+ * MethodOrFieldDecl: Type Identifier MethodOrFieldRest
+ */
 struct MethodOrFieldDecl : ASTError {
   spType type;
   spIdentifier id;
   spMethodOrFieldRest methodOrFieldRest;
 };
 
-/// MethodOrFieldRest:
-///   (1) FieldDeclaratorsRest ;
-///   (2) MethodDeclaratorRest
+/**
+ * MethodOrFieldRest:
+ *   (1) FieldDeclaratorsRest ;
+ *   (2) MethodDeclaratorRest
+ */
 struct MethodOrFieldRest : ASTError {
   enum MethodOrFieldRestOpt {
     OPT_UNDEFINED,
@@ -578,8 +614,10 @@ struct MethodOrFieldRest : ASTError {
   MethodOrFieldRest() : opt(OPT_UNDEFINED) {}
 };
 
-/// ConstructorDeclaratorRest:
-///   FormalParameters [throws QualifiedIdentifierList] Block
+/**
+ * ConstructorDeclaratorRest:
+ *   FormalParameters [throws QualifiedIdentifierList] Block
+ */
 struct ConstructorDeclaratorRest : ASTError {
   spFormalParameters formParams;
   spTokenExp tokThrows;
@@ -587,7 +625,9 @@ struct ConstructorDeclaratorRest : ASTError {
   spBlock block;
 };
 
-/// FormalParameters: '(' [FormalParameterDecls] ')'
+/**
+ * FormalParameters: '(' [FormalParameterDecls] ')'
+ */
 struct FormalParameters : ASTError {
   unsigned int posLParen;
   unsigned int posRParen;
@@ -595,17 +635,21 @@ struct FormalParameters : ASTError {
   FormalParameters() : posLParen(0), posRParen(0) {}
 };
 
-/// FormalParameterDecls: {VariableModifier} Type FormalParameterDeclsRest
+/**
+ * FormalParameterDecls: {VariableModifier} Type FormalParameterDeclsRest
+ */
 struct FormalParameterDecls {
   spVariableModifier varModifier;
   spType type;
   spFormalParameterDeclsRest formParamDeclsRest;
 };
 
-/// VariableModifier:
-///   final
-///   Annotation
-/// One 'final' keyword is allowed, while we can have zero or more annotations.
+/**
+ * VariableModifier:
+ *   final
+ *   Annotation
+ * One 'final' keyword is allowed, while we can have zero or more annotations.
+ */
 struct VariableModifier : ASTError {
   spTokenExp tokFinal;
   std::vector<spAnnotation> annotations;
@@ -619,8 +663,10 @@ struct VariableModifier : ASTError {
   }
 };
 
-/// VoidInterfaceMethodDeclaratorRest:
-///   FormalParameters [throws QualifiedIdentifierList] ;
+/**
+ * VoidInterfaceMethodDeclaratorRest:
+ *   FormalParameters [throws QualifiedIdentifierList] ;
+ */
 struct VoidInterfaceMethodDeclaratorRest : ASTError {
   unsigned posSemiColon;
   spFormalParameters formParams;
@@ -630,8 +676,10 @@ struct VoidInterfaceMethodDeclaratorRest : ASTError {
   VoidInterfaceMethodDeclaratorRest() : posSemiColon(0) {}
 };
 
-/// VoidMethodDeclaratorRest:
-///   FormalParameters [throws QualifiedIdentifierList] (Block | ;)
+/**
+ * VoidMethodDeclaratorRest:
+ *   FormalParameters [throws QualifiedIdentifierList] (Block | ;)
+ */
 struct VoidMethodDeclaratorRest : ASTError {
   spFormalParameters formParams;
 
@@ -644,9 +692,11 @@ struct VoidMethodDeclaratorRest : ASTError {
   VoidMethodDeclaratorRest() : posSemiColon(0) {}
 };
 
-/// Type:
-///   BasicType {[]}
-///   ReferenceType {[]}
+/**
+ * Type:
+ *   BasicType {[]}
+ *   ReferenceType {[]}
+ */
 struct Type : ASTError {
   enum TypeOpt {
     OPT_UNDEFINED,
@@ -662,10 +712,12 @@ struct Type : ASTError {
   Type() : opt(OPT_UNDEFINED) {}
 };
 
-/// FormalParameterDeclsRest:
-///   VariableDeclaratorId [ , FormalParameterDecls ]
-///   ... VariableDeclaratorId
-/// The variable arity parameter must be the last parameter.
+/**
+ * FormalParameterDeclsRest:
+ *   VariableDeclaratorId [ , FormalParameterDecls ]
+ *   ... VariableDeclaratorId
+ * The variable arity parameter must be the last parameter.
+ */
 struct FormalParameterDeclsRest {
   enum FormalParameterDeclsRestOpt {
     OPT_UNDEFINED,
@@ -680,39 +732,51 @@ struct FormalParameterDeclsRest {
   FormalParameterDeclsRest() : opt(OPT_UNDEFINED) {}
 };
 
-/// VariableDeclarator: Identifier VariableDeclaratorRest
+/**
+ * VariableDeclarator: Identifier VariableDeclaratorRest
+ */
 struct VariableDeclarator : ASTError {
   spIdentifier id;
   spVariableDeclaratorRest varDeclRest;
 };
 
-/// VariableDeclarators: VariableDeclarator { , VariableDeclarator }
+/**
+ * VariableDeclarators: VariableDeclarator { , VariableDeclarator }
+ */
 struct VariableDeclarators : ASTError {
   spVariableDeclarator varDecl;
   std::vector<std::pair<unsigned, spVariableDeclarator> > pairs;
 };
 
-/// VariableDeclaratorId: Identifier {[]}
+/**
+ * VariableDeclaratorId: Identifier {[]}
+ */
 struct VariableDeclaratorId : ASTError {
   spIdentifier id;
   ArrayDepth arrayDepth;
 };
 
-/// VariableDeclaratorRest: {'[' ']'} [ = VariableInitializer ]
+/**
+ * VariableDeclaratorRest: {'[' ']'} [ = VariableInitializer ]
+ */
 struct VariableDeclaratorRest : ASTError {
   ArrayDepth arrayDepth;
   unsigned int posEquals;
   spVariableInitializer varInit;
 };
 
-/// BasicType: byte | short | char | int | long | float | double | boolean
+/**
+ * BasicType: byte | short | char | int | long | float | double | boolean
+ */
 struct BasicType {
   spTokenExp tok;
   BasicType(spTokenExp tok) : tok(tok) {}
 };
 
-/// ReferenceType:
-///   Identifier [TypeArguments] { . Identifier [TypeArguments] }
+/**
+ * ReferenceType:
+ *   Identifier [TypeArguments] { . Identifier [TypeArguments] }
+ */
 struct ReferenceType : ASTError {
   spIdentifier id;
   spTypeArguments typeArgs;
@@ -720,8 +784,10 @@ struct ReferenceType : ASTError {
   std::vector<spReferenceTypeTriplet> triplets;
 };
 
-/// ReferenceType helper
-///   { . Identifier [TypeArguments] }
+/**
+ * ReferenceType helper
+ *   { . Identifier [TypeArguments] }
+ */
 struct ReferenceTypeTriplet {
   unsigned posPeriod;
   spIdentifier id;
@@ -730,8 +796,10 @@ struct ReferenceTypeTriplet {
   ReferenceTypeTriplet() : posPeriod(0) {}
 };
 
-/// Resource:
-///   {VariableModifier} ReferenceType VariableDeclaratorId = Expression
+/**
+ * Resource:
+ *   {VariableModifier} ReferenceType VariableDeclaratorId = Expression
+ */
 struct Resource : ASTError {
   unsigned posEquals;
   spVariableModifier varModifier;
@@ -742,15 +810,19 @@ struct Resource : ASTError {
   Resource() : posEquals(0) {}
 };
 
-/// Resources:
-///   Resource { ; Resource }
+/**
+ * Resources:
+ *   Resource { ; Resource }
+ */
 struct Resources : ASTError {
   spResource res;
   std::vector<std::pair<unsigned, spResource> > pairs;
 };
 
-/// ResourceSpecification:
-///   '(' Resources [;] ')'
+/**
+ * ResourceSpecification:
+ *   '(' Resources [;] ')'
+ */
 struct ResourceSpecification : ASTError {
   unsigned posLParen;
   unsigned posRParen;
@@ -760,13 +832,15 @@ struct ResourceSpecification : ASTError {
   ResourceSpecification() : posLParen(0), posRParen(0), posSemiColon(0) {}
 };
 
-/// Selector:
-///   . Identifier [Arguments]
-///   . ExplicitGenericInvocation
-///   . this
-///   . super SuperSuffix
-///   . new [NonWildcardTypeArguments] InnerCreator
-///   '[' Expression ']'
+/**
+ * Selector:
+ *   . Identifier [Arguments]
+ *   . ExplicitGenericInvocation
+ *   . this
+ *   . super SuperSuffix
+ *   . new [NonWildcardTypeArguments] InnerCreator
+ *   '[' Expression ']'
+ */
 struct Selector : ASTError {
   enum SelectorOpt {
     OPT_UNDEFINED,
@@ -809,24 +883,26 @@ struct Selector : ASTError {
   Selector() : opt(OPT_UNDEFINED) {}
 };
 
-/// Statement:
-///   (1) Block
-///   (2) ;
-///   (3) Identifier : Statement
-///   (4) StatementExpression ;
-///   (5) if ParExpression Statement [else Statement]
-///   (6) assert Expression [: Expression] ;
-///   (7) switch ParExpression '{' SwitchBlockStatementGroups '}'
-///   (8) while ParExpression Statement
-///   (9) do Statement while ParExpression ;
-///   (10) for '(' ForControl ')' Statement
-///   (11) break [Identifier] ;
-///   (12) continue [Identifier] ;
-///   (13) return [Expression] ;
-///   (14) throw Expression ;
-///   (15) synchronized ParExpression Block
-///   (16) try Block ( Catches | [Catches] Finally )
-///   (17) try ResourceSpecification Block [Catches] [Finally]
+/**
+ * Statement:
+ *   (1) Block
+ *   (2) ;
+ *   (3) Identifier : Statement
+ *   (4) StatementExpression ;
+ *   (5) if ParExpression Statement [else Statement]
+ *   (6) assert Expression [: Expression] ;
+ *   (7) switch ParExpression '{' SwitchBlockStatementGroups '}'
+ *   (8) while ParExpression Statement
+ *   (9) do Statement while ParExpression ;
+ *   (10) for '(' ForControl ')' Statement
+ *   (11) break [Identifier] ;
+ *   (12) continue [Identifier] ;
+ *   (13) return [Expression] ;
+ *   (14) throw Expression ;
+ *   (15) synchronized ParExpression Block
+ *   (16) try Block ( Catches | [Catches] Finally )
+ *   (17) try ResourceSpecification Block [Catches] [Finally]
+ */
 struct Statement : ASTError {
   enum StatementOpt {
     OPT_UNDEFINED,
@@ -942,12 +1018,16 @@ struct Statement : ASTError {
       posLParen(0), posRParen(0) {}
 };
 
-/// StatementExpression: Expression
+/**
+ * StatementExpression: Expression
+ */
 struct StatementExpression : ASTError {
   spExpression expr;
 };
 
-/// TypeArguments: < TypeArgument { , TypeArgument } >
+/**
+ * TypeArguments: < TypeArgument { , TypeArgument } >
+ */
 struct TypeArguments : ASTError {
   unsigned int posLt;
   unsigned int posGt;
@@ -957,10 +1037,12 @@ struct TypeArguments : ASTError {
   TypeArguments() : ASTError(), posLt(0), posGt(0) {}
 };
 
-/// TypeArgument:
-///   Type
-///   ? [(extends|super) Type]
-/// See note in the top of this file.
+/**
+ * TypeArgument:
+ *   Type
+ *   ? [(extends|super) Type]
+ * See note in the top of this file.
+ */
 struct TypeArgument : ASTError {
   enum TypeArgumentOpt {
     OPT_UNDEFINED,
@@ -975,15 +1057,19 @@ struct TypeArgument : ASTError {
   TypeArgument() : opt(OPT_UNDEFINED) {}
 };
 
-/// TypeArgument: ? [(extends|super) Type ]
-/// See note in the top of this file.
+/**
+ * TypeArgument: ? [(extends|super) Type ]
+ * See note in the top of this file.
+ */
 struct TypeArgumentOpt2 : ASTError {
   unsigned int posQuestionMark;
   spTokenExp tokExtendsOrSuper;
   spType type;
 };
 
-/// Block: '{' BlockStatements '}'
+/**
+ * Block: '{' BlockStatements '}'
+ */
 struct Block : ASTError {
   unsigned posLCBrace;
   unsigned posRCBrace;
@@ -992,10 +1078,12 @@ struct Block : ASTError {
   Block() : posLCBrace(0), posRCBrace(0) {}
 };
 
-/// BlockStatement:
-///   (1) LocalVariableDeclarationStatement
-///   (2) ClassOrInterfaceDeclaration
-///   (3) [Identifier :] Statement
+/**
+ * BlockStatement:
+ *   (1) LocalVariableDeclarationStatement
+ *   (2) ClassOrInterfaceDeclaration
+ *   (3) [Identifier :] Statement
+ */
 struct BlockStatement : ASTError {
   enum BlockStatementOpt {
     OPT_UNDEFINED,
@@ -1020,8 +1108,10 @@ struct BlockStatement : ASTError {
   BlockStatement() : opt(OPT_UNDEFINED) {}
 };
 
-/// EnumBody:
-///   '{' [EnumConstants] [,] [EnumBodyDeclarations] '}'
+/**
+ * EnumBody:
+ *   '{' [EnumConstants] [,] [EnumBodyDeclarations] '}'
+ */
 struct EnumBody : ASTError {
   unsigned posLCBrace;
   unsigned posRCBrace;
@@ -1032,8 +1122,10 @@ struct EnumBody : ASTError {
   EnumBody() : posLCBrace(0), posRCBrace(0), posComma(0) {}
 };
 
-/// EnumBodyDeclarations:
-///   ; {ClassBodyDeclaration}
+/**
+ * EnumBodyDeclarations:
+ *   ; {ClassBodyDeclaration}
+ */
 struct EnumBodyDeclarations : ASTError {
   unsigned posSemiColon;
   std::vector<spClassBodyDeclaration> classBodyDecls;
@@ -1041,8 +1133,10 @@ struct EnumBodyDeclarations : ASTError {
   EnumBodyDeclarations() : posSemiColon(0) {}
 };
 
-/// EnumConstant:
-///   [Annotations] Identifier [Arguments] [ClassBody]
+/**
+ * EnumConstant:
+ *   [Annotations] Identifier [Arguments] [ClassBody]
+ */
 struct EnumConstant : ASTError {
   std::vector<spAnnotation> annotations;
   spIdentifier id;
@@ -1050,22 +1144,28 @@ struct EnumConstant : ASTError {
   spClassBody classBody;
 };
 
-/// EnumConstants:
-///   EnumConstant
-///   EnumConstants , EnumConstant
+/**
+ * EnumConstants:
+ *   EnumConstant
+ *   EnumConstants , EnumConstant
+ */
 struct EnumConstants : ASTError {
   spEnumConstant enumConst;
   std::vector<std::pair<unsigned, spEnumConstant> > pairs;
 };
 
-/// EnumConstantName:
-///   Identifier
+/**
+ * EnumConstantName:
+ *   Identifier
+ */
 struct EnumConstantName : ASTError {
   spIdentifier id;
 };
 
-/// EnumDeclaration:
-///   enum Identifier [implements TypeList] EnumBody
+/**
+ * EnumDeclaration:
+ *   enum Identifier [implements TypeList] EnumBody
+ */
 struct EnumDeclaration : ASTError {
   spTokenExp tokEnum;
   spIdentifier id;
@@ -1074,8 +1174,10 @@ struct EnumDeclaration : ASTError {
   spEnumBody enumBody;
 };
 
-/// InterfaceBody:
-///   '{' { InterfaceBodyDeclaration } '}'
+/**
+ * InterfaceBody:
+ *   '{' { InterfaceBodyDeclaration } '}'
+ */
 struct InterfaceBody : ASTError {
   unsigned posLCBrace;
   unsigned posRCBrace;
@@ -1084,9 +1186,11 @@ struct InterfaceBody : ASTError {
   InterfaceBody() : posLCBrace(0), posRCBrace(0) {}
 };
 
-/// InterfaceBodyDeclaration:
-///   (1) ;
-///   (2) {Modifier} InterfaceMemberDecl
+/**
+ * InterfaceBodyDeclaration:
+ *   (1) ;
+ *   (2) {Modifier} InterfaceMemberDecl
+ */
 struct InterfaceBodyDeclaration : ASTError {
   enum InterfaceBodyDeclarationOpt {
     OPT_UNDEFINED,
@@ -1106,9 +1210,11 @@ struct InterfaceBodyDeclaration : ASTError {
   InterfaceBodyDeclaration() : opt(OPT_UNDEFINED), posSemiColon(0) {}
 };
 
-/// InterfaceDeclaration:
-///   NormalInterfaceDeclaration
-///   AnnotationTypeDeclaration
+/**
+ * InterfaceDeclaration:
+ *   NormalInterfaceDeclaration
+ *   AnnotationTypeDeclaration
+ */
 struct InterfaceDeclaration : ASTError {
   enum InterfaceDeclarationOpt {
     OPT_UNDEFINED,
@@ -1123,8 +1229,10 @@ struct InterfaceDeclaration : ASTError {
   InterfaceDeclaration() : opt(OPT_UNDEFINED) {}
 };
 
-/// InterfaceGenericMethodDecl:
-///   TypeParameters (Type | void) Identifier InterfaceMethodDeclaratorRest
+/**
+ * InterfaceGenericMethodDecl:
+ *   TypeParameters (Type | void) Identifier InterfaceMethodDeclaratorRest
+ */
 struct InterfaceGenericMethodDecl : ASTError {
   spTypeParameters typeParams;
   spType type;
@@ -1133,12 +1241,14 @@ struct InterfaceGenericMethodDecl : ASTError {
   spInterfaceMethodDeclaratorRest methDeclRest;
 };
 
-/// InterfaceMemberDecl:
-///   (1) InterfaceMethodOrFieldDecl
-///   (2) void Identifier VoidInterfaceMethodDeclaratorRest
-///   (3) InterfaceGenericMethodDecl
-///   (4) ClassDeclaration
-///   (5) InterfaceDeclaration
+/**
+ * InterfaceMemberDecl:
+ *   (1) InterfaceMethodOrFieldDecl
+ *   (2) void Identifier VoidInterfaceMethodDeclaratorRest
+ *   (3) InterfaceGenericMethodDecl
+ *   (4) ClassDeclaration
+ *   (5) InterfaceDeclaration
+ */
 struct InterfaceMemberDecl : ASTError {
   enum InterfaceMemberDeclOpt {
     OPT_UNDEFINED,
@@ -1171,8 +1281,10 @@ struct InterfaceMemberDecl : ASTError {
   InterfaceMemberDecl() : opt(OPT_UNDEFINED) {}
 };
 
-/// InterfaceMethodDeclaratorRest:
-///   FormalParameters {'[]'} [throws QualifiedIdentifierList] ;
+/**
+ * InterfaceMethodDeclaratorRest:
+ *   FormalParameters {'[]'} [throws QualifiedIdentifierList] ;
+ */
 struct InterfaceMethodDeclaratorRest : ASTError {
   unsigned posSemiColon;
   spFormalParameters formParams;
@@ -1183,17 +1295,21 @@ struct InterfaceMethodDeclaratorRest : ASTError {
   InterfaceMethodDeclaratorRest() : posSemiColon(0) {}
 };
 
-/// InterfaceMethodOrFieldDecl:
-///   Type Identifier InterfaceMethodOrFieldRest
+/**
+ * InterfaceMethodOrFieldDecl:
+ *   Type Identifier InterfaceMethodOrFieldRest
+ */
 struct InterfaceMethodOrFieldDecl : ASTError {
   spType type;
   spIdentifier id;
   spInterfaceMethodOrFieldRest rest;
 };
 
-/// InterfaceMethodOrFieldRest:
-///   ConstantDeclaratorsRest ;
-///   InterfaceMethodDeclaratorRest
+/**
+ * InterfaceMethodOrFieldRest:
+ *   ConstantDeclaratorsRest ;
+ *   InterfaceMethodDeclaratorRest
+ */
 struct InterfaceMethodOrFieldRest : ASTError {
   enum InterfaceMethodOrFieldRestOpt {
     OPT_UNDEFINED,
@@ -1210,24 +1326,30 @@ struct InterfaceMethodOrFieldRest : ASTError {
   InterfaceMethodOrFieldRest() : opt(OPT_UNDEFINED), posSemiColon(0) {}
 };
 
-/// ImportDeclarations:
-///   ImportDeclaration
-///   ImportDeclarations ImportDeclaration
+/**
+ * ImportDeclarations:
+ *   ImportDeclaration
+ *   ImportDeclarations ImportDeclaration
+ */
 struct ImportDeclarations {
   std::vector<spImportDeclaration> imports;
   ImportDeclarations(std::vector<spImportDeclaration> imports)
     : imports(imports) {}
 };
 
-/// InnerCreator:
-///   Identifier [NonWildcardTypeArgumentsOrDiamond] ClassCreatorRest
+/**
+ * InnerCreator:
+ *   Identifier [NonWildcardTypeArgumentsOrDiamond] ClassCreatorRest
+ */
 struct InnerCreator : ASTError {
   spIdentifier id;
   spNonWildcardTypeArgumentsOrDiamond nonWildcardOrDiam;
   spClassCreatorRest classCreatorRest;
 };
 
-/// Annotation: @ QualifiedIdentifier [ ( [AnnotationElement] ) ]
+/**
+ * Annotation: @ QualifiedIdentifier [ ( [AnnotationElement] ) ]
+ */
 struct Annotation {
   int posTokAt;
   bool err;
@@ -1236,17 +1358,21 @@ struct Annotation {
   Annotation() : posTokAt(-1), err(false) {}
 };
 
-/// GenericMethodOrConstructorDecl:
-/// TypeParameters GenericMethodOrConstructorRest
+/**
+ * GenericMethodOrConstructorDecl:
+ * TypeParameters GenericMethodOrConstructorRest
+ */
 struct GenericMethodOrConstructorDecl : ASTError {
   spTypeParameters typeParams;
   spGenericMethodOrConstructorRest rest;
 };
 
-/// GenericMethodOrConstructorRest:
-/// (1) Type Identifier MethodDeclaratorRest
-/// (2) void Identifier MethodDeclaratorRest
-/// (3) Identifier ConstructorDeclaratorRest
+/**
+ * GenericMethodOrConstructorRest:
+ * (1) Type Identifier MethodDeclaratorRest
+ * (2) void Identifier MethodDeclaratorRest
+ * (3) Identifier ConstructorDeclaratorRest
+ */
 struct GenericMethodOrConstructorRest : ASTError {
   enum GenericMethodOrConstructorRestOpt {
     OPT_UNDEFINED,
@@ -1266,22 +1392,26 @@ struct GenericMethodOrConstructorRest : ASTError {
   spConstructorDeclaratorRest constDeclRest;
 };
 
-/// Identifier: IdentifierChars but not Keyword or BooleanLiteral or NullLiteral
-/// IdentifierChars: JavaLetter | IdentifierChars JavaLetterOrDigit
-/// JavaLetter: any Unicode character that is a Java letter
-/// JavaLetterOrDigit: any Unicde character that is a Java letter or digit
+/**
+ * Identifier: IdentifierChars but not Keyword or BooleanLiteral or NullLiteral
+ * IdentifierChars: JavaLetter | IdentifierChars JavaLetterOrDigit
+ * JavaLetter: any Unicode character that is a Java letter
+ * JavaLetterOrDigit: any Unicde character that is a Java letter or digit
+ */
 struct Identifier {
   int pos;
   const std::string value;
   Identifier(int pos, const std::string &value) : pos(pos), value(value) {}
 };
 
-/// IdentifierSuffix:
-///   '[' ( ']' {'[]'} . class | Expression ']' )
-///   Arguments
-///   . ( class | ExplicitGenericInvocation | this | super Arguments |
-///       new [NonWildcardTypeArguments] InnerCreator )
-/// See note in the top of this file.
+/**
+ * IdentifierSuffix:
+ *   '[' ( ']' {'[]'} . class | Expression ']' )
+ *   Arguments
+ *   . ( class | ExplicitGenericInvocation | this | super Arguments |
+ *       new [NonWildcardTypeArguments] InnerCreator )
+ * See note in the top of this file.
+ */
 struct IdentifierSuffix : ASTError {
   enum IdentifierSuffixOpt {
     OPT_UNDEFINED,
@@ -1336,27 +1466,33 @@ struct IdentifierSuffix : ASTError {
   IdentifierSuffix() : opt(OPT_UNDEFINED), posPeriod(0) {}
 };
 
-/// QualifiedIdentifier: Identifier { . Identifier }
+/**
+ * QualifiedIdentifier: Identifier { . Identifier }
+ */
 struct QualifiedIdentifier : ASTError {
   spIdentifier id;
   std::vector<std::pair<unsigned, spIdentifier> > pairs;
 };
 
-/// QualifiedIdentifierList:
-///   QualifiedIdentifier { , QualifiedIdentifier }
+/**
+ * QualifiedIdentifierList:
+ *   QualifiedIdentifier { , QualifiedIdentifier }
+ */
 struct QualifiedIdentifierList : ASTError {
   spQualifiedIdentifier qualifiedId;
   std::vector<std::pair<unsigned, spQualifiedIdentifier> > pairs;
 };
 
-/// For simplicity we adopt the following rule
-/// ImportDeclaration: import [static] QualifiedId [.*]
-/// For reference, a more detailed ImportDeclaration follows:
-/// ImportDeclaration
-///   SingleTypeImportDeclaration
-///   TypeImportOnDemandDeclaration
-///   SingleStaticImportDeclaration
-///   StaticImportOnDemandDeclaration
+/**
+ * For simplicity we adopt the following rule
+ * ImportDeclaration: import [static] QualifiedId [.*]
+ * For reference, a more detailed ImportDeclaration follows:
+ * ImportDeclaration
+ *   SingleTypeImportDeclaration
+ *   TypeImportOnDemandDeclaration
+ *   SingleStaticImportDeclaration
+ *   StaticImportOnDemandDeclaration
+ */
 struct ImportDeclaration {
   int posTokImport;
   int posTokStatic;
@@ -1374,7 +1510,9 @@ struct ImportDeclaration {
       err(false), type(SINGLE_TYPE_IMPORT_DECLARATION) {}
 };
 
-/// AnnotationElement: ElementValuePairs | ElementValue
+/**
+ * AnnotationElement: ElementValuePairs | ElementValue
+ */
 struct AnnotationElement {
   enum AnnotationElementOpt {
     OPT_UNDEFINED,
@@ -1390,9 +1528,11 @@ struct AnnotationElement {
   AnnotationElement() : opt(OPT_UNDEFINED), err(false) {}
 };
 
-/// AnnotationMethodOrConstantRest:
-///   AnnotationMethodRest
-///   ConstantDeclaratorsRest
+/**
+ * AnnotationMethodOrConstantRest:
+ *   AnnotationMethodRest
+ *   ConstantDeclaratorsRest
+ */
 struct AnnotationMethodOrConstantRest : ASTError {
   enum AnnotationMethodOrConstantRestOpt {
     OPT_UNDEFINED,
@@ -1407,8 +1547,10 @@ struct AnnotationMethodOrConstantRest : ASTError {
   AnnotationMethodOrConstantRest() : opt(OPT_UNDEFINED) {}
 };
 
-/// AnnotationMethodRest:
-///   '()' ['[]'] [default ElementValue]
+/**
+ * AnnotationMethodRest:
+ *   '()' ['[]'] [default ElementValue]
+ */
 struct AnnotationMethodRest : ASTError {
   unsigned posLParen;
   unsigned posRParen;
@@ -1421,15 +1563,19 @@ struct AnnotationMethodRest : ASTError {
     : posLParen(0), posRParen(0), posLBracket(0), posRBracket(0) {}
 };
 
-/// AnnotationTypeBody:
-///   [AnnotationTypeElementDeclarations]
-/// See note in the top of this file.
+/**
+ * AnnotationTypeBody:
+ *   [AnnotationTypeElementDeclarations]
+ * See note in the top of this file.
+ */
 struct AnnotationTypeBody : ASTError {
   spAnnotationTypeElementDeclarations elemDecls;
 };
 
-/// AnnotationTypeDeclaration:
-///   @ interface Identifier AnnotationTypeBody
+/**
+ * AnnotationTypeDeclaration:
+ *   @ interface Identifier AnnotationTypeBody
+ */
 struct AnnotationTypeDeclaration : ASTError {
   unsigned posAt;
   spTokenExp tokInterface;
@@ -1439,26 +1585,32 @@ struct AnnotationTypeDeclaration : ASTError {
   AnnotationTypeDeclaration() : posAt(0) {}
 };
 
-/// AnnotationTypeElementDeclaration:
-///   {Modifier} AnnotationTypeElementRest
+/**
+ * AnnotationTypeElementDeclaration:
+ *   {Modifier} AnnotationTypeElementRest
+ */
 struct AnnotationTypeElementDeclaration : ASTError {
   spModifier modifier;
   spAnnotationTypeElementRest elemRest;
 };
 
-/// AnnotationTypeElementDeclarations:
-///   AnnotationTypeElementDeclaration
-///   AnnotationTypeElementDeclarations AnnotationTypeElementDeclaration
+/**
+ * AnnotationTypeElementDeclarations:
+ *   AnnotationTypeElementDeclaration
+ *   AnnotationTypeElementDeclarations AnnotationTypeElementDeclaration
+ */
 struct AnnotationTypeElementDeclarations : ASTError {
   std::vector<spAnnotationTypeElementDeclaration> elemDecls;
 };
 
-/// AnnotationTypeElementRest:
-///   (1) Type Identifier AnnotationMethodOrConstantRest ;
-///   (2) ClassDeclaration
-///   (3) InterfaceDeclaration
-///   (4) EnumDeclaration
-///   (5) AnnotationTypeDeclaration
+/**
+ * AnnotationTypeElementRest:
+ *   (1) Type Identifier AnnotationMethodOrConstantRest ;
+ *   (2) ClassDeclaration
+ *   (3) InterfaceDeclaration
+ *   (4) EnumDeclaration
+ *   (5) AnnotationTypeDeclaration
+ */
 struct AnnotationTypeElementRest : ASTError {
   enum AnnotationTypeElementRestOpt {
     OPT_UNDEFINED,
@@ -1492,15 +1644,19 @@ struct AnnotationTypeElementRest : ASTError {
   AnnotationTypeElementRest() : opt(OPT_UNDEFINED), posSemiColon(0) {}
 };
 
-/// ElementValuePairs: ElementValuePair { , ElementValuePair }
-/// ElementValuePair: Identifier = ElementValue
+/**
+ * ElementValuePairs: ElementValuePair { , ElementValuePair }
+ * ElementValuePair: Identifier = ElementValue
+ */
 struct ElementValuePair {
   spIdentifier id;
   spElementValue value;
   ElementValuePair() {}
 };
 
-/// ElementValue: Annotation | Expression1 | ElementValueArrayInitializer
+/**
+ * ElementValue: Annotation | Expression1 | ElementValueArrayInitializer
+ */
 struct ElementValue : ASTError {
   enum ElementValueOpt {
     OPT_UNDEFINED,
@@ -1517,14 +1673,18 @@ struct ElementValue : ASTError {
   ElementValue() : opt(OPT_UNDEFINED) {}
 };
 
-/// ElementValues:
-///   ElementValue { , ElementValue }
+/**
+ * ElementValues:
+ *   ElementValue { , ElementValue }
+ */
 struct ElementValues : ASTError {
   spElementValue elemVal;
   std::vector<std::pair<unsigned, spElementValue> > pairs;
 };
 
-/// ElementValueArrayInitializer: '{' [ElementValues] [,] '}'
+/**
+ * ElementValueArrayInitializer: '{' [ElementValues] [,] '}'
+ */
 struct ElementValueArrayInitializer : ASTError {
   unsigned posLCBrace;
   unsigned posRCBrace;
@@ -1534,16 +1694,20 @@ struct ElementValueArrayInitializer : ASTError {
   ElementValueArrayInitializer() : posLCBrace(0), posRCBrace(0), posComma(0) {}
 };
 
-/// ExplicitGenericInvocation:
-///   NonWildcardTypeArguments ExplicitGenericInvocationSuffix
+/**
+ * ExplicitGenericInvocation:
+ *   NonWildcardTypeArguments ExplicitGenericInvocationSuffix
+ */
 struct ExplicitGenericInvocation : ASTError {
   spNonWildcardTypeArguments nonWildcardTypeArguments;
   spExplicitGenericInvocationSuffix explGen;
 };
 
-/// ExplicitGenericInvocationSuffix:
-///   super SuperSuffix
-///   Identifier Arguments
+/**
+ * ExplicitGenericInvocationSuffix:
+ *   super SuperSuffix
+ *   Identifier Arguments
+ */
 struct ExplicitGenericInvocationSuffix : ASTError {
   enum ExplicitGenericInvocationSuffixOpt {
     OPT_UNDEFINED,
@@ -1564,8 +1728,10 @@ struct ExplicitGenericInvocationSuffix : ASTError {
   ExplicitGenericInvocationSuffix() : opt(OPT_UNDEFINED) {}
 };
 
-/// Expression: Expression1 [ AssignmentOperator Expression ]
-/// See note in the top of this file.
+/**
+ * Expression: Expression1 [ AssignmentOperator Expression ]
+ * See note in the top of this file.
+ */
 struct Expression {
   spExpression1 expr1;
   // [ AssignmentOperator Expression1 ]
@@ -1577,7 +1743,9 @@ struct Expression {
   }
 };
 
-/// Expression1: Expression2 [Expression1Rest]
+/**
+ * Expression1: Expression2 [Expression1Rest]
+ */
 struct Expression1 {
   spExpression2 expr2;
   spExpression1Rest expr1Rest;
@@ -1587,7 +1755,9 @@ struct Expression1 {
   }
 };
 
-/// Expression1Rest: ? Expression : Expression1
+/**
+ * Expression1Rest: ? Expression : Expression1
+ */
 struct Expression1Rest : ASTError {
   unsigned posQuestionMark;
   unsigned posColon;
@@ -1597,7 +1767,9 @@ struct Expression1Rest : ASTError {
   Expression1Rest() : posQuestionMark(0), posColon(0) {}
 };
 
-/// Expression2: Expression3 [ Expression2Rest ]
+/**
+ * Expression2: Expression3 [ Expression2Rest ]
+ */
 struct Expression2 {
   spExpression3 expr3;
   spExpression2Rest expr2Rest;
@@ -1607,9 +1779,11 @@ struct Expression2 {
   }
 };
 
-/// Expression2Rest:
-///   { InfixOp Expression3 | instanceof Type }
-/// See note in the top of this file.
+/**
+ * Expression2Rest:
+ *   { InfixOp Expression3 | instanceof Type }
+ * See note in the top of this file.
+ */
 struct Expression2Rest : ASTError {
   std::vector<spExpression2RestHelper> pairs;
 };
@@ -1634,7 +1808,9 @@ struct Expression2RestHelper {
   Expression2RestHelper() : opt(OPT_UNDEFINED) {}
 };
 
-/// Arguments: '(' [ Expression { , Expression }] ')'
+/**
+ * Arguments: '(' [ Expression { , Expression }] ')'
+ */
 struct Arguments : ASTError {
   unsigned int posLParen;
   unsigned int posRParen;
@@ -1644,12 +1820,14 @@ struct Arguments : ASTError {
   Arguments() : posLParen(0), posRParen(0) {}
 };
 
-/// Expression3:
-///   (1) PrefixOp Expression3
-///   (2) '(' Type ')' Expression3
-///   (3) '(' Expression ')' Expression3
-///   (4) Primary { Selector } { PostfixOp }
-/// See note in the top of this file.
+/**
+ * Expression3:
+ *   (1) PrefixOp Expression3
+ *   (2) '(' Type ')' Expression3
+ *   (3) '(' Expression ')' Expression3
+ *   (4) Primary { Selector } { PostfixOp }
+ * See note in the top of this file.
+ */
 struct Expression3 : ASTError {
   enum Expression3Opt {
     OPT_UNDEFINED,
@@ -1678,8 +1856,10 @@ struct Expression3 : ASTError {
   bool isEmpty() { return opt == OPT_UNDEFINED; }
 };
 
-/// Expression3:
-/// (2) '(' Type ')' Expression3
+/**
+ * Expression3:
+ * (2) '(' Type ')' Expression3
+ */
 struct Expression3Opt2 : ASTError {
   unsigned posLParen;
   unsigned posRParen;
@@ -1689,8 +1869,10 @@ struct Expression3Opt2 : ASTError {
   Expression3Opt2() : posLParen(0), posRParen(0) {}
 };
 
-/// Expression3:
-///   (3) '(' Expression ')' Expression3
+/**
+ * Expression3:
+ *   (3) '(' Expression ')' Expression3
+ */
 struct Expression3Opt3 : ASTError {
   unsigned posLParen;
   unsigned posRParen;
@@ -1700,17 +1882,19 @@ struct Expression3Opt3 : ASTError {
   Expression3Opt3() : posLParen(0), posRParen(0) {}
 };
 
-/// Primary: 
-///   (1) Literal
-///   (2) ParExpression
-///   (3) this [Arguments]
-///   (4) super SuperSuffix
-///   (5) new Creator
-///   (6) NonWildcardTypeArguments
-///         ( ExplicitGenericInvocationSuffix | this Arguments )
-///   (7) Identifier { . Identifier } [IdentifierSuffix]
-///   (8) BasicType {[]} . class
-///   (9) void . class
+/**
+ * Primary:
+ *   (1) Literal
+ *   (2) ParExpression
+ *   (3) this [Arguments]
+ *   (4) super SuperSuffix
+ *   (5) new Creator
+ *   (6) NonWildcardTypeArguments
+ *         ( ExplicitGenericInvocationSuffix | this Arguments )
+ *   (7) Identifier { . Identifier } [IdentifierSuffix]
+ *   (8) BasicType {[]} . class
+ *   (9) void . class
+ */
 struct Primary : ASTError {
   enum PrimaryEnum {
     OPT_UNDEFINED,
@@ -1740,7 +1924,9 @@ struct Primary : ASTError {
   bool isEmpty() { return opt == OPT_UNDEFINED; }
 };
 
-/// Primary: BasicType {[]} . class
+/**
+ * Primary: BasicType {[]} . class
+ */
 struct PrimaryBasicType : ASTError {
   spBasicType basicType;
   ArrayDepth arrayDepth;
@@ -1750,34 +1936,44 @@ struct PrimaryBasicType : ASTError {
   PrimaryBasicType() : posPeriod(0) {}
 };
 
-/// Primary: Identifier { . Identifier } [IdentifierSuffix]
+/**
+ * Primary: Identifier { . Identifier } [IdentifierSuffix]
+ */
 struct PrimaryIdentifier : ASTError {
   spIdentifier id;
   std::vector<std::pair<unsigned, spIdentifier> > pairs;
   spIdentifierSuffix idSuffix;
 };
 
-/// Primary: this [Arguments]
+/**
+ * Primary: this [Arguments]
+ */
 struct PrimaryThisArguments {
   spTokenExp tokThis;
   spArguments args;
 };
 
-/// Primary: super SuperSuffix
+/**
+ * Primary: super SuperSuffix
+ */
 struct PrimarySuperSuperSuffix {
   spTokenExp tokSuper;
   spSuperSuffix superSuffix;
 };
 
-/// Primary: new Creator
+/**
+ * Primary: new Creator
+ */
 struct PrimaryNewCreator {
   spTokenExp tokNew;
   spCreator creator;
 };
 
-/// Primary:
-///   NonWildcardTypeArguments
-///     ( ExplicitGenericInvocationSuffix | this Arguments )
+/**
+ * Primary:
+ *   NonWildcardTypeArguments
+ *     ( ExplicitGenericInvocationSuffix | this Arguments )
+ */
 struct PrimaryNonWildcardTypeArguments : ASTError {
   enum PrimaryNonWildcardTypeArgumentsOpt {
     OPT_UNDEFINED,
@@ -1798,7 +1994,9 @@ struct PrimaryNonWildcardTypeArguments : ASTError {
   PrimaryNonWildcardTypeArguments() : opt(OPT_UNDEFINED) {};
 };
 
-/// Primary: void . class
+/**
+ * Primary: void . class
+ */
 struct PrimaryVoidClass : ASTError {
   spTokenExp tokVoid;
   unsigned posPeriod;
@@ -1807,13 +2005,15 @@ struct PrimaryVoidClass : ASTError {
   PrimaryVoidClass() : posPeriod(0) {}
 };
 
-/// Literal:
-///   IntegerLiteral
-///   FloatingPointLiteral
-///   CharacterLiteral
-///   StringLiteral
-///   BooleanLiteral
-///   NullLiteral
+/**
+ * Literal:
+ *   IntegerLiteral
+ *   FloatingPointLiteral
+ *   CharacterLiteral
+ *   StringLiteral
+ *   BooleanLiteral
+ *   NullLiteral
+ */
 struct Literal {
   enum LiteralEnum {
     OPT_UNDEFINED,
@@ -1838,8 +2038,10 @@ struct Literal {
   bool isEmpty() { return opt == OPT_UNDEFINED; }
 };
 
-/// LocalVariableDeclarationStatement:
-///   { VariableModifier } Type VariableDeclarators ;
+/**
+ * LocalVariableDeclarationStatement:
+ *   { VariableModifier } Type VariableDeclarators ;
+ */
 struct LocalVariableDeclarationStatement : ASTError{
   spVariableModifier varModifier;
   spType type;
@@ -1849,11 +2051,13 @@ struct LocalVariableDeclarationStatement : ASTError{
   LocalVariableDeclarationStatement() : posSemiColon(0) {}
 };
 
-/// IntegerLiteral:
-///   DecimalIntegerLiteral
-///   HexIntegerLiteral
-///   OctalIntegerLiteral
-///   BinaryIntegerLiteral
+/**
+ * IntegerLiteral:
+ *   DecimalIntegerLiteral
+ *   HexIntegerLiteral
+ *   OctalIntegerLiteral
+ *   BinaryIntegerLiteral
+ */
 struct IntegerLiteral {
   enum IntegerLiteralEnum {
     OPT_UNDEFINED,
@@ -1871,9 +2075,11 @@ struct IntegerLiteral {
   IntegerLiteral() : opt(OPT_UNDEFINED), intSuffix(false), pos(-1) {}
 };
 
-/// FloatingPointLiteral:
-///   DecimalFloatingPointLiteral
-///   HexadecimalFloatingPointLiteral
+/**
+ * FloatingPointLiteral:
+ *   DecimalFloatingPointLiteral
+ *   HexadecimalFloatingPointLiteral
+ */
 struct FloatingPointLiteral {
   enum FloatingPointLiteralEnum {
     OPT_UNDEFINED,
@@ -1888,10 +2094,12 @@ struct FloatingPointLiteral {
   FloatingPointLiteral() : opt(OPT_UNDEFINED), pos(-1) {}
 };
 
-/// ForControl:
-///   (1) ForVarControl
-///   (2) [ForInit] ; [Expression] ; [ForUpdate]
-/// See note in the top of this file.
+/**
+ * ForControl:
+ *   (1) ForVarControl
+ *   (2) [ForInit] ; [Expression] ; [ForUpdate]
+ * See note in the top of this file.
+ */
 struct ForControl : ASTError {
   enum ForControlOpt {
     OPT_UNDEFINED,
@@ -1914,16 +2122,20 @@ struct ForControl : ASTError {
   ForControl() : opt(OPT_UNDEFINED), posSemiColon1(0), posSemiColon2(0) {}
 };
 
-/// ForInit:
-/// ForUpdate:
-///   StatementExpression { , StatementExpression }
+/**
+ * ForInit:
+ * ForUpdate:
+ *   StatementExpression { , StatementExpression }
+ */
 struct ForInit : ASTError {
   spStatementExpression stmtExpr;
   std::vector<std::pair<unsigned, spStatementExpression> > pairs;
 };
 
-/// ForVarControl
-///   {VariableModifier} Type VariableDeclaratorId ForVarControlRest
+/**
+ * ForVarControl
+ *   {VariableModifier} Type VariableDeclaratorId ForVarControlRest
+ */
 struct ForVarControl : ASTError {
   spVariableModifier varMod;
   spType type;
@@ -1931,9 +2143,11 @@ struct ForVarControl : ASTError {
   spForVarControlRest forVarCtrlRest;
 };
 
-/// ForVarControlRest
-///   (1) ForVariableDeclaratorsRest ; [Expression] ; [ForUpdate]
-///   (2) : Expression
+/**
+ * ForVarControlRest
+ *   (1) ForVariableDeclaratorsRest ; [Expression] ; [ForUpdate]
+ *   (2) : Expression
+ */
 struct ForVarControlRest : ASTError {
   enum ForVarControlRestOpt {
     OPT_UNDEFINED,
@@ -1959,8 +2173,10 @@ struct ForVarControlRest : ASTError {
     : opt(OPT_UNDEFINED), posSemiColon1(0), posSemiColon2(0), posColon(0) {}
 };
 
-/// ForVariableDeclaratorsRest
-///   [ = VariableInitializer ] { , VariableDeclarator }
+/**
+ * ForVariableDeclaratorsRest
+ *   [ = VariableInitializer ] { , VariableDeclarator }
+ */
 struct ForVariableDeclaratorsRest : ASTError {
   unsigned posEquals;
   spVariableInitializer varInit;
@@ -1974,21 +2190,27 @@ struct BooleanLiteral {
   bool val;
 };
 
-/// Bound:
-///   ReferenceType { & ReferenceType }
+/**
+ * Bound:
+ *   ReferenceType { & ReferenceType }
+ */
 struct Bound : ASTError {
   spReferenceType refType;
   std::vector<std::pair<unsigned, spReferenceType> > pairs;
 };
 
-/// Catches: CatchClause { CatchClause }
+/**
+ * Catches: CatchClause { CatchClause }
+ */
 struct Catches : ASTError {
   spCatchClause catchClause;
   std::vector<spCatchClause> catchClauses;
 };
 
-/// CatchClause:
-///   catch '(' {VariableModifier} CatchType Identifier ')' Block
+/**
+ * CatchClause:
+ *   catch '(' {VariableModifier} CatchType Identifier ')' Block
+ */
 struct CatchClause : ASTError {
   unsigned posLParen;
   unsigned posRParen;
@@ -2001,9 +2223,11 @@ struct CatchClause : ASTError {
   CatchClause() : posLParen(0), posRParen(0) {}
 };
 
-/// CatchType:
-///   QualifiedIdentifier { '|' QualifiedIdentifier }
-/// See note in the top of this file.
+/**
+ * CatchType:
+ *   QualifiedIdentifier { '|' QualifiedIdentifier }
+ * See note in the top of this file.
+ */
 struct CatchType : ASTError {
   spQualifiedIdentifier qualifiedId;
   std::vector<std::pair<unsigned, spQualifiedIdentifier> > pairs;
@@ -2019,7 +2243,9 @@ struct StringLiteral {
   std::string val;
 };
 
-/// ParExpression: '(' Expression ')'
+/**
+ * ParExpression: '(' Expression ')'
+ */
 struct ParExpression : ASTError {
   unsigned posLParen;
   unsigned posRParen;
@@ -2028,7 +2254,9 @@ struct ParExpression : ASTError {
   ParExpression() : posLParen(0), posRParen(0) {}
 };
 
-/// PostfixOp: ++ | --
+/**
+ * PostfixOp: ++ | --
+ */
 struct PostfixOp {
   enum PostfixOpOpt {
     OPT_UNDEFINED,
@@ -2042,9 +2270,11 @@ struct PostfixOp {
   PostfixOp() : opt(OPT_UNDEFINED), pos(0) {}
 };
 
-/// SuperSuffix:
-///   Arguments
-///   . Identifier [Arguments]
+/**
+ * SuperSuffix:
+ *   Arguments
+ *   . Identifier [Arguments]
+ */
 struct SuperSuffix : ASTError {
   enum SuperSuffixEnum {
     OPT_UNDEFINED,
@@ -2060,23 +2290,29 @@ struct SuperSuffix : ASTError {
   SuperSuffix() : opt(OPT_UNDEFINED), posPeriod(0) {}
 };
 
-/// SwitchBlockStatementGroup:
-///   SwitchLabels BlockStatements
+/**
+ * SwitchBlockStatementGroup:
+ *   SwitchLabels BlockStatements
+ */
 struct SwitchBlockStatementGroup : ASTError {
   spSwitchLabels labels;
   std::vector<spBlockStatement> blockStmts;
 };
 
-/// SwitchBlockStatementGroups:
-///   { SwitchBlockStatementGroup }
+/**
+ * SwitchBlockStatementGroups:
+ *   { SwitchBlockStatementGroup }
+ */
 struct SwitchBlockStatementGroups : ASTError {
   std::vector<spSwitchBlockStatementGroup> groups;
 };
 
-/// SwitchLabel:
-///   (1) case Expression :
-///   (2) case EnumConstantName :
-///   (3) default :
+/**
+ * SwitchLabel:
+ *   (1) case Expression :
+ *   (2) case EnumConstantName :
+ *   (3) default :
+ */
 struct SwitchLabel : ASTError {
   enum SwitchLabelOpt {
     OPT_UNDEFINED,
@@ -2095,18 +2331,22 @@ struct SwitchLabel : ASTError {
   SwitchLabel() : opt(OPT_UNDEFINED), posColon(0) {}
 };
 
-/// SwitchLabels:
-///   SwitchLabel { SwitchLabel }
+/**
+ * SwitchLabels:
+ *   SwitchLabel { SwitchLabel }
+ */
 struct SwitchLabels : ASTError {
   spSwitchLabel label;
   std::vector<spSwitchLabel> labels;
 };
 
-/// Creator:
-///   NonWildcardTypeArguments CreatedName ClassCreatorRest
-///   CreatedName ( ClassCreatorRest | ArrayCreatorRest )
-///   BasicType ArrayCreatorRest
-/// See note in the top of this file.
+/**
+ * Creator:
+ *   NonWildcardTypeArguments CreatedName ClassCreatorRest
+ *   CreatedName ( ClassCreatorRest | ArrayCreatorRest )
+ *   BasicType ArrayCreatorRest
+ * See note in the top of this file.
+ */
 struct Creator : ASTError {
   enum CreatorEnum {
     OPT_UNDEFINED,
@@ -2123,30 +2363,38 @@ struct Creator : ASTError {
   Creator() : opt(OPT_UNDEFINED) {}
 };
 
-/// CreatorOpt1: NonWildcardTypeArguments CreatedName ClassCreatorRest
+/**
+ * CreatorOpt1: NonWildcardTypeArguments CreatedName ClassCreatorRest
+ */
 struct CreatorOpt1 : ASTError {
   spNonWildcardTypeArguments nonWildcardTypeArguments;
   spCreatedName createdName;
   spClassCreatorRest classCreatorRest;
 };
 
-/// CreatorOpt2: CreatedName ( ClassCreatorRest | ArrayCreatorRest )
+/**
+ * CreatorOpt2: CreatedName ( ClassCreatorRest | ArrayCreatorRest )
+ */
 struct CreatorOpt2 : ASTError {
   spCreatedName createdName;
   spClassCreatorRest classCreatorRest;
   spArrayCreatorRest arrayCreatorRest;
 };
 
-/// CreatorOpt3: BasicType ArrayCreatorRest
+/**
+ * CreatorOpt3: BasicType ArrayCreatorRest
+ */
 struct CreatorOpt3 : ASTError {
   spBasicType basicType;
   spArrayCreatorRest arrayCreatorRest;
 };
 
-/// NonWildcardTypeArguments:
-///   < TypeList2 >
-/// A primitive type which is not an array is invalid.
-/// See note in the top of this file.
+/**
+ * NonWildcardTypeArguments:
+ *   < TypeList2 >
+ * A primitive type which is not an array is invalid.
+ * See note in the top of this file.
+ */
 struct NonWildcardTypeArguments : ASTError {
   unsigned int posLt;
   unsigned int posGt;
@@ -2154,9 +2402,11 @@ struct NonWildcardTypeArguments : ASTError {
   NonWildcardTypeArguments() : posLt(0), posGt(0) {}
 };
 
-/// NonWildcardTypeArgumentsOrDiamond:
-///   < >
-///   NonWildcardTypeArguments
+/**
+ * NonWildcardTypeArgumentsOrDiamond:
+ *   < >
+ *   NonWildcardTypeArguments
+ */
 struct NonWildcardTypeArgumentsOrDiamond : ASTError {
   enum NonWildcardTypeArgumentsOrDiamondOpt {
     OPT_UNDEFINED,
@@ -2171,28 +2421,36 @@ struct NonWildcardTypeArgumentsOrDiamond : ASTError {
   NonWildcardTypeArgumentsOrDiamond() : opt(OPT_UNDEFINED) {}
 };
 
-/// TypeList: ReferenceType { , ReferenceType }
+/**
+ * TypeList: ReferenceType { , ReferenceType }
+ */
 struct TypeList : ASTError {
   spReferenceType refType;
   std::vector<std::pair<unsigned, spReferenceType> > pairs;
 };
 
-/// TypeList2: Type { , Type }
+/**
+ * TypeList2: Type { , Type }
+ */
 struct TypeList2 : ASTError {
   spType type;
   std::vector<std::pair<unsigned int, spType> > pairs;
 };
 
-/// TypeParameter:
-///   Identifier [extends Bound]
+/**
+ * TypeParameter:
+ *   Identifier [extends Bound]
+ */
 struct TypeParameter : ASTError {
   spIdentifier id;
   spTokenExp tokExtends;
   spBound bound;
 };
 
-/// TypeParameters:
-///   < TypeParameter { , TypeParameter } >
+/**
+ * TypeParameters:
+ *   < TypeParameter { , TypeParameter } >
+ */
 struct TypeParameters : ASTError {
   unsigned posLt;
   unsigned posGt;
@@ -2202,16 +2460,20 @@ struct TypeParameters : ASTError {
   TypeParameters() : posLt(0), posGt(0) {}
 };
 
-/// CreatedName:
-///   Identifier [TypeArgumentsOrDiamond]
-///     { . Identifier [TypeArgumentsOrDiamond] }
+/**
+ * CreatedName:
+ *   Identifier [TypeArgumentsOrDiamond]
+ *     { . Identifier [TypeArgumentsOrDiamond] }
+ */
 struct CreatedName : ASTError {
   spIdentifier id;
   spTypeArgumentsOrDiamond typeArgsOrDiam;
   std::vector<spCreatedNameTriplet> triplets;
 };
 
-/// . Identifier [TypeArgumentsOrDiamond]
+/**
+ * . Identifier [TypeArgumentsOrDiamond]
+ */
 struct CreatedNameTriplet {
   unsigned posPeriod;
   spIdentifier id;
@@ -2220,9 +2482,11 @@ struct CreatedNameTriplet {
   CreatedNameTriplet() : posPeriod(0) {}
 };
 
-/// TypeArgumentsOrDiamond:
-///   < >
-///   TypeArguments
+/**
+ * TypeArgumentsOrDiamond:
+ *   < >
+ *   TypeArguments
+ */
 struct TypeArgumentsOrDiamond : ASTError {
   enum TypeArgumentsOrDiamondOpt {
     OPT_UNDEFINED,
@@ -2242,19 +2506,23 @@ struct TypeArgumentsOrDiamond : ASTError {
   TypeArgumentsOrDiamond() : ASTError(), opt(OPT_UNDEFINED), posLt(0), posGt(0) {}
 };
 
-/// ClassCreatorRest: Arguments [ClassBody]
+/**
+ * ClassCreatorRest: Arguments [ClassBody]
+ */
 struct ClassCreatorRest : ASTError {
   spArguments args;
   spClassBody classBody;
 };
 
-/// ArrayCreatorRest:
-///   '['
-///     ( ']' { '[]' } ArrayInitializer |
-///       Expression ']' { '[' Expression ']' } { '[]' } )
-///   ']'  <--- probably a typo in the grammar.
-///
-/// Non-terminals are enclosed in square brackets.
+/**
+ * ArrayCreatorRest:
+ *   '['
+ *     ( ']' { '[]' } ArrayInitializer |
+ *       Expression ']' { '[' Expression ']' } { '[]' } )
+ *   ']'  <--- probably a typo in the grammar.
+ *
+ * Non-terminals are enclosed in square brackets.
+ */
 struct ArrayCreatorRest : ASTError {
   enum ArrayCreatorRestOpt {
     OPT_UNDEFINED,
@@ -2269,23 +2537,29 @@ struct ArrayCreatorRest : ASTError {
   ArrayCreatorRest() : opt(OPT_UNDEFINED) {}
 };
 
-/// ArrayCreatorRestOpt1:
-///   '[' ']' { '[]' } ArrayInitializer
+/**
+ * ArrayCreatorRestOpt1:
+ *   '[' ']' { '[]' } ArrayInitializer
+ */
 struct ArrayCreatorRestOpt1 : ASTError {
   ArrayDepth arrayDepth;
   spArrayInitializer arrayInitializer;
 };
 
-/// ArrayCreatorRestOpt2:
-///   '[' Expression ']' { '[' Expression ']' } { '[]' }
+/**
+ * ArrayCreatorRestOpt2:
+ *   '[' Expression ']' { '[' Expression ']' } { '[]' }
+ */
 struct ArrayCreatorRestOpt2 : ASTError {
   spExpressionInBrackets exprInBrackets;
   std::vector<spExpressionInBrackets> exprInBracketsList;
   ArrayDepth arrayDepth;
 };
 
-/// Helper structure
-/// ExpressionInBrackets: '[' Expression ']'
+/**
+ * Helper structure
+ * ExpressionInBrackets: '[' Expression ']'
+ */
 struct ExpressionInBrackets : ASTError {
   unsigned posLBracket;
   unsigned posRBracket;
@@ -2293,20 +2567,26 @@ struct ExpressionInBrackets : ASTError {
   ExpressionInBrackets() : posLBracket(0), posRBracket(0) {}
 };
 
-/// FieldDeclaratorsRest: VariableDeclaratorRest { , VariableDeclarator }
+/**
+ * FieldDeclaratorsRest: VariableDeclaratorRest { , VariableDeclarator }
+ */
 struct FieldDeclaratorsRest : ASTError {
   spVariableDeclaratorRest varDeclRest;
   std::vector<std::pair<unsigned int, spVariableDeclarator> > pairs;
 };
 
-/// Finally: finally Block
+/**
+ * Finally: finally Block
+ */
 struct Finally : ASTError {
   spTokenExp tokFinally;
   spBlock block;
 };
 
-/// ArrayInitializer:
-///   '{' [ VariableInitializer { , VariableInitializer } [,] ] '}'
+/**
+ * ArrayInitializer:
+ *   '{' [ VariableInitializer { , VariableInitializer } [,] ] '}'
+ */
 struct ArrayInitializer : ASTError {
   unsigned posLCBrace;
   unsigned posRCBrace;
@@ -2318,26 +2598,30 @@ struct ArrayInitializer : ASTError {
   ArrayInitializer() : posLCBrace(0), posRCBrace(0), posComma(0) {}
 };
 
-/// AssignmentOperator:
-///   =
-///   +=
-///   -=
-///   *=
-///   /=
-///   &=
-///   |=
-///   ^=
-///   %=
-///   <<=
-///   >>=
-///   >>>=
+/**
+ * AssignmentOperator:
+ *   =
+ *   +=
+ *   -=
+ *   *=
+ *   /=
+ *   &=
+ *   |=
+ *   ^=
+ *   %=
+ *   <<=
+ *   >>=
+ *   >>>=
+ */
 struct AssignmentOperator : ASTError {
   spTokenExp tok;
 };
 
-/// VariableInitializer:
-///   ArrayInitializer
-///   Expression
+/**
+ * VariableInitializer:
+ *   ArrayInitializer
+ *   Expression
+ */
 struct VariableInitializer :ASTError {
   enum VariableInitializerOpt {
     OPT_UNDEFINED,

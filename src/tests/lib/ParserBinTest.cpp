@@ -24,11 +24,13 @@ std::string getCurrentDir() {
 
 std::string current_dir = getCurrentDir();
 
-/// public class HelloWorld {
-///     public static void main(String[] args) {
-///         System.out.println("Oi mundo");
-///     }
-/// }
+/**
+ * public class HelloWorld {
+ *     public static void main(String[] args) {
+ *         System.out.println("Oi mundo");
+ *     }
+ * }
+ */
 TEST(ParserBin, HelloWorld) {
   std::vector<unsigned char> buffer;
   File file;

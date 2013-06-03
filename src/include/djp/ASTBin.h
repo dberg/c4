@@ -91,24 +91,26 @@ enum AttributeType {
   ATTRIBUTE_TYPE_SOURCE_FILE,
 };
 
-/// ClassFile {
-///     u4             magic;
-///     u2             minor_version;
-///     u2             major_version;
-///     u2             constant_pool_count;
-///     cp_info        constant_pool[constant_pool_count-1];
-///     u2             access_flags;
-///     u2             this_class;
-///     u2             super_class;
-///     u2             interfaces_count;
-///     u2             interfaces[interfaces_count];
-///     u2             fields_count;
-///     field_info     fields[fields_count];
-///     u2             methods_count;
-///     method_info    methods[methods_count];
-///     u2             attributes_count;
-///     attribute_info attributes[attributes_count];
-/// }
+/**
+ * ClassFile {
+ *     u4             magic;
+ *     u2             minor_version;
+ *     u2             major_version;
+ *     u2             constant_pool_count;
+ *     cp_info        constant_pool[constant_pool_count-1];
+ *     u2             access_flags;
+ *     u2             this_class;
+ *     u2             super_class;
+ *     u2             interfaces_count;
+ *     u2             interfaces[interfaces_count];
+ *     u2             fields_count;
+ *     field_info     fields[fields_count];
+ *     u2             methods_count;
+ *     method_info    methods[methods_count];
+ *     u2             attributes_count;
+ *     attribute_info attributes[attributes_count];
+ * }
+ */
 struct ClassFile {
   u4 magic;
   u2 minor_version;
@@ -128,10 +130,12 @@ struct ClassFile {
   std::vector<spAttributeInfo> attributes;
 };
 
-/// cp_info {
-///     u1 tag;
-///     u1 info[];
-/// }
+/**
+ * cp_info {
+ *     u1 tag;
+ *     u1 info[];
+ * }
+ */
 struct CPInfo {
   std::vector<spCPItem> items;
 };
@@ -154,153 +158,183 @@ struct CPItem {
   spCInvokeDynamicInfo cInvokeDynamicInfo;
 };
 
-/// CONSTANT_Class_info {
-///     u1 tag;
-///     u2 name_index;
-/// }
+/**
+ * CONSTANT_Class_info {
+ *     u1 tag;
+ *     u2 name_index;
+ * }
+ */
 struct CClassInfo {
   //u1 tag; CPItem
   u2 name_index;
 };
 
-/// CONSTANT_Fieldref_info {
-///     u1 tag;
-///     u2 class_index;
-///     u2 name_and_type_index;
-/// }
+/**
+ * CONSTANT_Fieldref_info {
+ *     u1 tag;
+ *     u2 class_index;
+ *     u2 name_and_type_index;
+ * }
+ */
 struct CFieldrefInfo {
   //u1 tag; CPItem
   u2 class_index;
   u2 name_and_type_index;
 };
 
-/// CONSTANT_Methodref_info {
-///     u1 tag;
-///     u2 class_index;
-///     u2 name_and_type_index;
-/// }
+/**
+ * CONSTANT_Methodref_info {
+ *     u1 tag;
+ *     u2 class_index;
+ *     u2 name_and_type_index;
+ * }
+ */
 struct CMethodrefInfo {
   //u1 tag; CPItem
   u2 class_index;
   u2 name_and_type_index;
 };
 
-/// CONSTANT_InterfaceMethodref_info {
-///     u1 tag;
-///     u2 class_index;
-///     u2 name_and_type_index;
-/// }
+/**
+ * CONSTANT_InterfaceMethodref_info {
+ *     u1 tag;
+ *     u2 class_index;
+ *     u2 name_and_type_index;
+ * }
+ */
 struct CInterfaceMethodrefInfo {
   //u1 tag; CPItem
   u2 class_index;
   u2 name_and_type_index;
 };
 
-/// CONSTANT_String_info {
-///     u1 tag;
-///     u2 string_index;
-/// }
+/**
+ * CONSTANT_String_info {
+ *     u1 tag;
+ *     u2 string_index;
+ * }
+ */
 struct CStringInfo {
   //u1 tag; CPItem
   u2 string_index;
 };
 
-/// CONSTANT_Integer_info {
-///     u1 tag;
-///     u4 bytes;
-/// }
+/**
+ * CONSTANT_Integer_info {
+ *     u1 tag;
+ *     u4 bytes;
+ * }
+ */
 struct CIntegerInfo {
   //u1 tag; CPItem
   u4 bytes;
 };
 
-/// CONSTANT_Float_info {
-///     u1 tag;
-///     u4 bytes;
-/// }
+/**
+ * CONSTANT_Float_info {
+ *     u1 tag;
+ *     u4 bytes;
+ * }
+ */
 struct CFloatInfo {
   //u1 tag; CPItem
   u4 bytes;
 };
 
-/// CONSTANT_Long_info {
-///     u1 tag;
-///     u4 high_bytes;
-///     u4 low_bytes;
-/// }
+/**
+ * CONSTANT_Long_info {
+ *     u1 tag;
+ *     u4 high_bytes;
+ *     u4 low_bytes;
+ * }
+ */
 struct CLongInfo {
   //u1 tag; CPItem
   u4 high_bytes;
   u4 low_bytes;
 };
 
-/// CONSTANT_Double_info {
-///     u1 tag;
-///     u4 high_bytes;
-///     u4 low_bytes;
-/// }
+/**
+ * CONSTANT_Double_info {
+ *     u1 tag;
+ *     u4 high_bytes;
+ *     u4 low_bytes;
+ * }
+ */
 struct CDoubleInfo {
   //u1 tag; CPItem
   u4 high_bytes;
   u4 low_bytes;
 };
 
-/// CONSTANT_NameAndType_info {
-///     u2 name_index;
-///     u2 descriptor_index;
-/// }
+/**
+ * CONSTANT_NameAndType_info {
+ *     u2 name_index;
+ *     u2 descriptor_index;
+ * }
+ */
 struct CNameAndTypeInfo {
   //u1 tag; CPItem
   u2 name_index;
   u2 descriptor_index;
 };
 
-/// CONSTANT_Utf8_info {
-///     u length;
-///     u1 bytes[length];
-/// }
+/**
+ * CONSTANT_Utf8_info {
+ *     u length;
+ *     u1 bytes[length];
+ * }
+ */
 struct CUtf8Info {
   //u1 tag; CPItem
   u2 length;
   std::vector<unsigned char> bytes;
 };
 
-/// CONSTANT_MethodHandle_info {
-///     u1 reference_kind;
-///     u2 reference_index;
-/// }
+/**
+ * CONSTANT_MethodHandle_info {
+ *     u1 reference_kind;
+ *     u2 reference_index;
+ * }
+ */
 struct CMethodHandleInfo {
   //u1 tag; CPItem
   u1 reference_kind;
   u2 reference_index;
 };
 
-/// CONSTANT_MethodType_info {
-///     u1 reference_kind;
-///     u2 reference_index;
-/// }
+/**
+ * CONSTANT_MethodType_info {
+ *     u1 reference_kind;
+ *     u2 reference_index;
+ * }
+ */
 struct CMethodTypeInfo {
   //u1 tag; CPItem
   u2 descriptor_index;
 };
 
-/// CONSTANT_InvokeDynamic_info {
-///     u2 bootstrap_method_attr_index;
-///     u2 name_and_type_index;
-/// }
+/**
+ * CONSTANT_InvokeDynamic_info {
+ *     u2 bootstrap_method_attr_index;
+ *     u2 name_and_type_index;
+ * }
+ */
 struct CInvokeDynamicInfo {
   //u1 tag; CPItem
   u2 bootstrap_method_attr_index;
   u2 name_and_type_index;
 };
 
-/// field_info {
-///     u2             access_flags;
-///     u2             name_index;
-///     u2             descriptor_index;
-///     u2             attributes_count;
-///     attribute_info attributes[attributes_count];
-/// }
+/**
+ * field_info {
+ *     u2             access_flags;
+ *     u2             name_index;
+ *     u2             descriptor_index;
+ *     u2             attributes_count;
+ *     attribute_info attributes[attributes_count];
+ * }
+ */
 struct FieldInfo {
   u2 access_flags;
   u2 name_index;
@@ -309,13 +343,15 @@ struct FieldInfo {
   std::vector<spAttributeInfo> attributes;
 };
 
-/// method_info {
-///     u2             access_flags;
-///     u2             name_index;
-///     u2             descriptor_index;
-///     u2             attributes_count;
-///     attribute_info attributes[attributes_count];
-/// }
+/**
+ * method_info {
+ *     u2             access_flags;
+ *     u2             name_index;
+ *     u2             descriptor_index;
+ *     u2             attributes_count;
+ *     attribute_info attributes[attributes_count];
+ * }
+ */
 struct MethodInfo {
   u2 access_flags;
   u2 name_index;
@@ -324,11 +360,13 @@ struct MethodInfo {
   std::vector<spAttributeInfo> attributes;
 };
 
-/// attribute_info {
-///     u2 attribute_name_index;
-///     u4 attribute_length;
-///     u1 info[attribute_length];
-/// }
+/**
+ * attribute_info {
+ *     u2 attribute_name_index;
+ *     u4 attribute_length;
+ *     u1 info[attribute_length];
+ * }
+ */
 struct AttributeInfo {
   AttributeType type;
   u2 attribute_name_index;
@@ -347,22 +385,24 @@ struct AttributeInfo {
   u2 sourcefile_index;
 };
 
-/// Code_attribute {
-///     u2 attribute_name_index;
-///     u4 attribute_length;
-///     u2 max_stack;
-///     u2 max_locals;
-///     u4 code_length;
-///     u1 code[code_length];
-///     u2 exception_table_length;
-///     {   u2 start_pc;
-///         u2 end_pc;
-///         u2 handler_pc;
-///         u2 catch_type;
-///     } exception_table[exception_table_length];
-///     u2 attributes_count;
-///     attribute_info attributes[attributes_count];
-/// }
+/**
+ * Code_attribute {
+ *     u2 attribute_name_index;
+ *     u4 attribute_length;
+ *     u2 max_stack;
+ *     u2 max_locals;
+ *     u4 code_length;
+ *     u1 code[code_length];
+ *     u2 exception_table_length;
+ *     {   u2 start_pc;
+ *         u2 end_pc;
+ *         u2 handler_pc;
+ *         u2 catch_type;
+ *     } exception_table[exception_table_length];
+ *     u2 attributes_count;
+ *     attribute_info attributes[attributes_count];
+ * }
+ */
 struct CodeAttribute {
   // AttributeInfo
   //u2 attribute_name_index;
@@ -384,14 +424,16 @@ struct ExceptionInfo {
   u2 catch_type;
 };
 
-/// LineNumberTable_attribute {
-///     u2 attribute_name_index;
-///     u4 attribute_length;
-///     u2 line_number_table_length;
-///     {   u2 start_pc;
-///         u2 line_number;
-///     } line_number_table[line_number_table_length];
-/// }
+/**
+ * LineNumberTable_attribute {
+ *     u2 attribute_name_index;
+ *     u4 attribute_length;
+ *     u2 line_number_table_length;
+ *     {   u2 start_pc;
+ *         u2 line_number;
+ *     } line_number_table[line_number_table_length];
+ * }
+ */
 struct LineNumberTable {
   u2 line_number_table_length;
   std::vector<spLineNumberTableInfo> table;

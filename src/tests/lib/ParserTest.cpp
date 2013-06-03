@@ -6,30 +6,32 @@
 #include "gtest/gtest.h"
 using namespace djp;
 
-// -----------------------------------------------------------------------------
-// @Ann({"1", "2"}) class A {}
-// -----------------------------------------------------------------------------
-// ClassOrInterfaceDeclaration
-//   Modifier
-//     Annotation
-//     '@'
-//     QualifiedIdentifier <-- 'Ann'
-//     '('
-//     AnnotationElement
-//       ElementValue
-//         ElementValueArrayInitializer
-//           '{'
-//           ElementValues
-//             ElementValue
-//               Expression1
-//                 Expression2
-//                   Expression3
-//                     Primary
-//                       Literal
-//                         StringLiteral <-- "1"
-//           '}'
-//     ')'
-//   ClassDeclaration
+/**
+ * -----------------------------------------------------------------------------
+ * @Ann({"1", "2"}) class A {}
+ * -----------------------------------------------------------------------------
+ * ClassOrInterfaceDeclaration
+ *   Modifier
+ *     Annotation
+ *     '@'
+ *     QualifiedIdentifier <-- 'Ann'
+ *     '('
+ *     AnnotationElement
+ *       ElementValue
+ *         ElementValueArrayInitializer
+ *           '{'
+ *           ElementValues
+ *             ElementValue
+ *               Expression1
+ *                 Expression2
+ *                   Expression3
+ *                     Primary
+ *                       Literal
+ *                         StringLiteral <-- "1"
+ *           '}'
+ *     ')'
+ *   ClassDeclaration
+ */
 TEST(Parser, AnnotationElementValueArray) {
   std::string filename = "Test.java";
   std::string buffer = "@Ann({\"1\", \"2\"}) class A {}";
@@ -460,39 +462,41 @@ TEST(Parser, AnnotationElementValuePairsStringLiteral) {
   ASSERT_EQ("\"Hello, I'm a String!\"", strLiteralPair1->val);
 }
 
-// -----------------------------------------------------------------------------
-// class A { void m() { String[] a = new String[0]; }}
-// -----------------------------------------------------------------------------
-// BlockStatement(1)
-//   LocalVariableDeclarationStatement
-//     Type
-//       ReferenceType <--  'String'
-//       '[]'
-//     VariableDeclarators
-//       VariableDeclarator
-//         Identifier <-- 'a'
-//         VariableDeclaratorRest
-//           '='
-//           VariableInitializer(2)
-//             Expression
-//               Expression1
-//                 Expression2
-//                   Expression3(3)
-//                     Primary(5)
-//                       'new'
-//                       Creator(2)
-//                         CreatedName
-//                           Identifier <-- 'String'
-//                         ArrayCreatorRest
-//                           '['
-//                           Expression
-//                             Expression1
-//                               Expression2
-//                                 Expression3
-//                                   Primary
-//                                     Literal <-- '0'
-//                           ']'
-//     ';'
+/**
+ * -----------------------------------------------------------------------------
+ * class A { void m() { String[] a = new String[0]; }}
+ * -----------------------------------------------------------------------------
+ * BlockStatement(1)
+ *   LocalVariableDeclarationStatement
+ *     Type
+ *       ReferenceType <--  'String'
+ *       '[]'
+ *     VariableDeclarators
+ *       VariableDeclarator
+ *         Identifier <-- 'a'
+ *         VariableDeclaratorRest
+ *           '='
+ *           VariableInitializer(2)
+ *             Expression
+ *               Expression1
+ *                 Expression2
+ *                   Expression3(3)
+ *                     Primary(5)
+ *                       'new'
+ *                       Creator(2)
+ *                         CreatedName
+ *                           Identifier <-- 'String'
+ *                         ArrayCreatorRest
+ *                           '['
+ *                           Expression
+ *                             Expression1
+ *                               Expression2
+ *                                 Expression3
+ *                                   Primary
+ *                                     Literal <-- '0'
+ *                           ']'
+ *     ';'
+ */
 TEST(Parser, ArrayCreatorRest) {
   std::string filename = "Test.java";
   std::string buffer = "class A { void m() { String[] a = new String[0]; }}";
@@ -677,21 +681,23 @@ TEST(Parser, ClassDeclaration) {
   ASSERT_EQ("Def", decl->classDecl->nClassDecl->type->refType->id->value);
 }
 
-// -----------------------------------------------------------------------------
-// class A<T,U> {}
-// -----------------------------------------------------------------------------
-// NormalClassDeclaration
-//   'class'
-//   Identifier <-- 'A'
-//   TypeParameters
-//     '<'
-//     TypeParameter
-//       Identifier <-- 'T'
-//       ','
-//       TypeParameter
-//         Identifier <-- 'U'
-//     '>'
-//   ClassBody
+/**
+ * -----------------------------------------------------------------------------
+ * class A<T,U> {}
+ * -----------------------------------------------------------------------------
+ * NormalClassDeclaration
+ *   'class'
+ *   Identifier <-- 'A'
+ *   TypeParameters
+ *     '<'
+ *     TypeParameter
+ *       Identifier <-- 'T'
+ *       ','
+ *       TypeParameter
+ *         Identifier <-- 'U'
+ *     '>'
+ *   ClassBody
+ */
 TEST(Parser, ClassTypeParameters) {
   std::string filename = "Test.java";
   std::string buffer = "class A<T,U> {}";
@@ -723,24 +729,26 @@ TEST(Parser, Comments) {
   ASSERT_EQ(63, parser.comments[1]->posEnd);
 }
 
-// -----------------------------------------------------------------------------
-// enum E { E1, E2 }
-// -----------------------------------------------------------------------------
-// TypeDeclaration
-//   ClassOrInterfaceDeclaration
-//     ClassDeclaration(2)
-//       EnumDeclaration
-//         'enum'
-//         Identifier
-//         EnumBody
-//           '{'
-//           EnumConstants
-//             EnumConstant
-//               Identifier <-- E1
-//             ','
-//             EnumConstant
-//               Identifier <-- E2
-//           '}'
+/**
+ * -----------------------------------------------------------------------------
+ * enum E { E1, E2 }
+ * -----------------------------------------------------------------------------
+ * TypeDeclaration
+ *   ClassOrInterfaceDeclaration
+ *     ClassDeclaration(2)
+ *       EnumDeclaration
+ *         'enum'
+ *         Identifier
+ *         EnumBody
+ *           '{'
+ *           EnumConstants
+ *             EnumConstant
+ *               Identifier <-- E1
+ *             ','
+ *             EnumConstant
+ *               Identifier <-- E2
+ *           '}'
+ */
 TEST(Parser, Enum) {
   std::string filename = "Test.java";
   std::string buffer = "enum E { E1, E2 }";
@@ -765,31 +773,33 @@ TEST(Parser, Enum) {
   spEnumConstant enumConst = pair.second;
 }
 
-// -----------------------------------------------------------------------------
-// enum E { O1("a"), O2("b"); private String s; E(String s) { this.s = s; }}
-// -----------------------------------------------------------------------------
-// EnumDeclaration
-//   enum
-//   Identifier
-//   EnumBody
-//     '{'
-//     EnumConstants
-//       EnumConstant
-//         Identifier <-- O1
-//         Arguments
-//       ','
-//       EnumConstant
-//         Identifier <-- O2
-//         Arguments
-//     EnumBodyDeclarations
-//       ';'
-//       ClassBodyDeclaration[0](1)
-//         MemberDecl(1)
-//           methodOrFieldDecl <-- 'private String s;'
-//       ClassBodyDeclaration[1](1)
-//         MemberDecl(3)
-//           Identifier ConstructorRest
-//     '}'
+/**
+ * -----------------------------------------------------------------------------
+ * enum E { O1("a"), O2("b"); private String s; E(String s) { this.s = s; }}
+ * -----------------------------------------------------------------------------
+ * EnumDeclaration
+ *   enum
+ *   Identifier
+ *   EnumBody
+ *     '{'
+ *     EnumConstants
+ *       EnumConstant
+ *         Identifier <-- O1
+ *         Arguments
+ *       ','
+ *       EnumConstant
+ *         Identifier <-- O2
+ *         Arguments
+ *     EnumBodyDeclarations
+ *       ';'
+ *       ClassBodyDeclaration[0](1)
+ *         MemberDecl(1)
+ *           methodOrFieldDecl <-- 'private String s;'
+ *       ClassBodyDeclaration[1](1)
+ *         MemberDecl(3)
+ *           Identifier ConstructorRest
+ *     '}'
+ */
 TEST(Parser, EnumConstructor) {
   std::string filename = "Test.java";
   std::string buffer = "enum E { O1(\"a\"), O2(\"b\"); "
@@ -829,42 +839,44 @@ TEST(Parser, Errors) {
   ASSERT_EQ(1, parser.diag->errors.size());
 }
 
-// -----------------------------------------------------------------------------
-// public class A { public void m() { M.p("a" + b + "c"); }}
-// -----------------------------------------------------------------------------
-// BlockStatement(3)
-//   Statement(4)
-//     StatementExpression
-//       Expression
-//         Expression1
-//           Expression2
-//             Expression3(4)
-//               Primary(7)
-//                 Identifier <-- 'M'
-//                 { . Identifier } <-- 'p'
-//                 IdentifierSuffix
-//                   Arguments*
-//     ';'
-//
-// Arguments*
-//   '('
-//   Expression
-//     Expression1
-//       Expression2
-//         Expression3(4)
-//           Primary(1)
-//             Literal
-//               StringLiteral <-- "a"
-//         Expression2Rest
-//           InfixOp <-- '+'
-//           Expression3(4)
-//             Primary(7)
-//               Identifier <-- b
-//           InfixOp <-- '+'
-//           Expression3(4)
-//             Primary(1)
-//               Literal <-- "c"
-//   ')'
+/**
+ * -----------------------------------------------------------------------------
+ * public class A { public void m() { M.p("a" + b + "c"); }}
+ * -----------------------------------------------------------------------------
+ * BlockStatement(3)
+ *   Statement(4)
+ *     StatementExpression
+ *       Expression
+ *         Expression1
+ *           Expression2
+ *             Expression3(4)
+ *               Primary(7)
+ *                 Identifier <-- 'M'
+ *                 { . Identifier } <-- 'p'
+ *                 IdentifierSuffix
+ *                   Arguments*
+ *     ';'
+ *
+ * Arguments*
+ *   '('
+ *   Expression
+ *     Expression1
+ *       Expression2
+ *         Expression3(4)
+ *           Primary(1)
+ *             Literal
+ *               StringLiteral <-- "a"
+ *         Expression2Rest
+ *           InfixOp <-- '+'
+ *           Expression3(4)
+ *             Primary(7)
+ *               Identifier <-- b
+ *           InfixOp <-- '+'
+ *           Expression3(4)
+ *             Primary(1)
+ *               Literal <-- "c"
+ *   ')'
+ */
 TEST(Parser, ExpressionInfixOp) {
   std::string filename = "Test.java";
   std::string buffer
@@ -915,37 +927,39 @@ TEST(Parser, Expression2Rest) {
   ASSERT_EQ(TOK_NULL_LITERAL, expr3->primary->literal->nullLiteral->type);
 }
 
-// -----------------------------------------------------------------------------
-// class A { void m() { u = (U) e.get(); }}
-// -----------------------------------------------------------------------------
-// Block
-//   '{'
-//   BlockStatement(3)
-//     Statement(4)
-//       StatementExpression
-//         Expression*
-//       ';'
-//   '}'
-// 
-// Expression*
-//   Expression1
-//     Expression2
-//       Expression3
-//         Primary(7)
-//           Identifier <-- 'u'
-//     AssignmentOperator '='
-//     Expression
-//       Expression1
-//         Expression2
-//           Expression3(2)
-//             '('
-//             Type <-- 'U'
-//             Expression3(4)
-//               Primary(7)
-//                 Identifier { . Identifier } <-- 'u.get'
-//                 [IdentifierSuffix](3)
-//                   Arguments <-- '(' ')'
-//             ')'
+/**
+ * -----------------------------------------------------------------------------
+ * class A { void m() { u = (U) e.get(); }}
+ * -----------------------------------------------------------------------------
+ * Block
+ *   '{'
+ *   BlockStatement(3)
+ *     Statement(4)
+ *       StatementExpression
+ *         Expression*
+ *       ';'
+ *   '}'
+ *
+ * Expression*
+ *   Expression1
+ *     Expression2
+ *       Expression3
+ *         Primary(7)
+ *           Identifier <-- 'u'
+ *     AssignmentOperator '='
+ *     Expression
+ *       Expression1
+ *         Expression2
+ *           Expression3(2)
+ *             '('
+ *             Type <-- 'U'
+ *             Expression3(4)
+ *               Primary(7)
+ *                 Identifier { . Identifier } <-- 'u.get'
+ *                 [IdentifierSuffix](3)
+ *                   Arguments <-- '(' ')'
+ *             ')'
+ */
 TEST(Parser, Expression3Opt2) {
   std::string filename = "Test.java";
   std::string buffer = "class A { void m() { u = (U) e.get(); }}";
@@ -977,34 +991,36 @@ TEST(Parser, Expression3Opt2) {
     expr3->opt2->expr3->primary->primaryId->idSuffix->args->posRParen);
 }
 
-// -----------------------------------------------------------------------------
-// class S { void m() { a = b = 10; }}
-// -----------------------------------------------------------------------------
-// BlockStatements
-//   BlockStatement
-//     Statement(4)
-//       StatementExpression
-//         Expression
-//           Expression1
-//             Expression2
-//               Expression3
-//                 Primary
-//                   Identifier <-- 'a'
-//           AssignmentOperator <-- '='
-//           Expression
-//             Expression1
-//               Expression2
-//                 Expression3
-//                   Primary
-//                     Identifier <-- 'b'
-//             AssignmentOperator <-- '='
-//             Expression
-//               Expression1
-//                 Expression2
-//                   Expression3
-//                     Primary
-//                       Literal <-- '10'
-//         ';'
+/**
+ * -----------------------------------------------------------------------------
+ * class S { void m() { a = b = 10; }}
+ * -----------------------------------------------------------------------------
+ * BlockStatements
+ *   BlockStatement
+ *     Statement(4)
+ *       StatementExpression
+ *         Expression
+ *           Expression1
+ *             Expression2
+ *               Expression3
+ *                 Primary
+ *                   Identifier <-- 'a'
+ *           AssignmentOperator <-- '='
+ *           Expression
+ *             Expression1
+ *               Expression2
+ *                 Expression3
+ *                   Primary
+ *                     Identifier <-- 'b'
+ *             AssignmentOperator <-- '='
+ *             Expression
+ *               Expression1
+ *                 Expression2
+ *                   Expression3
+ *                     Primary
+ *                       Literal <-- '10'
+ *         ';'
+ */
 TEST(Parser, ExpressionMultipleAssignment) {
   std::string filename = "Test.java";
   std::string buffer = "class S { void m() { a = b = 10; }}";
@@ -1041,41 +1057,43 @@ TEST(Parser, ExpressionMultipleAssignment) {
     ->assignExpr->expr1->expr2->expr3->primary->literal->opt);
 }
 
-// -----------------------------------------------------------------------------
-// class C { C c = new C() { {} }; }
-// -----------------------------------------------------------------------------
-// MethodOrFieldDecl
-//   Type <-- 'C'
-//   Identifier <-- 'c'
-//   MethodOrFieldRest(1)
-//     FieldDeclaratorsRest
-//       VariableDeclaratorRest
-//         '='
-//         VariableInitializer(2)
-//           Expression*
-//     ';'
-//
-// Expression*
-//   Expression1
-//     Expression2
-//       Expression3
-//         Primary(5)
-//           'new'
-//           Creator**
-//
-// Creator(2)
-//   CreatedName
-//     Identifier <-- C
-//   ClassCreatorRest
-//     Arguments <-- '()'
-//     ClassBody
-//       '{'
-//       ClassBodyDeclaration(3)
-//         Block
-//           '{'
-//             BlockStatements <-- empty!
-//           '}'
-//       '}'
+/**
+ * -----------------------------------------------------------------------------
+ * class C { C c = new C() { {} }; }
+ * -----------------------------------------------------------------------------
+ * MethodOrFieldDecl
+ *   Type <-- 'C'
+ *   Identifier <-- 'c'
+ *   MethodOrFieldRest(1)
+ *     FieldDeclaratorsRest
+ *       VariableDeclaratorRest
+ *         '='
+ *         VariableInitializer(2)
+ *           Expression*
+ *     ';'
+ *
+ * Expression*
+ *   Expression1
+ *     Expression2
+ *       Expression3
+ *         Primary(5)
+ *           'new'
+ *           Creator**
+ *
+ * Creator(2)
+ *   CreatedName
+ *     Identifier <-- C
+ *   ClassCreatorRest
+ *     Arguments <-- '()'
+ *     ClassBody
+ *       '{'
+ *       ClassBodyDeclaration(3)
+ *         Block
+ *           '{'
+ *             BlockStatements <-- empty!
+ *           '}'
+ *       '}'
+ */
 TEST(Parser, FieldDeclaratorWithClassBody) {
   std::string filename = "Test.java";
   std::string buffer = "class C { C c = new C() { {} }; }";
@@ -1111,55 +1129,57 @@ TEST(Parser, FieldDeclaratorWithClassBody) {
     classCreatorRest->classBody->classBodyDecls[0]->block->posRCBrace);
 }
 
-// -----------------------------------------------------------------------------
-// class A { void m() { for (int i = 0; i < max; i++) { ; }}}
-// -----------------------------------------------------------------------------
-// BlockStatement(3)
-//   Statement(10)
-//     'for'
-//     '('
-//     ForControl(1)
-//       ForVarControl
-//         Type <-- 'int'
-//         VariableDeclaratorId
-//           Identifier <-- 'i'
-//         ForVarControlRest(1)
-//           ForVariableDeclaratorsRest
-//             '='
-//             VariableInitializer(2)
-//               Expression <-- '0'
-//           ';'
-//           Expression* <-- 'i < max'
-//           ';'
-//           ForUpdate
-//             StatementExpression
-//               Expression** <-- 'i++'
-//     ')'
-//     Statement(1)
-//       Block
-//         '{'
-//         BlockStattements
-//           BlockStatement
-//             Statement(2)
-//               ';'
-//         '}'
-//
-// Expression*
-//   Expression1
-//     Expression2
-//       Expression3
-//         Primary
-//           Identifier <-- 'i'
-//     Expression2Rest
-//       InfixOp <-- '<'
-//       Expression3 <-- 'max'
-//
-// Expression**
-//   Expression1
-//     Expression2
-//       Expression3
-//         Primary <-- 'i'
-//         PostfixOp <-- '++'
+/**
+ * -----------------------------------------------------------------------------
+ * class A { void m() { for (int i = 0; i < max; i++) { ; }}}
+ * -----------------------------------------------------------------------------
+ * BlockStatement(3)
+ *   Statement(10)
+ *     'for'
+ *     '('
+ *     ForControl(1)
+ *       ForVarControl
+ *         Type <-- 'int'
+ *         VariableDeclaratorId
+ *           Identifier <-- 'i'
+ *         ForVarControlRest(1)
+ *           ForVariableDeclaratorsRest
+ *             '='
+ *             VariableInitializer(2)
+ *               Expression <-- '0'
+ *           ';'
+ *           Expression* <-- 'i < max'
+ *           ';'
+ *           ForUpdate
+ *             StatementExpression
+ *               Expression** <-- 'i++'
+ *     ')'
+ *     Statement(1)
+ *       Block
+ *         '{'
+ *         BlockStattements
+ *           BlockStatement
+ *             Statement(2)
+ *               ';'
+ *         '}'
+ *
+ * Expression*
+ *   Expression1
+ *     Expression2
+ *       Expression3
+ *         Primary
+ *           Identifier <-- 'i'
+ *     Expression2Rest
+ *       InfixOp <-- '<'
+ *       Expression3 <-- 'max'
+ *
+ * Expression**
+ *   Expression1
+ *     Expression2
+ *       Expression3
+ *         Primary <-- 'i'
+ *         PostfixOp <-- '++'
+ */
 TEST(Parser, For) {
   std::string filename = "Test.java";
   std::string buffer
@@ -1181,15 +1201,17 @@ TEST(Parser, For) {
   ASSERT_EQ(44, forVarCtrlRest->posSemiColon2);
 }
 
-// -----------------------------------------------------------------------------
-// class S { void m() { for (;;) { break; }}}
-// -----------------------------------------------------------------------------
-// Statement(10)
-//   'for'
-//   '('
-//   ForControl
-//   ')'
-//   Statement
+/**
+ * -----------------------------------------------------------------------------
+ * class S { void m() { for (;;) { break; }}}
+ * -----------------------------------------------------------------------------
+ * Statement(10)
+ *   'for'
+ *   '('
+ *   ForControl
+ *   ')'
+ *   Statement
+ */
 TEST(Parser, ForBreak) {
   std::string filename = "Test.java";
   std::string buffer = "class S { void m() { for (;;) { break; }}}";
@@ -1202,45 +1224,47 @@ TEST(Parser, ForBreak) {
   ASSERT_EQ(Statement::OPT_FOR, stmt->opt);
 }
 
-// -----------------------------------------------------------------------------
-// class A { void m() { for (int i = 0; (i + 1) < max; i++) {} }}
-// -----------------------------------------------------------------------------
-// BlockStatement
-//   Statement
-//     'for'
-//     '('
-//     ForControl
-//       ForVarControl (opt 1)
-//         Type <-- 'int'
-//         VariableDeclaratorId
-//           Identifier <-- 'i'
-//         ForVarControlRest
-//           ForVariableDeclaratorsRest
-//             '='
-//             VariableInitializer
-//               Expression <-- '0'
-//           ';'
-//           Expression
-//             Expression1
-//               Expression2
-//                 Expression3
-//                   '('
-//                   Expression
-//                     Expression1
-//                       Expression2
-//                         Expression3
-//                           Primary <-- 'i'
-//                         Expression2Rest <-- '+ 1'
-//                   ')'
-//                   Expression3 <-- '< max'
-
-//                 Expression2Rest
-//                   InfixOp <-- '<'
-//                   Expression3 <-- 'max'
-//           ';'
-//           ForUpdate
-//     ')'
-//     Statement
+/**
+ * -----------------------------------------------------------------------------
+ * class A { void m() { for (int i = 0; (i + 1) < max; i++) {} }}
+ * -----------------------------------------------------------------------------
+ * BlockStatement
+ *   Statement
+ *     'for'
+ *     '('
+ *     ForControl
+ *       ForVarControl (opt 1)
+ *         Type <-- 'int'
+ *         VariableDeclaratorId
+ *           Identifier <-- 'i'
+ *         ForVarControlRest
+ *           ForVariableDeclaratorsRest
+ *             '='
+ *             VariableInitializer
+ *               Expression <-- '0'
+ *           ';'
+ *           Expression
+ *             Expression1
+ *               Expression2
+ *                 Expression3
+ *                   '('
+ *                   Expression
+ *                     Expression1
+ *                       Expression2
+ *                         Expression3
+ *                           Primary <-- 'i'
+ *                         Expression2Rest <-- '+ 1'
+ *                   ')'
+ *                   Expression3 <-- '< max'
+ *
+ *                 Expression2Rest
+ *                   InfixOp <-- '<'
+ *                   Expression3 <-- 'max'
+ *           ';'
+ *           ForUpdate
+ *     ')'
+ *     Statement
+ */
 TEST(Parser, ForExpr) {
   std::string filename = "Test.java";
   std::string buffer
@@ -1264,33 +1288,35 @@ TEST(Parser, ForExpr) {
   ASSERT_EQ(0, parser.diag->errors.size());
 }
 
-// -----------------------------------------------------------------------------
-// class A { private <E> E m(List<T> l) { return l.get(0); }}
-// -----------------------------------------------------------------------------
-// ClassBodyDeclaration(3)
-//   Modifier <-- 'private'
-//   MemberDecl(4)
-//     GenericMethodOrConstructorDecl
-//       TypeParameters
-//         '<'
-//         TypeParameter <-- 'E'
-//         '>'
-//       GenericMethodOrConstructorRest(1)
-//         Type <-- 'E'
-//         Identifier <-- 'm'
-//         MethodDeclaratorRest
-//         FormalParameters
-//           '('
-//           FormalParameterDecls
-//             Type <-- 'List<T>'
-//             FormalParameterDeclsRest
-//               VariableDeclaratorId
-//                 Identifier
-//           ')'
-//         Block
-//           '{'
-//           BlockStatements
-//           '}'
+/**
+ * -----------------------------------------------------------------------------
+ * class A { private <E> E m(List<T> l) { return l.get(0); }}
+ * -----------------------------------------------------------------------------
+ * ClassBodyDeclaration(3)
+ *   Modifier <-- 'private'
+ *   MemberDecl(4)
+ *     GenericMethodOrConstructorDecl
+ *       TypeParameters
+ *         '<'
+ *         TypeParameter <-- 'E'
+ *         '>'
+ *       GenericMethodOrConstructorRest(1)
+ *         Type <-- 'E'
+ *         Identifier <-- 'm'
+ *         MethodDeclaratorRest
+ *         FormalParameters
+ *           '('
+ *           FormalParameterDecls
+ *             Type <-- 'List<T>'
+ *             FormalParameterDeclsRest
+ *               VariableDeclaratorId
+ *                 Identifier
+ *           ')'
+ *         Block
+ *           '{'
+ *           BlockStatements
+ *           '}'
+ */
 TEST(Parser, GenericMethod) {
   std::string filename = "Test.java";
   std::string buffer
@@ -1315,68 +1341,70 @@ TEST(Parser, GenericMethod) {
   ASSERT_EQ("m", memberDecl->genMethodOrConstDecl->rest->id->value);
 }
 
-// -----------------------------------------------------------------------------
-// u = m.r(j, new A<B<T>>() {});
-// -----------------------------------------------------------------------------
-// Block
-//   '{'
-//   BlockStatement(3)
-//     Statement(4)
-//       StatementExpression
-//         Expression*
-//       ';'
-//   '}'
-//
-// Expression1*
-//   Expression2
-//     Expression3(3)
-//       Primary(7)
-//         Identifier <-- 'u'
-// AssignmentOperator <-- '='
-// Expression
-//   Expression1
-//     Expression2
-//       Expression3(3)
-//         Primary(7)
-//           Identifier { . Identifier } <-- m.r
-//           IdentifierSuffix
-//             Arguments
-//               '('
-//               Expression <-- 'j' *
-//               ','
-//               Expression
-//                 Expression1
-//                   Expression2
-//                    Expression3
-//                      Primary(5)
-//                        'new'
-//                        Creator**
-//               ')'
-//
-// Expression*
-//   Expression2
-//     Expression3(3)
-//       Primary(7)
-//
-// Creator**(2)
-//   CreatedName
-//     Identifier <-- 'A'
-//     TypeArgumentsOrDiamond(2)
-//       TypeArguments
-//         '<'
-//         TypeArgument(1)
-//           ReferenceType
-//             Identifier <-- 'B'
-//             TypeArguments
-//               '<'
-//               TypeArgument(1)
-//                 ReferenceType
-//                   Identifier <-- 'T'
-//               '>'
-//         '>'
-//   ClassCreatorRest
-//     Arguments '()'
-//     ClassBody '{}'
+/**
+ * -----------------------------------------------------------------------------
+ * u = m.r(j, new A<B<T>>() {});
+ * -----------------------------------------------------------------------------
+ * Block
+ *   '{'
+ *   BlockStatement(3)
+ *     Statement(4)
+ *       StatementExpression
+ *         Expression*
+ *       ';'
+ *   '}'
+ *
+ * Expression1*
+ *   Expression2
+ *     Expression3(3)
+ *       Primary(7)
+ *         Identifier <-- 'u'
+ * AssignmentOperator <-- '='
+ * Expression
+ *   Expression1
+ *     Expression2
+ *       Expression3(3)
+ *         Primary(7)
+ *           Identifier { . Identifier } <-- m.r
+ *           IdentifierSuffix
+ *             Arguments
+ *               '('
+ *               Expression <-- 'j' *
+ *               ','
+ *               Expression
+ *                 Expression1
+ *                   Expression2
+ *                    Expression3
+ *                      Primary(5)
+ *                        'new'
+ *                        Creator**
+ *               ')'
+ *
+ * Expression*
+ *   Expression2
+ *     Expression3(3)
+ *       Primary(7)
+ *
+ * Creator**(2)
+ *   CreatedName
+ *     Identifier <-- 'A'
+ *     TypeArgumentsOrDiamond(2)
+ *       TypeArguments
+ *         '<'
+ *         TypeArgument(1)
+ *           ReferenceType
+ *             Identifier <-- 'B'
+ *             TypeArguments
+ *               '<'
+ *               TypeArgument(1)
+ *                 ReferenceType
+ *                   Identifier <-- 'T'
+ *               '>'
+ *         '>'
+ *   ClassCreatorRest
+ *     Arguments '()'
+ *     ClassBody '{}'
+ */
 TEST(Parser, Generics) {
   std::string filename = "Test.java";
   std::string buffer = "class A { void m() { u = m.r(j, new T<L<G>>() {}); }}";
@@ -1408,18 +1436,20 @@ TEST(Parser, Generics) {
   ASSERT_EQ(44, creator->opt2->classCreatorRest->args->posRParen);
 }
 
-// -----------------------------------------------------------------------------
-// interface I { void m(); }
-// -----------------------------------------------------------------------------
-// ClassOrInterfaceDeclaration
-//   InterfaceDeclaration
-//    NormalInterfaceDeclaration
-//      interface
-//      Identifier
-//      InterfaceBody
-//        '{'
-//        InterfaceBodyDeclaration
-//        '}'
+/**
+ * -----------------------------------------------------------------------------
+ * interface I { void m(); }
+ * -----------------------------------------------------------------------------
+ * ClassOrInterfaceDeclaration
+ *   InterfaceDeclaration
+ *    NormalInterfaceDeclaration
+ *      interface
+ *      Identifier
+ *      InterfaceBody
+ *        '{'
+ *        InterfaceBodyDeclaration
+ *        '}'
+ */
 TEST(Parser, Interface) {
   std::string filename = "Test.java";
   std::string buffer = "interface I { void m(); }";
@@ -1436,26 +1466,28 @@ TEST(Parser, Interface) {
     decl->interfaceDecl->normalDecl->body->bodyDecls[0]->opt);
 }
 
-// -----------------------------------------------------------------------------
-// interface A { class B { B() {} }}
-// -----------------------------------------------------------------------------
-// NormalInterfaceDeclaration
-//   interface
-//   Identifier <-- 'A'
-//   InterfaceBody
-//     '{'
-//     InterfaceBodyDeclaration[0]
-//       InterfaceMemberDecl(4)
-//         ClassDeclaration
-//           NormalClassDeclaration
-//             class
-//             Identifier 'B'
-//             ClassBody
-//               '{'
-//                 ClassBodyDeclarations[0]
-//                   MemberDecl(3)
-//               '}'
-//     '}'
+/**
+ * -----------------------------------------------------------------------------
+ * interface A { class B { B() {} }}
+ * -----------------------------------------------------------------------------
+ * NormalInterfaceDeclaration
+ *   interface
+ *   Identifier <-- 'A'
+ *   InterfaceBody
+ *     '{'
+ *     InterfaceBodyDeclaration[0]
+ *       InterfaceMemberDecl(4)
+ *         ClassDeclaration
+ *           NormalClassDeclaration
+ *             class
+ *             Identifier 'B'
+ *             ClassBody
+ *               '{'
+ *                 ClassBodyDeclarations[0]
+ *                   MemberDecl(3)
+ *               '}'
+ *     '}'
+ */
 TEST(Parser, InterfaceInnerClassConstructor) {
   std::string filename = "Test.java";
   std::string buffer = "interface A { class B { B() {} }}";
@@ -1483,35 +1515,37 @@ TEST(Parser, InterfaceInnerClassConstructor) {
     memberDecl->opt);
 }
 
-// -----------------------------------------------------------------------------
-// class A { void m() { p = s[i]; }}
-// -----------------------------------------------------------------------------
-// BlockStatement(3)
-//   Statement(4)
-//     StatementExpression
-//       Expression
-//         Expression1
-//           Expression2
-//             Expression3(3)
-//               Primary(7)
-//                 Identifier <-- 'p'
-//         AssignmentOperator <-- '='
-//         Expression
-//           Expression1
-//             Expression2
-//               Expression3(3)
-//                 Primary(7)
-//                   Identifier <-- 's'
-//                   IdentifierSuffix(2)
-//                     '['
-//                     Expression
-//                       Expression1
-//                         Expression2
-//                           Expression3(3)
-//                             Primary(7)
-//                               Identifier <-- 'i'
-//                     ']'
-//       ';'
+/**
+ * -----------------------------------------------------------------------------
+ * class A { void m() { p = s[i]; }}
+ * -----------------------------------------------------------------------------
+ * BlockStatement(3)
+ *   Statement(4)
+ *     StatementExpression
+ *       Expression
+ *         Expression1
+ *           Expression2
+ *             Expression3(3)
+ *               Primary(7)
+ *                 Identifier <-- 'p'
+ *         AssignmentOperator <-- '='
+ *         Expression
+ *           Expression1
+ *             Expression2
+ *               Expression3(3)
+ *                 Primary(7)
+ *                   Identifier <-- 's'
+ *                   IdentifierSuffix(2)
+ *                     '['
+ *                     Expression
+ *                       Expression1
+ *                         Expression2
+ *                           Expression3(3)
+ *                             Primary(7)
+ *                               Identifier <-- 'i'
+ *                     ']'
+ *       ';'
+ */
 TEST(Parser, IdentifierSuffix) {
   std::string filename = "Test.java";
   std::string buffer = "class A { void m() { p = s[i]; }}";
@@ -1587,22 +1621,24 @@ TEST(Parser, ImportDeclarations) {
     parser.compilationUnit->impDecls->imports[3]->type);
 }
 
-// -----------------------------------------------------------------------------
-// class A { class B {} }
-// -----------------------------------------------------------------------------
-// TypeDeclaration
-//   ClassOrInterfaceDeclaration               +ST_CLASS (pop)
-//     ClassDeclaration
-//       NormalClassDeclaration                +ST_IDENTIFIER 'A'
-//         'class'
-//         Identifier <-- 'A'
-//         ClassBody
-//           '{'
-//           ClassBodyDeclaration
-//             MemberDecl                      +ST_MEMBER_DECL -> ST_CLASS (pop)
-//               ClassDeclaration
-//                 NormalClassDeclaration      +ST_IDENTIFIER 'B'
-//           '}'
+/**
+ * -----------------------------------------------------------------------------
+ * class A { class B {} }
+ * -----------------------------------------------------------------------------
+ * TypeDeclaration
+ *   ClassOrInterfaceDeclaration               +ST_CLASS (pop)
+ *     ClassDeclaration
+ *       NormalClassDeclaration                +ST_IDENTIFIER 'A'
+ *         'class'
+ *         Identifier <-- 'A'
+ *         ClassBody
+ *           '{'
+ *           ClassBodyDeclaration
+ *             MemberDecl                      +ST_MEMBER_DECL -> ST_CLASS (pop)
+ *               ClassDeclaration
+ *                 NormalClassDeclaration      +ST_IDENTIFIER 'B'
+ *           '}'
+ */
 TEST(Parser, InnerClass) {
   std::string filename = "Test.java";
   std::string buffer = "class A { class B {} }";
@@ -1614,39 +1650,41 @@ TEST(Parser, InnerClass) {
   ASSERT_EQ(MemberDecl::OPT_CLASS_DECLARATION, memberDecl->opt);
 }
 
-// -----------------------------------------------------------------------------
-// class A { class B {} void m() { A a = new A(); a.new B(); }}
-// -----------------------------------------------------------------------------
-// ClassBody
-//   ClassBodyDeclaration[0](1)
-//     MemberDecl(5)
-//   ClassBodyDeclaration[1](1)
-//     MemberDecl(2)
-//       void
-//       Identifier <-- m
-//       VoidMethodDeclaratorRest
-//         FormalParameters
-//         Block
-//           '{'
-//           BlockStatements
-//             BlockStatement[0](1)
-//             BlockStatement[1](3)
-//               Statement(4)
-//                 StatementExpression
-//                   Expression
-//                     Expression1
-//                       Expression2
-//                         Expression3
-//                           Primary(7)
-//                             Identifier <-- 'a'
-//                             IdentifierSuffix
-//                               '.'
-//                               new
-//                               InnerCreator
-//                                 Identifier <- 'B'
-//                                 ClassCreatorRest
-//                 ';'
-//           '}'
+/**
+ * -----------------------------------------------------------------------------
+ * class A { class B {} void m() { A a = new A(); a.new B(); }}
+ * -----------------------------------------------------------------------------
+ * ClassBody
+ *   ClassBodyDeclaration[0](1)
+ *     MemberDecl(5)
+ *   ClassBodyDeclaration[1](1)
+ *     MemberDecl(2)
+ *       void
+ *       Identifier <-- m
+ *       VoidMethodDeclaratorRest
+ *         FormalParameters
+ *         Block
+ *           '{'
+ *           BlockStatements
+ *             BlockStatement[0](1)
+ *             BlockStatement[1](3)
+ *               Statement(4)
+ *                 StatementExpression
+ *                   Expression
+ *                     Expression1
+ *                       Expression2
+ *                         Expression3
+ *                           Primary(7)
+ *                             Identifier <-- 'a'
+ *                             IdentifierSuffix
+ *                               '.'
+ *                               new
+ *                               InnerCreator
+ *                                 Identifier <- 'B'
+ *                                 ClassCreatorRest
+ *                 ';'
+ *           '}'
+ */
 TEST(Parser, InnerClassInstance) {
   std::string filename = "Test.java";
   std::string buffer
@@ -1683,29 +1721,31 @@ TEST(Parser, InnerClassInstance) {
   ASSERT_EQ(56, stmt->posSemiColon);
 }
 
-// -----------------------------------------------------------------------------
-// class A { void test() { Exec exe = createExec(); }}
-// -----------------------------------------------------------------------------
-// BlockStatement
-//   LocalVariableDeclarationStatement
-//     Type <-- 'Exec'
-//     VariableDeclarators
-//       VariableDeclarator
-//         Identifier <-- 'exe'
-//         VariableDeclaratorRest
-//           '='
-//           VariableInitializer
-//             Expression
-//               Expression1
-//                 Expression2
-//                   Expression3(3)
-//                     Primary(7)
-//                       Identifier <-- createExec
-//                       IdentifierSuffix
-//                         Arguments
-//                           '('
-//                           ')'
-//     ';'
+/**
+ * -----------------------------------------------------------------------------
+ * class A { void test() { Exec exe = createExec(); }}
+ * -----------------------------------------------------------------------------
+ * BlockStatement
+ *   LocalVariableDeclarationStatement
+ *     Type <-- 'Exec'
+ *     VariableDeclarators
+ *       VariableDeclarator
+ *         Identifier <-- 'exe'
+ *         VariableDeclaratorRest
+ *           '='
+ *           VariableInitializer
+ *             Expression
+ *               Expression1
+ *                 Expression2
+ *                   Expression3(3)
+ *                     Primary(7)
+ *                       Identifier <-- createExec
+ *                       IdentifierSuffix
+ *                         Arguments
+ *                           '('
+ *                           ')'
+ *     ';'
+ */
 TEST(Parser, LocalVariableDeclarationStatement) {
   std::string filename = "Test.java";
   std::string buffer = "class A { void test() { Exec exe = createExec(); }}";
@@ -1731,21 +1771,23 @@ TEST(Parser, LocalVariableDeclarationStatement) {
   ASSERT_EQ(46, primary->primaryId->idSuffix->args->posRParen);
 }
 
-// -----------------------------------------------------------------------------
-// class C { void m() { List<A> lst = new ArrayList<A>(); }}
-// -----------------------------------------------------------------------------
-// BlockStatement(1)
-//   LocalVariableDeclarationStatement
-//     Type
-//     VariableDeclarators
-//       ReferenceType
-//         Identifier <-- 'List'
-//           TypeArguments
-//             '<'
-//             Type
-//               ReferenceType <-- 'A'
-//             '>'
-//     ';'
+/**
+ * -----------------------------------------------------------------------------
+ * class C { void m() { List<A> lst = new ArrayList<A>(); }}
+ * -----------------------------------------------------------------------------
+ * BlockStatement(1)
+ *   LocalVariableDeclarationStatement
+ *     Type
+ *     VariableDeclarators
+ *       ReferenceType
+ *         Identifier <-- 'List'
+ *           TypeArguments
+ *             '<'
+ *             Type
+ *               ReferenceType <-- 'A'
+ *             '>'
+ *     ';'
+ */
 TEST(Parser, LocalVariableTypeArguments) {
   std::string filename = "Test.java";
   std::string buffer
@@ -1776,22 +1818,24 @@ TEST(Parser, LocalVariableTypeArguments) {
   ASSERT_EQ(53, localVar->posSemiColon);
 }
 
-// -----------------------------------------------------------------------------
-// class C { void m() { List<A[]> lst = new ArrayList<A[]>(); }}
-// -----------------------------------------------------------------------------
-// BlockStatement(1)
-//   LocalVariableDeclarationStatement
-//     Type
-//     VariableDeclarators
-//       ReferenceType
-//         Identifier <-- 'List'
-//           TypeArguments
-//             '<'
-//             Type
-//               ReferenceType <-- 'A'
-//               '[]'
-//             '>'
-//     ';'
+/**
+ * -----------------------------------------------------------------------------
+ * class C { void m() { List<A[]> lst = new ArrayList<A[]>(); }}
+ * -----------------------------------------------------------------------------
+ * BlockStatement(1)
+ *   LocalVariableDeclarationStatement
+ *     Type
+ *     VariableDeclarators
+ *       ReferenceType
+ *         Identifier <-- 'List'
+ *           TypeArguments
+ *             '<'
+ *             Type
+ *               ReferenceType <-- 'A'
+ *               '[]'
+ *             '>'
+ *     ';'
+ */
 TEST(Parser, LocalVariableTypeArgumentsArray) {
   std::string filename = "Test.java";
   std::string buffer
@@ -1822,12 +1866,14 @@ TEST(Parser, LocalVariableTypeArgumentsArray) {
   ASSERT_EQ(55, localVar->posSemiColon);
 }
 
-// -----------------------------------------------------------------------------
-// class A { interface I {} }
-// -----------------------------------------------------------------------------
-// MemberDecl
-//   InterfaceDeclaration
-//     NormalInterfaceDeclaration
+/**
+ * -----------------------------------------------------------------------------
+ * class A { interface I {} }
+ * -----------------------------------------------------------------------------
+ * MemberDecl
+ *   InterfaceDeclaration
+ *     NormalInterfaceDeclaration
+ */
 TEST(Parser, MemberDeclInterfaceDeclaration) {
   std::string filename = "Test.java";
   std::string buffer = "class A { interface I {} }";
@@ -1841,21 +1887,23 @@ TEST(Parser, MemberDeclInterfaceDeclaration) {
 //  ASSERT_EQ(MemberDecl::OPT_INTERFACE_DECLARATION, memberDecl->opt);
 }
 
-// -----------------------------------------------------------------------------
-// class A { int m1() { return 1; }};
-// -----------------------------------------------------------------------------
-// ClassBody
-//   '{'
-//   ClassBodyDeclaration(2)
-//     MemberDecl(1)
-//       MethodOrFieldDecl
-//         Type <-- 'int'
-//         Identifier <-- 'm1'
-//         MethodOrFieldRest(2)
-//           MethodDeclaratorRest
-//             FormalParameters <-- '()'
-//             Block <-- '{ return 1; }
-//   '}'
+/**
+ * -----------------------------------------------------------------------------
+ * class A { int m1() { return 1; }};
+ * -----------------------------------------------------------------------------
+ * ClassBody
+ *   '{'
+ *   ClassBodyDeclaration(2)
+ *     MemberDecl(1)
+ *       MethodOrFieldDecl
+ *         Type <-- 'int'
+ *         Identifier <-- 'm1'
+ *         MethodOrFieldRest(2)
+ *           MethodDeclaratorRest
+ *             FormalParameters <-- '()'
+ *             Block <-- '{ return 1; }
+ *   '}'
+ */
 TEST(Parser, MemberDeclOpt1) {
   std::string filename = "Test.java";
   std::string buffer = "class A { int m1() { return 1; }}";
@@ -1996,23 +2044,25 @@ TEST(Parser, ParExpression) {
   ASSERT_EQ("\"x\"", strLiteral->val);
 }
 
-/// Primary: new Creator
-/// Creator:
-///   NonWildcardTypeArguments CreatedName ClassCreatorRest
-///   CreatedName ( ClassCreatorRest | ArrayCreatorRest )
-/// NonWildcardTypeArguments: < TypeList >
-/// TypeList: ReferenceType {, ReferenceType }
-/// CreatedName:
-///   Identifier [TypeArgumentsOrDiamond]
-///     { . Identifier [TypeArgumentsOrDiamond] }
-/// ClassCreatorRest: Arguments [ClassBody]
-/// Arguments: ( [ Expression { , Expression }] )
-/// ArrayCreatorRest:
-///   '['
-///     ( ']' { '[]' } ArrayInitializer |
-///       Expression ']' { '[' Expression ']' } { '[]' } )
-///
-/// Non-terminals are enclosed in square brackets.
+/**
+ * Primary: new Creator
+ * Creator:
+ *   NonWildcardTypeArguments CreatedName ClassCreatorRest
+ *   CreatedName ( ClassCreatorRest | ArrayCreatorRest )
+ * NonWildcardTypeArguments: < TypeList >
+ * TypeList: ReferenceType {, ReferenceType }
+ * CreatedName:
+ *   Identifier [TypeArgumentsOrDiamond]
+ *     { . Identifier [TypeArgumentsOrDiamond] }
+ * ClassCreatorRest: Arguments [ClassBody]
+ * Arguments: ( [ Expression { , Expression }] )
+ * ArrayCreatorRest:
+ *   '['
+ *     ( ']' { '[]' } ArrayInitializer |
+ *       Expression ']' { '[' Expression ']' } { '[]' } )
+ *
+ * Non-terminals are enclosed in square brackets.
+ */
 TEST(Parser, PrimaryNewCreator) {
   std::string filename = "Test.java";
   std::string buffer =
@@ -2104,22 +2154,24 @@ TEST(Parser, PrimaryNewCreator) {
   ASSERT_EQ(1, creator4->opt2->arrayCreatorRest->opt1->arrayDepth.size());
 }
 
-// -----------------------------------------------------------------------------
-// class A { public void m() { super.m(); }}
-// -----------------------------------------------------------------------------
-// Statement(4)
-//   StatementExpression
-//     Expression
-//       Expression1
-//         Expression2
-//           Expression3
-//             Primary(4)
-//               'super'
-//               SuperSuffix
-//                 '.'
-//                 Identifier <-- 'm'
-//                 Arguments '()'
-//   ';'
+/**
+ * -----------------------------------------------------------------------------
+ * class A { public void m() { super.m(); }}
+ * -----------------------------------------------------------------------------
+ * Statement(4)
+ *   StatementExpression
+ *     Expression
+ *       Expression1
+ *         Expression2
+ *           Expression3
+ *             Primary(4)
+ *               'super'
+ *               SuperSuffix
+ *                 '.'
+ *                 Identifier <-- 'm'
+ *                 Arguments '()'
+ *   ';'
+ */
 TEST(Parser, PrimarySuper) {
   std::string filename = "Test.java";
   std::string buffer = "class A { void m() { super.m(); }}";
@@ -2138,10 +2190,12 @@ TEST(Parser, PrimarySuper) {
   ASSERT_EQ(29, primary->superSuperSuffix->superSuffix->args->posRParen);
 }
 
-// -----------------------------------------------------------------------------
-// class A { void m() { this(); }}
-// -----------------------------------------------------------------------------
-// Primary
+/**
+ * -----------------------------------------------------------------------------
+ * class A { void m() { this(); }}
+ * -----------------------------------------------------------------------------
+ * Primary
+ */
 TEST(Parser, PrimaryThis) {
   std::string filename = "Test.java";
   std::string buffer = "class A { void m() { this(); }}";
@@ -2157,50 +2211,51 @@ TEST(Parser, PrimaryThis) {
   ASSERT_EQ(Primary::OPT_THIS_ARGUMENTS, primary->opt);
 }
 
-
-// -----------------------------------------------------------------------------
-// class A { void m() { long l = (new Long(i)).longValue(); }}
-// -----------------------------------------------------------------------------
-// BlockStatement(1)
-//   LocalVariableDeclarationStatement
-//     Type <-- 'long'
-//     VariableDeclarators
-//       VariableDeclarator
-//         Identifier <-- 'l'
-//         VariableDeclaratorRest
-//           '='
-//           VariableInitializer
-//             Expression
-//               Expression1
-//                 Expression2
-//                   Expression3(3)
-//                     Primary
-//                       ParExpression
-//                         '('
-//                         Expression*
-//                         ')'
-//                     Selector(1)
-//                       '.'
-//                       Identifier <-- 'longValue'
-//                       Arguments
-//                         '('
-//                         ')'
-//     ';'
-//
-// Expression*
-//   Expression1
-//     Expression2
-//       Expression3
-//         Primary(5)
-//           'new'
-//           Creator(1)
-//             CreatedName
-//               Identifier <-- 'Long'
-//             ClassCreatorRest
-//               Arguments
-//                 '('
-//                 Expression <-- 'i'
-//                 ')'
+/**
+ * -----------------------------------------------------------------------------
+ * class A { void m() { long l = (new Long(i)).longValue(); }}
+ * -----------------------------------------------------------------------------
+ * BlockStatement(1)
+ *   LocalVariableDeclarationStatement
+ *     Type <-- 'long'
+ *     VariableDeclarators
+ *       VariableDeclarator
+ *         Identifier <-- 'l'
+ *         VariableDeclaratorRest
+ *           '='
+ *           VariableInitializer
+ *             Expression
+ *               Expression1
+ *                 Expression2
+ *                   Expression3(3)
+ *                     Primary
+ *                       ParExpression
+ *                         '('
+ *                         Expression*
+ *                         ')'
+ *                     Selector(1)
+ *                       '.'
+ *                       Identifier <-- 'longValue'
+ *                       Arguments
+ *                         '('
+ *                         ')'
+ *     ';'
+ *
+ * Expression*
+ *   Expression1
+ *     Expression2
+ *       Expression3
+ *         Primary(5)
+ *           'new'
+ *           Creator(1)
+ *             CreatedName
+ *               Identifier <-- 'Long'
+ *             ClassCreatorRest
+ *               Arguments
+ *                 '('
+ *                 Expression <-- 'i'
+ *                 ')'
+ */
 TEST(Parser, Selector) {
   std::string filename = "Test.java";
   std::string buffer
@@ -2229,20 +2284,22 @@ TEST(Parser, Selector) {
   ASSERT_EQ(54, selector->args->posRParen);
 }
 
-/// Primary:
-///   NonWildcardTypeArguments
-///     ( ExplicitGenericInvocationSuffix | this Arguments )
-/// NonWildcardTypeArguments: < TypeList >
-/// ExplicitGenericInvocationSuffix:
-///   super SuperSuffix
-///   Identifier Arguments
-/// Arguments: '(' [ Expression { , Expression }] ')'
-/// SuperSuffix:
-///   Arguments
-///   . Identifier [Arguments]
-///
-/// TODO: It seems that this production rule does not apply when inside of
-///       annotations.
+/**
+ * Primary:
+ *   NonWildcardTypeArguments
+ *     ( ExplicitGenericInvocationSuffix | this Arguments )
+ * NonWildcardTypeArguments: < TypeList >
+ * ExplicitGenericInvocationSuffix:
+ *   super SuperSuffix
+ *   Identifier Arguments
+ * Arguments: '(' [ Expression { , Expression }] ')'
+ * SuperSuffix:
+ *   Arguments
+ *   . Identifier [Arguments]
+ *
+ * TODO: It seems that this production rule does not apply when inside of
+ *       annotations.
+ */
 //TEST(Parser, PrimaryNonWildcardTypeArguments) {}
 
 TEST(Parser, Statement) {
@@ -2267,21 +2324,23 @@ TEST(Parser, Statement) {
   ASSERT_EQ("e", stmt->catches->catchClause->id->value);
 }
 
-// -----------------------------------------------------------------------------
-// class A { void m() { while (true) { continue; }}}
-// -----------------------------------------------------------------------------
-// BlockStatement(3)
-//   Statement(8)
-//     'while'
-//     ParExpression <-- '(true)'
-//     Statement(1)
-//       Block
-//         '{'
-//         BlockStatement[0](3)
-//           Statement(12)
-//             'continue'
-//             ';'
-//         '}'
+/**
+ * -----------------------------------------------------------------------------
+ * class A { void m() { while (true) { continue; }}}
+ * -----------------------------------------------------------------------------
+ * BlockStatement(3)
+ *   Statement(8)
+ *     'while'
+ *     ParExpression <-- '(true)'
+ *     Statement(1)
+ *       Block
+ *         '{'
+ *         BlockStatement[0](3)
+ *           Statement(12)
+ *             'continue'
+ *             ';'
+ *         '}'
+ */
 TEST(Parser, StatementContinue) {
   std::string filename = "Test.java";
   std::string buffer = "class A { void m() { while (true) { continue; }}}";
@@ -2304,26 +2363,28 @@ TEST(Parser, StatementContinue) {
   ASSERT_EQ(44, blockStmt->stmt->posSemiColon);
 }
 
-// -----------------------------------------------------------------------------
-// class C { void m() { switch (getR()) { case R.I: break; default: ; }}}
-// -----------------------------------------------------------------------------
-// Statement(7)
-//   'switch'
-//   ParExpression
-//   '{'
-//   SwitchBlockStatementGroups
-//     SwitchBlockStatementGroup[0]
-//       SwitchLabels
-//         SwitchLabel(1)
-//           'case'
-//           Expression
-//           ':'
-//       BlockStatements
-//         BlockStatement[0]
-//           Statement(11)
-//             'break'
-//             ';'
-//   '}'
+/**
+ * -----------------------------------------------------------------------------
+ * class C { void m() { switch (getR()) { case R.I: break; default: ; }}}
+ * -----------------------------------------------------------------------------
+ * Statement(7)
+ *   'switch'
+ *   ParExpression
+ *   '{'
+ *   SwitchBlockStatementGroups
+ *     SwitchBlockStatementGroup[0]
+ *       SwitchLabels
+ *         SwitchLabel(1)
+ *           'case'
+ *           Expression
+ *           ':'
+ *       BlockStatements
+ *         BlockStatement[0]
+ *           Statement(11)
+ *             'break'
+ *             ';'
+ *   '}'
+ */
 TEST(Parser, StatementSwitch) {
   std::string filename = "Test.java";
   std::string buffer
@@ -2338,14 +2399,16 @@ TEST(Parser, StatementSwitch) {
   ASSERT_EQ(stmt->opt, Statement::OPT_SWITCH);
 }
 
-// -----------------------------------------------------------------------------
-// class A { void m() { synchronized(x) { }}}
-// -----------------------------------------------------------------------------
-// BlockStatement(3)
-//   Statement(15)
-//     'synchronized'
-//     ParExpression
-//     Block
+/**
+ * -----------------------------------------------------------------------------
+ * class A { void m() { synchronized(x) { }}}
+ * -----------------------------------------------------------------------------
+ * BlockStatement(3)
+ *   Statement(15)
+ *     'synchronized'
+ *     ParExpression
+ *     Block
+ */
 TEST(Parser, StatementSynchronized) {
   std::string filename = "Test.java";
   std::string buffer = "class A { void m() { synchronized(x) { }}}";
@@ -2361,23 +2424,25 @@ TEST(Parser, StatementSynchronized) {
   ASSERT_EQ(35, stmt->parExpr->posRParen);
 }
 
-// -----------------------------------------------------------------------------
-// class A { int a; static { a = 10; }}
-// -----------------------------------------------------------------------------
-// ClassBodyDeclaration[0](1)
-//   MemberDecl(1)
-//     Type <-- int
-//     Identifier <-- a
-//     MethodOrFieldRest
-//       FieldDeclaratorsRest
-//         VariableDeclaratorRest <-- nothing to see here
-//       ';'
-// ClassBodyDeclaration[1](3)
-//   'static'
-//   Block
-//     '{'
-//     BlockStatements
-//     '}'
+/**
+ * -----------------------------------------------------------------------------
+ * class A { int a; static { a = 10; }}
+ * -----------------------------------------------------------------------------
+ * ClassBodyDeclaration[0](1)
+ *   MemberDecl(1)
+ *     Type <-- int
+ *     Identifier <-- a
+ *     MethodOrFieldRest
+ *       FieldDeclaratorsRest
+ *         VariableDeclaratorRest <-- nothing to see here
+ *       ';'
+ * ClassBodyDeclaration[1](3)
+ *   'static'
+ *   Block
+ *     '{'
+ *     BlockStatements
+ *     '}'
+ */
 TEST(Parser, StaticInitializer) {
   std::string filename = "Test.java";
   std::string buffer = "class A { int a; static { a = 10; }}";
@@ -2399,33 +2464,35 @@ TEST(Parser, StaticInitializer) {
   ASSERT_EQ(34, decl1->block->posRCBrace);
 }
 
-// -----------------------------------------------------------------------------
-// class A { void m() { int a = x == 0 ? 1 : 2; }}
-// -----------------------------------------------------------------------------
-// BlockStatement(1)
-//   LocalVariableDeclarationStatement
-//     Type <-- 'int'
-//     VariableDeclarators
-//       VariableDeclarator
-//         Identifier <-- a
-//         VariableDeclaratorRest
-//           '='
-//           VariableInitializer
-//             Expression
-//               Expression1
-//                 Expression2
-//                   Expression3
-//                     Primary <-- 'x'
-//                   Expression2Rest
-//                     InfixOp <-- '=='
-//                     Expression3(3)
-//                       Primary <-- '0'
-//                 Expression1Rest
-//                   '?'
-//                   Expression <-- '1'
-//                   ':'
-//                   Expression1 <-- '2'
-//     ';'
+/**
+ * -----------------------------------------------------------------------------
+ * class A { void m() { int a = x == 0 ? 1 : 2; }}
+ * -----------------------------------------------------------------------------
+ * BlockStatement(1)
+ *   LocalVariableDeclarationStatement
+ *     Type <-- 'int'
+ *     VariableDeclarators
+ *       VariableDeclarator
+ *         Identifier <-- a
+ *         VariableDeclaratorRest
+ *           '='
+ *           VariableInitializer
+ *             Expression
+ *               Expression1
+ *                 Expression2
+ *                   Expression3
+ *                     Primary <-- 'x'
+ *                   Expression2Rest
+ *                     InfixOp <-- '=='
+ *                     Expression3(3)
+ *                       Primary <-- '0'
+ *                 Expression1Rest
+ *                   '?'
+ *                   Expression <-- '1'
+ *                   ':'
+ *                   Expression1 <-- '2'
+ *     ';'
+ */
 TEST(Parser, TernaryCond) {
   std::string filename = "Test.java";
   std::string buffer = "class A { void m() { int a = x == 0 ? 1 : 2; }}";
@@ -2451,29 +2518,31 @@ TEST(Parser, TernaryCond) {
   ASSERT_EQ(40, expr1Rest->posColon);
 }
 
-// -----------------------------------------------------------------------------
-// class A { void m() { throw new E(R.Err, "m"); }}
-// -----------------------------------------------------------------------------
-// BlockStatement
-//   Statement(14)
-//     'throw'
-//     Expression
-//       Expression1
-//         Expression2
-//           Expression3
-//             Primary(5)
-//               'new'
-//               Creator(2)
-//                 CreatedName
-//                   Identifier <-- 'E'
-//                 ClassCreatorRest
-//                   Arguments
-//                   '('
-//                   Expression
-//                   ','
-//                   Expression
-//                   ')'
-//     ';'
+/**
+ * -----------------------------------------------------------------------------
+ * class A { void m() { throw new E(R.Err, "m"); }}
+ * -----------------------------------------------------------------------------
+ * BlockStatement
+ *   Statement(14)
+ *     'throw'
+ *     Expression
+ *       Expression1
+ *         Expression2
+ *           Expression3
+ *             Primary(5)
+ *               'new'
+ *               Creator(2)
+ *                 CreatedName
+ *                   Identifier <-- 'E'
+ *                 ClassCreatorRest
+ *                   Arguments
+ *                   '('
+ *                   Expression
+ *                   ','
+ *                   Expression
+ *                   ')'
+ *     ';'
+ */
 TEST(Parser, Throw) {
   std::string filename = "Test.java";
   std::string buffer = "class A { void m() { throw new E(R.Err, \"m\"); }}";
@@ -2497,53 +2566,57 @@ TEST(Parser, Throw) {
     primary->newCreator->creator->opt2->classCreatorRest->args->posRParen);
 }
 
-// -----------------------------------------------------------------------------
-// class A { void m() { n = (Integer[]) r(); }}
-// -----------------------------------------------------------------------------
-// BlockStatement(3)
-//   Statement(4)
-//   StatementExpression
-//     Expression
-//       Expression1
-//         Expression2
-//           Expression3(2?)
-//             Expression
-//               Expression1
-//                 Expression2
-//                   Expression3
-//                     Primary(7)
-//                       Identifier <-- 'n'
-//               AssignmentOperator <-- '='
-//               Expression1
-//                 Expression2
-//                   Expression3(3)
-//                     Primary(2)
-//                       ParExpression
-//                         '('
-//                         Expression
-//                           Expression1
-//                             Expression2
-//                               Expression3
-//                                 Primary
-//                                   Identifier <-- Integer
-//                                   IdentifierSuffix
-//                                     '[' ERR missing '. class' or Expression
-//                         ')'
-//             Expression3(?)
-//   ';'
+/**
+ * -----------------------------------------------------------------------------
+ * class A { void m() { n = (Integer[]) r(); }}
+ * -----------------------------------------------------------------------------
+ * BlockStatement(3)
+ *   Statement(4)
+ *   StatementExpression
+ *     Expression
+ *       Expression1
+ *         Expression2
+ *           Expression3(2?)
+ *             Expression
+ *               Expression1
+ *                 Expression2
+ *                   Expression3
+ *                     Primary(7)
+ *                       Identifier <-- 'n'
+ *               AssignmentOperator <-- '='
+ *               Expression1
+ *                 Expression2
+ *                   Expression3(3)
+ *                     Primary(2)
+ *                       ParExpression
+ *                         '('
+ *                         Expression
+ *                           Expression1
+ *                             Expression2
+ *                               Expression3
+ *                                 Primary
+ *                                   Identifier <-- Integer
+ *                                   IdentifierSuffix
+ *                                     '[' ERR missing '. class' or Expression
+ *                         ')'
+ *             Expression3(?)
+ *   ';'
+ */
 
-// -----------------------------------------------------------------------------
-// class A { void m() throws E { ; }}
-// -----------------------------------------------------------------------------
-// MemberDecl(2)
-//   'void'
-//   Identifier
-//   VoidMethodDeclaratorRest
-//     FormalParameters
-//     'throws'
-//     QualifiedIdentifierList
-//       QualifiedIdentifier <-- 'E'
-//     Block
+/**
+ * -----------------------------------------------------------------------------
+ * class A { void m() throws E { ; }}
+ * -----------------------------------------------------------------------------
+ * MemberDecl(2)
+ *   'void'
+ *   Identifier
+ *   VoidMethodDeclaratorRest
+ *     FormalParameters
+ *     'throws'
+ *     QualifiedIdentifierList
+ *       QualifiedIdentifier <-- 'E'
+ *     Block
+ */
 TEST(Parser, Throws) {
   std::string filename = "Test.java";
   std::string buffer = "class A { void m() throws E { ; }}";
