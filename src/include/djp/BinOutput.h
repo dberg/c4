@@ -41,13 +41,16 @@ class BinOutput {
   void buildClassInfo();
   void buildInterfaces();
   void buildFields();
-  void buildMethod(spMethodInfo &method);
   void buildMethods();
+  void buildMethod(spMethodInfo &method);
   void buildAttributeInfo(spAttributeInfo &attribute);
+  void buildAttributes();
   void buildAttributes(std::vector<spAttributeInfo> &attributes);
   void buildAttributeCode(spAttributeInfo &attribute);
   void buildCodeAttribute(spCodeAttribute &code);
   void buildCode(std::vector<u1> &code);
+
+  void buildAttributeSourceFile(spAttributeInfo &attribute);
 
 public:
   BinOutput(ParserBin &parser) : parser(parser) {

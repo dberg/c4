@@ -9,8 +9,7 @@ void BinOutput::build() {
   buildInterfaces();
   buildFields();
   buildMethods();
-  // TODO:
-  // buildAttributes();
+  buildAttributes();
 }
 
 void BinOutput::buildHeader() {
@@ -188,6 +187,15 @@ void BinOutput::buildMethod(spMethodInfo &method) {
   buildAttributes(method->attributes);
 }
 
+/**
+ * Class attributes
+ */
+void BinOutput::buildAttributes() {
+  out << "attributes_count " << parser.classFile->attributes_count
+    << std::endl << std::endl;
+  buildAttributes(parser.classFile->attributes);
+}
+
 void BinOutput::buildAttributes(std::vector<spAttributeInfo> &attributes) {
   for (u2 i = 0; i < attributes.size(); i++) {
     buildAttributeInfo(attributes[i]);
@@ -204,8 +212,7 @@ void BinOutput::buildAttributeInfo(spAttributeInfo &attribute) {
       // buildAttributeLineNumberTable();
       break;
     case ATTRIBUTE_TYPE_SOURCE_FILE:
-      // TODO:
-      //buildAttributeSourceFile():
+      buildAttributeSourceFile(attribute);
       break;
     case ATTRIBUTE_TYPE_UNKNOWN:
       // TODO:
@@ -266,8 +273,16 @@ void BinOutput::buildFields() {
       << " attributes_count " << field->attributes_count << std::endl;
 
     buildAttributes(field->attributes);
-    out << std::endl;
   }
+
+  out << std::endl;
+}
+
+void BinOutput::buildAttributeSourceFile(spAttributeInfo &attribute) {
+  out << "SourceFile"
+    << " attribute_name_index #" << attribute->attribute_name_index
+    << " attribute_length " << attribute->attribute_length
+    << " sourcefile_index #" << attribute->sourcefile_index << std::endl;
 }
 
 } // namespace
