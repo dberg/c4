@@ -7,8 +7,7 @@ void BinOutput::build() {
   buildConstantPool();
   buildClassInfo();
   buildInterfaces();
-  // TODO:
-  //buildFields();
+  buildFields();
   buildMethods();
   // TODO:
   // buildAttributes();
@@ -237,11 +236,38 @@ void BinOutput::buildCode(std::vector<u1> &code) {
 }
 
 void BinOutput::buildInterfaces() {
-  out << "Interfaces count " << parser.classFile->interfaces_count << std::endl;
+  const u2 count = parser.classFile->interfaces_count;
+  out << "Interfaces count " <<  count << std::endl;
   for (auto constantPoolIdx: parser.classFile->interfaces) {
     out << "  #" << constantPoolIdx;
   }
-  out << std::endl << std::endl;
+
+  if (count) {
+    out << std::endl;
+  }
+
+  out << std::endl;
+}
+
+void BinOutput::buildFields() {
+  u2 count = parser.classFile->fields_count;
+  out << "Fields count " << count << std::endl;
+  for (auto &field: parser.classFile->fields) {
+    // field access and property flags
+    if (count) { out << " "; }
+    for (auto flag: fieldFlags) {
+      if (flag.first & field->access_flags) {
+        out << " " << flag.second;
+      }
+    }
+
+    out << " name_index #" << field->name_index
+      << " descriptor_index #" << field->descriptor_index
+      << " attributes_count " << field->attributes_count << std::endl;
+
+    buildAttributes(field->attributes);
+    out << std::endl;
+  }
 }
 
 } // namespace

@@ -17,6 +17,7 @@ class BinOutput {
   std::unordered_map<int, std::string> tags;
   std::unordered_map<int, std::string> classModifiers;
   std::unordered_map<int, std::string> methodFlags;
+  std::unordered_map<int, std::string> fieldFlags;
 
   void buildHeader();
 
@@ -39,6 +40,7 @@ class BinOutput {
 
   void buildClassInfo();
   void buildInterfaces();
+  void buildFields();
   void buildMethod(spMethodInfo &method);
   void buildMethods();
   void buildAttributeInfo(spAttributeInfo &attribute);
@@ -90,7 +92,19 @@ public:
       { METHOD_ACC_ABSTRACT, "abstract" },
       { METHOD_ACC_STRICT, "strict" },
       { METHOD_ACC_SYNTHETIC, "synthetic" },
-  };
+    };
+
+    fieldFlags = {
+      { FIELD_ACC_PUBLIC, "public" },
+      { FIELD_ACC_PRIVATE, "private" },
+      { FIELD_ACC_PROTECTED, "protected" },
+      { FIELD_ACC_STATIC, "static" },
+      { FIELD_ACC_FINAL, "final" },
+      { FIELD_ACC_VOLATILE, "volatile" },
+      { FIELD_ACC_TRANSIENT, "transient" },
+      { FIELD_ACC_SYNTHETIC, "synthetic" },
+      { FIELD_ACC_ENUM, "enum" },
+    };
   }
 
   void build();
