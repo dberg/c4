@@ -6,8 +6,8 @@ void BinOutput::build() {
   buildHeader();
   buildConstantPool();
   buildClassInfo();
+  buildInterfaces();
   // TODO:
-  //buildInterfaces();
   //buildFields();
   buildMethods();
   // TODO:
@@ -234,6 +234,14 @@ void BinOutput::buildCodeAttribute(spCodeAttribute &code) {
 void BinOutput::buildCode(std::vector<u1> &code) {
   BinOutputCode outCode(code, out);
   outCode.build();
+}
+
+void BinOutput::buildInterfaces() {
+  out << "Interfaces count " << parser.classFile->interfaces_count << std::endl;
+  for (auto constantPoolIdx: parser.classFile->interfaces) {
+    out << "  #" << constantPoolIdx;
+  }
+  out << std::endl << std::endl;
 }
 
 } // namespace

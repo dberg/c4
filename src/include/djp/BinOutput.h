@@ -38,6 +38,7 @@ class BinOutput {
   void buildCPInvokeDynamicInfo(spCInvokeDynamicInfo& cInvokeDynamicInfo);
 
   void buildClassInfo();
+  void buildInterfaces();
   void buildMethod(spMethodInfo &method);
   void buildMethods();
   void buildAttributeInfo(spAttributeInfo &attribute);
