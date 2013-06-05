@@ -342,16 +342,84 @@ AttributeType ParserBin::getAttributeType(u2 attributeNameIndex) {
     std::string str(item->cUtf8Info->bytes.begin(),
       item->cUtf8Info->bytes.end());
 
+    if (str.compare("ConstantValue") == 0) {
+      return ATTRIBUTE_TYPE_CONSTANT_VALUE;
+    }
+
     if (str.compare("Code") == 0) {
       return ATTRIBUTE_TYPE_CODE;
+    }
+
+    if (str.compare("StackMapTable") == 0) {
+      return ATTRIBUTE_TYPE_STACK_MAP_TABLE;
+    }
+
+    if (str.compare("Exceptions") == 0) {
+      return ATTRIBUTE_TYPE_EXCEPTIONS;
+    }
+
+    if (str.compare("InnerClasses") == 0) {
+      return ATTRIBUTE_TYPE_INNER_CLASSES;
+    }
+
+    if (str.compare("EnclosingMethod") == 0) {
+      return ATTRIBUTE_TYPE_ENCLOSING_METHOD;
+    }
+
+    if (str.compare("Synthetic") == 0) {
+      return ATTRIBUTE_TYPE_SYNTHETIC;
+    }
+
+    if (str.compare("Signature") == 0) {
+      return ATTRIBUTE_TYPE_SIGNATURE;
+    }
+
+    if (str.compare("SourceFile") == 0) {
+      return ATTRIBUTE_TYPE_SOURCE_FILE;
+    }
+
+    if (str.compare("SourceDebugExtension") == 0) {
+      return ATTRIBUTE_TYPE_SOURCE_DEBUG_EXTENSION;
     }
 
     if (str.compare("LineNumberTable") == 0) {
       return ATTRIBUTE_TYPE_LINE_NUMBER_TABLE;
     }
 
-    if (str.compare("SourceFile") == 0) {
-      return ATTRIBUTE_TYPE_SOURCE_FILE;
+    if (str.compare("LocalVariableTable") == 0) {
+      return ATTRIBUTE_TYPE_LOCAL_VARIABLE_TABLE;
+    }
+
+    if (str.compare("LocalVariableTypeTable") == 0) {
+      return ATTRIBUTE_TYPE_LOCAL_VARIABLE_TYPE_TABLE;
+    }
+
+    if (str.compare("Deprecated") == 0) {
+      return ATTRIBUTE_TYPE_DEPRECATED;
+    }
+
+    if (str.compare("RuntimeVisibleAnnotations") == 0) {
+      return ATTRIBUTE_TYPE_RUNTIME_VISIBLE_ANNOTATIONS;
+    }
+
+    if (str.compare("RuntimeInvisibleAnnotations") == 0) {
+      return ATTRIBUTE_TYPE_RUNTIME_INVISIBLE_ANNOTATIONS;
+    }
+
+    if (str.compare("RuntimeVisibleParameterAnnotations") == 0) {
+      return ATTRIBUTE_TYPE_RUNTIME_VISIBLE_PARAMETER_ANNOTATIONS;
+    }
+
+    if (str.compare("RuntimeInvisibleParameterAnnotations") == 0) {
+      return ATTRIBUTE_TYPE_RUNTIME_INVISIBLE_PARAMETER_ANNOTATIONS;
+    }
+
+    if (str.compare("AnnotationDefault") == 0) {
+      return ATTRIBUTE_TYPE_ANNOTATION_DEFAULT;
+    }
+
+    if (str.compare("BootstrapMethods") == 0) {
+      return ATTRIBUTE_TYPE_BOOTSTRAP_METHODS;
     }
   }
 

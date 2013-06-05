@@ -204,18 +204,68 @@ void BinOutput::buildAttributes(std::vector<spAttributeInfo> &attributes) {
 
 void BinOutput::buildAttributeInfo(spAttributeInfo &attribute) {
   switch (attribute->type) {
+    case ATTRIBUTE_TYPE_UNKNOWN:
+      // TODO:
+      break;
+    case ATTRIBUTE_TYPE_CONSTANT_VALUE:
+      // TODO:
+      break;
     case ATTRIBUTE_TYPE_CODE:
       buildAttributeCode(attribute);
       break;
-    case ATTRIBUTE_TYPE_LINE_NUMBER_TABLE:
-      buildAttributeLineNumberTable(attribute);
+    case ATTRIBUTE_TYPE_STACK_MAP_TABLE:
+      // TODO:
+      break;
+    case ATTRIBUTE_TYPE_EXCEPTIONS:
+      // TODO:
+      break;
+    case ATTRIBUTE_TYPE_INNER_CLASSES:
+      // TODO:
+      break;
+    case ATTRIBUTE_TYPE_ENCLOSING_METHOD:
+      // TODO:
+      break;
+    case ATTRIBUTE_TYPE_SYNTHETIC:
+      // TODO:
+      break;
+    case ATTRIBUTE_TYPE_SIGNATURE:
+      // TODO:
       break;
     case ATTRIBUTE_TYPE_SOURCE_FILE:
       buildAttributeSourceFile(attribute);
       break;
-    case ATTRIBUTE_TYPE_UNKNOWN:
+    case ATTRIBUTE_TYPE_SOURCE_DEBUG_EXTENSION:
       // TODO:
-      //buildAttributeUnknown();
+      break;
+    case ATTRIBUTE_TYPE_LINE_NUMBER_TABLE:
+      buildAttributeLineNumberTable(attribute);
+      break;
+    case ATTRIBUTE_TYPE_LOCAL_VARIABLE_TABLE:
+      // TODO:
+      break;
+    case ATTRIBUTE_TYPE_LOCAL_VARIABLE_TYPE_TABLE:
+      // TODO:
+      break;
+    case ATTRIBUTE_TYPE_DEPRECATED:
+      // TODO:
+      break;
+    case ATTRIBUTE_TYPE_RUNTIME_VISIBLE_ANNOTATIONS:
+      // TODO:
+      break;
+    case ATTRIBUTE_TYPE_RUNTIME_INVISIBLE_ANNOTATIONS:
+      // TODO:
+      break;
+    case ATTRIBUTE_TYPE_RUNTIME_VISIBLE_PARAMETER_ANNOTATIONS:
+      // TODO:
+      break;
+    case ATTRIBUTE_TYPE_RUNTIME_INVISIBLE_PARAMETER_ANNOTATIONS:
+      // TODO:
+      break;
+    case ATTRIBUTE_TYPE_ANNOTATION_DEFAULT:
+      // TODO:
+      break;
+    case ATTRIBUTE_TYPE_BOOTSTRAP_METHODS:
+      // TODO:
       break;
   }
 }
