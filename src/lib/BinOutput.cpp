@@ -232,8 +232,20 @@ void BinOutput::buildCodeAttribute(spCodeAttribute &code) {
     << " max_locals " << code->max_locals << std::endl;
   buildCode(code->code);
 
-  // TODO:
   // exceptions
+  if (code->exception_table_length) {
+    out << "  Exception table:" << std::endl;
+    out << "    from    to      target  type" << std::endl;
+    for (auto ex: code->exceptions) {
+      out << "    "
+        << std::left << std::setw(8) << std::setfill(' ') << ex->start_pc
+        << std::left << std::setw(8) << std::setfill(' ') << ex->end_pc
+        << std::left << std::setw(8) << std::setfill(' ') << ex->handler_pc
+        << "#"
+        << std::left << std::setw(7) << std::setfill(' ') << ex->catch_type
+        << std::endl;
+    }
+  }
 
   // attributes
   out << "  ";
@@ -296,7 +308,7 @@ void BinOutput::buildAttributeLineNumberTable(spAttributeInfo &attribute) {
     << attribute->table->line_number_table_length << std::endl;
 
   for (auto row: attribute->table->table) {
-    out << "  line " << row->line_number << ": " << row->start_pc << std::endl;
+    out << "    line " << row->line_number << ": " << row->start_pc << std::endl;
   }
 
   out << std::endl;
