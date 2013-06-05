@@ -208,8 +208,7 @@ void BinOutput::buildAttributeInfo(spAttributeInfo &attribute) {
       buildAttributeCode(attribute);
       break;
     case ATTRIBUTE_TYPE_LINE_NUMBER_TABLE:
-      // TODO:
-      // buildAttributeLineNumberTable();
+      buildAttributeLineNumberTable(attribute);
       break;
     case ATTRIBUTE_TYPE_SOURCE_FILE:
       buildAttributeSourceFile(attribute);
@@ -228,13 +227,17 @@ void BinOutput::buildAttributeCode(spAttributeInfo &attribute) {
 }
 
 void BinOutput::buildCodeAttribute(spCodeAttribute &code) {
-  out << "max_stack " << code->max_stack << " max_locals " << code->max_locals
-    << std::endl;
+  // code
+  out << "max_stack " << code->max_stack
+    << " max_locals " << code->max_locals << std::endl;
   buildCode(code->code);
-  out << std::endl;
+
   // TODO:
   // exceptions
+
   // attributes
+  out << "  ";
+  buildAttributes(code->attributes);
 }
 
 void BinOutput::buildCode(std::vector<u1> &code) {
@@ -283,6 +286,20 @@ void BinOutput::buildAttributeSourceFile(spAttributeInfo &attribute) {
     << " attribute_name_index #" << attribute->attribute_name_index
     << " attribute_length " << attribute->attribute_length
     << " sourcefile_index #" << attribute->sourcefile_index << std::endl;
+}
+
+void BinOutput::buildAttributeLineNumberTable(spAttributeInfo &attribute) {
+  out << "LineNumberTable"
+    << " attribute_name_index #" << attribute->attribute_name_index
+    << " attribute_length " << attribute->attribute_length
+    << " line_number_table_length "
+    << attribute->table->line_number_table_length << std::endl;
+
+  for (auto row: attribute->table->table) {
+    out << "  line " << row->line_number << ": " << row->start_pc << std::endl;
+  }
+
+  out << std::endl;
 }
 
 } // namespace

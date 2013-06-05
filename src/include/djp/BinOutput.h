@@ -51,6 +51,7 @@ class BinOutput {
   void buildCode(std::vector<u1> &code);
 
   void buildAttributeSourceFile(spAttributeInfo &attribute);
+  void buildAttributeLineNumberTable(spAttributeInfo &attribute);
 
 public:
   BinOutput(ParserBin &parser) : parser(parser) {
