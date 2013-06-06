@@ -313,17 +313,55 @@ void ParserBin::parseAttributes(u2 attributesCount,
     info->attribute_length = length;
 
     switch (type) {
+      // TODO:
+      //case ATTRIBUTE_TYPE_CONSTANT_VALUE:
+      //  break;
       case ATTRIBUTE_TYPE_CODE:
         info->code = spCodeAttribute(new CodeAttribute);
         parseCodeAttribute(info->code);
         break;
+      // TODO:
+      //case ATTRIBUTE_TYPE_STACK_MAP_TABLE:
+      //  break;
+      //case ATTRIBUTE_TYPE_EXCEPTIONS:
+      //  break;
+      //case ATTRIBUTE_TYPE_INNER_CLASSES:
+      //  break;
+      //case ATTRIBUTE_TYPE_ENCLOSING_METHOD:
+      //  break;
+      //case ATTRIBUTE_TYPE_SYNTHETIC:
+      //  break;
+      //case ATTRIBUTE_TYPE_SIGNATURE:
+      //  break;
+      case ATTRIBUTE_TYPE_SOURCE_FILE:
+        info->sourcefile_index = getU2();
+        break;
+      // TODO:
+      //case ATTRIBUTE_TYPE_SOURCE_DEBUG_EXTENSION:
+        // break;
       case ATTRIBUTE_TYPE_LINE_NUMBER_TABLE:
         info->table = spLineNumberTable(new LineNumberTable);
         parseLineNumberTable(info->table);
         break;
-      case ATTRIBUTE_TYPE_SOURCE_FILE:
-        info->sourcefile_index = getU2();
-        break;
+      // TODO:
+      //case ATTRIBUTE_TYPE_LOCAL_VARIABLE_TABLE:
+      //  break;
+      //case ATTRIBUTE_TYPE_LOCAL_VARIABLE_TYPE_TABLE:
+      //  break;
+      //case ATTRIBUTE_TYPE_DEPRECATED:
+      //  break;
+      //case ATTRIBUTE_TYPE_RUNTIME_VISIBLE_ANNOTATIONS:
+      //  break;
+      //case ATTRIBUTE_TYPE_RUNTIME_INVISIBLE_ANNOTATIONS:
+      //  break;
+      //case ATTRIBUTE_TYPE_RUNTIME_VISIBLE_PARAMETER_ANNOTATIONS:
+      //  break;
+      //case ATTRIBUTE_TYPE_RUNTIME_INVISIBLE_PARAMETER_ANNOTATIONS:
+      //  break;
+      //case ATTRIBUTE_TYPE_ANNOTATION_DEFAULT:
+      //  break;
+      //case ATTRIBUTE_TYPE_BOOTSTRAP_METHODS:
+      //  break;
       default:
         info->info.reserve(length);
         for (unsigned j = 0; j < length; j++) {
