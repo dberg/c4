@@ -3,12 +3,10 @@
 #define __ASTBIN_H__
 #include <stdint.h> // cstdint
 #include <memory>
+#include "djp/TypeDefs.h"
+#include "djp/ASTBinStackFrame.h"
 
 namespace djp {
-
-typedef uint32_t u4;
-typedef uint16_t u2;
-typedef uint8_t u1;
 
 typedef std::shared_ptr<struct ClassFile> spClassFile;
 typedef std::shared_ptr<struct CPInfo> spCPInfo;
@@ -411,7 +409,10 @@ struct AttributeInfo {
   spCodeAttribute code;
 
   // TODO:
-  // ATTRIBUTE_TYPE_STACK_MAP_TABLE:
+  // ATTRIBUTE_TYPE_STACK_MAP_TABLE
+  //spStackMapTable stackMapTable;
+
+  // TODO:
   // ATTRIBUTE_TYPE_EXCEPTIONS:
   // ATTRIBUTE_TYPE_INNER_CLASSES:
   // ATTRIBUTE_TYPE_ENCLOSING_METHOD:

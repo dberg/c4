@@ -4,7 +4,7 @@
 #include <stdint.h> // cstdint
 #include <string>
 #include <vector>
-#include "ASTBin.h"
+#include "djp/ASTBin.h"
 
 namespace djp {
 
@@ -49,6 +49,8 @@ class ParserBin {
   // Helpers
   AttributeType getAttributeType(u2 attributeNameIndex);
   void parseCodeAttribute(spCodeAttribute &code);
+  void parseStackMapTable(spStackMapTable &stackMapTable);
+  void parseStackMapFrame(spStackMapFrame &frame);
   void parseLineNumberTable(spLineNumberTable &table);
 
 public:

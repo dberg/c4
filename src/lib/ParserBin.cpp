@@ -322,7 +322,10 @@ void ParserBin::parseAttributes(u2 attributesCount,
         break;
       // TODO:
       //case ATTRIBUTE_TYPE_STACK_MAP_TABLE:
-      //  break;
+        //info->stackMapTable = spStackMapTable(new StackMapTable);
+        //parseStackMapTable(info->stackMapTable);
+        //break;
+      // TODO:
       //case ATTRIBUTE_TYPE_EXCEPTIONS:
       //  break;
       //case ATTRIBUTE_TYPE_INNER_CLASSES:
@@ -492,13 +495,28 @@ void ParserBin::parseCodeAttribute(spCodeAttribute &code) {
   parseAttributes(attributes_count, code->attributes);
 }
 
+void ParserBin::parseStackMapTable(spStackMapTable &stackMapTable) {
+  u2 numberOfEntries = getU2();
+  stackMapTable->number_of_entries = numberOfEntries;
+  for (u2 i = 0; i < numberOfEntries; i++) {
+    spStackMapFrame frame = spStackMapFrame(new StackMapFrame);
+    parseStackMapFrame(frame);
+    stackMapTable->entries.push_back(frame);
+  }
+}
+
+void ParserBin::parseStackMapFrame(spStackMapFrame &frame) {
+  // TODO:
+}
+
 void ParserBin::parseLineNumberTable(spLineNumberTable &table) {
   u2 length = getU2();
   table->line_number_table_length = length;
 
   // LineNumberTable Info
   for (u4 i = 0; i < length; i++) {
-    spLineNumberTableInfo entry = spLineNumberTableInfo(new LineNumberTableInfo);
+    spLineNumberTableInfo entry = spLineNumberTableInfo(
+      new LineNumberTableInfo);
     entry->start_pc = getU2();
     entry->line_number = getU2();
     table->table.push_back(entry);
