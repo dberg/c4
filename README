@@ -23,32 +23,3 @@ Emacs mode (djp-mode) installation
     (add-to-list 'load-path "~/PATH/TO/src/djp-mode")
     (autoload 'djp-mode "djp-mode" "Major mode for Java." t)
     (add-to-list 'auto-mode-alist '("\\.java$" . djp-mode))
-
-
-Parser lib
--------------------------------------------------------------------------------
-
-The parser from djp is modular and can be embedded into different projects. The
-directory 'sample' includes a simple example that takes the following java
-class as input:
-
-Class Foo {
-    public Foo() {}
-    public String bar() { return ""; }
-    public void baz() {}
-}
-
-and prints a list of method names found int the class Foo:
-
-Foo
-  Foo (constructor)
-  bar
-  baz
-
-To build and execute the sample code:
-
-  cd djp/src
-  make
-  cd sample
-  make
-  ./out/Debug/bin/ListClassMethods
