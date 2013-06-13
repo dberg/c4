@@ -36,11 +36,24 @@ endif
 
 builddir_name = out
 builddir = $(builddir_name)/$(BUILDTYPE)
-obj = $(builddir)/obj
+builddir_java = $(builddir)/java
+builddir_bytecode = $(builddir)/bytecode
+builddir_djp = $(builddir)/djp
+
+obj_java = $(builddir)/java/obj
+obj_bytecode = $(builddir)/bytecode/obj
+obj_djp = $(builddir)/djp/obj
+
 bin = $(builddir)/bin
-incdir := include
-libdir := lib
-INC = -I$(incdir)
+
+incdir_java := java/include/djp
+incdir_bytecode := bytecode/include/djp
+incdir_djp := djp/include/djp
+INC = -I$(dir $(incdir_java)) -I$(dir $(incdir_bytecode)) -I$(dir $(incdir_djp))
+
+libdir_java := java/lib
+libdir_bytecode := bytecode/lib
+libdir_djp := djp/lib
 
 # Tests
 # Google Test r652
@@ -54,105 +67,94 @@ CXXTESTFLAGS = -g3 $(CXX11FLAGS)
 .PHONY: all
 all: directories $(bin)/djp $(bin)/tests
 
+.PHONY: djp
+djp: directories $(bin)/djp
+
 .PHONY: clean
 clean:
 	$(RM) -r $(builddir_name)
 
 .PHONY: directories
 directories:
-	mkdir -p $(obj) $(bin) $(gtest_obj) $(test_obj)
+	mkdir -p $(obj_java) $(obj_bytecode) $(obj_djp) $(bin) $(gtest_obj)
 
 # main djp
-$(bin)/djp: $(obj)/CmdInput.o \
-            $(obj)/BinOutput.o \
-            $(obj)/BinOutputCode.o \
-            $(obj)/EmacsOutput.o \
-            $(obj)/SourceCodeStream.o \
-            $(obj)/SymbolTable.o \
-            $(obj)/djp.o \
-            $(obj)/libdjp.a
-	$(CXX) $(obj)/CmdInput.o \
-               $(obj)/BinOutput.o \
-               $(obj)/BinOutputCode.o \
-               $(obj)/EmacsOutput.o \
-               $(CFLAGS) $(INC) $(obj)/djp.o -o $@ $(obj)/libdjp.a
+$(bin)/djp: $(obj_bytecode)/BinOutput.o \
+            $(obj_bytecode)/BinOutputCode.o \
+            $(obj_bytecode)/ParserBin.o \
+            $(obj_java)/libjava.a \
+            $(obj_djp)/CmdInput.o \
+            $(obj_djp)/djp.o
+	$(CXX) $(obj_djp)/CmdInput.o \
+               $(obj_bytecode)/BinOutput.o \
+               $(obj_bytecode)/BinOutputCode.o \
+               $(obj_bytecode)/ParserBin.o \
+               $(CFLAGS) $(INC) $(obj_djp)/djp.o -o $@ $(obj_java)/libjava.a
 
-# objects
-$(obj)/CmdInput.o: $(libdir)/CmdInput.cpp $(incdir)/djp/CmdInput.h
+# objects djp
+$(obj_djp)/CmdInput.o: $(libdir_djp)/CmdInput.cpp $(incdir_djp)/CmdInput.h
+	$(CXX) $(CFLAGS) $(INC) \
+          -c $< -o $@
+
+$(obj_djp)/djp.o: $(libdir_djp)/djp.cpp
 	$(CXX) $(CFLAGS) $(INC) -c $< -o $@
 
-$(obj)/BinOutput.o: $(libdir)/BinOutput.cpp \
-                    $(incdir)/djp/BinOutput.h \
-                    $(incdir)/djp/ParserBin.h
+# objects bytecode
+$(obj_bytecode)/BinOutput.o: $(libdir_bytecode)/BinOutput.cpp \
+                             $(incdir_bytecode)/BinOutput.h
 	$(CXX) $(CFLAGS) $(INC) -c $< -o $@
 
-$(obj)/BinOutputCode.o: $(libdir)/BinOutputCode.cpp \
-                        $(incdir)/djp/BinOutputCode.h
+$(obj_bytecode)/BinOutputCode.o: $(libdir_bytecode)/BinOutputCode.cpp \
+                                 $(incdir_bytecode)/BinOutputCode.h
 	$(CXX) $(CFLAGS) $(INC) -c $< -o $@
 
-$(obj)/EmacsOutput.o: $(libdir)/EmacsOutput.cpp \
-                      $(incdir)/djp/EmacsOutput.h \
-                      $(incdir)/djp/AST.h \
-                      $(incdir)/djp/ErrorCodes.h \
-                      $(incdir)/djp/Token.h
-	$(CXX) $(CFLAGS) $(INC) -c $< -o $@
-
-$(obj)/djp.o: $(libdir)/djp.cpp
-	$(CXX) $(CFLAGS) $(INC) -c $< -o $@
-
-# objects - libdjp
-$(obj)/libdjp.a: $(obj)/Util.o \
-                 $(obj)/Diagnosis.o \
-                 $(obj)/Indentation.o \
-                 $(obj)/Lexer.o \
-                 $(obj)/LiteralSupport.o \
-                 $(obj)/Parser.o \
-                 $(obj)/SourceCodeStream.o \
-                 $(obj)/SymbolTable.o \
-                 $(obj)/ParserBin.o
+# objects java - libjava
+$(obj_java)/libjava.a: $(obj_java)/Util.o \
+                       $(obj_java)/Diagnosis.o \
+                       $(obj_java)/Indentation.o \
+                       $(obj_java)/Lexer.o \
+                       $(obj_java)/LiteralSupport.o \
+                       $(obj_java)/Parser.o \
+                       $(obj_java)/SourceCodeStream.o \
+                       $(obj_java)/SymbolTable.o \
+                       $(obj_java)/EmacsOutput.o
 	ar -rv $@ $+
 
-$(obj)/Util.o: $(libdir)/Util.cpp $(incdir)/djp/Util.h
+$(obj_java)/Util.o: $(libdir_java)/Util.cpp $(incdir_java)/Util.h
 	$(CXX) $(CFLAGS) $(INC) -c $< -o $@
 
-$(obj)/Diagnosis.o: $(libdir)/Diagnosis.cpp $(incdir)/djp/Diagnosis.h
+$(obj_java)/Diagnosis.o: $(libdir_java)/Diagnosis.cpp $(incdir_java)/Diagnosis.h
 	$(CXX) $(CFLAGS) $(INC) -c $< -o $@
 
-$(obj)/Indentation.o: $(libdir)/Indentation.cpp $(incdir)/djp/Indentation.h
+$(obj_java)/Indentation.o: $(libdir_java)/Indentation.cpp \
+                           $(incdir_java)/Indentation.h
 	$(CXX) $(CFLAGS) $(INC) -c $< -o $@
 
-$(obj)/Lexer.o: $(libdir)/Lexer.cpp \
-                $(incdir)/djp/Lexer.h \
-                $(incdir)/djp/AST.h \
-                $(incdir)/djp/Diagnosis.h \
-                $(incdir)/djp/LiteralSupport.h \
-                $(incdir)/djp/ParserState.h \
-                $(incdir)/djp/SourceCodeStream.h \
-                $(incdir)/djp/Token.h
+$(obj_java)/Lexer.o: $(libdir_java)/Lexer.cpp $(incdir_java)/Lexer.h
 	$(CXX) $(CFLAGS) $(INC) -c $< -o $@
 
-$(obj)/LiteralSupport.o: $(libdir)/LiteralSupport.cpp \
-                         $(incdir)/djp/LiteralSupport.h
+$(obj_java)/LiteralSupport.o: $(libdir_java)/LiteralSupport.cpp \
+                              $(incdir_java)/LiteralSupport.h
 	$(CXX) $(CFLAGS) $(INC) -c $< -o $@
 
-$(obj)/Parser.o: $(libdir)/Parser.cpp \
-                 $(incdir)/djp/Parser.h \
-                 $(incdir)/djp/AST.h \
-                 $(incdir)/djp/ErrorCodes.h \
-                 $(incdir)/djp/ParserState.h \
-                 $(incdir)/djp/Token.h
+$(obj_java)/Parser.o: $(libdir_java)/Parser.cpp $(incdir_java)/Parser.h
 	$(CXX) $(CFLAGS) $(INC) -c $< -o $@
 
-$(obj)/SourceCodeStream.o: $(libdir)/SourceCodeStream.cpp \
-	                   $(incdir)/djp/SourceCodeStream.h
+$(obj_java)/EmacsOutput.o: $(libdir_java)/EmacsOutput.cpp \
+                           $(incdir_java)/EmacsOutput.h
 	$(CXX) $(CFLAGS) $(INC) -c $< -o $@
 
-$(obj)/SymbolTable.o: $(libdir)/SymbolTable.cpp \
-                 $(incdir)/djp/SymbolTable.h
+$(obj_java)/SourceCodeStream.o: $(libdir_java)/SourceCodeStream.cpp \
+                                $(incdir_java)/SourceCodeStream.h
 	$(CXX) $(CFLAGS) $(INC) -c $< -o $@
 
-# objects - binary parsing
-$(obj)/ParserBin.o: $(libdir)/ParserBin.cpp $(incdir)/djp/ParserBin.h
+$(obj_java)/SymbolTable.o: $(libdir_java)/SymbolTable.cpp \
+                           $(incdir_java)/SymbolTable.h
+	$(CXX) $(CFLAGS) $(INC) -c $< -o $@
+
+# objects - bytecode
+$(obj_bytecode)/ParserBin.o: $(libdir_bytecode)/ParserBin.cpp \
+                             $(incdir_bytecode)/ParserBin.h
 	$(CXX) $(CFLAGS) $(INC) -c $< -o $@
 
 # tests
@@ -167,19 +169,18 @@ $(bin)/tests: test-classes \
               $(test_libdir)/ParserTest.cpp \
               $(test_libdir)/ParserBinTest.cpp \
               $(test_libdir)/SymbolTableTest.cpp \
-              $(obj)/EmacsOutput.o \
-              $(obj)/Diagnosis.o \
-              $(obj)/libdjp.a \
+              $(obj_java)/libjava.a \
               $(gtest_obj)/libgtest.a
 
-	$(CXX) $(CXXTESTFLAGS) $(INC) -I$(gtest_inc) $(obj)/EmacsOutput.o \
+	$(CXX) $(CXXTESTFLAGS) $(INC) -I$(gtest_inc) \
+                                      $(obj_bytecode)/ParserBin.o \
                                       $(test_libdir)/EmacsOutputTest.cpp \
                                       $(test_libdir)/IndentationTest.cpp \
                                       $(test_libdir)/ParserTest.cpp \
                                       $(test_libdir)/ParserBinTest.cpp \
                                       $(test_libdir)/SymbolTableTest.cpp \
                                       -o $@ \
-                                      $(obj)/libdjp.a \
+                                      $(obj_java)/libjava.a \
                                       $(gtest_obj)/libgtest.a \
                                       -lpthread -ldl
 
