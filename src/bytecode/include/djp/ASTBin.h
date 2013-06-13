@@ -408,9 +408,8 @@ struct AttributeInfo {
   // ATTRIBUTE_TYPE_CODE
   spCodeAttribute code;
 
-  // TODO:
   // ATTRIBUTE_TYPE_STACK_MAP_TABLE
-  //spStackMapTable stackMapTable;
+  spStackMapTable stackMapTable;
 
   // TODO:
   // ATTRIBUTE_TYPE_EXCEPTIONS:

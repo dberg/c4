@@ -30,6 +30,35 @@ u4 ParserBin::getU4() {
   return bytes;
 }
 
+StackMapFrameOpt getStackMapFrameOpt(u1 byt) {
+  // [0-63]
+  if (byt <= 63) {
+    return StackMapFrameOpt::SAME_FRAME;
+  }
+
+  // [64-127]
+  if (byt <= 127) {
+    return StackMapFrameOpt::SAME_LOCALS_1_STACK_ITEM_FRAME;
+  }
+
+  // [128-247]
+  if (byt <= 247) {
+    return StackMapFrameOpt::SAME_LOCALS_1_STACK_ITEM_FRAME_EXTENDED;
+  }
+
+  // [248-250]
+  if (byt <= 250) {
+    return StackMapFrameOpt::CHOP_FRAME;
+  }
+
+  if (byt == 251) {
+    return StackMapFrameOpt::SAME_FRAME_EXTENDED;
+  }
+
+  // [252-255]
+  return StackMapFrameOpt::FULL_FRAME;
+}
+
 // -----------------------------------------------------------------------------
 // Parser
 // -----------------------------------------------------------------------------
@@ -507,6 +536,7 @@ void ParserBin::parseStackMapTable(spStackMapTable &stackMapTable) {
 
 void ParserBin::parseStackMapFrame(spStackMapFrame &frame) {
   // TODO:
+  (void) frame;
 }
 
 void ParserBin::parseLineNumberTable(spLineNumberTable &table) {
