@@ -76,7 +76,8 @@ clean:
 
 .PHONY: directories
 directories:
-	mkdir -p $(obj_java) $(obj_bytecode) $(obj_djp) $(bin) $(gtest_obj)
+	mkdir -p $(obj_java) $(obj_bytecode) $(obj_djp) \
+          $(bin) $(gtest_obj)
 
 # main djp
 $(bin)/djp: $(obj_bytecode)/BinOutput.o \
@@ -89,24 +90,28 @@ $(bin)/djp: $(obj_bytecode)/BinOutput.o \
                $(obj_bytecode)/BinOutput.o \
                $(obj_bytecode)/BinOutputCode.o \
                $(obj_bytecode)/ParserBin.o \
-               $(CFLAGS) $(INC) $(obj_djp)/djp.o -o $@ $(obj_java)/libjava.a
+               $(CFLAGS) $(INC) \
+                 $(obj_djp)/djp.o -o $@ $(obj_java)/libjava.a
 
 # objects djp
 $(obj_djp)/CmdInput.o: $(libdir_djp)/CmdInput.cpp $(incdir_djp)/CmdInput.h
 	$(CXX) $(CFLAGS) $(INC) \
-          -c $< -o $@
+            -c $< -o $@
 
 $(obj_djp)/djp.o: $(libdir_djp)/djp.cpp
-	$(CXX) $(CFLAGS) $(INC) -c $< -o $@
+	$(CXX) $(CFLAGS) $(INC) \
+            -c $< -o $@
 
 # objects bytecode
 $(obj_bytecode)/BinOutput.o: $(libdir_bytecode)/BinOutput.cpp \
                              $(incdir_bytecode)/BinOutput.h
-	$(CXX) $(CFLAGS) $(INC) -c $< -o $@
+	$(CXX) $(CFLAGS) $(INC) \
+            -c $< -o $@
 
 $(obj_bytecode)/BinOutputCode.o: $(libdir_bytecode)/BinOutputCode.cpp \
                                  $(incdir_bytecode)/BinOutputCode.h
-	$(CXX) $(CFLAGS) $(INC) -c $< -o $@
+	$(CXX) $(CFLAGS) $(INC) \
+            -c $< -o $@
 
 # objects java - libjava
 $(obj_java)/libjava.a: $(obj_java)/Util.o \
@@ -121,41 +126,51 @@ $(obj_java)/libjava.a: $(obj_java)/Util.o \
 	ar -rv $@ $+
 
 $(obj_java)/Util.o: $(libdir_java)/Util.cpp $(incdir_java)/Util.h
-	$(CXX) $(CFLAGS) $(INC) -c $< -o $@
+	$(CXX) $(CFLAGS) $(INC) \
+            -c $< -o $@
 
 $(obj_java)/Diagnosis.o: $(libdir_java)/Diagnosis.cpp $(incdir_java)/Diagnosis.h
-	$(CXX) $(CFLAGS) $(INC) -c $< -o $@
+	$(CXX) $(CFLAGS) $(INC) \
+            -c $< -o $@
 
 $(obj_java)/Indentation.o: $(libdir_java)/Indentation.cpp \
                            $(incdir_java)/Indentation.h
-	$(CXX) $(CFLAGS) $(INC) -c $< -o $@
+	$(CXX) $(CFLAGS) $(INC) \
+            -c $< -o $@
 
 $(obj_java)/Lexer.o: $(libdir_java)/Lexer.cpp $(incdir_java)/Lexer.h
-	$(CXX) $(CFLAGS) $(INC) -c $< -o $@
+	$(CXX) $(CFLAGS) $(INC) \
+            -c $< -o $@
 
 $(obj_java)/LiteralSupport.o: $(libdir_java)/LiteralSupport.cpp \
                               $(incdir_java)/LiteralSupport.h
-	$(CXX) $(CFLAGS) $(INC) -c $< -o $@
+	$(CXX) $(CFLAGS) $(INC) \
+            -c $< -o $@
 
 $(obj_java)/Parser.o: $(libdir_java)/Parser.cpp $(incdir_java)/Parser.h
-	$(CXX) $(CFLAGS) $(INC) -c $< -o $@
+	$(CXX) $(CFLAGS) $(INC) \
+            -c $< -o $@
 
 $(obj_java)/EmacsOutput.o: $(libdir_java)/EmacsOutput.cpp \
                            $(incdir_java)/EmacsOutput.h
-	$(CXX) $(CFLAGS) $(INC) -c $< -o $@
+	$(CXX) $(CFLAGS) $(INC) \
+            -c $< -o $@
 
 $(obj_java)/SourceCodeStream.o: $(libdir_java)/SourceCodeStream.cpp \
                                 $(incdir_java)/SourceCodeStream.h
-	$(CXX) $(CFLAGS) $(INC) -c $< -o $@
+	$(CXX) $(CFLAGS) $(INC) \
+            -c $< -o $@
 
 $(obj_java)/SymbolTable.o: $(libdir_java)/SymbolTable.cpp \
                            $(incdir_java)/SymbolTable.h
-	$(CXX) $(CFLAGS) $(INC) -c $< -o $@
+	$(CXX) $(CFLAGS) $(INC) \
+            -c $< -o $@
 
 # objects - bytecode
 $(obj_bytecode)/ParserBin.o: $(libdir_bytecode)/ParserBin.cpp \
                              $(incdir_bytecode)/ParserBin.h
-	$(CXX) $(CFLAGS) $(INC) -c $< -o $@
+	$(CXX) $(CFLAGS) $(INC) \
+            -c $< -o $@
 
 # tests
 .PHONY: test-classes
@@ -173,20 +188,20 @@ $(bin)/tests: test-classes \
               $(gtest_obj)/libgtest.a
 
 	$(CXX) $(CXXTESTFLAGS) $(INC) -I$(gtest_inc) \
-                                      $(obj_bytecode)/ParserBin.o \
-                                      $(test_libdir)/EmacsOutputTest.cpp \
-                                      $(test_libdir)/IndentationTest.cpp \
-                                      $(test_libdir)/ParserTest.cpp \
-                                      $(test_libdir)/ParserBinTest.cpp \
-                                      $(test_libdir)/SymbolTableTest.cpp \
-                                      -o $@ \
-                                      $(obj_java)/libjava.a \
-                                      $(gtest_obj)/libgtest.a \
-                                      -lpthread -ldl
+            $(obj_bytecode)/ParserBin.o \
+            $(test_libdir)/EmacsOutputTest.cpp \
+            $(test_libdir)/IndentationTest.cpp \
+            $(test_libdir)/ParserTest.cpp \
+            $(test_libdir)/ParserBinTest.cpp \
+            $(test_libdir)/SymbolTableTest.cpp \
+            -o $@ \
+            $(obj_java)/libjava.a \
+            $(gtest_obj)/libgtest.a \
+            -lpthread -ldl
 
 $(gtest_obj)/libgtest.a: $(gtest_obj)/gtest-all.o
 	ar -rv $@ $<
 
 $(gtest_obj)/gtest-all.o: $(gtest_dir)/src/gtest-all.cc
 	$(CXX) $(CXXTESTFLAGS) -I$(gtest_dir)/include -I$(gtest_dir) \
-               -c $< -o $@
+            -c $< -o $@
