@@ -37,21 +37,26 @@ endif
 builddir_name = out
 builddir = $(builddir_name)/$(BUILDTYPE)
 builddir_java = $(builddir)/java
+builddir_scala = $(builddir)/scala
 builddir_bytecode = $(builddir)/bytecode
 builddir_djp = $(builddir)/djp
 
 obj_java = $(builddir)/java/obj
+obj_scala = $(builddir)/scala/obj
 obj_bytecode = $(builddir)/bytecode/obj
 obj_djp = $(builddir)/djp/obj
 
 bin = $(builddir)/bin
 
 incdir_java := java/include/djp
+incdir_scala := scala/include/djp
 incdir_bytecode := bytecode/include/djp
 incdir_djp := djp/include/djp
-INC = -I$(dir $(incdir_java)) -I$(dir $(incdir_bytecode)) -I$(dir $(incdir_djp))
+INC = -I$(dir $(incdir_java)) -I$(dir $(incdir_scala)) \
+    -I$(dir $(incdir_bytecode)) -I$(dir $(incdir_djp))
 
 libdir_java := java/lib
+libdir_scala := scala/lib
 libdir_bytecode := bytecode/lib
 libdir_djp := djp/lib
 
@@ -76,14 +81,15 @@ clean:
 
 .PHONY: directories
 directories:
-	mkdir -p $(obj_java) $(obj_bytecode) $(obj_djp) \
-          $(bin) $(gtest_obj)
+	mkdir -p $(obj_java) $(obj_scala) $(obj_bytecode) \
+          $(obj_djp) $(bin) $(gtest_obj)
 
 # main djp
 $(bin)/djp: $(obj_bytecode)/BinOutput.o \
             $(obj_bytecode)/BinOutputCode.o \
             $(obj_bytecode)/ParserBin.o \
             $(obj_java)/libjava.a \
+            $(obj_scala)/libscala.a \
             $(obj_djp)/CmdInput.o \
             $(obj_djp)/djp.o
 	$(CXX) $(obj_djp)/CmdInput.o \
@@ -91,7 +97,9 @@ $(bin)/djp: $(obj_bytecode)/BinOutput.o \
                $(obj_bytecode)/BinOutputCode.o \
                $(obj_bytecode)/ParserBin.o \
                $(CFLAGS) $(INC) \
-                 $(obj_djp)/djp.o -o $@ $(obj_java)/libjava.a
+                 $(obj_djp)/djp.o -o $@ \
+                 $(obj_java)/libjava.a \
+                 $(obj_scala)/libscala.a
 
 # objects djp
 $(obj_djp)/CmdInput.o: $(libdir_djp)/CmdInput.cpp $(incdir_djp)/CmdInput.h
@@ -166,6 +174,15 @@ $(obj_java)/SymbolTable.o: $(libdir_java)/SymbolTable.cpp \
 	$(CXX) $(CFLAGS) $(INC) \
             -c $< -o $@
 
+# objects scala - libscala
+$(obj_scala)/libscala.a: $(obj_scala)/ScalaParser.o
+	ar -rv $@ $+
+
+$(obj_scala)/ScalaParser.o: $(libdir_scala)/ScalaParser.cpp \
+                            $(incdir_java)/Parser.h
+	$(CXX) $(CFLAGS) $(INC) \
+            -c $< -o $@
+
 # objects - bytecode
 $(obj_bytecode)/ParserBin.o: $(libdir_bytecode)/ParserBin.cpp \
                              $(incdir_bytecode)/ParserBin.h
@@ -185,6 +202,7 @@ $(bin)/tests: test-classes \
               $(test_libdir)/ParserBinTest.cpp \
               $(test_libdir)/SymbolTableTest.cpp \
               $(obj_java)/libjava.a \
+              $(obj_scala)/libscala.a \
               $(gtest_obj)/libgtest.a
 
 	$(CXX) $(CXXTESTFLAGS) $(INC) -I$(gtest_inc) \
