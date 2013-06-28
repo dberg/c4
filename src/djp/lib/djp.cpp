@@ -8,6 +8,25 @@
 #include "djp/EmacsOutput.h"
 using namespace djp;
 
+int parseClassFile(CmdInput &ci) {
+  std::vector<unsigned char> buffer;
+
+  File file;
+  if (file.read(ci.getFilename(), buffer)) {
+    std::cerr << "Error: Failed to read file:" << ci.getFilename() << std::endl;
+    return 1;
+  }
+
+  ParserBin parser(ci.getFilename(), buffer);
+  parser.parse();
+
+  BinOutput output(parser);
+  output.build();
+  std::cout << output.out.str() << std::endl;
+
+  return 0;
+}
+
 int parseJavaFile(CmdInput &ci) {
   std::string buffer;
 
@@ -36,8 +55,8 @@ int parseJavaFile(CmdInput &ci) {
   return 0;
 }
 
-int parseClassFile(CmdInput &ci) {
-  std::vector<unsigned char> buffer;
+int parseScalaFile(CmdInput &ci) {
+  std::string buffer;
 
   File file;
   if (file.read(ci.getFilename(), buffer)) {
@@ -45,12 +64,23 @@ int parseClassFile(CmdInput &ci) {
     return 1;
   }
 
-  ParserBin parser(ci.getFilename(), buffer);
+  /*
+  ScalaParser parser(ci.getFilename(), buffer);
   parser.parse();
+  if (parser.error) {
+    std::cerr << "Error( " << parser.error << "): "
+      << parser.error_msg << std::endl;
+    return 1;
+  }
 
-  BinOutput output(parser);
+  ScalaEmacsOutput output(parser);
   output.build();
-  std::cout << output.out.str() << std::endl;
+  std::cout
+    << output.outSH.str() << std::endl
+    << output.outErr.str() << std::endl
+    << output.outST.str() << std::endl
+    << output.outIT.str();
+  */
 
   return 0;
 }
@@ -64,10 +94,12 @@ int main(int argc, const char **argv) {
 
   if (ci.isOptHelp()) {
     std::cout << ci.help << std::endl;
-  } else if (ci.isOptBinary()) {
+  } else if (ci.isOptInBytecode()) {
     return parseClassFile(ci);
-  } else if (ci.isOptEmacs()) {
+  } else if (ci.isOptInJava()) {
     return parseJavaFile(ci);
+  } else if (ci.isOptInScala()) {
+    return parseScalaFile(ci);
   }
 
   return 0;
