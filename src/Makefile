@@ -102,11 +102,12 @@ $(bin)/djp: $(obj_bytecode)/BinOutput.o \
                $(obj_bytecode)/BinOutput.o \
                $(obj_bytecode)/BinOutputCode.o \
                $(obj_bytecode)/ParserBin.o \
-               $(CFLAGS) $(INC) \
-                 $(obj_djp)/djp.o -o $@ \
-                 $(obj_java)/libjava.a \
-                 $(obj_scala)/libscala.a \
-                 $(obj_common)/libcommon.a
+               $(CFLAGS) \
+               $(INC) \
+               $(obj_djp)/djp.o -o $@ \
+               $(obj_java)/libjava.a \
+               $(obj_scala)/libscala.a \
+               $(obj_common)/libcommon.a
 
 # objects djp
 $(obj_djp)/CmdInput.o: $(libdir_djp)/CmdInput.cpp $(incdir_djp)/CmdInput.h
@@ -190,11 +191,16 @@ $(obj_java)/SymbolTable.o: $(libdir_java)/SymbolTable.cpp \
             -c $< -o $@
 
 # objects scala - libscala
-$(obj_scala)/libscala.a: $(obj_scala)/ScalaParser.o
+$(obj_scala)/libscala.a: $(obj_scala)/ScalaParser.o $(obj_scala)/ScalaLexer.o
 	ar -rv $@ $+
 
 $(obj_scala)/ScalaParser.o: $(libdir_scala)/ScalaParser.cpp \
-                            $(incdir_java)/Parser.h
+                            $(incdir_scala)/ScalaParser.h
+	$(CXX) $(CFLAGS) $(INC) \
+            -c $< -o $@
+
+$(obj_scala)/ScalaLexer.o: $(libdir_scala)/ScalaLexer.cpp \
+                           $(incdir_scala)/ScalaParser.h
 	$(CXX) $(CFLAGS) $(INC) \
             -c $< -o $@
 
