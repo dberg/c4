@@ -170,7 +170,7 @@ The output of the compiler is used to build djp-syntax-highlighting,
 djp-errors, djp-symbol-table and djp-indentation-table."
   (let (cmd compiler-output tmp)
     (write-region (point-min) (point-max) djp-tmp-buffer)
-    (setq cmd (concat djp-executable " " djp-tmp-buffer))
+    (setq cmd (concat djp-executable " -i java -f " djp-tmp-buffer))
     (setq compiler-output (shell-command-to-string cmd))
     ;; 1. array with syntax highlighting info
     (setq tmp (read-from-string compiler-output))
