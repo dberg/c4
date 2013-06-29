@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#include "djp/SourceCodeStream.h"
 #include "djp/CmdInput.h"
 #include "djp/File.h"
 #include "djp/Parser.h"

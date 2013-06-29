@@ -5,12 +5,12 @@
 #include <string>
 #include <sstream>
 #include <memory>
+#include "djp/SourceCodeStream.h"
 #include "AST.h"
 #include "Diagnosis.h"
 #include "Indentation.h"
 #include "LiteralSupport.h"
 #include "ParserState.h"
-#include "SourceCodeStream.h"
 #include "Token.h"
 
 namespace djp {

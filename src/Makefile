@@ -36,11 +36,13 @@ endif
 
 builddir_name = out
 builddir = $(builddir_name)/$(BUILDTYPE)
+builddir_common = $(builddir)/common
 builddir_java = $(builddir)/java
 builddir_scala = $(builddir)/scala
 builddir_bytecode = $(builddir)/bytecode
 builddir_djp = $(builddir)/djp
 
+obj_common = $(builddir)/common/obj
 obj_java = $(builddir)/java/obj
 obj_scala = $(builddir)/scala/obj
 obj_bytecode = $(builddir)/bytecode/obj
@@ -48,13 +50,16 @@ obj_djp = $(builddir)/djp/obj
 
 bin = $(builddir)/bin
 
+incdir_common := common/include/djp
 incdir_java := java/include/djp
 incdir_scala := scala/include/djp
 incdir_bytecode := bytecode/include/djp
 incdir_djp := djp/include/djp
-INC = -I$(dir $(incdir_java)) -I$(dir $(incdir_scala)) \
-    -I$(dir $(incdir_bytecode)) -I$(dir $(incdir_djp))
+INC = -I$(dir $(incdir_common)) -I$(dir $(incdir_java)) \
+  -I$(dir $(incdir_scala)) -I$(dir $(incdir_bytecode)) \
+  -I$(dir $(incdir_djp))
 
+libdir_common := common/lib
 libdir_java := java/lib
 libdir_scala := scala/lib
 libdir_bytecode := bytecode/lib
@@ -81,13 +86,14 @@ clean:
 
 .PHONY: directories
 directories:
-	mkdir -p $(obj_java) $(obj_scala) $(obj_bytecode) \
-          $(obj_djp) $(bin) $(gtest_obj)
+	mkdir -p $(obj_common) $(obj_java) $(obj_scala) \
+          $(obj_bytecode) $(obj_djp) $(bin) $(gtest_obj)
 
 # main djp
 $(bin)/djp: $(obj_bytecode)/BinOutput.o \
             $(obj_bytecode)/BinOutputCode.o \
             $(obj_bytecode)/ParserBin.o \
+            $(obj_common)/libcommon.a \
             $(obj_java)/libjava.a \
             $(obj_scala)/libscala.a \
             $(obj_djp)/CmdInput.o \
@@ -99,7 +105,8 @@ $(bin)/djp: $(obj_bytecode)/BinOutput.o \
                $(CFLAGS) $(INC) \
                  $(obj_djp)/djp.o -o $@ \
                  $(obj_java)/libjava.a \
-                 $(obj_scala)/libscala.a
+                 $(obj_scala)/libscala.a \
+                 $(obj_common)/libcommon.a
 
 # objects djp
 $(obj_djp)/CmdInput.o: $(libdir_djp)/CmdInput.cpp $(incdir_djp)/CmdInput.h
@@ -110,7 +117,21 @@ $(obj_djp)/djp.o: $(libdir_djp)/djp.cpp
 	$(CXX) $(CFLAGS) $(INC) \
             -c $< -o $@
 
+# objects common - libcommon
+$(obj_common)/libcommon.a: $(obj_common)/SourceCodeStream.o
+	ar -rv $@ $+
+
+$(obj_common)/SourceCodeStream.o: $(libdir_common)/SourceCodeStream.cpp \
+                                  $(incdir_common)/SourceCodeStream.h
+	$(CXX) $(CFLAGS) $(INC) \
+            -c $< -o $@
+
 # objects bytecode
+$(obj_bytecode)/ParserBin.o: $(libdir_bytecode)/ParserBin.cpp \
+                             $(incdir_bytecode)/ParserBin.h
+	$(CXX) $(CFLAGS) $(INC) \
+            -c $< -o $@
+
 $(obj_bytecode)/BinOutput.o: $(libdir_bytecode)/BinOutput.cpp \
                              $(incdir_bytecode)/BinOutput.h
 	$(CXX) $(CFLAGS) $(INC) \
@@ -128,7 +149,6 @@ $(obj_java)/libjava.a: $(obj_java)/Util.o \
                        $(obj_java)/Lexer.o \
                        $(obj_java)/LiteralSupport.o \
                        $(obj_java)/Parser.o \
-                       $(obj_java)/SourceCodeStream.o \
                        $(obj_java)/SymbolTable.o \
                        $(obj_java)/EmacsOutput.o
 	ar -rv $@ $+
@@ -164,11 +184,6 @@ $(obj_java)/EmacsOutput.o: $(libdir_java)/EmacsOutput.cpp \
 	$(CXX) $(CFLAGS) $(INC) \
             -c $< -o $@
 
-$(obj_java)/SourceCodeStream.o: $(libdir_java)/SourceCodeStream.cpp \
-                                $(incdir_java)/SourceCodeStream.h
-	$(CXX) $(CFLAGS) $(INC) \
-            -c $< -o $@
-
 $(obj_java)/SymbolTable.o: $(libdir_java)/SymbolTable.cpp \
                            $(incdir_java)/SymbolTable.h
 	$(CXX) $(CFLAGS) $(INC) \
@@ -183,12 +198,6 @@ $(obj_scala)/ScalaParser.o: $(libdir_scala)/ScalaParser.cpp \
 	$(CXX) $(CFLAGS) $(INC) \
             -c $< -o $@
 
-# objects - bytecode
-$(obj_bytecode)/ParserBin.o: $(libdir_bytecode)/ParserBin.cpp \
-                             $(incdir_bytecode)/ParserBin.h
-	$(CXX) $(CFLAGS) $(INC) \
-            -c $< -o $@
-
 # tests
 .PHONY: test-classes
 test-classes:
@@ -196,25 +205,24 @@ test-classes:
 	cp tests/test-classes/*.class $(bin)/test-classes
 
 $(bin)/tests: test-classes \
+              $(test_libdir)/AllTests.cpp \
               $(test_libdir)/EmacsOutputTest.cpp \
               $(test_libdir)/IndentationTest.cpp \
               $(test_libdir)/ParserTest.cpp \
               $(test_libdir)/ParserBinTest.cpp \
               $(test_libdir)/SymbolTableTest.cpp \
+              $(obj_common)/libcommon.a \
               $(obj_java)/libjava.a \
               $(obj_scala)/libscala.a \
               $(gtest_obj)/libgtest.a
 
 	$(CXX) $(CXXTESTFLAGS) $(INC) -I$(gtest_inc) \
             $(obj_bytecode)/ParserBin.o \
-            $(test_libdir)/EmacsOutputTest.cpp \
-            $(test_libdir)/IndentationTest.cpp \
-            $(test_libdir)/ParserTest.cpp \
-            $(test_libdir)/ParserBinTest.cpp \
-            $(test_libdir)/SymbolTableTest.cpp \
+            $(test_libdir)/AllTests.cpp \
             -o $@ \
             $(obj_java)/libjava.a \
             $(gtest_obj)/libgtest.a \
+            $(obj_common)/libcommon.a \
             -lpthread -ldl
 
 $(gtest_obj)/libgtest.a: $(gtest_obj)/gtest-all.o

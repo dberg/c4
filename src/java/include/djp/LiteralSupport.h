@@ -3,8 +3,8 @@
 #define __LITERAL_SUPPORT_H__
 #include <memory>
 #include <sstream>
+#include "djp/SourceCodeStream.h"
 #include "Diagnosis.h"
-#include "SourceCodeStream.h"
 #include "Token.h"
 
 namespace djp {

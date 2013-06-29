@@ -1,0 +1,5 @@
+#include "EmacsOutputTest.cpp"
+#include "IndentationTest.cpp"
+#include "ParserBinTest.cpp"
+#include "ParserTest.cpp"
+#include "SymbolTableTest.cpp"
