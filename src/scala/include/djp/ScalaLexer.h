@@ -3,6 +3,7 @@
 #define __SCALA_LEXER_H__
 #include <memory>
 #include "djp/SourceCodeStream.h"
+#include "ScalaToken.h"
 
 namespace djp {
 
@@ -13,11 +14,17 @@ class ScalaLexer {
 
   spSourceCodeStream src;
 
-  int curToken;
+  STok curToken;
   std::string curTokenStr;
 
+  STok getToken();
+
 public:
-  ScalaLexer(spSourceCodeStream &src) : src(src) {}
+  ScalaLexer(spSourceCodeStream &src)
+    : src(src) {}
+
+  void getNextToken();
+  STok getCurToken() { return curToken; }
 
 };
 

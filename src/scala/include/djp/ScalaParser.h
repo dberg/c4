@@ -12,12 +12,22 @@ class ScalaParser {
   spSourceCodeStream src;
   spScalaLexer lexer;
 
+  void buildParseTree();
+
+  void parseCompilationUnit();
+
 public:
   ScalaParser(const std::string filename, const std::string &buffer)
-    : filename(filename), src(spSourceCodeStream(new SourceCodeStream(buffer)))
+    : filename(filename), src(spSourceCodeStream(new SourceCodeStream(buffer))),
+      error(0)
   {
     lexer = spScalaLexer(new ScalaLexer(src));
   }
+
+  int error;
+  std::string error_msg;
+
+  void parse();
 };
 
 } // namespace

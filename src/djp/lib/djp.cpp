@@ -4,9 +4,11 @@
 #include "djp/CmdInput.h"
 #include "djp/File.h"
 #include "djp/Parser.h"
+#include "djp/EmacsOutput.h"
+#include "djp/ScalaParser.h"
 #include "djp/ParserBin.h"
 #include "djp/BinOutput.h"
-#include "djp/EmacsOutput.h"
+
 using namespace djp;
 
 int parseClassFile(CmdInput &ci) {
@@ -65,15 +67,10 @@ int parseScalaFile(CmdInput &ci) {
     return 1;
   }
 
-  /*
   ScalaParser parser(ci.getFilename(), buffer);
   parser.parse();
-  if (parser.error) {
-    std::cerr << "Error( " << parser.error << "): "
-      << parser.error_msg << std::endl;
-    return 1;
-  }
 
+  /*
   ScalaEmacsOutput output(parser);
   output.build();
   std::cout
