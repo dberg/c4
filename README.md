@@ -1,5 +1,7 @@
+Djp
+================================================================================
+
 Djp is a parser and an emacs mode for Java version 7.
---------------------------------------------------------------------------------
 
 The emacs mode provides only two features:
 
