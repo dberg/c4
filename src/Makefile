@@ -217,6 +217,7 @@ $(bin)/tests: test-classes \
               $(test_libdir)/ParserTest.cpp \
               $(test_libdir)/ParserBinTest.cpp \
               $(test_libdir)/SymbolTableTest.cpp \
+              $(test_libdir)/ScalaParserTest.cpp \
               $(obj_common)/libcommon.a \
               $(obj_java)/libjava.a \
               $(obj_scala)/libscala.a \
@@ -227,8 +228,9 @@ $(bin)/tests: test-classes \
             $(test_libdir)/AllTests.cpp \
             -o $@ \
             $(obj_java)/libjava.a \
-            $(gtest_obj)/libgtest.a \
+            $(obj_scala)/libscala.a \
             $(obj_common)/libcommon.a \
+            $(gtest_obj)/libgtest.a \
             -lpthread -ldl
 
 $(gtest_obj)/libgtest.a: $(gtest_obj)/gtest-all.o

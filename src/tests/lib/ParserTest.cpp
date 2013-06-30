@@ -2630,8 +2630,3 @@ TEST(Parser, Throws) {
   ASSERT_EQ(19, voidMethDeclRest->tokThrows->pos);
   ASSERT_EQ(26, voidMethDeclRest->qualifiedIdList->qualifiedId->id->pos);
 }
-
-int main(int argc, char **argv) {
-  ::testing::InitGoogleTest(&argc, argv);
-  return RUN_ALL_TESTS();
-}
