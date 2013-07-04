@@ -1,12 +1,14 @@
 //-*- C++ -*-
 #ifndef __SCALA_TOKEN_H__
 #define __SCALA_TOKEN_H__
+#include <unordered_map>
+#include <string>
 
 namespace djp {
 
 enum class STok {
-  END_OF_FILE = -1,
-  ERROR = -2,
+  ERROR = -1,
+  END_OF_FILE = -2,
 
   // Reserved words
   ABSTRACT = -3,
@@ -58,6 +60,71 @@ enum class STok {
   GT_COLON = -49, // >:
   HASH = -50, // #
   AT = -51, // @
+};
+
+class ScalaTokenUtil {
+
+  std::unordered_map<std::string, STok> ReservedWords = {
+    { "abstract", STok::ABSTRACT },
+    { "case", STok::CASE },
+    { "catch", STok::CATCH },
+    { "class", STok::CLASS },
+    { "def", STok::DEF },
+    { "do", STok::DO },
+    { "else", STok::ELSE },
+    { "extends", STok::EXTENDS },
+    { "false", STok::FALSE },
+    { "final", STok::FINAL },
+    { "finally", STok::FINALLY },
+    { "for", STok::FOR },
+    { "forsome", STok::FORSOME },
+    { "if", STok::IF },
+    { "implicit", STok::IMPLICIT },
+    { "import", STok::IMPORT },
+    { "lazy", STok::LAZY },
+    { "match", STok::MATCH },
+    { "new", STok::NEW },
+    { "null", STok::NULL_KEY },
+    { "object", STok::OBJECT },
+    { "override", STok::OVERRIDE },
+    { "package", STok::PACKAGE },
+    { "private", STok::PRIVATE },
+    { "protected", STok::PROTECTED },
+    { "return", STok::RETURN },
+    { "sealed", STok::SEALED },
+    { "super", STok::SUPER },
+    { "this", STok::THIS },
+    { "throw", STok::THROW },
+    { "trait", STok::TRAIT },
+    { "try", STok::TRY },
+    { "true", STok::TRUE },
+    { "type", STok::TYPE },
+    { "val", STok::VAL },
+    { "var", STok::VAR },
+    { "while", STok::WHILE },
+    { "with", STok::WITH },
+    { "yield", STok::YIELD },
+    { "_", STok::UNDERSCORE },
+    { ":", STok::COLON },
+    { "=", STok::EQUALS },
+    { "=>", STok::EQUALS_GT },
+    { "<-", STok::LT_DASH },
+    { "<:", STok::LT_COLON },
+    { "<%", STok::LT_PERCENTAGE },
+    { ">:", STok::GT_COLON },
+    { "#", STok::HASH },
+    { "@", STok::AT },
+  };
+
+public:
+  STok getReservedWordToken(std::string id) {
+    auto it = ReservedWords.find(id);
+    if (it == ReservedWords.end()) {
+      return STok::ERROR;
+    }
+    return it->second;
+  }
+
 };
 
 } // namespace
