@@ -1,7 +1,9 @@
 //-*- C++ -*-
 #ifndef __SCALA_LEXER_H__
 #define __SCALA_LEXER_H__
+#include <cctype>
 #include <memory>
+#include <sstream>
 #include "djp/SourceCodeStream.h"
 #include "ScalaToken.h"
 
@@ -14,9 +16,13 @@ class ScalaLexer {
 
   spSourceCodeStream src;
 
-  STok curToken;
-  std::string curTokenStr;
+  STok curTok;
+  std::string curTokStr;
+  std::stringstream curTokStream;
 
+  ScalaTokenUtil tokUtil;
+
+  STok getLowerToken(char c);
   STok getToken();
 
 public:
@@ -24,7 +30,7 @@ public:
     : src(src) {}
 
   void getNextToken();
-  STok getCurToken() { return curToken; }
+  STok getCurToken() { return curTok; }
 
 };
 

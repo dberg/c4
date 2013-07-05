@@ -43,16 +43,47 @@ STok ScalaLexer::getToken() {
   // Identifier
   //if (isScalaLetter(c)) return getTokenIdentifier(c);
 
+  if (islower(c)) return getLowerToken(c);
+
+  return STok::ERROR;
+}
+
+STok ScalaLexer::getLowerToken(char c) {
+  curTokStream << c;
+
+  while ((c = src->getChar())) {
+    // TODO: check for 'op'
+    // idrest ::= {letter | digit} [‘_’ op]
+    if (isalpha(c) || c == '_') {
+      curTokStream << c;
+    } else {
+      src->ungetChar(1);
+      break;
+    }
+  }
+
+  STok tok = tokUtil.getReservedWordToken(curTokStream.str());
+  if (tok != STok::ERROR) {
+    return tok;
+  }
+
+  // TODO: id?
   return STok::ERROR;
 }
 
 void ScalaLexer::getNextToken() {
+  // clear string stream
+  curTokStr = "";
+  curTokStream.str("");
+  curTokStream.clear();
+
   // Save current data for indentation processing
   unsigned line = src->getLine();
-  STok token = curToken;
+  STok token = curTok;
 
   // Consume token
-  curToken = getToken();
+  curTok = getToken();
+  curTokStr = curTokStream.str();
 
   // TODO:
   //processIndentation(line, src->getLine(), token, curToken);
