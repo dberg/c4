@@ -3,6 +3,7 @@
 #define __SCALA_PARSER_H__
 #include <string>
 #include "djp/SourceCodeStream.h"
+#include "djp/Diagnosis.h"
 #include "ScalaLexer.h"
 #include "ScalaAST.h"
 using namespace djp::scala;
@@ -13,7 +14,6 @@ class ScalaParser {
   const std::string filename;
   spSourceCodeStream src;
   spScalaLexer lexer;
-  spCompilationUnit compUnit;
 
   void buildParseTree();
   void parseCompilationUnit();
@@ -30,6 +30,8 @@ public:
     lexer = spScalaLexer(new ScalaLexer(src));
   }
 
+  spDiagnosis diag;
+  spCompilationUnit compUnit;
   int error;
   std::string error_msg;
 
