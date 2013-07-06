@@ -6,8 +6,8 @@
 #include <sstream>
 #include <memory>
 #include "djp/SourceCodeStream.h"
+#include "djp/Diagnosis.h"
 #include "AST.h"
-#include "Diagnosis.h"
 #include "Indentation.h"
 #include "LiteralSupport.h"
 #include "ParserState.h"

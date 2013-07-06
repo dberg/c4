@@ -1,16 +1,15 @@
 //-*- C++ -*-
 #ifndef __OUTPUT_H__
 #define __OUTPUT_H__
+#include <iostream>
+#include <map>
+#include <sstream>
+#include "djp/Diagnosis.h"
 #include "AST.h"
-#include "Diagnosis.h"
-#include "ErrorCodes.h"
 #include "Indentation.h"
 #include "Parser.h"
 #include "SymbolTable.h"
 #include "Token.h"
-#include <iostream>
-#include <map>
-#include <sstream>
 
 namespace djp {
 

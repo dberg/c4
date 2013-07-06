@@ -5,9 +5,8 @@
 #include <sstream>
 #include <vector>
 #include "djp/SourceCodeStream.h"
+#include "djp/Diagnosis.h"
 #include "AST.h"
-#include "Diagnosis.h"
-#include "ErrorCodes.h"
 #include "Indentation.h"
 #include "Lexer.h"
 #include "ParserState.h"

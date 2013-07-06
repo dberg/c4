@@ -4,7 +4,7 @@
 #include <memory>
 #include <sstream>
 #include "djp/SourceCodeStream.h"
-#include "Diagnosis.h"
+#include "djp/Diagnosis.h"
 #include "Token.h"
 
 namespace djp {

@@ -119,8 +119,14 @@ $(obj_djp)/djp.o: $(libdir_djp)/djp.cpp
             -c $< -o $@
 
 # objects common - libcommon
-$(obj_common)/libcommon.a: $(obj_common)/SourceCodeStream.o
+$(obj_common)/libcommon.a: $(obj_common)/Diagnosis.o \
+                           $(obj_common)/SourceCodeStream.o
 	ar -rv $@ $+
+
+$(obj_common)/Diagnosis.o: $(libdir_common)/Diagnosis.cpp \
+                           $(incdir_common)/Diagnosis.h
+	$(CXX) $(CFLAGS) $(INC) \
+            -c $< -o $@
 
 $(obj_common)/SourceCodeStream.o: $(libdir_common)/SourceCodeStream.cpp \
                                   $(incdir_common)/SourceCodeStream.h
@@ -145,7 +151,6 @@ $(obj_bytecode)/BinOutputCode.o: $(libdir_bytecode)/BinOutputCode.cpp \
 
 # objects java - libjava
 $(obj_java)/libjava.a: $(obj_java)/Util.o \
-                       $(obj_java)/Diagnosis.o \
                        $(obj_java)/Indentation.o \
                        $(obj_java)/Lexer.o \
                        $(obj_java)/LiteralSupport.o \
@@ -155,10 +160,6 @@ $(obj_java)/libjava.a: $(obj_java)/Util.o \
 	ar -rv $@ $+
 
 $(obj_java)/Util.o: $(libdir_java)/Util.cpp $(incdir_java)/Util.h
-	$(CXX) $(CFLAGS) $(INC) \
-            -c $< -o $@
-
-$(obj_java)/Diagnosis.o: $(libdir_java)/Diagnosis.cpp $(incdir_java)/Diagnosis.h
 	$(CXX) $(CFLAGS) $(INC) \
             -c $< -o $@
 

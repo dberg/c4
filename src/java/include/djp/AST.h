@@ -4,8 +4,8 @@
 #include <memory>
 #include <utility>
 #include <vector>
+#include "djp/ErrorCodes.h"
 #include "Token.h"
-#include "ErrorCodes.h"
 
 /**
  * We have to modify a few production rules from the grammar.
