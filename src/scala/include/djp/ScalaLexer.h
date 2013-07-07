@@ -5,6 +5,7 @@
 #include <memory>
 #include <sstream>
 #include "djp/SourceCodeStream.h"
+#include "djp/Diagnosis.h"
 #include "ScalaToken.h"
 
 namespace djp {
@@ -15,6 +16,7 @@ typedef std::shared_ptr<ScalaLexer> spScalaLexer;
 class ScalaLexer {
 
   spSourceCodeStream src;
+  spDiagnosis diag;
 
   STok curTok;
   std::string curTokStr;
@@ -26,8 +28,8 @@ class ScalaLexer {
   STok getToken();
 
 public:
-  ScalaLexer(spSourceCodeStream &src)
-    : src(src) {}
+  ScalaLexer(spSourceCodeStream &src, spDiagnosis diag)
+    : src(src), diag(diag) {}
 
   void getNextToken();
   STok getCurToken() { return curTok; }

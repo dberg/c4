@@ -27,7 +27,7 @@ public:
     : filename(filename), src(spSourceCodeStream(new SourceCodeStream(buffer))),
       compUnit(spCompilationUnit(new CompilationUnit)), error(0)
   {
-    lexer = spScalaLexer(new ScalaLexer(src));
+    lexer = spScalaLexer(new ScalaLexer(src, diag));
   }
 
   spDiagnosis diag;
