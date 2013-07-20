@@ -2,6 +2,7 @@
 #ifndef __SCALA_AST_H__
 #define __SCALA_AST_H__
 #include <memory>
+#include "ScalaToken.h"
 
 namespace djp {
 namespace scala {

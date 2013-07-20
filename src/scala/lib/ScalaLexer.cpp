@@ -2,6 +2,14 @@
 
 namespace djp {
 
+spTokenNode ScalaLexer::getCurTokenNode() {
+  spTokenNode tok = spTokenNode(new TokenNode());
+  tok->tok = getCurToken();
+  tok->ini = src->getCursor() - tokUtil.getTokenLength(getCurToken());
+  tok->end = src->getCursor() - 1;
+  return tok;
+}
+
 STok ScalaLexer::getToken() {
   char c = src->getChar();
   if (!c) return STok::END_OF_FILE;

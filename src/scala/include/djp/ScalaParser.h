@@ -4,8 +4,9 @@
 #include <string>
 #include "djp/SourceCodeStream.h"
 #include "djp/Diagnosis.h"
-#include "ScalaLexer.h"
 #include "ScalaAST.h"
+#include "ScalaLexer.h"
+#include "ScalaToken.h"
 using namespace djp::scala;
 
 namespace djp {

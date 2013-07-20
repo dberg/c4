@@ -6,7 +6,9 @@
 #include <sstream>
 #include "djp/SourceCodeStream.h"
 #include "djp/Diagnosis.h"
+#include "ScalaAST.h"
 #include "ScalaToken.h"
+using namespace djp::scala;
 
 namespace djp {
 
@@ -33,7 +35,7 @@ public:
 
   void getNextToken();
   STok getCurToken() { return curTok; }
-
+  spTokenNode getCurTokenNode();
 };
 
 } // namespace

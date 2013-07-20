@@ -29,7 +29,13 @@ void ScalaParser::parseObjectDef(spObjectDef &objectDef) {
  *           | ‘trait’ TraitDef
  */
 void ScalaParser::parseTmplDef(spTmplDef &tmplDef) {
-  // TODO:
+  if (lexer->getCurToken() == STok::CASE) {
+    tmplDef->tokCase = lexer->getCurTokenNode();
+  }
+
+  // TODO: [‘case’] ‘class’ ClassDef
+  // TODO: [‘case’] ‘object’ ObjectDef
+  // TODO: ‘trait’ TraitDef
 }
 
 /**
@@ -39,7 +45,14 @@ void ScalaParser::parseTmplDef(spTmplDef &tmplDef) {
  *           | PackageObject
  */
 void ScalaParser::parseTopStat(spTopStat &topStat) {
-  // TODO:
+  // TODO: {Annotation [nl]} {Modifier}
+  topStat->opt = TopStat::OPT_ANNOTATION;
+  topStat->tmplDef = spTmplDef(new TmplDef);
+  parseTmplDef(topStat->tmplDef);
+
+  // TODO: Import
+  // TODO: Packaging
+  // TODO:PackageObject
 }
 
 /**
