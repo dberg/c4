@@ -23,6 +23,8 @@ class ScalaParser {
   void parseTopStat(spTopStat &topStat);
   void parseTopStatSeq(spTopStatSeq &topStatSeq);
 
+  int addErr(int err);
+
 public:
   ScalaParser(const std::string filename, const std::string &buffer)
     : filename(filename), src(spSourceCodeStream(new SourceCodeStream(buffer))),

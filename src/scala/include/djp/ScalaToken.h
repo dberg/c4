@@ -72,6 +72,9 @@ enum class STok : int {
   GT_COLON = -49, // >:
   HASH = -50, // #
   AT = -51, // @
+
+  // Grammar
+  ID = -52,
 };
 
 class ScalaTokenUtil {

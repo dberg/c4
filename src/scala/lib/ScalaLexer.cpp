@@ -2,6 +2,30 @@
 
 namespace djp {
 
+// Helper functions
+bool is_idrest(char c) {
+  // TODO: check for op ::= opchar {opchar}
+  if (std::isalpha(c) || isdigit(c) || c == '_') {
+    return true;
+  }
+
+  return false;
+}
+
+/**
+ * upper ::= ‘A’ | ··· | ‘Z’ | ‘$’ | ‘_’
+ *           and Unicode category Lu
+ * TODO: Unicode category Lu
+*/
+bool is_upper(char c) {
+  if (isupper(c) || c == '$' || c == '_') {
+    return true;
+  }
+
+  return false;
+}
+
+// ScalaLexer methods
 spTokenNode ScalaLexer::getCurTokenNode() {
   spTokenNode tok = spTokenNode(new TokenNode());
   tok->tok = getCurToken();
@@ -53,9 +77,14 @@ STok ScalaLexer::getToken() {
 
   if (islower(c)) return getLowerToken(c);
 
+  if (is_upper(c)) return getUpperToken(c);
+
   return STok::ERROR;
 }
 
+/**
+ * STok::* Reserved Words
+ */
 STok ScalaLexer::getLowerToken(char c) {
   curTokStream << c;
 
@@ -77,6 +106,23 @@ STok ScalaLexer::getLowerToken(char c) {
 
   // TODO: id?
   return STok::ERROR;
+}
+
+/**
+ * STok::ID starting with the production rule 'upper'
+ */
+STok ScalaLexer::getUpperToken(char c) {
+  curTokStream << c;
+  while ((c = src->getChar())) {
+    if (is_idrest(c)) {
+      curTokStream << c;
+    } else {
+      src->ungetChar(1);
+      break;
+    }
+  }
+
+  return STok::ID;
 }
 
 void ScalaLexer::getNextToken() {

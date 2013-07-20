@@ -20,6 +20,11 @@ void ScalaParser::parseCompilationUnit() {
  * ObjectDef ::= id ClassTemplateOpt
  */
 void ScalaParser::parseObjectDef(spObjectDef &objectDef) {
+  if (lexer->getCurToken() != STok::ID) {
+    objectDef->addErr(ERR_EXP_IDENTIFIER);
+    return;
+  }
+
   // TODO:
 }
 
@@ -29,12 +34,31 @@ void ScalaParser::parseObjectDef(spObjectDef &objectDef) {
  *           | ‘trait’ TraitDef
  */
 void ScalaParser::parseTmplDef(spTmplDef &tmplDef) {
+  // ‘case’
   if (lexer->getCurToken() == STok::CASE) {
     tmplDef->tokCase = lexer->getCurTokenNode();
+    lexer->getNextToken();
   }
 
   // TODO: [‘case’] ‘class’ ClassDef
-  // TODO: [‘case’] ‘object’ ObjectDef
+  if (lexer->getCurToken() == STok::CLASS) {
+    // TODO:
+    return;
+  }
+
+  // [‘case’] ‘object’ ObjectDef
+  if (lexer->getCurToken() == STok::OBJECT) {
+    tmplDef->tokObject = lexer->getCurTokenNode();
+    lexer->getNextToken();
+
+    tmplDef->objectDef = spObjectDef(new ObjectDef);
+    parseObjectDef(tmplDef->objectDef);
+    if (tmplDef->objectDef->err) {
+      tmplDef->addErr(-1);
+    }
+    return;
+  }
+
   // TODO: ‘trait’ TraitDef
 }
 
@@ -46,7 +70,7 @@ void ScalaParser::parseTmplDef(spTmplDef &tmplDef) {
  */
 void ScalaParser::parseTopStat(spTopStat &topStat) {
   // TODO: {Annotation [nl]} {Modifier}
-  topStat->opt = TopStat::OPT_ANNOTATION;
+  topStat->opt = TopStat::Opt::ANNOTATION;
   topStat->tmplDef = spTmplDef(new TmplDef);
   parseTmplDef(topStat->tmplDef);
 
@@ -86,6 +110,16 @@ void ScalaParser::buildParseTree() {
       return;
     }
   }
+}
+
+/**
+ * Add Diagnosis error including buffer ini and end positions.
+ */
+int ScalaParser::addErr(int err) {
+  unsigned int cursor = src->getCursor();
+  unsigned int ini = cursor - lexer->getCurTokenStr().size();
+  unsigned int end = cursor - 1;
+  return diag->addErr(err, ini, end);
 }
 
 } // namespace

@@ -15,6 +15,9 @@ namespace djp {
 class ScalaLexer;
 typedef std::shared_ptr<ScalaLexer> spScalaLexer;
 
+// Helper functions
+bool is_idrest(char c);
+
 class ScalaLexer {
 
   spSourceCodeStream src;
@@ -27,6 +30,7 @@ class ScalaLexer {
   ScalaTokenUtil tokUtil;
 
   STok getLowerToken(char c);
+  STok getUpperToken(char c);
   STok getToken();
 
 public:
@@ -35,6 +39,7 @@ public:
 
   void getNextToken();
   STok getCurToken() { return curTok; }
+  std::string getCurTokenStr() { return curTokStr; }
   spTokenNode getCurTokenNode();
 };
 
