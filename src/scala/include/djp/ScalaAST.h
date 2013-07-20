@@ -7,8 +7,13 @@
 namespace djp {
 namespace scala {
 
+typedef std::shared_ptr<struct LexId> spLexId;
+
 typedef std::shared_ptr<struct CompilationUnit> spCompilationUnit;
+typedef std::shared_ptr<struct ClassTemplate> spClassTemplate;
+typedef std::shared_ptr<struct ClassTemplateOpt> spClassTemplateOpt;
 typedef std::shared_ptr<struct ObjectDef> spObjectDef;
+typedef std::shared_ptr<struct TemplateBody> spTemplateBody;
 typedef std::shared_ptr<struct TmplDef> spTmplDef;
 typedef std::shared_ptr<struct TokenNode> spTokenNode;
 typedef std::shared_ptr<struct TopStat> spTopStat;
@@ -43,6 +48,13 @@ struct TokenNode : ASTBase {
   STok tok;
 };
 
+// -----------------------------------------------------------------------------
+//   Lexical grammar
+// -----------------------------------------------------------------------------
+struct LexId : ASTBase {
+  std::string id;
+};
+
 // ----------------------------------------------------------------------------
 // AST based in the Scala grammar
 // ----------------------------------------------------------------------------
@@ -57,9 +69,43 @@ struct CompilationUnit : ASTBase {
 };
 
 /**
+ * ClassTemplate ::= [EarlyDefs] ClassParents [TemplateBody]
+ */
+struct ClassTemplate : ASTBase {
+  // TODO:
+};
+
+/**
+ * ClassTemplateOpt ::= ‘extends’ ClassTemplate
+ *                    | [[‘extends’] TemplateBody]
+ */
+struct ClassTemplateOpt : ASTBase {
+  enum class Opt {
+    UNDEFINED,
+    CLASS_TEMPLATE,
+    TEMPLATE_BODY,
+  };
+
+  Opt opt;
+  spTokenNode tokExtends;
+  spClassTemplate classTmpl;
+  spTemplateBody tmplBody;
+
+  ClassTemplateOpt() : opt(Opt::UNDEFINED) {}
+};
+
+/**
  * ObjectDef ::= id ClassTemplateOpt
  */
 struct ObjectDef : ASTBase {
+  spLexId lId;
+  spClassTemplateOpt classTmplOpt;
+};
+
+/**
+ * TemplateBody ::= [nl] ‘{’ [SelfType] TemplateStat {semi TemplateStat} ‘}’
+ */
+struct TemplateBody : ASTBase {
   // TODO:
 };
 
@@ -69,14 +115,14 @@ struct ObjectDef : ASTBase {
  *           | ‘trait’ TraitDef
  */
 struct TmplDef : ASTBase {
-  enum TmplDefOpt {
-    OPT_UNDEFINED,
-    OPT_CASE_CLASS,
-    OPT_CASE_OBJECT,
-    OPT_TRAIT,
+  enum class Opt {
+    UNDEFINED,
+    CASE_CLASS,
+    CASE_OBJECT,
+    TRAIT,
   };
 
-  TmplDefOpt opt;
+  Opt opt;
 
   // shared
   spTokenNode tokCase;
@@ -94,7 +140,7 @@ struct TmplDef : ASTBase {
   // TODO:
   //spTraitDef traitDef;
 
-  TmplDef() : opt(OPT_UNDEFINED) {}
+  TmplDef() : opt(Opt::UNDEFINED) {}
 };
 
 /**
@@ -104,22 +150,22 @@ struct TmplDef : ASTBase {
  *           | PackageObject
  */
 struct TopStat : ASTBase {
-  enum TopStatOpt {
-    OPT_UNDEFINED,
-    OPT_ANNOTATION,
-    OPT_IMPORT,
-    OPT_PACKAGING,
-    OPT_PACKAGE,
+  enum Opt {
+    UNDEFINED,
+    ANNOTATION,
+    IMPORT,
+    PACKAGING,
+    PACKAGE,
   };
 
-  TopStatOpt opt;
+  Opt opt;
 
   // TODO:
   // std::vector<{Annotation [nl]}
   // std::vector<{Modifier}
   spTmplDef tmplDef;
 
-  TopStat() : opt(OPT_UNDEFINED) {}
+  TopStat() : opt(Opt::UNDEFINED) {}
 };
 
 /**
