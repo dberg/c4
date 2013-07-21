@@ -2,6 +2,39 @@
 
 namespace djp {
 
+spLexId ScalaParser::parseLexId() {
+  spLexId lId = spLexId(new LexId);
+  if (lexer->getCurToken() != STok::ID) {
+    lId->addErr(ERR_EXP_IDENTIFIER);
+    return lId;
+  }
+
+  lId->ini = lexer->getCurTokenIni();
+  lId->end = lexer->getCurTokenEnd();
+  lId->id = lexer->getCurTokenStr();
+  return lId;
+}
+
+/**
+ * ClassTemplateOpt ::= ‘extends’ ClassTemplate
+ *                    | [[‘extends’] TemplateBody]
+ */
+void ScalaParser::parseClassTemplateOpt(spClassTemplateOpt &classTmplOpt) {
+  if (lexer->getCurToken() == STok::EXTENDS) {
+    classTmplOpt->tokExtends = lexer->getCurTokenNode();
+    lexer->getNextToken(); // consume 'extends'
+    // TODO: we have to decide if we have a ClassTemplate or a TemplateBody
+    return;
+  }
+
+  classTmplOpt->opt = ClassTemplateOpt::Opt::TEMPLATE_BODY;
+  classTmplOpt->tmplBody = spTemplateBody(new TemplateBody);
+  parseTemplateBody(classTmplOpt->tmplBody);
+  if (classTmplOpt->tmplBody->err) {
+    classTmplOpt->addErr(-1);
+  }
+}
+
 /**
  * CompilationUnit ::= {‘package’ QualId semi} TopStatSeq
  */
@@ -20,12 +53,24 @@ void ScalaParser::parseCompilationUnit() {
  * ObjectDef ::= id ClassTemplateOpt
  */
 void ScalaParser::parseObjectDef(spObjectDef &objectDef) {
-  if (lexer->getCurToken() != STok::ID) {
-    objectDef->addErr(ERR_EXP_IDENTIFIER);
+  objectDef->lId = parseLexId();
+  if (objectDef->lId->err) {
+    objectDef->addErr(-1);
     return;
   }
 
-  // TODO:
+  objectDef->classTmplOpt = spClassTemplateOpt(new ClassTemplateOpt);
+  parseClassTemplateOpt(objectDef->classTmplOpt);
+  if (objectDef->classTmplOpt->err) {
+    objectDef->addErr(-1);
+  }
+}
+
+/**
+ * TemplateBody ::= [nl] ‘{’ [SelfType] TemplateStat {semi TemplateStat} ‘}’
+ */
+void ScalaParser::parseTemplateBody(spTemplateBody &tmplBody) {
+
 }
 
 /**

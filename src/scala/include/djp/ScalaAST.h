@@ -9,11 +9,17 @@ namespace scala {
 
 typedef std::shared_ptr<struct LexId> spLexId;
 
+typedef std::shared_ptr<struct AnnotType> spAnnotType;
 typedef std::shared_ptr<struct CompilationUnit> spCompilationUnit;
+typedef std::shared_ptr<struct ClassParents> spClassParents;
 typedef std::shared_ptr<struct ClassTemplate> spClassTemplate;
 typedef std::shared_ptr<struct ClassTemplateOpt> spClassTemplateOpt;
+typedef std::shared_ptr<struct Constr> spConstr;
 typedef std::shared_ptr<struct ObjectDef> spObjectDef;
+typedef std::shared_ptr<struct SimpleType> spSimpleType;
+typedef std::shared_ptr<struct StableId> spStableId;
 typedef std::shared_ptr<struct TemplateBody> spTemplateBody;
+typedef std::shared_ptr<struct TemplateStat> spTemplateStat;
 typedef std::shared_ptr<struct TmplDef> spTmplDef;
 typedef std::shared_ptr<struct TokenNode> spTokenNode;
 typedef std::shared_ptr<struct TopStat> spTopStat;
@@ -60,6 +66,14 @@ struct LexId : ASTBase {
 // ----------------------------------------------------------------------------
 
 /**
+ * AnnotType ::= SimpleType {Annotation}
+ */
+struct AnnotType : ASTBase {
+  spSimpleType simpleType;
+  // TODO: std::vector<Annotation> annotations;
+};
+
+/**
  * CompilationUnit ::= {‘package’ QualId semi} TopStatSeq
  */
 struct CompilationUnit : ASTBase {
@@ -69,10 +83,20 @@ struct CompilationUnit : ASTBase {
 };
 
 /**
+ * ClassParents ::= Constr {‘with’ AnnotType}
+ */
+struct ClassParents : ASTBase {
+  spConstr constr;
+  // TODO: std::vector<spTokenNode, spAnnotType> paTokNodeAnnotType;
+};
+
+/**
  * ClassTemplate ::= [EarlyDefs] ClassParents [TemplateBody]
  */
 struct ClassTemplate : ASTBase {
-  // TODO:
+  // TODO: spEarlyDefs earlyDefs;
+  spClassParents classParents;
+  // TODO: spTemplateBody tmplBody;
 };
 
 /**
@@ -95,6 +119,14 @@ struct ClassTemplateOpt : ASTBase {
 };
 
 /**
+ * Constr ::= AnnotType {ArgumentExprs}
+ */
+struct Constr : ASTBase {
+  spAnnotType annotType;
+  // TODO: std::vector<spArgumentExprs> argExprs;
+};
+
+/**
  * ObjectDef ::= id ClassTemplateOpt
  */
 struct ObjectDef : ASTBase {
@@ -103,10 +135,86 @@ struct ObjectDef : ASTBase {
 };
 
 /**
+ * SimpleType ::= SimpleType TypeArgs
+ *              | SimpleType ‘#’ id
+ *              | StableId
+ *              | Path ‘.’ ‘type’
+ *              | ‘(’ Types ’)’
+ */
+struct SimpleType : ASTBase {
+  enum class Opt {
+    UNDEFINED,
+    TYPE_ARGS,
+    HASH_ID,
+    STABLE_ID,
+    PATH,
+    TYPES,
+  };
+
+  Opt opt;
+
+  // TODO: SimpleType TypeArgs
+  // TODO: SimpleType '#' id
+  spStableId stableId;
+  // TODO: Path '.' 'type'
+  // TODO: '(' Types ')'
+
+  SimpleType() : opt(Opt::UNDEFINED) {}
+};
+
+/**
+ * StableId ::= id
+ *            | Path ‘.’ id
+ *            | [id ’.’] ‘super’ [ClassQualifier] ‘.’ id
+ */
+struct StableId : ASTBase {
+  enum class Opt {
+    UNDEFINED,
+    PATH,
+    SUPER,
+  };
+
+  spLexId lId;
+  // TODO: Path ‘.’ id
+  // TODO: [id ’.’] ‘super’ [ClassQualifier] ‘.’ id
+};
+
+/**
  * TemplateBody ::= [nl] ‘{’ [SelfType] TemplateStat {semi TemplateStat} ‘}’
  */
 struct TemplateBody : ASTBase {
+  spTokenNode lCurlyB;
   // TODO:
+  //spSelfType selfType;
+  spTemplateStat tmplStat;
+  // TODO:
+  //std::vector<pair<spSemi, spTemplateStat>> paSemiTmplStat;
+  spTokenNode rCurlyB;
+};
+
+/**
+ * TemplateStat ::= Import
+ *                | {Annotation [nl]} {Modifier} Def
+ *                | {Annotation [nl]} {Modifier} Dcl
+ *                | Expr
+ */
+struct TemplateStat : ASTBase {
+  enum class Opt {
+    UNDEFINED,
+    IMPORT,
+    DEF,
+    DCL,
+    EXPR,
+  };
+
+  Opt opt;
+  // TODO: spImport import;
+  // TODO: std::vector<spAnnotation> annotations;
+  // TODO: std::vector<spModifier> modifiers;
+  // TODO: spDef def;
+  // TODO: spExpr expr;
+
+  TemplateStat() : opt(Opt::UNDEFINED) {}
 };
 
 /**
@@ -161,8 +269,8 @@ struct TopStat : ASTBase {
   Opt opt;
 
   // TODO:
-  // std::vector<{Annotation [nl]}
-  // std::vector<{Modifier}
+  // std::vector<{Annotation [nl]}>
+  // std::vector<{Modifier}>
   spTmplDef tmplDef;
 
   TopStat() : opt(Opt::UNDEFINED) {}
@@ -174,7 +282,7 @@ struct TopStat : ASTBase {
 struct TopStatSeq : ASTBase {
   spTopStat topStat;
   // TODO:
-  // std::vector<{semi TopStat}
+  // std::vector<{semi TopStat}>
 };
 
 }} // namespace

@@ -16,9 +16,13 @@ class ScalaParser {
   spSourceCodeStream src;
   spScalaLexer lexer;
 
+  spLexId parseLexId();
+
   void buildParseTree();
+  void parseClassTemplateOpt(spClassTemplateOpt &classTmplOpt);
   void parseCompilationUnit();
   void parseObjectDef(spObjectDef &objectDef);
+  void parseTemplateBody(spTemplateBody &tmplBody);
   void parseTmplDef(spTmplDef &tmplDef);
   void parseTopStat(spTopStat &topStat);
   void parseTopStatSeq(spTopStatSeq &topStatSeq);

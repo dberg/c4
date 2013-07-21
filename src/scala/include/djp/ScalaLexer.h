@@ -39,6 +39,8 @@ public:
 
   void getNextToken();
   STok getCurToken() { return curTok; }
+  int getCurTokenIni();
+  int getCurTokenEnd();
   std::string getCurTokenStr() { return curTokStr; }
   spTokenNode getCurTokenNode();
 };

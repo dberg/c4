@@ -26,8 +26,16 @@ bool is_upper(char c) {
 }
 
 // ScalaLexer methods
+int ScalaLexer::getCurTokenIni() {
+  return src->getCursor() - getCurTokenStr().size();
+}
+
+int ScalaLexer::getCurTokenEnd() {
+  return src->getCursor() - 1;
+}
+
 spTokenNode ScalaLexer::getCurTokenNode() {
-  spTokenNode tok = spTokenNode(new TokenNode());
+  spTokenNode tok = spTokenNode(new TokenNode);
   tok->tok = getCurToken();
   tok->ini = src->getCursor() - tokUtil.getTokenLength(getCurToken());
   tok->end = src->getCursor() - 1;
