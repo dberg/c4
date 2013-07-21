@@ -9,34 +9,34 @@ using namespace djp;
  * -----------------------------------------------------------------------------
  * TopStatSeq
  *   TopStat
- *     TmplDef
+ *     TmplDef(2)
  *       'object'
  *       ObjectDef
  *         id                          <-- HelloWorld
- *         ClassTemplateOpt
+ *         ClassTemplateOpt(1)
  *           'extends'
- *           ClassTemplate
+ *           ClassTemplate             check [TemplateBody]
  *             ClassParents
  *               Constr
  *                 AnnoType
  *                   SimpleType
  *                     StableId
  *                       id            <-- App
- *               ArgumentExprs
- *                 BlockExpr
- *                   '{'
- *                   Block
- *                     BlockStat
- *                       Expr1*
- *                   '}'
+ *                 ArgumentExprs[0](3)
+ *                   BlockExpr[0](2)
+ *                     '{'
+ *                     Block
+ *                       BlockStat(4)
+ *                         Expr1*
+ *                     '}'
  *
  *
  * Expr1*
  *   PostfixExpr
  *     InfixExpr
  *       PrefixExpr
- *         SimpleExpr
- *           SimpleExpr1
+ *         SimpleExpr(3)
+ *           SimpleExpr1(7)
  *             SimpleExpr1
  *               Path
  *                 Stableid
