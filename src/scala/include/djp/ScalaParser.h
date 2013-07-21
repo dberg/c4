@@ -19,9 +19,15 @@ class ScalaParser {
   spLexId parseLexId();
 
   void buildParseTree();
+  void parseAnnotType(spAnnotType &annotType);
+  void parseClassParents(spClassParents &classParents);
+  void parseClassTemplate(spClassTemplate &classTmpl);
   void parseClassTemplateOpt(spClassTemplateOpt &classTmplOpt);
   void parseCompilationUnit();
+  void parseConstr(spConstr &constr);
   void parseObjectDef(spObjectDef &objectDef);
+  void parseSimpleType(spSimpleType &simpleType);
+  void parseStableId(spStableId &stableId);
   void parseTemplateBody(spTemplateBody &tmplBody);
   void parseTmplDef(spTmplDef &tmplDef);
   void parseTopStat(spTopStat &topStat);

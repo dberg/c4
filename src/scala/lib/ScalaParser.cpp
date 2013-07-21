@@ -16,6 +16,50 @@ spLexId ScalaParser::parseLexId() {
 }
 
 /**
+ * AnnotType ::= SimpleType {Annotation}
+ */
+void ScalaParser::parseAnnotType(spAnnotType &annotType) {
+  annotType->simpleType = spSimpleType(new SimpleType);
+  parseSimpleType(annotType->simpleType);
+  if (annotType->simpleType->err) {
+    annotType->addErr(-1);
+    return;
+  }
+
+  // TODO: {Annotation}
+}
+
+/**
+ * ClassParents ::= Constr {‘with’ AnnotType}
+ */
+void ScalaParser::parseClassParents(spClassParents &classParents) {
+  classParents->constr = spConstr(new Constr);
+  parseConstr(classParents->constr);
+  if (classParents->constr->err) {
+    classParents->constr->addErr(-1);
+    return;
+  }
+
+  // TODO: {‘with’ AnnotType}
+}
+
+/**
+ * ClassTemplate ::= [EarlyDefs] ClassParents [TemplateBody]
+ */
+void ScalaParser::parseClassTemplate(spClassTemplate &classTmpl) {
+  // TODO: [EarlyDefs]
+
+  classTmpl->classParents = spClassParents(new ClassParents);
+  parseClassParents(classTmpl->classParents);
+  if (classTmpl->classParents->err) {
+    classTmpl->addErr(-1);
+    return;
+  }
+
+  // TODO: [TemplateBody]
+}
+
+/**
  * ClassTemplateOpt ::= ‘extends’ ClassTemplate
  *                    | [[‘extends’] TemplateBody]
  */
@@ -23,10 +67,19 @@ void ScalaParser::parseClassTemplateOpt(spClassTemplateOpt &classTmplOpt) {
   if (lexer->getCurToken() == STok::EXTENDS) {
     classTmplOpt->tokExtends = lexer->getCurTokenNode();
     lexer->getNextToken(); // consume 'extends'
-    // TODO: we have to decide if we have a ClassTemplate or a TemplateBody
-    return;
+
+    // We have to decide if we have a ClassTemplate or a TemplateBody, so we
+    // first try ClassTemplate and if there's an error we try TemplateBody next.
+    spClassTemplate classTmpl = spClassTemplate(new ClassTemplate);
+    parseClassTemplate(classTmpl);
+    if (classTmpl->err == false) {
+      classTmplOpt->opt = ClassTemplateOpt::Opt::CLASS_TEMPLATE;
+      classTmplOpt->classTmpl = classTmpl;
+      return;
+    }
   }
 
+  // TemplateBody
   classTmplOpt->opt = ClassTemplateOpt::Opt::TEMPLATE_BODY;
   classTmplOpt->tmplBody = spTemplateBody(new TemplateBody);
   parseTemplateBody(classTmplOpt->tmplBody);
@@ -50,6 +103,20 @@ void ScalaParser::parseCompilationUnit() {
 }
 
 /**
+ * Constr ::= AnnotType {ArgumentExprs}
+ */
+void ScalaParser::parseConstr(spConstr &constr) {
+  constr->annotType = spAnnotType(new AnnotType);
+  parseAnnotType(constr->annotType);
+  if (constr->annotType->err) {
+    constr->addErr(-1);
+    return;
+  }
+
+  // TODO: {ArgumentExprs}
+}
+
+/**
  * ObjectDef ::= id ClassTemplateOpt
  */
 void ScalaParser::parseObjectDef(spObjectDef &objectDef) {
@@ -64,6 +131,46 @@ void ScalaParser::parseObjectDef(spObjectDef &objectDef) {
   if (objectDef->classTmplOpt->err) {
     objectDef->addErr(-1);
   }
+}
+
+/**
+ * SimpleType ::= SimpleType TypeArgs
+ *              | SimpleType ‘#’ id
+ *              | StableId
+ *              | Path ‘.’ ‘type’
+ *              | ‘(’ Types ’)’
+ */
+void ScalaParser::parseSimpleType(spSimpleType &simpleType) {
+  // TODO: SimpleType TypeArgs
+  // TODO: SimpleType ‘#’ id
+
+  simpleType->opt = SimpleType::Opt::STABLE_ID;
+  simpleType->stableId = spStableId(new StableId);
+  parseStableId(simpleType->stableId);
+  if (simpleType->stableId->err) {
+    simpleType->addErr(-1);
+    return;
+  }
+
+  // TODO: Path ‘.’ ‘type’
+  // TODO: ‘(’ Types ’)’
+}
+
+/**
+ * StableId ::= id
+ *            | Path ‘.’ id
+ *            | [id ’.’] ‘super’ [ClassQualifier] ‘.’ id
+ */
+void ScalaParser::parseStableId(spStableId &stableId) {
+  spLexId id = parseLexId();
+  if (id->err == false) {
+    stableId->opt = StableId::Opt::ID;
+    stableId->id = id;
+    return;
+  }
+
+  // TODO: Path ‘.’ id
+  // TODO: [id ’.’] ‘super’ [ClassQualifier] ‘.’ id
 }
 
 /**
@@ -93,6 +200,8 @@ void ScalaParser::parseTmplDef(spTmplDef &tmplDef) {
 
   // [‘case’] ‘object’ ObjectDef
   if (lexer->getCurToken() == STok::OBJECT) {
+    tmplDef->opt = TmplDef::Opt::CASE_OBJECT;
+
     tmplDef->tokObject = lexer->getCurTokenNode();
     lexer->getNextToken();
 

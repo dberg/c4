@@ -170,13 +170,17 @@ struct SimpleType : ASTBase {
 struct StableId : ASTBase {
   enum class Opt {
     UNDEFINED,
+    ID,
     PATH,
     SUPER,
   };
 
-  spLexId lId;
+  Opt opt;
+  spLexId id;
   // TODO: Path ‘.’ id
   // TODO: [id ’.’] ‘super’ [ClassQualifier] ‘.’ id
+
+  StableId() : opt(Opt::UNDEFINED) {}
 };
 
 /**
