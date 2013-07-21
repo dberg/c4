@@ -2,6 +2,8 @@
 #ifndef __SCALA_AST_H__
 #define __SCALA_AST_H__
 #include <memory>
+#include <vector>
+#include <utility>
 #include "ScalaToken.h"
 
 namespace djp {
@@ -10,12 +12,18 @@ namespace scala {
 typedef std::shared_ptr<struct LexId> spLexId;
 
 typedef std::shared_ptr<struct AnnotType> spAnnotType;
+typedef std::shared_ptr<struct ArgumentExprs> spArgumentExprs;
+typedef std::shared_ptr<struct Block> spBlock;
+typedef std::shared_ptr<struct BlockExpr> spBlockExpr;
+typedef std::shared_ptr<struct BlockStat> spBlockStat;
 typedef std::shared_ptr<struct CompilationUnit> spCompilationUnit;
 typedef std::shared_ptr<struct ClassParents> spClassParents;
 typedef std::shared_ptr<struct ClassTemplate> spClassTemplate;
 typedef std::shared_ptr<struct ClassTemplateOpt> spClassTemplateOpt;
 typedef std::shared_ptr<struct Constr> spConstr;
+typedef std::shared_ptr<struct Expr1> spExpr1;
 typedef std::shared_ptr<struct ObjectDef> spObjectDef;
+typedef std::shared_ptr<struct Semi> spSemi;
 typedef std::shared_ptr<struct SimpleType> spSimpleType;
 typedef std::shared_ptr<struct StableId> spStableId;
 typedef std::shared_ptr<struct TemplateBody> spTemplateBody;
@@ -74,6 +82,80 @@ struct AnnotType : ASTBase {
 };
 
 /**
+ * Block ::= {BlockStat semi} [ResultExpr]
+ */
+struct Block : ASTBase {
+  std::vector<std::pair<spBlockStat, spSemi>> paBlockStatSemi;
+  // TODO: ResultExpr
+};
+
+/**
+ * BlockExpr ::= ‘{’ CaseClauses ‘}’
+ *             | ‘{’ Block ‘}’
+ */
+struct BlockExpr : ASTBase {
+  enum class Opt {
+    UNDEFINED,
+    CASE,
+    BLOCK,
+  };
+
+  Opt opt;
+  spTokenNode tokLCurlyB;
+  // TODO: ‘{’ CaseClauses ‘}’
+  spBlock block;
+  spTokenNode tokRCurlB;
+
+  BlockExpr() : opt(Opt::UNDEFINED) {}
+};
+
+/**
+ * BlockStat ::= Import
+ *             | {Annotation} [‘implicit’ | ‘lazy’] Def
+ *             | {Annotation} {LocalModifier} TmplDef
+ *             | Expr1
+ */
+struct BlockStat : ASTBase {
+  enum class Opt {
+    UNDEFINED,
+    DEF,
+    TMPL_DEF,
+    EXPR1,
+  };
+
+  Opt opt;
+
+  // TODO: Import
+  // TODO: {Annotation} [‘implicit’ | ‘lazy’] Def
+  // TODO: {Annotation} {LocalModifier} TmplDef
+  spExpr1 expr1;
+
+  BlockStat() : opt(Opt::UNDEFINED) {}
+};
+
+
+/**
+ * ArgumentExprs ::= ‘(’ [Exprs] ‘)’
+ *                 | ‘(’ [Exprs ‘,’] PostfixExpr ‘:’ ‘_’ ‘*’ ’)’
+ *                 | [nl] BlockExpr
+ */
+struct ArgumentExprs : ASTBase {
+  enum class Opt {
+    UNDEFINED,
+    EXPRS,
+    EXPRS_POSTFIX_EXPR,
+    BLOCK_EXPR,
+  };
+
+  Opt opt;
+  // TODO: ‘(’ [Exprs] ‘)’
+  // TODO: ‘(’ [Exprs ‘,’] PostfixExpr ‘:’ ‘_’ ‘*’ ’)’
+  spBlockExpr blockExpr;
+
+  ArgumentExprs() : opt(Opt::UNDEFINED) {}
+};
+
+/**
  * CompilationUnit ::= {‘package’ QualId semi} TopStatSeq
  */
 struct CompilationUnit : ASTBase {
@@ -123,7 +205,57 @@ struct ClassTemplateOpt : ASTBase {
  */
 struct Constr : ASTBase {
   spAnnotType annotType;
-  // TODO: std::vector<spArgumentExprs> argExprs;
+  std::vector<spArgumentExprs> argExprs;
+};
+
+/**
+ * Expr1 ::= ‘if’ ‘(’ Expr ‘)’ {nl} Expr [[semi] else Expr]
+ *         | ‘while’ ‘(’ Expr ‘)’ {nl} Expr
+ *         | ‘try’ ‘{’ Block ‘}’ [‘catch’ ‘{’ CaseClauses ‘}’]
+ *           [‘finally’ Expr]
+ *         | ‘do’ Expr [semi] ‘while’ ‘(’ Expr ’)’
+ *         | ‘for’ (‘(’ Enumerators ‘)’ | ‘{’ Enumerators ‘}’)
+ *           {nl} [‘yield’] Expr
+ *         | ‘throw’ Expr
+ *         | ‘return’ [Expr]
+ *         | [SimpleExpr ‘.’] id ‘=’ Expr
+ *         | SimpleExpr1 ArgumentExprs ‘=’ Expr
+ *         | PostfixExpr
+ *         | PostfixExpr Ascription
+ *         | PostfixExpr ‘match’ ‘{’ CaseClauses ‘}’
+ */
+struct Expr1 : ASTBase {
+  enum class Opt {
+    UNDEFINED,
+    IF,
+    WHILE,
+    TRY,
+    DO,
+    FOR,
+    THROW,
+    RETURN,
+    ID_EQUALS,
+    POSTFIX_EXPR,
+    POSTFIX_EXPR_ASCRIPTION,
+    POSTFIX_EXPR_MATCH,
+  };
+
+  Opt opt;
+
+  // TODO: ‘if’ ‘(’ Expr ‘)’ {nl} Expr [[semi] else Expr]
+  // TODO: ‘while’ ‘(’ Expr ‘)’ {nl} Expr
+  // TODO: ‘try’ ‘{’ Block ‘}’ [‘catch’ ‘{’ CaseClauses ‘}’] [‘finally’ Expr]
+  // TODO: ‘do’ Expr [semi] ‘while’ ‘(’ Expr ’)’
+  // TODO: ‘for’ (‘(’ Enumerators ‘)’ | ‘{’ Enumerators ‘}’) {nl} [‘yield’] Expr
+  // TODO: ‘throw’ Expr
+  // TODO: ‘return’ [Expr]
+  // TODO: [SimpleExpr ‘.’] id ‘=’ Expr
+  // TODO: SimpleExpr1 ArgumentExprs ‘=’ Expr
+  // TODO: PostfixExpr
+  // TODO: PostfixExpr Ascription
+  // TODO: PostfixExpr ‘match’ ‘{’ CaseClauses ‘}’
+
+  Expr1() : opt(Opt::UNDEFINED) {}
 };
 
 /**
@@ -132,6 +264,22 @@ struct Constr : ASTBase {
 struct ObjectDef : ASTBase {
   spLexId lId;
   spClassTemplateOpt classTmplOpt;
+};
+
+/**
+ * semi ::= ‘;’ | nl {nl}
+ */
+struct Semi : ASTBase {
+  enum class Opt {
+    UNDEFINED,
+    SEMI_COLON,
+    NL,
+  };
+
+  Opt opt;
+  spTokenNode tokSemiColon;
+
+  Semi() : opt(Opt::UNDEFINED) {}
 };
 
 /**

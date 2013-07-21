@@ -70,12 +70,12 @@ STok ScalaLexer::getToken() {
   //if ('*' == c) return getMulToken();
   //if ('~' == c) return TOK_OP_TILDE;
   //if ('!' == c) return getExclamationToken();
-  //if ('{' == c) return TOK_LCURLY_BRACKET;
-  //if ('}' == c) return TOK_RCURLY_BRACKET;
-  //if ('(' == c) return TOK_LPAREN;
-  //if (')' == c) return TOK_RPAREN;
-  //if ('[' == c) return TOK_LBRACKET;
-  //if (']' == c) return TOK_RBRACKET;
+  if ('{' == c) return STok::LCURLYB;
+  if ('}' == c) return STok::RCURLYB;
+  if ('(' == c) return STok::LPAREN;
+  if (')' == c) return STok::RPAREN;
+  if ('[' == c) return STok::LBRACKET;
+  if (']' == c) return STok::RBRACKET;
   //if ('?' == c) return TOK_OP_QUESTION_MARK;
 
   //if (isdigit(c)) return getNumberToken(c);

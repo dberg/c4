@@ -73,8 +73,17 @@ enum class STok : int {
   HASH = -50, // #
   AT = -51, // @
 
-  // Grammar
+  // Lexer grammar
   ID = -52,
+
+  // Symbol Terminals
+  SEMI_COLON = -53,
+  LCURLYB = -54, // {
+  RCURLYB = -55, // }
+  LPAREN = -56, // (
+  RPAREN = -57, // )
+  LBRACKET = -58, // [
+  RBRACKET = -59, // ]
 };
 
 class ScalaTokenUtil {
