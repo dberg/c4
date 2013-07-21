@@ -111,7 +111,7 @@ SimpleType ::= SimpleType TypeArgs
              | SimpleType ‘#’ id
              | StableId
              | Path ‘.’ ‘type’
-             ‘(’ Types ’)’
+             | ‘(’ Types ’)’
 
 TypeArgs ::= ‘[’ Types ‘]’
 
