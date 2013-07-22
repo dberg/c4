@@ -2,7 +2,9 @@
 
 namespace djp {
 
+// -----------------------------------------------------------------------------
 // Helper functions
+// -----------------------------------------------------------------------------
 bool is_idrest(char c) {
   // TODO: check for op ::= opchar {opchar}
   if (std::isalpha(c) || isdigit(c) || c == '_') {
@@ -15,8 +17,9 @@ bool is_idrest(char c) {
 /**
  * upper ::= ‘A’ | ··· | ‘Z’ | ‘$’ | ‘_’
  *           and Unicode category Lu
+ *
  * TODO: Unicode category Lu
-*/
+ */
 bool is_upper(char c) {
   if (isupper(c) || c == '$' || c == '_') {
     return true;
@@ -25,7 +28,9 @@ bool is_upper(char c) {
   return false;
 }
 
+// -----------------------------------------------------------------------------
 // ScalaLexer methods
+// -----------------------------------------------------------------------------
 int ScalaLexer::getCurTokenIni() {
   return src->getCursor() - getCurTokenStr().size();
 }
@@ -149,6 +154,30 @@ void ScalaLexer::getNextToken() {
 
   // TODO:
   //processIndentation(line, src->getLine(), token, curToken);
+}
+
+void ScalaLexer::saveState(State &state) {
+  state.cursor = src->getCursor();
+  state.line = src->getLine();
+  state.token = getCurToken();
+  state.tokenStr = getCurTokenStr();
+
+  // TODO:
+  //state.indentationLevel = curIndentationLevel;
+  //state.indentationMapSize = indentMap.size();
+}
+
+void ScalaLexer::restoreState(State &state) {
+  src->setCursor(state.cursor);
+  src->setLine(state.line);
+  curTok = state.token;
+  curTokStr = state.tokenStr;
+
+  // TODO:
+  //curIndentationLevel = state.indentationLevel;
+  //while (indentMap.size() > state.indentationMapSize) {
+  //  indentMap.erase(std::prev(indentMap.end()));
+  //}
 }
 
 } // namespace

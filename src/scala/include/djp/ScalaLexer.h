@@ -7,6 +7,7 @@
 #include "djp/SourceCodeStream.h"
 #include "djp/Diagnosis.h"
 #include "ScalaAST.h"
+#include "ScalaParserState.h"
 #include "ScalaToken.h"
 using namespace djp::scala;
 
@@ -43,6 +44,9 @@ public:
   int getCurTokenEnd();
   std::string getCurTokenStr() { return curTokStr; }
   spTokenNode getCurTokenNode();
+
+  void saveState(State &state);
+  void restoreState(State &state);
 };
 
 } // namespace

@@ -2,6 +2,9 @@
 
 namespace djp {
 
+// -----------------------------------------------------------------------------
+// Lexical grammar
+// -----------------------------------------------------------------------------
 spLexId ScalaParser::parseLexId() {
   spLexId lId = spLexId(new LexId);
   if (lexer->getCurToken() != STok::ID) {
@@ -15,6 +18,10 @@ spLexId ScalaParser::parseLexId() {
   return lId;
 }
 
+// -----------------------------------------------------------------------------
+// Grammar
+// -----------------------------------------------------------------------------
+
 /**
  * AnnotType ::= SimpleType {Annotation}
  */
@@ -27,6 +34,15 @@ void ScalaParser::parseAnnotType(spAnnotType &annotType) {
   }
 
   // TODO: {Annotation}
+}
+
+/**
+ * ArgumentExprs ::= ‘(’ [Exprs] ‘)’
+ *                 | ‘(’ [Exprs ‘,’] PostfixExpr ‘:’ ‘_’ ‘*’ ’)’
+ *                 | [nl] BlockExpr
+ */
+void ScalaParser::parseArgumentExprs(spArgumentExprs &argExprs) {
+  // TODO:
 }
 
 /**
@@ -113,7 +129,19 @@ void ScalaParser::parseConstr(spConstr &constr) {
     return;
   }
 
-  // TODO: {ArgumentExprs}
+  // {ArgumentExprs}
+  State state;
+  while (true) {
+    saveState(state);
+    spArgumentExprs argExprs = spArgumentExprs(new ArgumentExprs);
+    parseArgumentExprs(argExprs);
+    if (argExprs->err) {
+      restoreState(state);
+      return;
+    }
+
+    constr->argExprs.push_back(argExprs);
+  }
 }
 
 /**
@@ -266,6 +294,10 @@ void ScalaParser::buildParseTree() {
   }
 }
 
+// -----------------------------------------------------------------------------
+// Helper methods
+// -----------------------------------------------------------------------------
+
 /**
  * Add Diagnosis error including buffer ini and end positions.
  */
@@ -274,6 +306,20 @@ int ScalaParser::addErr(int err) {
   unsigned int ini = cursor - lexer->getCurTokenStr().size();
   unsigned int end = cursor - 1;
   return diag->addErr(err, ini, end);
+}
+
+// Helper methods
+void ScalaParser::saveState(State &state) {
+  state.diagErrorsSize = diag->errors.size();
+  lexer->saveState(state);
+}
+
+void ScalaParser::restoreState(State &state) {
+  while (diag->errors.size() > state.diagErrorsSize) {
+    diag->errors.pop_back();
+  }
+
+  lexer->restoreState(state);
 }
 
 } // namespace

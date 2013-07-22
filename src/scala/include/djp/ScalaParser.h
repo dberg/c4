@@ -6,6 +6,7 @@
 #include "djp/Diagnosis.h"
 #include "ScalaAST.h"
 #include "ScalaLexer.h"
+#include "ScalaParserState.h"
 #include "ScalaToken.h"
 using namespace djp::scala;
 
@@ -16,10 +17,13 @@ class ScalaParser {
   spSourceCodeStream src;
   spScalaLexer lexer;
 
+  // lexical grammar
   spLexId parseLexId();
 
+  // grammar
   void buildParseTree();
   void parseAnnotType(spAnnotType &annotType);
+  void parseArgumentExprs(spArgumentExprs &argExprs);
   void parseClassParents(spClassParents &classParents);
   void parseClassTemplate(spClassTemplate &classTmpl);
   void parseClassTemplateOpt(spClassTemplateOpt &classTmplOpt);
@@ -33,7 +37,10 @@ class ScalaParser {
   void parseTopStat(spTopStat &topStat);
   void parseTopStatSeq(spTopStatSeq &topStatSeq);
 
+  // helper methods
   int addErr(int err);
+  void saveState(State &state);
+  void restoreState(State &state);
 
 public:
   ScalaParser(const std::string filename, const std::string &buffer)
