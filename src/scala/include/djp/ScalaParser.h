@@ -24,6 +24,8 @@ class ScalaParser {
   void buildParseTree();
   void parseAnnotType(spAnnotType &annotType);
   void parseArgumentExprs(spArgumentExprs &argExprs);
+  void parseBlock(spBlock &block);
+  void parseBlockExpr(spBlockExpr &blockExpr);
   void parseClassParents(spClassParents &classParents);
   void parseClassTemplate(spClassTemplate &classTmpl);
   void parseClassTemplateOpt(spClassTemplateOpt &classTmplOpt);

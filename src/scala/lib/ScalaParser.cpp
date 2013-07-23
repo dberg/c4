@@ -42,7 +42,55 @@ void ScalaParser::parseAnnotType(spAnnotType &annotType) {
  *                 | [nl] BlockExpr
  */
 void ScalaParser::parseArgumentExprs(spArgumentExprs &argExprs) {
+  // TODO: ‘(’ [Exprs] ‘)’
+  // TODO: ‘(’ [Exprs ‘,’] PostfixExpr ‘:’ ‘_’ ‘*’ ’)’
+  // TODO: [nl]
+
+  argExprs->opt = ArgumentExprs::Opt::BLOCK_EXPR;
+  argExprs->blockExpr = spBlockExpr(new BlockExpr);
+  parseBlockExpr(argExprs->blockExpr);
+  if (argExprs->blockExpr->err) {
+    argExprs->addErr(-1);
+  }
+}
+
+/**
+ * Block ::= {BlockStat semi} [ResultExpr]
+ */
+void ScalaParser::parseBlock(spBlock &block) {
   // TODO:
+}
+
+/**
+ * BlockExpr ::= ‘{’ CaseClauses ‘}’
+ *             | ‘{’ Block ‘}’
+ */
+void ScalaParser::parseBlockExpr(spBlockExpr &blockExpr) {
+  // TODO: CaseClauses
+
+  // '{'
+  spTokenNode tokLCurlyB = lexer->getCurTokenNode();
+  if (tokLCurlyB->tok != STok::LCURLYB) {
+    blockExpr->addErr(addErr(ERR_EXP_LCURLY_BRACKET));
+    return;
+  }
+
+  blockExpr->tokLCurlyB = tokLCurlyB;
+
+  blockExpr->opt = BlockExpr::Opt::BLOCK;
+  blockExpr->block = spBlock(new Block);
+  parseBlock(blockExpr->block);
+  if (blockExpr->block->err) {
+    blockExpr->addErr(-1);
+  }
+
+  spTokenNode tokRCurlyB = lexer->getCurTokenNode();
+  if (tokRCurlyB->tok != STok::RCURLYB) {
+    blockExpr->addErr(addErr(ERR_EXP_RCURLY_BRACKET));
+    return;
+  }
+
+  blockExpr->tokRCurlyB = tokRCurlyB;
 }
 
 /**
@@ -308,7 +356,6 @@ int ScalaParser::addErr(int err) {
   return diag->addErr(err, ini, end);
 }
 
-// Helper methods
 void ScalaParser::saveState(State &state) {
   state.diagErrorsSize = diag->errors.size();
   lexer->saveState(state);
@@ -321,5 +368,4 @@ void ScalaParser::restoreState(State &state) {
 
   lexer->restoreState(state);
 }
-
 } // namespace

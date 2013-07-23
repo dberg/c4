@@ -104,7 +104,7 @@ struct BlockExpr : ASTBase {
   spTokenNode tokLCurlyB;
   // TODO: ‘{’ CaseClauses ‘}’
   spBlock block;
-  spTokenNode tokRCurlB;
+  spTokenNode tokRCurlyB;
 
   BlockExpr() : opt(Opt::UNDEFINED) {}
 };
