@@ -31,28 +31,28 @@ using namespace djp;
  *                     '}'
  *
  *
- * Expr1*
+ * Expr1(10)*
  *   PostfixExpr
- *     InfixExpr
+ *     InfixExpr(1)
  *       PrefixExpr
  *         SimpleExpr(3)
  *           SimpleExpr1(7)
- *             SimpleExpr1
+ *             SimpleExpr1(2)
  *               Path
  *                 Stableid
  *                   id <-- println
- *             ArgumentExprs
+ *             ArgumentExprs(1)
  *               '('
  *               Exprs
- *                 Expr
- *                   Expr1
+ *                 Expr(2)
+ *                   Expr1(10)
  *                     PostfixExpr
- *                       InfixExpr
+ *                       InfixExpr(1)
  *                         PrefixExpr
  *                           SimpleExpr
- *                             SimpleExpr1
- *                               Literal
- *                                 stringLiteral
+ *                             SimpleExpr1(3)
+ *                               Literal(5)
+ *                                 stringLiteral(1)
  *                                   "
  *                                   {stringElement} <-- "Hello world"
  *                                   "

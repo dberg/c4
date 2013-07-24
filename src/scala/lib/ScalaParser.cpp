@@ -18,6 +18,19 @@ spLexId ScalaParser::parseLexId() {
   return lId;
 }
 
+/**
+ * semi ::= ‘;’ | nl {nl}
+ */
+void ScalaParser::parseSemi(spSemi &semi) {
+  if (lexer->getCurToken() == STok::SEMI_COLON) {
+    semi->opt = Semi::Opt::SEMI_COLON;
+    semi->tokSemiColon = lexer->getCurTokenNode();
+    return;
+  }
+
+  // TODO: nl {nl}
+}
+
 // -----------------------------------------------------------------------------
 // Grammar
 // -----------------------------------------------------------------------------
@@ -58,7 +71,23 @@ void ScalaParser::parseArgumentExprs(spArgumentExprs &argExprs) {
  * Block ::= {BlockStat semi} [ResultExpr]
  */
 void ScalaParser::parseBlock(spBlock &block) {
-  // TODO:
+  while (true) {
+    spBlockStat blockStat = spBlockStat(new BlockStat);
+    parseBlockStat(blockStat);
+    if (blockStat->err) {
+      break;
+    }
+
+    spSemi semi = spSemi(new Semi);
+    parseSemi(semi);
+    if (semi->err) {
+      block->addErr(-1);
+    }
+
+    block->paBlockStatSemi.push_back(std::make_pair(blockStat, semi));
+  }
+
+  // TODO: [ResultExpr]
 }
 
 /**
@@ -91,6 +120,26 @@ void ScalaParser::parseBlockExpr(spBlockExpr &blockExpr) {
   }
 
   blockExpr->tokRCurlyB = tokRCurlyB;
+}
+
+/**
+ * BlockStat ::= Import
+ *             | {Annotation} [‘implicit’ | ‘lazy’] Def
+ *             | {Annotation} {LocalModifier} TmplDef
+ *             | Expr1
+ */
+void ScalaParser::parseBlockStat(spBlockStat &blockStat) {
+  // TODO: Import
+  // TODO: {Annotation} [‘implicit’ | ‘lazy’] Def
+  // TODO: {Annotation} {LocalModifier} TmplDef
+
+  // Expr1
+  blockStat->opt = BlockStat::Opt::EXPR1;
+  blockStat->expr1 = spExpr1(new Expr1);
+  parseExpr1(blockStat->expr1);
+  if (blockStat->expr1->err) {
+    blockStat->addErr(-1);
+  }
 }
 
 /**
@@ -134,6 +183,8 @@ void ScalaParser::parseClassTemplateOpt(spClassTemplateOpt &classTmplOpt) {
 
     // We have to decide if we have a ClassTemplate or a TemplateBody, so we
     // first try ClassTemplate and if there's an error we try TemplateBody next.
+    State state;
+    saveState(state);
     spClassTemplate classTmpl = spClassTemplate(new ClassTemplate);
     parseClassTemplate(classTmpl);
     if (classTmpl->err == false) {
@@ -141,6 +192,8 @@ void ScalaParser::parseClassTemplateOpt(spClassTemplateOpt &classTmplOpt) {
       classTmplOpt->classTmpl = classTmpl;
       return;
     }
+
+    restoreState(state);
   }
 
   // TemplateBody
@@ -193,11 +246,58 @@ void ScalaParser::parseConstr(spConstr &constr) {
 }
 
 /**
+ * Expr1 ::= ‘if’ ‘(’ Expr ‘)’ {nl} Expr [[semi] else Expr]
+ *         | ‘while’ ‘(’ Expr ‘)’ {nl} Expr
+ *         | ‘try’ ‘{’ Block ‘}’ [‘catch’ ‘{’ CaseClauses ‘}’]
+ *           [‘finally’ Expr]
+ *         | ‘do’ Expr [semi] ‘while’ ‘(’ Expr ’)’
+ *         | ‘for’ (‘(’ Enumerators ‘)’ | ‘{’ Enumerators ‘}’)
+ *           {nl} [‘yield’] Expr
+ *         | ‘throw’ Expr
+ *         | ‘return’ [Expr]
+ *         | [SimpleExpr ‘.’] id ‘=’ Expr
+ *         | SimpleExpr1 ArgumentExprs ‘=’ Expr
+ *         | PostfixExpr
+ *         | PostfixExpr Ascription
+ *         | PostfixExpr ‘match’ ‘{’ CaseClauses ‘}’
+ */
+void ScalaParser::parseExpr1(spExpr1 &expr1) {
+  // TODO: ‘if’ ‘(’ Expr ‘)’ {nl} Expr [[semi] else Expr]
+  // TODO: ‘while’ ‘(’ Expr ‘)’ {nl} Expr
+  // TODO: ‘try’ ‘{’ Block ‘}’ [‘catch’ ‘{’ CaseClauses ‘}’] [‘finally’ Expr]
+  // TODO: ‘do’ Expr [semi] ‘while’ ‘(’ Expr ’)’
+  // TODO: ‘for’ (‘(’ Enumerators ‘)’ | ‘{’ Enumerators ‘}’) {nl} [‘yield’] Expr
+  // TODO: ‘throw’ Expr
+  // TODO: ‘return’ [Expr]
+  // TODO: [SimpleExpr ‘.’] id ‘=’ Expr
+  // TODO: SimpleExpr1 ArgumentExprs ‘=’ Expr
+
+  // PostfixExpr
+  expr1->opt = Expr1::Opt::POSTFIX_EXPR;
+  expr1->postfixExpr = spPostfixExpr(new PostfixExpr);
+  parsePostfixExpr(expr1->postfixExpr);
+  if (expr1->postfixExpr->err) {
+    expr1->addErr(-1);
+    return;
+  }
+
+  // TODO: PostfixExpr Ascription
+  // TODO: PostfixExpr ‘match’ ‘{’ CaseClauses ‘}’
+}
+
+/**
+ * PostfixExpr ::= InfixExpr [id [nl]]
+ */
+void ScalaParser::parsePostfixExpr(spPostfixExpr &postfixExpr) {
+  // TODO:
+}
+
+/**
  * ObjectDef ::= id ClassTemplateOpt
  */
 void ScalaParser::parseObjectDef(spObjectDef &objectDef) {
-  objectDef->lId = parseLexId();
-  if (objectDef->lId->err) {
+  objectDef->id = parseLexId();
+  if (objectDef->id->err) {
     objectDef->addErr(-1);
     return;
   }

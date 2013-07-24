@@ -22,7 +22,9 @@ typedef std::shared_ptr<struct ClassTemplate> spClassTemplate;
 typedef std::shared_ptr<struct ClassTemplateOpt> spClassTemplateOpt;
 typedef std::shared_ptr<struct Constr> spConstr;
 typedef std::shared_ptr<struct Expr1> spExpr1;
+typedef std::shared_ptr<struct InfixExpr> spInfixExpr;
 typedef std::shared_ptr<struct ObjectDef> spObjectDef;
+typedef std::shared_ptr<struct PostfixExpr> spPostfixExpr;
 typedef std::shared_ptr<struct Semi> spSemi;
 typedef std::shared_ptr<struct SimpleType> spSimpleType;
 typedef std::shared_ptr<struct StableId> spStableId;
@@ -252,7 +254,7 @@ struct Expr1 : ASTBase {
   // TODO: ‘return’ [Expr]
   // TODO: [SimpleExpr ‘.’] id ‘=’ Expr
   // TODO: SimpleExpr1 ArgumentExprs ‘=’ Expr
-  // TODO: PostfixExpr
+  spPostfixExpr postfixExpr;
   // TODO: PostfixExpr Ascription
   // TODO: PostfixExpr ‘match’ ‘{’ CaseClauses ‘}’
 
@@ -260,11 +262,27 @@ struct Expr1 : ASTBase {
 };
 
 /**
+ * InfixExpr ::= PrefixExpr
+ *             | InfixExpr id [nl] InfixExpr
+ */
+struct InfixExpr : ASTBase {
+  // TODO:
+};
+
+/**
  * ObjectDef ::= id ClassTemplateOpt
  */
 struct ObjectDef : ASTBase {
-  spLexId lId;
+  spLexId id;
   spClassTemplateOpt classTmplOpt;
+};
+
+/**
+ * PostfixExpr ::= InfixExpr [id [nl]]
+ */
+struct PostfixExpr : ASTBase {
+  spInfixExpr infixExpr;
+  // TODO: [id [nl]]
 };
 
 /**

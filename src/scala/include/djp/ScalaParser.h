@@ -19,6 +19,7 @@ class ScalaParser {
 
   // lexical grammar
   spLexId parseLexId();
+  void parseSemi(spSemi &semi);
 
   // grammar
   void buildParseTree();
@@ -26,12 +27,15 @@ class ScalaParser {
   void parseArgumentExprs(spArgumentExprs &argExprs);
   void parseBlock(spBlock &block);
   void parseBlockExpr(spBlockExpr &blockExpr);
+  void parseBlockStat(spBlockStat &blockStat);
   void parseClassParents(spClassParents &classParents);
   void parseClassTemplate(spClassTemplate &classTmpl);
   void parseClassTemplateOpt(spClassTemplateOpt &classTmplOpt);
   void parseCompilationUnit();
   void parseConstr(spConstr &constr);
+  void parseExpr1(spExpr1 &expr1);
   void parseObjectDef(spObjectDef &objectDef);
+  void parsePostfixExpr(spPostfixExpr &postfixExpr);
   void parseSimpleType(spSimpleType &simpleType);
   void parseStableId(spStableId &stableId);
   void parseTemplateBody(spTemplateBody &tmplBody);
