@@ -24,8 +24,11 @@ typedef std::shared_ptr<struct Constr> spConstr;
 typedef std::shared_ptr<struct Expr1> spExpr1;
 typedef std::shared_ptr<struct InfixExpr> spInfixExpr;
 typedef std::shared_ptr<struct ObjectDef> spObjectDef;
+typedef std::shared_ptr<struct PrefixExpr> spPrefixExpr;
 typedef std::shared_ptr<struct PostfixExpr> spPostfixExpr;
 typedef std::shared_ptr<struct Semi> spSemi;
+typedef std::shared_ptr<struct SimpleExpr> spSimpleExpr;
+typedef std::shared_ptr<struct SimpleExpr1> spSimpleExpr1;
 typedef std::shared_ptr<struct SimpleType> spSimpleType;
 typedef std::shared_ptr<struct StableId> spStableId;
 typedef std::shared_ptr<struct TemplateBody> spTemplateBody;
@@ -266,7 +269,17 @@ struct Expr1 : ASTBase {
  *             | InfixExpr id [nl] InfixExpr
  */
 struct InfixExpr : ASTBase {
-  // TODO:
+  enum class Opt {
+    UNDEFINED,
+    PREFIX,
+    INFIX,
+  };
+
+  Opt opt;
+  spPrefixExpr prefixExpr;
+  // TODO: InfixExpr id [nl] InfixExpr
+
+  InfixExpr() : opt(Opt::UNDEFINED) {}
 };
 
 /**
@@ -275,6 +288,14 @@ struct InfixExpr : ASTBase {
 struct ObjectDef : ASTBase {
   spLexId id;
   spClassTemplateOpt classTmplOpt;
+};
+
+/**
+ * PrefixExpr ::= [‘-’ | ‘+’ | ‘~’ | ‘!’] SimpleExpr
+ */
+struct PrefixExpr : ASTBase {
+  spTokenNode tok;
+  spSimpleExpr simpleExpr;
 };
 
 /**
@@ -299,6 +320,64 @@ struct Semi : ASTBase {
   spTokenNode tokSemiColon;
 
   Semi() : opt(Opt::UNDEFINED) {}
+};
+
+/**
+ * SimpleExpr ::= ‘new’ (ClassTemplate | TemplateBody)
+ *              | BlockExpr
+ *              | SimpleExpr1 [‘_’]
+ */
+struct SimpleExpr : ASTBase {
+  enum class Opt {
+    UNDEFINED,
+    BLOCK_EXPR,
+    SIMPLE_EXPR1,
+  };
+
+  // TODO: ‘new’ (ClassTemplate | TemplateBody)
+  spBlockExpr blockExpr;
+  spSimpleExpr1 simpleExpr1;
+  // TODO: [‘_’]
+
+  Opt opt;
+
+  SimpleExpr() : opt(Opt::UNDEFINED) {}
+};
+
+/**
+ * Literal
+ * Path
+ * ‘_’
+ * ‘(’ [Exprs] ‘)’
+ * SimpleExpr ‘.’ id
+ * SimpleExpr TypeArgs
+ * SimpleExpr1 ArgumentExprs
+ * XmlExpr
+ */
+struct SimpleExpr1 : ASTBase {
+  enum class Opt {
+    UNDEFINED,
+    LITERAL,
+    PATH,
+    UNDERSCORE,
+    EXPRS,
+    SIMPLEEXPR_ID,
+    SIMPLEEXPR_TYPEARGS,
+    SIMPLEEXPR1_ARGUMENTEXPRS,
+    XMLEXPR,
+  };
+
+  Opt opt;
+  // TODO: Literal
+  // TODO: Path
+  // TODO: ‘_’
+  // TODO: ‘(’ [Exprs] ‘)’
+  // TODO: SimpleExpr ‘.’ id
+  // TODO: SimpleExpr TypeArgs
+  // TODO: SimpleExpr1 ArgumentExprs
+  // TODO: XmlExpr
+
+  SimpleExpr1() : opt(Opt::UNDEFINED) {}
 };
 
 /**

@@ -286,10 +286,18 @@ void ScalaParser::parseExpr1(spExpr1 &expr1) {
 }
 
 /**
- * PostfixExpr ::= InfixExpr [id [nl]]
+ * InfixExpr ::= PrefixExpr
+ *             | InfixExpr id [nl] InfixExpr
  */
-void ScalaParser::parsePostfixExpr(spPostfixExpr &postfixExpr) {
-  // TODO:
+void ScalaParser::parseInfixExpr(spInfixExpr &infixExpr) {
+  infixExpr->prefixExpr = spPrefixExpr(new PrefixExpr);
+  parsePrefixExpr(infixExpr->prefixExpr);
+  if (infixExpr->prefixExpr->err) {
+    infixExpr->addErr(-1);
+    return;
+  }
+
+  // TODO: InfixExpr id [nl] InfixExpr
 }
 
 /**
@@ -307,6 +315,70 @@ void ScalaParser::parseObjectDef(spObjectDef &objectDef) {
   if (objectDef->classTmplOpt->err) {
     objectDef->addErr(-1);
   }
+}
+
+/**
+ * PrefixExpr ::= [‘-’ | ‘+’ | ‘~’ | ‘!’] SimpleExpr
+ */
+void ScalaParser::parsePrefixExpr(spPrefixExpr &prefixExpr) {
+  // TODO: [‘-’ | ‘+’ | ‘~’ | ‘!’]
+  prefixExpr->simpleExpr = spSimpleExpr(new SimpleExpr);
+  parseSimpleExpr(prefixExpr->simpleExpr);
+  if (prefixExpr->simpleExpr->err) {
+    prefixExpr->addErr(-1);
+  }
+}
+
+/**
+ * PostfixExpr ::= InfixExpr [id [nl]]
+ */
+void ScalaParser::parsePostfixExpr(spPostfixExpr &postfixExpr) {
+  postfixExpr->infixExpr = spInfixExpr(new InfixExpr);
+  parseInfixExpr(postfixExpr->infixExpr);
+  if (postfixExpr->infixExpr->err) {
+    postfixExpr->addErr(-1);
+    return;
+  }
+
+  // TODO: [id [nl]]
+}
+
+/**
+ * SimpleExpr ::= ‘new’ (ClassTemplate | TemplateBody)
+ *              | BlockExpr
+ *              | SimpleExpr1 [‘_’]
+ */
+void ScalaParser::parseSimpleExpr(spSimpleExpr &simpleExpr) {
+  // TODO: ‘new’ (ClassTemplate | TemplateBody)
+  // TODO: BlockExpr
+
+  simpleExpr->opt = SimpleExpr::Opt::SIMPLE_EXPR1;
+  simpleExpr->simpleExpr1 = spSimpleExpr1(new SimpleExpr1);
+  parseSimpleExpr1(simpleExpr->simpleExpr1);
+  if (simpleExpr->simpleExpr1->err) {
+    simpleExpr->addErr(-1);
+  }
+}
+
+/**
+ * Literal
+ * Path
+ * ‘_’
+ * ‘(’ [Exprs] ‘)’
+ * SimpleExpr ‘.’ id
+ * SimpleExpr TypeArgs
+ * SimpleExpr1 ArgumentExprs
+ * XmlExpr
+ */
+void ScalaParser::parseSimpleExpr1(spSimpleExpr1 &simpleExpr1) {
+  // TODO: Literal
+  // TODO: Path
+  // TODO: ‘_’
+  // TODO: ‘(’ [Exprs] ‘)’
+  // TODO: SimpleExpr ‘.’ id
+  // TODO: SimpleExpr TypeArgs
+  // TODO: SimpleExpr1 ArgumentExprs
+  // TODO: XmlExpr
 }
 
 /**

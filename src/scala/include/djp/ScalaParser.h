@@ -34,8 +34,12 @@ class ScalaParser {
   void parseCompilationUnit();
   void parseConstr(spConstr &constr);
   void parseExpr1(spExpr1 &expr1);
+  void parseInfixExpr(spInfixExpr &infixExpr);
   void parseObjectDef(spObjectDef &objectDef);
+  void parsePrefixExpr(spPrefixExpr &prefixExpr);
   void parsePostfixExpr(spPostfixExpr &postfixExpr);
+  void parseSimpleExpr(spSimpleExpr &simpleExpr);
+  void parseSimpleExpr1(spSimpleExpr1 &simpleExpr1);
   void parseSimpleType(spSimpleType &simpleType);
   void parseStableId(spStableId &stableId);
   void parseTemplateBody(spTemplateBody &tmplBody);
