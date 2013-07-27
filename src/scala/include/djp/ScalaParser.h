@@ -36,6 +36,7 @@ class ScalaParser {
   void parseExpr1(spExpr1 &expr1);
   void parseInfixExpr(spInfixExpr &infixExpr);
   void parseObjectDef(spObjectDef &objectDef);
+  void parsePath(spPath &path);
   void parsePrefixExpr(spPrefixExpr &prefixExpr);
   void parsePostfixExpr(spPostfixExpr &postfixExpr);
   void parseSimpleExpr(spSimpleExpr &simpleExpr);

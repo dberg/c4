@@ -318,6 +318,22 @@ void ScalaParser::parseObjectDef(spObjectDef &objectDef) {
 }
 
 /**
+ * Path ::= StableId
+ *        | [id ‘.’] ‘this’
+ */
+void ScalaParser::parsePath(spPath &path) {
+  path->opt = Path::Opt::STABLE_ID;
+  path->stableId = spStableId(new StableId);
+  parseStableId(path->stableId);
+  if (path->stableId->err) {
+    path->addErr(-1);
+    return;
+  }
+
+  // TODO: [id ‘.’] ‘this’
+}
+
+/**
  * PrefixExpr ::= [‘-’ | ‘+’ | ‘~’ | ‘!’] SimpleExpr
  */
 void ScalaParser::parsePrefixExpr(spPrefixExpr &prefixExpr) {
@@ -372,7 +388,15 @@ void ScalaParser::parseSimpleExpr(spSimpleExpr &simpleExpr) {
  */
 void ScalaParser::parseSimpleExpr1(spSimpleExpr1 &simpleExpr1) {
   // TODO: Literal
-  // TODO: Path
+
+  // Path
+  simpleExpr1->opt = SimpleExpr1::Opt::PATH;
+  parsePath(simpleExpr1->path);
+  if (simpleExpr1->path->err) {
+    simpleExpr1->addErr(-1);
+    return;
+  }
+
   // TODO: ‘_’
   // TODO: ‘(’ [Exprs] ‘)’
   // TODO: SimpleExpr ‘.’ id

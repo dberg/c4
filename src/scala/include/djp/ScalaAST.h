@@ -24,6 +24,7 @@ typedef std::shared_ptr<struct Constr> spConstr;
 typedef std::shared_ptr<struct Expr1> spExpr1;
 typedef std::shared_ptr<struct InfixExpr> spInfixExpr;
 typedef std::shared_ptr<struct ObjectDef> spObjectDef;
+typedef std::shared_ptr<struct Path> spPath;
 typedef std::shared_ptr<struct PrefixExpr> spPrefixExpr;
 typedef std::shared_ptr<struct PostfixExpr> spPostfixExpr;
 typedef std::shared_ptr<struct Semi> spSemi;
@@ -291,6 +292,24 @@ struct ObjectDef : ASTBase {
 };
 
 /**
+ * Path ::= StableId
+ *        | [id ‘.’] ‘this’
+ */
+struct Path : ASTBase {
+  enum class Opt {
+    UNDEFINED,
+    STABLE_ID,
+    THIS,
+  };
+
+  Opt opt;
+  spStableId stableId;
+  // TODO: [id ‘.’] ‘this’
+
+  Path() : opt(Opt::UNDEFINED) {}
+};
+
+/**
  * PrefixExpr ::= [‘-’ | ‘+’ | ‘~’ | ‘!’] SimpleExpr
  */
 struct PrefixExpr : ASTBase {
@@ -369,7 +388,10 @@ struct SimpleExpr1 : ASTBase {
 
   Opt opt;
   // TODO: Literal
-  // TODO: Path
+
+  // Path
+  spPath path;
+
   // TODO: ‘_’
   // TODO: ‘(’ [Exprs] ‘)’
   // TODO: SimpleExpr ‘.’ id
