@@ -6,6 +6,25 @@
 #include <utility>
 #include "ScalaToken.h"
 
+/**
+ * We have a few modifications in the grammar.
+ *
+ * SimpleExpr1 was transformed to remove the left recursion into the following
+ * production rules:
+ *
+ * SimpleExpr1 ::= SimpleExpr1Head SimpleExpr1Tail | SimpleExpr1Head
+ *
+ * SimpleExpr1Head ::= Literal
+ *                   | Path
+ *                   | ‘_’
+ *                   | ‘(’ [Exprs] ‘)’
+ *                   | SimpleExpr ‘.’ id
+ *                   | SimpleExpr TypeArgs
+ *                   | XmlExpr
+ *
+ * SimpleExpr1Tail ::=  ArgumentExprs SimpleExpr1Tail | ArgumentExprs
+ */
+
 namespace djp {
 namespace scala {
 
@@ -30,6 +49,8 @@ typedef std::shared_ptr<struct PostfixExpr> spPostfixExpr;
 typedef std::shared_ptr<struct Semi> spSemi;
 typedef std::shared_ptr<struct SimpleExpr> spSimpleExpr;
 typedef std::shared_ptr<struct SimpleExpr1> spSimpleExpr1;
+typedef std::shared_ptr<struct SimpleExpr1Head> spSimpleExpr1Head;
+typedef std::shared_ptr<struct SimpleExpr1Tail> spSimpleExpr1Tail;
 typedef std::shared_ptr<struct SimpleType> spSimpleType;
 typedef std::shared_ptr<struct StableId> spStableId;
 typedef std::shared_ptr<struct TemplateBody> spTemplateBody;
@@ -364,25 +385,31 @@ struct SimpleExpr : ASTBase {
 };
 
 /**
- * Literal
- * Path
- * ‘_’
- * ‘(’ [Exprs] ‘)’
- * SimpleExpr ‘.’ id
- * SimpleExpr TypeArgs
- * SimpleExpr1 ArgumentExprs
- * XmlExpr
+ * SimpleExpr1 ::= SimpleExpr1Head SimpleExpr1Tail | SimpleExpr1Head
  */
 struct SimpleExpr1 : ASTBase {
+  spSimpleExpr1Head head;
+  spSimpleExpr1Tail tail;
+};
+
+/**
+ * SimpleExpr1Head ::= Literal
+ *                   | Path
+ *                   | ‘_’
+ *                   | ‘(’ [Exprs] ‘)’
+ *                   | SimpleExpr ‘.’ id
+ *                   | SimpleExpr TypeArgs
+ *                   | XmlExpr
+ */
+struct SimpleExpr1Head : ASTBase {
   enum class Opt {
     UNDEFINED,
     LITERAL,
     PATH,
     UNDERSCORE,
     EXPRS,
-    SIMPLEEXPR_ID,
-    SIMPLEEXPR_TYPEARGS,
-    SIMPLEEXPR1_ARGUMENTEXPRS,
+    SIMPLE_EXPR_ID,
+    SIMPLE_EXPR_TYPE_ARGS,
     XMLEXPR,
   };
 
@@ -396,10 +423,17 @@ struct SimpleExpr1 : ASTBase {
   // TODO: ‘(’ [Exprs] ‘)’
   // TODO: SimpleExpr ‘.’ id
   // TODO: SimpleExpr TypeArgs
-  // TODO: SimpleExpr1 ArgumentExprs
   // TODO: XmlExpr
 
-  SimpleExpr1() : opt(Opt::UNDEFINED) {}
+  SimpleExpr1Head() : opt(Opt::UNDEFINED) {}
+};
+
+/**
+ * SimpleExpr1Tail ::=  ArgumentExprs SimpleExpr1Tail | ArgumentExprs
+ */
+struct SimpleExpr1Tail : ASTBase {
+  spArgumentExprs argExprs;
+  spSimpleExpr1Tail tail;
 };
 
 /**

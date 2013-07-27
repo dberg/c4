@@ -377,23 +377,52 @@ void ScalaParser::parseSimpleExpr(spSimpleExpr &simpleExpr) {
 }
 
 /**
- * Literal
- * Path
- * ‘_’
- * ‘(’ [Exprs] ‘)’
- * SimpleExpr ‘.’ id
- * SimpleExpr TypeArgs
- * SimpleExpr1 ArgumentExprs
- * XmlExpr
+ * SimpleExpr1 ::= SimpleExpr1Head SimpleExpr1Tail | SimpleExpr1Head
  */
 void ScalaParser::parseSimpleExpr1(spSimpleExpr1 &simpleExpr1) {
+  simpleExpr1->head = spSimpleExpr1Head(new SimpleExpr1Head);
+  parseSimpleExpr1Head(simpleExpr1->head);
+  if (simpleExpr1->head->err) {
+    simpleExpr1->addErr(-1);
+    return;
+  }
+
+  // SimpleExpr1Tail
+  State state;
+  saveState(state);
+
+  spSimpleExpr1Tail tail = spSimpleExpr1Tail(new SimpleExpr1Tail);
+  parseSimpleExpr1Tail(tail);
+
+  // If there's an error we restore the state and assume it's
+  // SimpleExpr1Head production.
+  if (tail->err) {
+    restoreState(state);
+    return;
+  }
+
+  // SimpleExpr1Head SimpleExpr1Tail
+  simpleExpr1->tail = tail;
+}
+
+/**
+ * SimpleExpr1Head ::= Literal
+ *                   | Path
+ *                   | ‘_’
+ *                   | ‘(’ [Exprs] ‘)’
+ *                   | SimpleExpr ‘.’ id
+ *                   | SimpleExpr TypeArgs
+ *                   | XmlExpr
+ */
+void ScalaParser::parseSimpleExpr1Head(spSimpleExpr1Head &head) {
   // TODO: Literal
 
   // Path
-  simpleExpr1->opt = SimpleExpr1::Opt::PATH;
-  parsePath(simpleExpr1->path);
-  if (simpleExpr1->path->err) {
-    simpleExpr1->addErr(-1);
+  spPath path = spPath(new Path);
+  parsePath(path);
+  if (path->err == false) {
+    head->opt = SimpleExpr1Head::Opt::PATH;
+    head->path = path;
     return;
   }
 
@@ -401,8 +430,34 @@ void ScalaParser::parseSimpleExpr1(spSimpleExpr1 &simpleExpr1) {
   // TODO: ‘(’ [Exprs] ‘)’
   // TODO: SimpleExpr ‘.’ id
   // TODO: SimpleExpr TypeArgs
-  // TODO: SimpleExpr1 ArgumentExprs
   // TODO: XmlExpr
+}
+
+/**
+ * SimpleExpr1Tail ::=  ArgumentExprs SimpleExpr1Tail | ArgumentExprs
+ */
+void ScalaParser::parseSimpleExpr1Tail(spSimpleExpr1Tail &tail) {
+  tail->argExprs = spArgumentExprs(new ArgumentExprs);
+  parseArgumentExprs(tail->argExprs);
+  if (tail->argExprs->err) {
+    tail->err = addErr(-1);
+    return;
+  }
+
+  State state;
+  saveState(state);
+
+  // If there's an error we restore the state and assume it's
+  // ArgumentExprs production.
+  spSimpleExpr1Tail tmpTail = spSimpleExpr1Tail(new SimpleExpr1Tail);
+  parseSimpleExpr1Tail(tmpTail);
+  if (tmpTail->err) {
+    restoreState(state);
+    return;
+  }
+
+  // ArgumentExprs SimpleExpr1Tail
+  tail->tail = tmpTail;
 }
 
 /**

@@ -41,6 +41,8 @@ class ScalaParser {
   void parsePostfixExpr(spPostfixExpr &postfixExpr);
   void parseSimpleExpr(spSimpleExpr &simpleExpr);
   void parseSimpleExpr1(spSimpleExpr1 &simpleExpr1);
+  void parseSimpleExpr1Head(spSimpleExpr1Head &head);
+  void parseSimpleExpr1Tail(spSimpleExpr1Tail &tail);
   void parseSimpleType(spSimpleType &simpleType);
   void parseStableId(spStableId &stableId);
   void parseTemplateBody(spTemplateBody &tmplBody);
