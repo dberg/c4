@@ -41,6 +41,7 @@ typedef std::shared_ptr<struct ClassTemplate> spClassTemplate;
 typedef std::shared_ptr<struct ClassTemplateOpt> spClassTemplateOpt;
 typedef std::shared_ptr<struct Constr> spConstr;
 typedef std::shared_ptr<struct Expr1> spExpr1;
+typedef std::shared_ptr<struct Exprs> spExprs;
 typedef std::shared_ptr<struct InfixExpr> spInfixExpr;
 typedef std::shared_ptr<struct ObjectDef> spObjectDef;
 typedef std::shared_ptr<struct Path> spPath;
@@ -175,8 +176,13 @@ struct ArgumentExprs : ASTBase {
   };
 
   Opt opt;
-  // TODO: ‘(’ [Exprs] ‘)’
-  // TODO: ‘(’ [Exprs ‘,’] PostfixExpr ‘:’ ‘_’ ‘*’ ’)’
+  spTokenNode tokLParen;
+  spTokenNode tokRParen;
+  spTokenNode tokComma;
+  spExprs exprs;
+  spPostfixExpr postfixExpr;
+  // TODO: ‘:’ ‘_’ ‘*’
+  // TODO: [nl]
   spBlockExpr blockExpr;
 
   ArgumentExprs() : opt(Opt::UNDEFINED) {}
@@ -284,6 +290,13 @@ struct Expr1 : ASTBase {
   // TODO: PostfixExpr ‘match’ ‘{’ CaseClauses ‘}’
 
   Expr1() : opt(Opt::UNDEFINED) {}
+};
+
+/**
+ * Exprs ::= Expr {‘,’ Expr}
+ */
+struct Exprs : ASTBase {
+  // TODO:
 };
 
 /**

@@ -55,16 +55,103 @@ void ScalaParser::parseAnnotType(spAnnotType &annotType) {
  *                 | [nl] BlockExpr
  */
 void ScalaParser::parseArgumentExprs(spArgumentExprs &argExprs) {
-  // TODO: ‘(’ [Exprs] ‘)’
-  // TODO: ‘(’ [Exprs ‘,’] PostfixExpr ‘:’ ‘_’ ‘*’ ’)’
   // TODO: [nl]
+  // BlockExpr
+  if (lexer->getCurToken() != STok::LPAREN) {
+    argExprs->opt = ArgumentExprs::Opt::BLOCK_EXPR;
+    argExprs->blockExpr = spBlockExpr(new BlockExpr);
+    parseBlockExpr(argExprs->blockExpr);
+    if (argExprs->blockExpr->err) {
+      argExprs->addErr(-1);
+    }
 
-  argExprs->opt = ArgumentExprs::Opt::BLOCK_EXPR;
-  argExprs->blockExpr = spBlockExpr(new BlockExpr);
-  parseBlockExpr(argExprs->blockExpr);
-  if (argExprs->blockExpr->err) {
-    argExprs->addErr(-1);
+    return;
   }
+
+  // We assume ‘(’ [Exprs] ‘)’ until we see a ',' or the PostfixExpr production
+  // ‘(’ [Exprs] ‘)’
+  argExprs->opt = ArgumentExprs::Opt::EXPRS;
+  argExprs->tokLParen = lexer->getCurTokenNode();
+  lexer->getNextToken(); // consume '('
+
+  // '(' ')'
+  if (lexer->getCurToken() == STok::RPAREN) {
+    argExprs->tokRParen = lexer->getCurTokenNode();
+    lexer->getNextToken(); // consume ')'
+    return;
+  }
+
+  // Try to parse Exprs
+  State state;
+  saveState(state);
+
+  argExprs->exprs = spExprs(new Exprs);
+  parseExprs(argExprs->exprs);
+  if (argExprs->exprs->err) {
+    restoreState(state);
+
+    // Our only option now is a Postfix
+    argExprs->opt = ArgumentExprs::Opt::EXPRS_POSTFIX_EXPR;
+
+    // PostfixExpr ‘:’ ‘_’ ‘*’
+    parseArgumentExprsHelper(argExprs);
+    if (argExprs->err) {
+      return;
+    }
+
+    // ')'
+    if (lexer->getCurToken() != STok::RPAREN) {
+      argExprs->addErr(ERR_EXP_RPAREN);
+      return;
+    }
+
+    argExprs->tokRParen = lexer->getCurTokenNode();
+    return;
+  }
+
+  // '(' Exprs ')'
+  if (lexer->getCurToken() == STok::RPAREN) {
+    argExprs->tokRParen = lexer->getCurTokenNode();
+    lexer->getNextToken(); // consume ')'
+    return;
+  }
+
+  if (lexer->getCurToken() != STok::COMMA) {
+    argExprs->addErr(ERR_EXP_COMMA);
+    return;
+  }
+
+  argExprs->tokComma = lexer->getCurTokenNode();
+  lexer->getNextToken(); // consume ,
+
+  // PostfixExpr ‘:’ ‘_’ ‘*’
+  argExprs->opt = ArgumentExprs::Opt::EXPRS_POSTFIX_EXPR;
+  parseArgumentExprsHelper(argExprs);
+  if (argExprs->err) {
+    return;
+  }
+
+  // ')'
+  if (lexer->getCurToken() != STok::RPAREN) {
+    argExprs->addErr(ERR_EXP_RPAREN);
+    return;
+  }
+
+  argExprs->tokRParen = lexer->getCurTokenNode();
+}
+
+/**
+ * PostfixExpr ‘:’ ‘_’ ‘*’
+ */
+void ScalaParser::parseArgumentExprsHelper(spArgumentExprs &argExprs) {
+  argExprs->postfixExpr = spPostfixExpr(new PostfixExpr);
+  parsePostfixExpr(argExprs->postfixExpr);
+  if (argExprs->postfixExpr->err) {
+    argExprs->addErr(-1);
+    return;
+  }
+
+  // TODO: ‘:’ ‘_’ ‘*’
 }
 
 /**
@@ -283,6 +370,13 @@ void ScalaParser::parseExpr1(spExpr1 &expr1) {
 
   // TODO: PostfixExpr Ascription
   // TODO: PostfixExpr ‘match’ ‘{’ CaseClauses ‘}’
+}
+
+/**
+ * Exprs ::= Expr {‘,’ Expr}
+ */
+void ScalaParser::parseExprs(spExprs &exprs) {
+
 }
 
 /**

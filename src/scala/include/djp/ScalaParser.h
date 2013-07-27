@@ -25,6 +25,7 @@ class ScalaParser {
   void buildParseTree();
   void parseAnnotType(spAnnotType &annotType);
   void parseArgumentExprs(spArgumentExprs &argExprs);
+  void parseArgumentExprsHelper(spArgumentExprs &argExprs);
   void parseBlock(spBlock &block);
   void parseBlockExpr(spBlockExpr &blockExpr);
   void parseBlockStat(spBlockStat &blockStat);
@@ -34,6 +35,7 @@ class ScalaParser {
   void parseCompilationUnit();
   void parseConstr(spConstr &constr);
   void parseExpr1(spExpr1 &expr1);
+  void parseExprs(spExprs &exprs);
   void parseInfixExpr(spInfixExpr &infixExpr);
   void parseObjectDef(spObjectDef &objectDef);
   void parsePath(spPath &path);

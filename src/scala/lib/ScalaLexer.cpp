@@ -69,7 +69,7 @@ STok ScalaLexer::getToken() {
   //if ('%' == c) return getRemToken();
   //if ('>' == c) return getGreaterThenToken();
   //if ('<' == c) return getLessThenToken();
-  //if (',' == c) return TOK_COMMA;
+  if (',' == c) return STok::COMMA;
   //if (';' == c) return TOK_SEMICOLON;
   //if (':' == c) return TOK_OP_COLON;
   //if ('*' == c) return getMulToken();
