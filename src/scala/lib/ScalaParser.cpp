@@ -14,7 +14,7 @@ spLexId ScalaParser::parseLexId() {
 
   lId->ini = lexer->getCurTokenIni();
   lId->end = lexer->getCurTokenEnd();
-  lId->id = lexer->getCurTokenStr();
+  lId->val = lexer->getCurTokenStr();
   return lId;
 }
 
@@ -394,6 +394,10 @@ void ScalaParser::parseInfixExpr(spInfixExpr &infixExpr) {
   // TODO: InfixExpr id [nl] InfixExpr
 }
 
+void ScalaParser::parseLiteral(spLiteral &literal) {
+  // TODO:
+}
+
 /**
  * ObjectDef ::= id ClassTemplateOpt
  */
@@ -509,7 +513,20 @@ void ScalaParser::parseSimpleExpr1(spSimpleExpr1 &simpleExpr1) {
  *                   | XmlExpr
  */
 void ScalaParser::parseSimpleExpr1Head(spSimpleExpr1Head &head) {
-  // TODO: Literal
+  State state;
+  saveState(state);
+
+  // Literal
+  spLiteral literal = spLiteral(new Literal);
+  parseLiteral(literal);
+  if (literal->err == false) {
+    head->opt = SimpleExpr1Head::Opt::LITERAL;
+    head->literal = literal;
+    return;
+  }
+
+  restoreState(state);
+  saveState(state);
 
   // Path
   spPath path = spPath(new Path);

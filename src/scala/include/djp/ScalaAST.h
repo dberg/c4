@@ -28,7 +28,9 @@
 namespace djp {
 namespace scala {
 
-typedef std::shared_ptr<struct LexId> spLexId;
+typedef struct ASTBase LexId;
+typedef std::shared_ptr<LexId> spLexId;
+typedef std::shared_ptr<struct StringLiteral> spStringLiteral;
 
 typedef std::shared_ptr<struct AnnotType> spAnnotType;
 typedef std::shared_ptr<struct ArgumentExprs> spArgumentExprs;
@@ -43,6 +45,7 @@ typedef std::shared_ptr<struct Constr> spConstr;
 typedef std::shared_ptr<struct Expr1> spExpr1;
 typedef std::shared_ptr<struct Exprs> spExprs;
 typedef std::shared_ptr<struct InfixExpr> spInfixExpr;
+typedef std::shared_ptr<struct Literal> spLiteral;
 typedef std::shared_ptr<struct ObjectDef> spObjectDef;
 typedef std::shared_ptr<struct Path> spPath;
 typedef std::shared_ptr<struct PrefixExpr> spPrefixExpr;
@@ -77,8 +80,9 @@ struct ASTBase {
   // is the index in the error messages.
   bool err;
   int errIdx;
+  std::string val;
 
-  ASTBase() : ini(0), end(0), err(false), errIdx(0) {}
+  ASTBase() : ini(0), end(0), err(false), errIdx(0), val("") {}
   void addErr(int _errIdx) { err = true; errIdx = _errIdx; }
 };
 
@@ -88,13 +92,6 @@ struct ASTBase {
  */
 struct TokenNode : ASTBase {
   STok tok;
-};
-
-// -----------------------------------------------------------------------------
-//   Lexical grammar
-// -----------------------------------------------------------------------------
-struct LexId : ASTBase {
-  std::string id;
 };
 
 // ----------------------------------------------------------------------------
@@ -318,6 +315,45 @@ struct InfixExpr : ASTBase {
 };
 
 /**
+ * Literal ::= [‘-’] integerLiteral
+ *           | [‘-’] floatingPointLiteral
+ *           | booleanLiteral
+ *           | characterLiteral
+ *           | stringLiteral
+ *           | symbolLiteral
+ *           | ‘null’
+ */
+struct Literal : ASTBase {
+  enum class Opt {
+    UNDEFINED,
+    INTEGER,
+    FLOATING_POINT,
+    BOOLEAN,
+    CHARACTER,
+    STRING,
+    SYMBOL,
+    NULL_LITERAL,
+  };
+
+  Opt opt;
+
+  // TODO: [‘-’] integerLiteral
+  // TODO: [‘-’] floatingPointLiteral
+  // TODO: booleanLiteral
+  // TODO: characterLiteral
+
+  // stringLiteral
+  spStringLiteral strLit;
+
+  // TODO: symbolLiteral
+
+  // ‘null’
+  spTokenNode tokNull;
+
+  Literal() : opt(Opt::UNDEFINED) {}
+};
+
+/**
  * ObjectDef ::= id ClassTemplateOpt
  */
 struct ObjectDef : ASTBase {
@@ -427,7 +463,9 @@ struct SimpleExpr1Head : ASTBase {
   };
 
   Opt opt;
-  // TODO: Literal
+
+  // Literal
+  spLiteral literal;
 
   // Path
   spPath path;
@@ -496,6 +534,22 @@ struct StableId : ASTBase {
   // TODO: [id ’.’] ‘super’ [ClassQualifier] ‘.’ id
 
   StableId() : opt(Opt::UNDEFINED) {}
+};
+
+/**
+ * stringLiteral ::= ‘"’ {stringElement} ‘"’
+ *                 | ‘"""’ multiLineChars ‘"""’
+ */
+struct StringLiteral : ASTBase {
+  enum class Opt {
+    UNDEFINED,
+    STRING_ELEMENT,
+    MULTI_LINE_CHARS,
+  };
+
+  Opt opt;
+
+  StringLiteral() : opt(Opt::UNDEFINED) {}
 };
 
 /**
