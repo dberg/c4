@@ -57,7 +57,7 @@ STok ScalaLexer::getToken() {
 
   //if ('@' == c) return getAnnotationToken();
   //if ('\'' == c) return getCharacterLiteral();
-  //if ('"' == c) return getStringLiteral();
+  if ('"' == c) return getStringLiteral();
   //if ('.' == c) return getPeriodStartingToken();
   //if ('+' == c) return getPlusToken();
   //if ('-' == c) return getMinusToken();
@@ -91,6 +91,97 @@ STok ScalaLexer::getToken() {
   if (islower(c)) return getLowerToken(c);
 
   if (is_upper(c)) return getUpperToken(c);
+
+  return STok::ERROR;
+}
+
+/**
+ * EscapeSequence:
+ *   \b
+ *   \t
+ *   \n
+ *   \f
+ *   \r
+ *   \"
+ *   \'
+ *   \\
+ *   OctalEscape \u0000 to \u00ff: from octal value
+ *
+ * OctalEscape:
+ *   \ OctalDigit
+ *   \ OctalDigit OctalDigit
+ *   \ ZeroToThree OctalDigit OctalDigit
+ * OctalDigit: one of
+ *   0 1 2 3 4 5 6 7
+ * ZeroToThree: one of
+ *   0 1 2 3
+ *
+ * Returns STok::ESCAPE_SEQUENCE | STok::ERROR
+ */
+// TODO: Remove duplicate code. See Lexer::getEscapeSequence()
+STok ScalaLexer::getEscapeSequence() {
+  curTokStream << src->getChar(); // consume '\'
+  switch (src->peekChar()) {
+    case 'b': // backspace BS
+    case 't': // horizontal tab HT
+    case 'n': // linefeed LF
+    case 'f': // form feed FF
+    case 'r': // carriage return CR
+    case '"': // double quote
+    case '\'': // single quote
+    case '\\': // backslash
+      curTokStream << src->getChar(); // consume special char
+      return STok::ESCAPE_SEQUENCE;
+  }
+
+  // Octal Escape:
+  //   \ OctalDigit
+  //   \ OctalDigit OctalDigit
+  //   \ ZeroToThree OctalDigit OctalDigit
+  if (isOctalDigit(src->peekChar())) {
+    char c = src->getChar(); // consume first octal digit
+    curTokStream << c;
+    if (isOctalDigit(src->peekChar())) {
+      curTokStream << src->getChar(); // consume second octal digit
+      if (isOctalDigit(src->peekChar())) {
+        curTokStream << src->getChar(); // consume third octal digit
+        // at this point the first octal digit must be a number
+        // from zero to three
+        if (!(c >= '0' && c <= '3')) {
+          return STok::ERROR;
+        }
+      }
+    }
+    return STok::ESCAPE_SEQUENCE;
+  }
+
+  // Special case.
+  // The unicode escape \u is processed earlier by the java compiler but
+  // we build the AST in one pass.
+  // UnicodeEscape:
+  //  \ UnicodeMarker HexDigit HexDigit HexDigit HexDigit
+  // TODO: check for LINE TERMINATOR since it's invalid inside strings or char
+  //       literals
+  if (src->peekChar() == 'u') {
+    // Finish consuming UnicodeMarker:
+    //   UnicodeMarker:
+    //     u
+    //     UnicodeMarker u
+    while (src->peekChar() == 'u') {
+      curTokStream << src->getChar();
+    }
+
+    // HexDigit{4}
+    for (int i = 0; i < 4; i++) {
+      if (isHexDigit(src->peekChar())) {
+        curTokStream << src->getChar(); // consume hex digit
+      } else {
+        return STok::ERROR;
+      }
+    }
+
+    return STok::ESCAPE_SEQUENCE;
+  }
 
   return STok::ERROR;
 }
@@ -136,6 +227,62 @@ STok ScalaLexer::getUpperToken(char c) {
   }
 
   return STok::ID;
+}
+
+/**
+ * stringLiteral ::= ‘"’ {stringElement} ‘"’
+ *                 | ‘"""’ multiLineChars ‘"""’
+ *
+ * stringElement ::= printableCharNoDoubleQuote
+ *                 | charEscapeSeq
+ *
+ * @return STok::STRING_LITERAL | STok::ERROR
+ */
+STok ScalaLexer::getStringLiteral() {
+  curTokStream << '"'; // opening double quotes
+
+  // Check if we have """
+  if (src->peekChar(0) == '"' && src->peekChar(1) == '"') {
+    curTokStream << src->getChar(); // consume 2nd "
+    curTokStream << src->getChar(); // consume 3rd "
+    return getStringLiteralMultiLine();
+  }
+
+  char c;
+  STok tok;
+  while ((c = src->peekChar())) {
+    switch (c) {
+      case '\\':
+        tok = getEscapeSequence();
+        if (tok != STok::ESCAPE_SEQUENCE) {
+          curTokStr = curTokStream.str();
+          return STok::ERROR;
+        }
+        break;
+      case '\n':
+      case '\r':
+        curTokStr = curTokStream.str();
+        return STok::ERROR;
+      case '"':
+        curTokStream << src->getChar(); // consume closing double quotes
+        curTokStr = curTokStream.str();
+        return STok::STRING_LITERAL;
+      default:
+        curTokStream << src->getChar(); // consume StringCharacter
+    }
+  }
+
+  curTokStr = curTokStream.str();
+  return STok::ERROR;
+}
+
+/**
+ * @see ScalaLexer::getStringLiteral()
+ * @return STok::STRING_LITERAL | STok::ERROR
+ */
+STok ScalaLexer::getStringLiteralMultiLine() {
+  // TODO:
+  return STok::ERROR;
 }
 
 void ScalaLexer::getNextToken() {

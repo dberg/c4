@@ -75,6 +75,10 @@ enum class STok : int {
 
   // Lexer grammar
   ID = -52,
+  ESCAPE_SEQUENCE,
+
+  // Literals
+  STRING_LITERAL,
 
   // Symbol Terminals
   COMMA = -53, // ,

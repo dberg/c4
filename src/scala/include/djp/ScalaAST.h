@@ -30,7 +30,8 @@ namespace scala {
 
 typedef struct ASTBase LexId;
 typedef std::shared_ptr<LexId> spLexId;
-typedef std::shared_ptr<struct StringLiteral> spStringLiteral;
+typedef struct ASTBase StringLiteral;
+typedef std::shared_ptr<StringLiteral> spStringLiteral;
 
 typedef std::shared_ptr<struct AnnotType> spAnnotType;
 typedef std::shared_ptr<struct ArgumentExprs> spArgumentExprs;
@@ -534,22 +535,6 @@ struct StableId : ASTBase {
   // TODO: [id ’.’] ‘super’ [ClassQualifier] ‘.’ id
 
   StableId() : opt(Opt::UNDEFINED) {}
-};
-
-/**
- * stringLiteral ::= ‘"’ {stringElement} ‘"’
- *                 | ‘"""’ multiLineChars ‘"""’
- */
-struct StringLiteral : ASTBase {
-  enum class Opt {
-    UNDEFINED,
-    STRING_ELEMENT,
-    MULTI_LINE_CHARS,
-  };
-
-  Opt opt;
-
-  StringLiteral() : opt(Opt::UNDEFINED) {}
 };
 
 /**

@@ -4,8 +4,9 @@
 #include <cctype>
 #include <memory>
 #include <sstream>
-#include "djp/SourceCodeStream.h"
 #include "djp/Diagnosis.h"
+#include "djp/LiteralSupport.h"
+#include "djp/SourceCodeStream.h"
 #include "ScalaAST.h"
 #include "ScalaParserState.h"
 #include "ScalaToken.h"
@@ -30,8 +31,11 @@ class ScalaLexer {
 
   ScalaTokenUtil tokUtil;
 
+  STok getEscapeSequence();
   STok getLowerToken(char c);
   STok getUpperToken(char c);
+  STok getStringLiteral();
+  STok getStringLiteralMultiLine();
   STok getToken();
 
 public:

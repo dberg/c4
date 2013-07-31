@@ -5,23 +5,15 @@
 #include <string>
 #include <sstream>
 #include <memory>
-#include "djp/SourceCodeStream.h"
 #include "djp/Diagnosis.h"
+#include "djp/LiteralSupport.h"
+#include "djp/SourceCodeStream.h"
 #include "AST.h"
 #include "Indentation.h"
-#include "LiteralSupport.h"
 #include "ParserState.h"
 #include "Token.h"
 
 namespace djp {
-
-// Helpers
-bool isBinaryDigit(char c);
-bool isDecimalDigit(char c);
-bool isHexDigit(char c);
-bool isOctalDigit(char c);
-bool isJavaLetter(char c);
-bool isJavaLetterOrDigit(char c);
 
 class Lexer;
 typedef std::shared_ptr<Lexer> spLexer;

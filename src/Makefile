@@ -120,11 +120,17 @@ $(obj_djp)/djp.o: $(libdir_djp)/djp.cpp
 
 # objects common - libcommon
 $(obj_common)/libcommon.a: $(obj_common)/Diagnosis.o \
+                           $(obj_common)/LiteralSupport.o \
                            $(obj_common)/SourceCodeStream.o
 	ar -rv $@ $+
 
 $(obj_common)/Diagnosis.o: $(libdir_common)/Diagnosis.cpp \
                            $(incdir_common)/Diagnosis.h
+	$(CXX) $(CFLAGS) $(INC) \
+            -c $< -o $@
+
+$(obj_common)/LiteralSupport.o: $(libdir_common)/LiteralSupport.cpp \
+                                $(incdir_common)/LiteralSupport.h
 	$(CXX) $(CFLAGS) $(INC) \
             -c $< -o $@
 
@@ -153,7 +159,6 @@ $(obj_bytecode)/BinOutputCode.o: $(libdir_bytecode)/BinOutputCode.cpp \
 $(obj_java)/libjava.a: $(obj_java)/Util.o \
                        $(obj_java)/Indentation.o \
                        $(obj_java)/Lexer.o \
-                       $(obj_java)/LiteralSupport.o \
                        $(obj_java)/Parser.o \
                        $(obj_java)/SymbolTable.o \
                        $(obj_java)/EmacsOutput.o
@@ -169,11 +174,6 @@ $(obj_java)/Indentation.o: $(libdir_java)/Indentation.cpp \
             -c $< -o $@
 
 $(obj_java)/Lexer.o: $(libdir_java)/Lexer.cpp $(incdir_java)/Lexer.h
-	$(CXX) $(CFLAGS) $(INC) \
-            -c $< -o $@
-
-$(obj_java)/LiteralSupport.o: $(libdir_java)/LiteralSupport.cpp \
-                              $(incdir_java)/LiteralSupport.h
 	$(CXX) $(CFLAGS) $(INC) \
             -c $< -o $@
 
