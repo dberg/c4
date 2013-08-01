@@ -618,7 +618,7 @@ struct TmplDef : ASTBase {
 struct TopStat : ASTBase {
   enum Opt {
     UNDEFINED,
-    ANNOTATION,
+    TMPL_DEF,
     IMPORT,
     PACKAGING,
     PACKAGE,

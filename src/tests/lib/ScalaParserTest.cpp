@@ -2,7 +2,6 @@
 #include "djp/ScalaParser.h"
 #include "gtest/gtest.h"
 using namespace djp;
-//using namespace djp::scala;
 
 /**
  * -----------------------------------------------------------------------------
@@ -65,4 +64,7 @@ TEST(ScalaParser, HelloWorld) {
     "object HelloWorld extends App { println(\"Hello world\"); }";
   ScalaParser parser(filename, buffer);
   parser.parse();
+
+  spTopStat topStat = parser.compUnit->topStatSeq->topStat;
+  ASSERT_EQ(TopStat::Opt::TMPL_DEF, topStat->opt);
 }

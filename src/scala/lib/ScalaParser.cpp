@@ -662,7 +662,7 @@ void ScalaParser::parseTmplDef(spTmplDef &tmplDef) {
  */
 void ScalaParser::parseTopStat(spTopStat &topStat) {
   // TODO: {Annotation [nl]} {Modifier}
-  topStat->opt = TopStat::Opt::ANNOTATION;
+  topStat->opt = TopStat::Opt::TMPL_DEF;
   topStat->tmplDef = spTmplDef(new TmplDef);
   parseTmplDef(topStat->tmplDef);
 
