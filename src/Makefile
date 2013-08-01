@@ -75,7 +75,7 @@ test_libdir = tests/lib
 CXXTESTFLAGS = -g3 $(CXX11FLAGS)
 
 .PHONY: all
-all: directories $(bin)/djp $(bin)/tests
+all: directories $(bin)/djp $(bin)/test-all
 
 .PHONY: djp
 djp: directories $(bin)/djp
@@ -206,31 +206,59 @@ $(obj_scala)/ScalaLexer.o: $(libdir_scala)/ScalaLexer.cpp \
             -c $< -o $@
 
 # tests
-.PHONY: test-classes
-test-classes:
-	mkdir -p $(bin)/test-classes
-	cp tests/test-classes/*.class $(bin)/test-classes
+.PHONY: bytecode-classes
+bytecode-classes:
+	mkdir -p $(bin)/bytecode-classes
+	cp tests/bytecode-classes/*.class $(bin)/bytecode-classes
 
-$(bin)/tests: test-classes \
-              $(test_libdir)/AllTests.cpp \
-              $(test_libdir)/EmacsOutputTest.cpp \
-              $(test_libdir)/IndentationTest.cpp \
-              $(test_libdir)/ParserTest.cpp \
-              $(test_libdir)/ParserBinTest.cpp \
-              $(test_libdir)/SymbolTableTest.cpp \
-              $(test_libdir)/ScalaParserTest.cpp \
-              $(obj_common)/libcommon.a \
-              $(obj_java)/libjava.a \
-              $(obj_scala)/libscala.a \
-              $(gtest_obj)/libgtest.a
+.PHONY: run-all
+run-all:
+	cp tests/run-all.sh.tmpl $(bin)/run-all.sh
+	chmod +x $(bin)/run-all.sh
+
+.PHONY: $(bin)/test-all
+$(bin)/test-all: run-all $(bin)/test-java $(bin)/test-scala $(bin)/test-bytecode
+
+$(bin)/test-java: $(test_libdir)/JavaTests.cpp \
+                  $(test_libdir)/EmacsOutputTest.cpp \
+                  $(test_libdir)/IndentationTest.cpp \
+                  $(test_libdir)/ParserTest.cpp \
+                  $(test_libdir)/SymbolTableTest.cpp \
+                  $(obj_common)/libcommon.a \
+                  $(obj_java)/libjava.a \
+                  $(gtest_obj)/libgtest.a
 
 	$(CXX) $(CXXTESTFLAGS) $(INC) -I$(gtest_inc) \
-            $(obj_bytecode)/ParserBin.o \
-            $(test_libdir)/AllTests.cpp \
+            $(test_libdir)/JavaTests.cpp \
             -o $@ \
-            $(obj_java)/libjava.a \
-            $(obj_scala)/libscala.a \
             $(obj_common)/libcommon.a \
+            $(obj_java)/libjava.a \
+            $(gtest_obj)/libgtest.a \
+            -lpthread -ldl
+
+$(bin)/test-scala: $(test_libdir)/ScalaTests.cpp \
+                   $(test_libdir)/ScalaParserTest.cpp \
+                   $(obj_common)/libcommon.a \
+                   $(obj_scala)/libscala.a \
+                   $(gtest_obj)/libgtest.a
+
+	$(CXX) $(CXXTESTFLAGS) $(INC) -I$(gtest_inc) \
+            $(test_libdir)/ScalaTests.cpp \
+            -o $@ \
+            $(obj_common)/libcommon.a \
+            $(obj_scala)/libscala.a \
+            $(gtest_obj)/libgtest.a \
+            -lpthread -ldl
+
+$(bin)/test-bytecode: bytecode-classes \
+                      $(test_libdir)/BytecodeTests.cpp \
+                      $(test_libdir)/ParserBinTest.cpp \
+                      $(gtest_obj)/libgtest.a
+
+	$(CXX) $(CXXTESTFLAGS) $(INC) -I$(gtest_inc) \
+            $(test_libdir)/BytecodeTests.cpp \
+            $(obj_bytecode)/ParserBin.o \
+            -o $@ \
             $(gtest_obj)/libgtest.a \
             -lpthread -ldl
 

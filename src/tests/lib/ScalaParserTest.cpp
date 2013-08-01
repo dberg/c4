@@ -2,6 +2,7 @@
 #include "djp/ScalaParser.h"
 #include "gtest/gtest.h"
 using namespace djp;
+//using namespace djp::scala;
 
 /**
  * -----------------------------------------------------------------------------
@@ -63,5 +64,5 @@ TEST(ScalaParser, HelloWorld) {
   std::string buffer =
     "object HelloWorld extends App { println(\"Hello world\"); }";
   ScalaParser parser(filename, buffer);
-  //parser.parse();
+  parser.parse();
 }

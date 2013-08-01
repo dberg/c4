@@ -34,7 +34,7 @@ std::string current_dir = getCurrentDir();
 TEST(ParserBin, HelloWorld) {
   std::vector<unsigned char> buffer;
   File file;
-  std::string filename =  current_dir + "/test-classes/HelloWorld.class";
+  std::string filename =  current_dir + "/bytecode-classes/HelloWorld.class";
   ASSERT_EQ(file.read(filename, buffer), 0);
   ParserBin parser(filename, buffer);
   parser.parse();
