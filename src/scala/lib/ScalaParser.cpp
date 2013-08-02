@@ -403,6 +403,7 @@ void ScalaParser::parseLiteral(spLiteral &literal) {
  */
 void ScalaParser::parseObjectDef(spObjectDef &objectDef) {
   objectDef->id = parseLexId();
+  lexer->getNextToken(); // consume id
   if (objectDef->id->err) {
     objectDef->addErr(-1);
     return;

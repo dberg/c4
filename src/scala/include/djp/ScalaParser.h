@@ -63,6 +63,7 @@ public:
     : filename(filename), src(spSourceCodeStream(new SourceCodeStream(buffer))),
       compUnit(spCompilationUnit(new CompilationUnit)), error(0)
   {
+    diag = spDiagnosis(new Diagnosis);
     lexer = spScalaLexer(new ScalaLexer(src, diag));
   }
 

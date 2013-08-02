@@ -17,6 +17,8 @@ struct State {
   unsigned line;
   STok token;
   std::string tokenStr;
+
+  State() : diagErrorsSize(0), cursor(0), line(0) {}
 };
 
 } // namespace scala
