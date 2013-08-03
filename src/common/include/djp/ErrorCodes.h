@@ -1,7 +1,7 @@
 //-*- C++ -*-
 #ifndef __ERROR_CODES__
 #define __ERROR_CODES__
-#include <map>
+#include <unordered_map>
 #include <memory>
 #include <string>
 
@@ -45,6 +45,7 @@ enum ErrorCode {
   ERR_EXP_REFTYPE,
   ERR_EXP_RPAREN,
   ERR_EXP_SEMICOLON,
+  ERR_EXP_STRING_LITERAL,
   ERR_EXP_SUPER,
   ERR_EXP_TYPE,
   ERR_EXP_VOID,
@@ -60,53 +61,51 @@ enum ErrorCode {
 };
 
 class ErrorUtil {
-  typedef std::map<int, std::string> ErrorMap;
-  ErrorMap msgs;
+  std::unordered_map<int, std::string> msgs = {
+    { ERR_EXP_ARGUMENTS, "Expected Arguments" },
+    { ERR_EXP_ARRAY, "Expected Array" },
+    { ERR_EXP_CATCH, "Expected 'catch' expression" },
+    { ERR_EXP_CLASS, "Expected keyword class" },
+    { ERR_EXP_CLASS_OR_ARRAY_CREATOR_REST,
+      "Expected ClassCreatorRest or ArrayCreatorRest" },
+    { ERR_EXP_COMMA, "Expected comma" },
+    { ERR_EXP_ELEMENT_VALUE, "Expected element value" },
+    { ERR_EXP_EXPRESSION_IN_BRACKETS, "Expected [Expression]" },
+    { ERR_EXP_IDENTIFIER, "Expected identifier" },
+    { ERR_EXP_INTERFACE, "Expected interface" },
+    { ERR_EXP_LCURLY_BRACKET, "Expected opening curly brackets" },
+    { ERR_EXP_LBRACKET, "Expected '['" },
+    { ERR_EXP_LPAREN, "Expected opening parenthesis" },
+    { ERR_EXP_OP_COLON, "Expected colon" },
+    { ERR_EXP_OP_EQUALS, "Expected operator =" },
+    { ERR_EXP_OP_LT, "Expected operator <" },
+    { ERR_EXP_OP_GT, "Expected operator >" },
+    { ERR_EXP_PERIOD, "Expected period" },
+    { ERR_EXP_QID, "Expected qualified id" },
+    { ERR_EXP_RBRACKET, "Expected ']'" },
+    { ERR_EXP_RCURLY_BRACKET, "Expected closing curly brackets" },
+    { ERR_EXP_REFTYPE, "Expected reference type" },
+    { ERR_EXP_RPAREN, "Expected closing parenthesis" },
+    { ERR_EXP_SEMICOLON, "Expected semi-colon" },
+    { ERR_EXP_STRING_LITERAL, "Expected string literal" },
+    { ERR_EXP_SUPER, "Expected keyword super" },
+    { ERR_EXP_TYPE, "Expected Type" },
+    { ERR_EXP_VOID, "Expected keyword void" },
+    { ERR_EXP_WHILE, "Expected keyword while" },
+    { ERR_NVAL_ANNOT_ELEM, "Invalid annotation element" },
+    { ERR_NVAL_ARRAY, "Invalid array notation" },
+    { ERR_NVAL_EXPLICIT_GENERIC_INVOCATION_SUFFIX,
+      "Invalid ExplicitGenericInvocationSuffix" },
+    { ERR_NVAL_HEX, "Invalid Hexadecimal" },
+    { ERR_NVAL_IDENTIFIER_SUFFIX, "Invalid IdentifierSuffix" },
+    { ERR_NVAL_SELECTOR, "Invalid Selector" },
+    { ERR_NVAL_TYPE_ARGUMENT, "Invalid Type Argument" },
+    { ERR_VAR_MODIFIER_FINAL, "Duplicate 'final' keyword" },
+  };
 
 public:
-  ErrorUtil() {
-    msgs[ERR_EXP_ARGUMENTS] = "Expected Arguments";
-    msgs[ERR_EXP_ARRAY] = "Expected Array";
-    msgs[ERR_EXP_CATCH] = "Expected 'catch' expression";
-    msgs[ERR_EXP_CLASS] = "Expected keyword class";
-    msgs[ERR_EXP_CLASS_OR_ARRAY_CREATOR_REST] =
-      "Expected ClassCreatorRest or ArrayCreatorRest";
-    msgs[ERR_EXP_COMMA] = "Expected comma";
-    msgs[ERR_EXP_ELEMENT_VALUE] = "Expected element value";
-    msgs[ERR_EXP_EXPRESSION_IN_BRACKETS] = "Expected [Expression]";
-    msgs[ERR_EXP_IDENTIFIER] = "Expected identifier";
-    msgs[ERR_EXP_INTERFACE] = "Expected interface";
-    msgs[ERR_EXP_LCURLY_BRACKET] = "Expected opening curly brackets";
-    msgs[ERR_EXP_LBRACKET] = "Expected '['";
-    msgs[ERR_EXP_LPAREN] = "Expected opening parenthesis";
-    msgs[ERR_EXP_OP_COLON] = "Expected colon";
-    msgs[ERR_EXP_OP_EQUALS] = "Expected operator =";
-    msgs[ERR_EXP_OP_LT] = "Expected operator <";
-    msgs[ERR_EXP_OP_GT] = "Expected operator >";
-    msgs[ERR_EXP_PERIOD] = "Expected period";
-    msgs[ERR_EXP_QID] = "Expected qualified id";
-    msgs[ERR_EXP_RBRACKET] = "Expected ']'";
-    msgs[ERR_EXP_RCURLY_BRACKET] = "Expected closing curly brackets";
-    msgs[ERR_EXP_REFTYPE] = "Expected reference type";
-    msgs[ERR_EXP_RPAREN] = "Expected closing parenthesis";
-    msgs[ERR_EXP_SEMICOLON] = "Expected semi-colon";
-    msgs[ERR_EXP_SUPER] = "Expected keyword super";
-    msgs[ERR_EXP_TYPE] = "Expected Type";
-    msgs[ERR_EXP_VOID] = "Expected keyword void";
-    msgs[ERR_EXP_WHILE] = "Expected keyword while";
-    msgs[ERR_NVAL_ANNOT_ELEM] = "Invalid annotation element";
-    msgs[ERR_NVAL_ARRAY] = "Invalid array notation";
-    msgs[ERR_NVAL_EXPLICIT_GENERIC_INVOCATION_SUFFIX] =
-      "Invalid ExplicitGenericInvocationSuffix";
-    msgs[ERR_NVAL_HEX] = "Invalid Hexadecimal";
-    msgs[ERR_NVAL_IDENTIFIER_SUFFIX] = "Invalid IdentifierSuffix";
-    msgs[ERR_NVAL_SELECTOR] = "Invalid Selector";
-    msgs[ERR_NVAL_TYPE_ARGUMENT] = "Invalid Type Argument";
-    msgs[ERR_VAR_MODIFIER_FINAL] = "Duplicate 'final' keyword";
-  }
-
   const std::string getMessage(int error) {
-    ErrorMap::iterator it = msgs.find(error);
+    auto it = msgs.find(error);
     if (it == msgs.end()) {
       return "";
     }
