@@ -20,6 +20,7 @@ class ScalaParser {
   // lexical grammar
   spLexId parseLexId();
   void parseSemi(spSemi &semi);
+  spStringLiteral parseStringLiteral();
 
   // grammar
   void buildParseTree();

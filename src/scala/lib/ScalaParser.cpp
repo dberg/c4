@@ -31,6 +31,19 @@ void ScalaParser::parseSemi(spSemi &semi) {
   // TODO: nl {nl}
 }
 
+spStringLiteral ScalaParser::parseStringLiteral() {
+  spStringLiteral strLit = spStringLiteral(new StringLiteral);
+  if (lexer->getCurToken() != STok::STRING_LITERAL) {
+    strLit->addErr(ERR_EXP_STRING_LITERAL);
+    return strLit;
+  }
+
+  strLit->ini = lexer->getCurTokenIni();
+  strLit->end = lexer->getCurTokenEnd();
+  strLit->val = lexer->getCurTokenStr();
+  return strLit;
+}
+
 // -----------------------------------------------------------------------------
 // Grammar
 // -----------------------------------------------------------------------------
@@ -106,6 +119,7 @@ void ScalaParser::parseArgumentExprs(spArgumentExprs &argExprs) {
     }
 
     argExprs->tokRParen = lexer->getCurTokenNode();
+    lexer->getNextToken(); // consume ')'
     return;
   }
 
@@ -138,6 +152,7 @@ void ScalaParser::parseArgumentExprs(spArgumentExprs &argExprs) {
   }
 
   argExprs->tokRParen = lexer->getCurTokenNode();
+  lexer->getNextToken(); // consume ')'
 }
 
 /**
@@ -186,6 +201,7 @@ void ScalaParser::parseBlockExpr(spBlockExpr &blockExpr) {
 
   // '{'
   spTokenNode tokLCurlyB = lexer->getCurTokenNode();
+  lexer->getNextToken(); // consume '{'
   if (tokLCurlyB->tok != STok::LCURLYB) {
     blockExpr->addErr(addErr(ERR_EXP_LCURLY_BRACKET));
     return;
@@ -201,6 +217,7 @@ void ScalaParser::parseBlockExpr(spBlockExpr &blockExpr) {
   }
 
   spTokenNode tokRCurlyB = lexer->getCurTokenNode();
+  lexer->getNextToken(); // consume '}'
   if (tokRCurlyB->tok != STok::RCURLYB) {
     blockExpr->addErr(addErr(ERR_EXP_RCURLY_BRACKET));
     return;
@@ -376,7 +393,7 @@ void ScalaParser::parseExpr1(spExpr1 &expr1) {
  * Exprs ::= Expr {‘,’ Expr}
  */
 void ScalaParser::parseExprs(spExprs &exprs) {
-
+  // TODO:
 }
 
 /**
@@ -384,6 +401,7 @@ void ScalaParser::parseExprs(spExprs &exprs) {
  *             | InfixExpr id [nl] InfixExpr
  */
 void ScalaParser::parseInfixExpr(spInfixExpr &infixExpr) {
+  infixExpr->opt = InfixExpr::Opt::PREFIX;
   infixExpr->prefixExpr = spPrefixExpr(new PrefixExpr);
   parsePrefixExpr(infixExpr->prefixExpr);
   if (infixExpr->prefixExpr->err) {
@@ -394,8 +412,32 @@ void ScalaParser::parseInfixExpr(spInfixExpr &infixExpr) {
   // TODO: InfixExpr id [nl] InfixExpr
 }
 
+/**
+ * Literal ::= [‘-’] integerLiteral
+ *           | [‘-’] floatingPointLiteral
+ *           | booleanLiteral
+ *           | characterLiteral
+ *           | stringLiteral
+ *           | symbolLiteral
+ *           | ‘null’
+ */
 void ScalaParser::parseLiteral(spLiteral &literal) {
-  // TODO:
+  // TODO: [‘-’] integerLiteral
+  // TODO: [‘-’] floatingPointLiteral
+  // TODO: booleanLiteral
+  // TODO: characterLiteral
+
+  // stringLiteral
+  if (lexer->getCurToken() == STok::STRING_LITERAL) {
+    literal->strLit = parseStringLiteral();
+    lexer->getNextToken(); // consume string literal
+    return;
+  }
+
+  // TODO: symbolLiteral
+  // TODO: ‘null’
+
+  literal->addErr(-1);
 }
 
 /**
@@ -602,6 +644,7 @@ void ScalaParser::parseSimpleType(spSimpleType &simpleType) {
  */
 void ScalaParser::parseStableId(spStableId &stableId) {
   spLexId id = parseLexId();
+  lexer->getNextToken(); // consume 'id'
   if (id->err == false) {
     stableId->opt = StableId::Opt::ID;
     stableId->id = id;
