@@ -231,8 +231,8 @@ $(bin)/test-java: $(test_libdir)/JavaTests.cpp \
 	$(CXX) $(CXXTESTFLAGS) $(INC) -I$(gtest_inc) \
             $(test_libdir)/JavaTests.cpp \
             -o $@ \
-            $(obj_common)/libcommon.a \
             $(obj_java)/libjava.a \
+            $(obj_common)/libcommon.a \
             $(gtest_obj)/libgtest.a \
             -lpthread -ldl
 
@@ -245,8 +245,8 @@ $(bin)/test-scala: $(test_libdir)/ScalaTests.cpp \
 	$(CXX) $(CXXTESTFLAGS) $(INC) -I$(gtest_inc) \
             $(test_libdir)/ScalaTests.cpp \
             -o $@ \
-            $(obj_common)/libcommon.a \
             $(obj_scala)/libscala.a \
+            $(obj_common)/libcommon.a \
             $(gtest_obj)/libgtest.a \
             -lpthread -ldl
 
