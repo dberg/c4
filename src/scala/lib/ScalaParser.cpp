@@ -1,4 +1,5 @@
 #include "djp/ScalaParser.h"
+#include <iostream>
 
 namespace djp {
 
@@ -70,7 +71,7 @@ void ScalaParser::parseAnnotType(spAnnotType &annotType) {
 void ScalaParser::parseArgumentExprs(spArgumentExprs &argExprs) {
   // TODO: [nl]
   // BlockExpr
-  if (lexer->getCurToken() != STok::LPAREN) {
+  if (lexer->getCurToken() == STok::LCURLYB) {
     argExprs->opt = ArgumentExprs::Opt::BLOCK_EXPR;
     argExprs->blockExpr = spBlockExpr(new BlockExpr);
     parseBlockExpr(argExprs->blockExpr);
@@ -86,6 +87,11 @@ void ScalaParser::parseArgumentExprs(spArgumentExprs &argExprs) {
   argExprs->opt = ArgumentExprs::Opt::EXPRS;
   argExprs->tokLParen = lexer->getCurTokenNode();
   lexer->getNextToken(); // consume '('
+
+  if (argExprs->tokLParen->tok != STok::LPAREN) {
+    argExprs->addErr(ERR_EXP_LPAREN);
+    return;
+  }
 
   // '(' ')'
   if (lexer->getCurToken() == STok::RPAREN) {

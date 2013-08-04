@@ -44,6 +44,7 @@ spTokenNode ScalaLexer::getCurTokenNode() {
   tok->tok = getCurToken();
   tok->ini = src->getCursor() - tokUtil.getTokenLength(getCurToken());
   tok->end = src->getCursor() - 1;
+  tok->val = getCurTokenStr();
   return tok;
 }
 
@@ -208,8 +209,7 @@ STok ScalaLexer::getLowerToken(char c) {
     return tok;
   }
 
-  // TODO: id?
-  return STok::ERROR;
+  return STok::ID;
 }
 
 /**
