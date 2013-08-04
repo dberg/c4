@@ -43,6 +43,7 @@ typedef std::shared_ptr<struct ClassParents> spClassParents;
 typedef std::shared_ptr<struct ClassTemplate> spClassTemplate;
 typedef std::shared_ptr<struct ClassTemplateOpt> spClassTemplateOpt;
 typedef std::shared_ptr<struct Constr> spConstr;
+typedef std::shared_ptr<struct Expr> spExpr;
 typedef std::shared_ptr<struct Expr1> spExpr1;
 typedef std::shared_ptr<struct Exprs> spExprs;
 typedef std::shared_ptr<struct InfixExpr> spInfixExpr;
@@ -240,6 +241,24 @@ struct Constr : ASTBase {
 };
 
 /**
+ * Expr ::= (Bindings | [‘implicit’] id | ‘_’) ‘=>’ Expr
+ *        | Expr1
+ */
+struct Expr : ASTBase {
+  enum class Opt {
+    UNDEFINED,
+    EXPR,
+    EXPR1,
+  };
+
+  Opt opt;
+  // TODO: (Bindings | [‘implicit’] id | ‘_’) ‘=>’ Expr
+  spExpr1 expr1;
+
+  Expr() : opt(Opt::UNDEFINED) {}
+};
+
+/**
  * Expr1 ::= ‘if’ ‘(’ Expr ‘)’ {nl} Expr [[semi] else Expr]
  *         | ‘while’ ‘(’ Expr ‘)’ {nl} Expr
  *         | ‘try’ ‘{’ Block ‘}’ [‘catch’ ‘{’ CaseClauses ‘}’]
@@ -294,7 +313,8 @@ struct Expr1 : ASTBase {
  * Exprs ::= Expr {‘,’ Expr}
  */
 struct Exprs : ASTBase {
-  // TODO:
+  spExpr expr;
+  std::vector<std::pair<unsigned int, spExpr>> pairs;
 };
 
 /**

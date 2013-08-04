@@ -350,6 +350,21 @@ void ScalaParser::parseConstr(spConstr &constr) {
 }
 
 /**
+ * Expr ::= (Bindings | [‘implicit’] id | ‘_’) ‘=>’ Expr
+ *        | Expr1
+ */
+void ScalaParser::parseExpr(spExpr &expr) {
+  // TODO: (Bindings | [‘implicit’] id | ‘_’) ‘=>’ Expr
+
+  expr->opt = Expr::Opt::EXPR1;
+  expr->expr1 = spExpr1(new Expr1);
+  parseExpr1(expr->expr1);
+  if (expr->expr1->err) {
+    expr->addErr(-1);
+  }
+}
+
+/**
  * Expr1 ::= ‘if’ ‘(’ Expr ‘)’ {nl} Expr [[semi] else Expr]
  *         | ‘while’ ‘(’ Expr ‘)’ {nl} Expr
  *         | ‘try’ ‘{’ Block ‘}’ [‘catch’ ‘{’ CaseClauses ‘}’]
@@ -393,7 +408,31 @@ void ScalaParser::parseExpr1(spExpr1 &expr1) {
  * Exprs ::= Expr {‘,’ Expr}
  */
 void ScalaParser::parseExprs(spExprs &exprs) {
-  // TODO:
+  // Expr
+  exprs->expr = spExpr(new Expr);
+  parseExpr(exprs->expr);
+  if (exprs->expr->err) {
+    exprs->addErr(-1);
+    return;
+  }
+
+  // {‘,’ Expr}
+  State state;
+  unsigned comma;
+  while (lexer->getCurToken() == STok::COMMA) {
+    saveState(state);
+    comma = lexer->getCurTokenIni();
+    lexer->getNextToken(); // consume ','
+
+    spExpr expr = spExpr(new Expr);
+    parseExpr(expr);
+    if (expr->err) {
+      restoreState(state);
+      return;
+    }
+
+    exprs->pairs.push_back(std::make_pair(comma, expr));
+  }
 }
 
 /**
