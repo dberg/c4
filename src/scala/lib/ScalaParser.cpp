@@ -639,7 +639,7 @@ void ScalaParser::parseSimpleExpr1Tail(spSimpleExpr1Tail &tail) {
   tail->argExprs = spArgumentExprs(new ArgumentExprs);
   parseArgumentExprs(tail->argExprs);
   if (tail->argExprs->err) {
-    tail->err = addErr(-1);
+    tail->addErr(-1);
     return;
   }
 
