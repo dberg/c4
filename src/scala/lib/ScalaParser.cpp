@@ -26,6 +26,7 @@ void ScalaParser::parseSemi(spSemi &semi) {
   if (lexer->getCurToken() == STok::SEMI_COLON) {
     semi->opt = Semi::Opt::SEMI_COLON;
     semi->tokSemiColon = lexer->getCurTokenNode();
+    lexer->getNextToken(); // consume ';'
     return;
   }
 
@@ -179,20 +180,30 @@ void ScalaParser::parseArgumentExprsHelper(spArgumentExprs &argExprs) {
  * Block ::= {BlockStat semi} [ResultExpr]
  */
 void ScalaParser::parseBlock(spBlock &block) {
-  while (true) {
+  State state;
+  STok tok = lexer->getCurToken();
+  while (tok != STok::ERROR
+      && tok != STok::END_OF_FILE
+      && tok != STok::RCURLYB) {
+
+    saveState(state);
     spBlockStat blockStat = spBlockStat(new BlockStat);
     parseBlockStat(blockStat);
     if (blockStat->err) {
-      break;
+      restoreState(state);
+      return;
     }
 
+    saveState(state);
     spSemi semi = spSemi(new Semi);
     parseSemi(semi);
     if (semi->err) {
-      block->addErr(-1);
+      restoreState(state);
+      return;
     }
 
     block->paBlockStatSemi.push_back(std::make_pair(blockStat, semi));
+    tok = lexer->getCurToken();
   }
 
   // TODO: [ResultExpr]
@@ -215,13 +226,16 @@ void ScalaParser::parseBlockExpr(spBlockExpr &blockExpr) {
 
   blockExpr->tokLCurlyB = tokLCurlyB;
 
+  // Block
   blockExpr->opt = BlockExpr::Opt::BLOCK;
   blockExpr->block = spBlock(new Block);
   parseBlock(blockExpr->block);
   if (blockExpr->block->err) {
     blockExpr->addErr(-1);
+    return;
   }
 
+  // '}'
   spTokenNode tokRCurlyB = lexer->getCurTokenNode();
   lexer->getNextToken(); // consume '}'
   if (tokRCurlyB->tok != STok::RCURLYB) {
@@ -625,11 +639,15 @@ void ScalaParser::parseSimpleExpr1Head(spSimpleExpr1Head &head) {
     return;
   }
 
+  restoreState(state);
+
   // TODO: ‘_’
   // TODO: ‘(’ [Exprs] ‘)’
   // TODO: SimpleExpr ‘.’ id
   // TODO: SimpleExpr TypeArgs
   // TODO: XmlExpr
+
+  head->addErr(-1);
 }
 
 /**
