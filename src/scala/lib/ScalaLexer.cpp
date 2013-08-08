@@ -36,15 +36,16 @@ int ScalaLexer::getCurTokenIni() {
 }
 
 int ScalaLexer::getCurTokenEnd() {
-  return src->getCursor() - 1;
+  return src->getCursor();
 }
 
 spTokenNode ScalaLexer::getCurTokenNode() {
   spTokenNode tok = spTokenNode(new TokenNode);
   tok->tok = getCurToken();
-  tok->ini = src->getCursor() - tokUtil.getTokenLength(getCurToken());
-  tok->end = src->getCursor() - 1;
+  tok->ini = getCurTokenIni();
+  tok->end = getCurTokenEnd();
   tok->val = getCurTokenStr();
+
   return tok;
 }
 
@@ -70,18 +71,18 @@ STok ScalaLexer::getToken() {
   //if ('%' == c) return getRemToken();
   //if ('>' == c) return getGreaterThenToken();
   //if ('<' == c) return getLessThenToken();
-  if (',' == c) return STok::COMMA;
-  if (';' == c) return STok::SEMI_COLON;
+  if (',' == c) { curTokStream << c; return STok::COMMA; }
+  if (';' == c) { curTokStream << c; return STok::SEMI_COLON; }
   //if (':' == c) return TOK_OP_COLON;
   //if ('*' == c) return getMulToken();
   //if ('~' == c) return TOK_OP_TILDE;
   //if ('!' == c) return getExclamationToken();
-  if ('{' == c) return STok::LCURLYB;
-  if ('}' == c) return STok::RCURLYB;
-  if ('(' == c) return STok::LPAREN;
-  if (')' == c) return STok::RPAREN;
-  if ('[' == c) return STok::LBRACKET;
-  if (']' == c) return STok::RBRACKET;
+  if ('{' == c) { curTokStream << c; return STok::LCURLYB; }
+  if ('}' == c) { curTokStream << c; return STok::RCURLYB; }
+  if ('(' == c) { curTokStream << c; return STok::LPAREN; }
+  if (')' == c) { curTokStream << c; return STok::RPAREN; }
+  if ('[' == c) { curTokStream << c; return STok::LBRACKET; }
+  if (']' == c) { curTokStream << c; return STok::RBRACKET; }
   //if ('?' == c) return TOK_OP_QUESTION_MARK;
 
   //if (isdigit(c)) return getNumberToken(c);

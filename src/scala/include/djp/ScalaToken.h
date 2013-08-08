@@ -4,18 +4,6 @@
 #include <unordered_map>
 #include <string>
 
-// To use STok as a map key we have to specialize the std namespace with a hash
-// function for STok.
-namespace djp { enum class STok: int; } // forward decl
-namespace std {
-  template <>
-  struct hash<djp::STok> {
-    size_t operator()(const djp::STok &tok) const {
-      return hash<int>()(static_cast<int>(tok));
-    }
-  };
-}
-
 namespace djp {
 
 enum class STok : int {
@@ -145,58 +133,6 @@ class ScalaTokenUtil {
     { "@", STok::AT },
   };
 
-  std::unordered_map<STok, int> TokensLength = {
-    { STok::ABSTRACT, 8 },
-    { STok::CASE, 4 },
-    { STok::CATCH, 5 },
-    { STok::CLASS, 5 },
-    { STok::DEF, 3 },
-    { STok::DO, 2 },
-    { STok::ELSE, 4 },
-    { STok::EXTENDS, 7 },
-    { STok::FALSE, 5 },
-    { STok::FINAL, 5 },
-    { STok::FINALLY, 7 },
-    { STok::FOR, 3 },
-    { STok::FORSOME, 7 },
-    { STok::IF, 2 },
-    { STok::IMPLICIT, 8 },
-    { STok::IMPORT, 6 },
-    { STok::LAZY, 4 },
-    { STok::MATCH, 5 },
-    { STok::NEW, 3 },
-    { STok::NULL_KEY, 4 },
-    { STok::OBJECT, 6 },
-    { STok::OVERRIDE, 8 },
-    { STok::PACKAGE, 7 },
-    { STok::PRIVATE, 7 },
-    { STok::PROTECTED, 9 },
-    { STok::RETURN, 6 },
-    { STok::SEALED, 6 },
-    { STok::SUPER, 5 },
-    { STok::THIS, 4 },
-    { STok::THROW, 5 },
-    { STok::TRAIT, 5 },
-    { STok::TRY, 3 },
-    { STok::TRUE, 4 },
-    { STok::TYPE, 4 },
-    { STok::VAL, 3 },
-    { STok::VAR, 3 },
-    { STok::WHILE, 5 },
-    { STok::WITH, 4 },
-    { STok::YIELD, 5 },
-    { STok::UNDERSCORE, 1 },
-    { STok::COLON, 1 },
-    { STok::EQUALS, 1 },
-    { STok::EQUALS_GT, 2 },
-    { STok::LT_DASH, 2 },
-    { STok::LT_COLON, 2 },
-    { STok::LT_PERCENTAGE, 2 },
-    { STok::GT_COLON, 2 },
-    { STok::HASH, 1 },
-    { STok::AT, 1 },
-  };
-
 public:
   STok getReservedWordToken(std::string id) {
     auto it = ReservedWords.find(id);
@@ -205,15 +141,6 @@ public:
     }
     return it->second;
   }
-
-  int getTokenLength(STok token) {
-    auto it = TokensLength.find(token);
-    if (it == TokensLength.end()) {
-      return 0;
-    }
-    return it->second;
-  }
-
 };
 
 } // namespace
