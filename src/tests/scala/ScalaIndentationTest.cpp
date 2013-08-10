@@ -3,7 +3,6 @@
 #include "gtest/gtest.h"
 using namespace djp;
 
-/*
 TEST(ScalaIndentation, Class) {
   std::string filename = "HelloWorld.scala";
   std::string buffer =
@@ -14,6 +13,7 @@ TEST(ScalaIndentation, Class) {
   ScalaParser parser(filename, buffer);
   parser.parse();
 
+  /*
   ASSERT_EQ(3, parser.indentMap.size());
 
   {
@@ -36,5 +36,6 @@ TEST(ScalaIndentation, Class) {
     ASSERT_EQ(0, indent->level);
     ASSERT_FALSE(indent->lineWrap);
   }
+  */
 }
-*/
+

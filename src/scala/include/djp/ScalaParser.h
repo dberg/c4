@@ -66,11 +66,12 @@ public:
       compUnit(spCompilationUnit(new CompilationUnit)), error(0)
   {
     diag = spDiagnosis(new Diagnosis);
-    lexer = spScalaLexer(new ScalaLexer(src, diag));
+    lexer = spScalaLexer(new ScalaLexer(src, diag, indentMap));
   }
 
   spDiagnosis diag;
   spCompilationUnit compUnit;
+  LineIndentationMap indentMap;
   int error;
   std::string error_msg;
 

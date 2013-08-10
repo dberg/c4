@@ -5,6 +5,7 @@
 #include <memory>
 #include <sstream>
 #include "djp/Diagnosis.h"
+#include "djp/Indentation.h"
 #include "djp/LiteralSupport.h"
 #include "djp/SourceCodeStream.h"
 #include "ScalaAST.h"
@@ -31,6 +32,8 @@ class ScalaLexer {
 
   ScalaTokenUtil tokUtil;
 
+  LineIndentationMap &indentMap;
+
   STok getEscapeSequence();
   STok getLowerToken(char c);
   STok getUpperToken(char c);
@@ -39,8 +42,9 @@ class ScalaLexer {
   STok getToken();
 
 public:
-  ScalaLexer(spSourceCodeStream &src, spDiagnosis diag)
-    : src(src), diag(diag) {}
+  ScalaLexer(spSourceCodeStream &src, spDiagnosis &diag,
+    LineIndentationMap &indentMap)
+    : src(src), diag(diag), indentMap(indentMap) {}
 
   void getNextToken();
   STok getCurToken() { return curTok; }
