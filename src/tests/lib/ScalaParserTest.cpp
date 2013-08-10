@@ -111,5 +111,37 @@ TEST(ScalaParser, HelloWorld) {
   ASSERT_EQ(56, blockExpr->tokRCurlyB->ini);
   ASSERT_EQ(57, blockExpr->tokRCurlyB->end);
 
+  spBlock block = blockExpr->block;
+  ASSERT_EQ(1, block->paBlockStatSemi.size());
+  spBlockStat blockStat = block->paBlockStatSemi[0].first;
+  ASSERT_EQ(BlockStat::Opt::EXPR1, blockStat->opt);
+  ASSERT_EQ(Expr1::Opt::POSTFIX_EXPR, blockStat->expr1->opt);
+
+  spInfixExpr infixExpr = blockStat->expr1->postfixExpr->infixExpr;
+  ASSERT_EQ(InfixExpr::Opt::PREFIX, infixExpr->opt);
+
+  spSimpleExpr simpleExpr = infixExpr->prefixExpr->simpleExpr;
+  ASSERT_EQ(SimpleExpr::Opt::SIMPLE_EXPR1, simpleExpr->opt);
+
+  spSimpleExpr1Head head = simpleExpr->simpleExpr1->head;
+  ASSERT_EQ(SimpleExpr1Head::Opt::PATH, head->opt);
+  ASSERT_EQ(Path::Opt::STABLE_ID, head->path->opt);
+  ASSERT_EQ(StableId::Opt::ID, head->path->stableId->opt);
+  ASSERT_EQ("println", head->path->stableId->id->val);
+
+  spSimpleExpr1Tail tail = simpleExpr->simpleExpr1->tail;
+  ASSERT_EQ(ArgumentExprs::Opt::EXPRS, tail->argExprs->opt);
+  ASSERT_EQ(39, tail->argExprs->tokLParen->ini);
+  ASSERT_EQ(40, tail->argExprs->tokLParen->end);
+  ASSERT_EQ(53, tail->argExprs->tokRParen->ini);
+  ASSERT_EQ(54, tail->argExprs->tokRParen->end);
+
   // TODO:
+  // tail->argExprs->exprs->expr
+
+  spSemi semi = block->paBlockStatSemi[0].second;
+  ASSERT_EQ(Semi::Opt::SEMI_COLON, semi->opt);
+  ASSERT_EQ(STok::SEMI_COLON, semi->tokSemiColon->tok);
+  ASSERT_EQ(54, semi->tokSemiColon->ini);
+  ASSERT_EQ(55, semi->tokSemiColon->end);
 }
