@@ -51,7 +51,7 @@ using namespace djp;
  *                       PostfixExpr
  *                         InfixExpr(1)
  *                           PrefixExpr
- *                             SimpleExpr
+ *                             SimpleExpr(3)
  *                               SimpleExpr1(2)
  *                                 SimpleExpr1Head(1)
  *                                   Literal(5)
@@ -136,8 +136,23 @@ TEST(ScalaParser, HelloWorld) {
   ASSERT_EQ(53, tail->argExprs->tokRParen->ini);
   ASSERT_EQ(54, tail->argExprs->tokRParen->end);
 
-  // TODO:
-  // tail->argExprs->exprs->expr
+  ASSERT_EQ(Expr::Opt::EXPR1, tail->argExprs->exprs->expr->opt);
+  ASSERT_EQ(Expr1::Opt::POSTFIX_EXPR, tail->argExprs->exprs->expr->expr1->opt);
+  {
+    spInfixExpr infixExpr =
+      tail->argExprs->exprs->expr->expr1->postfixExpr->infixExpr;
+    ASSERT_EQ(InfixExpr::Opt::PREFIX, infixExpr->opt);
+
+    spSimpleExpr simpleExpr = infixExpr->prefixExpr->simpleExpr;
+    ASSERT_EQ(SimpleExpr::Opt::SIMPLE_EXPR1, simpleExpr->opt);
+
+    spSimpleExpr1Head head = simpleExpr->simpleExpr1->head;
+    ASSERT_EQ(SimpleExpr1Head::Opt::LITERAL, head->opt);
+    ASSERT_EQ(Literal::Opt::STRING, head->literal->opt);
+    ASSERT_EQ("\"Hello world\"", head->literal->strLit->val);
+    ASSERT_EQ(40, head->literal->strLit->ini);
+    ASSERT_EQ(53, head->literal->strLit->end);
+  }
 
   spSemi semi = block->paBlockStatSemi[0].second;
   ASSERT_EQ(Semi::Opt::SEMI_COLON, semi->opt);

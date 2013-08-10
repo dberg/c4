@@ -488,6 +488,7 @@ void ScalaParser::parseLiteral(spLiteral &literal) {
 
   // stringLiteral
   if (lexer->getCurToken() == STok::STRING_LITERAL) {
+    literal->opt = Literal::Opt::STRING;
     literal->strLit = parseStringLiteral();
     lexer->getNextToken(); // consume string literal
     return;
