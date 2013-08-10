@@ -23,7 +23,7 @@ If you checkout the project like this:
 ```bash
 cd ~
 git clone git@github.com:dberg/djp.git
-SRC = ~/djp/src
+SRC=~/djp/src
 ```
 
 $SRC is the path to /home/your_user/djp/src.
@@ -32,13 +32,13 @@ The variable $BIN is the location of the 'bin' directory in the project.
 
 The $BIN directory contains the binaries produced by the build process.
 
-The path to bin is affected by the BUILDTYPE, which has two possible values: Debug or Release. Check the Build for for more information.
+The path to bin is affected by the BUILDTYPE, which has two possible values: Debug or Release. Check the Build section for more information.
 
 Example. Assuming your username is 'ichigo' and you run the build in Release mode:
 
 ```bash
-SRC = /home/ichigo/djp/src
-BIN = /home/ichigo/djp/src/out/Release/bin
+SRC=/home/ichigo/djp/src
+BIN=/home/ichigo/djp/src/out/Release/bin
 ```
 
 
