@@ -6,8 +6,8 @@
 #include <vector>
 #include "djp/SourceCodeStream.h"
 #include "djp/Diagnosis.h"
+#include "djp/Indentation.h"
 #include "AST.h"
-#include "Indentation.h"
 #include "Lexer.h"
 #include "ParserState.h"
 #include "SymbolTable.h"

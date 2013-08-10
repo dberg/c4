@@ -1,4 +1,5 @@
 #include "ScalaParserTest.cpp"
+#include "ScalaIndentationTest.cpp"
 
 int main(int argc, char **argv) {
   ::testing::InitGoogleTest(&argc, argv);

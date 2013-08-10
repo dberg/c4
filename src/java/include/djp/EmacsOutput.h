@@ -5,8 +5,8 @@
 #include <map>
 #include <sstream>
 #include "djp/Diagnosis.h"
+#include "djp/Indentation.h"
 #include "AST.h"
-#include "Indentation.h"
 #include "Parser.h"
 #include "SymbolTable.h"
 #include "Token.h"
