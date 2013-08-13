@@ -71,7 +71,7 @@ public:
 
   spDiagnosis diag;
   spCompilationUnit compUnit;
-  LineIndentationMap indentMap;
+  ScalaLineIndentationMap indentMap;
   int error;
   std::string error_msg;
 
