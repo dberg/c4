@@ -300,8 +300,53 @@ void ScalaLexer::getNextToken() {
   curTok = getToken();
   curTokStr = curTokStream.str();
 
-  // TODO:
-  //processIndentation(line, src->getLine(), token, curToken);
+  processIndentation(line, src->getLine(), token, curTok);
+}
+
+void ScalaLexer::processIndentation(unsigned prevLine, unsigned curLine,
+  STok prevToken, STok curToken) {
+
+  // We should increment or decrement the indentation level when see an opening
+  // or closing curly bracket.
+  if (curToken == STok::LCURLYB) { increaseIndentLevel(); }
+  if (curToken == STok::RCURLYB) { decreaseIndentLevel(); }
+
+  // If there's no line change our job is done. We're only interested in the
+  // first token of each line. One special case is the very first token we
+  // parse.
+  if ((prevLine == curLine && !indentMap.empty())
+      || curToken == STok::END_OF_FILE) {
+    return;
+  }
+
+  // If we have an opening curly brace we shouldn't expand the identation. We
+  // assume the syle:
+  // void m()
+  // {
+  //   // ...
+  // }
+  if (curToken == STok::LCURLYB) {
+    addIndentation(
+      indentMap, curLine, curIndentationLevel - 1, false, curToken);
+    return;
+  }
+
+  // If we have a closing curly brace the indentation level has been decreased
+  // and we can just add the indent information and exit.
+  if (curToken == STok::RCURLYB) {
+    addIndentation(indentMap, curLine, curIndentationLevel, false, curToken);
+    return;
+  }
+
+  bool lineWrap = isLineWrap(prevToken);
+  addIndentation(indentMap, curLine, curIndentationLevel, lineWrap, curToken);
+}
+
+bool ScalaLexer::isLineWrap(STok prevToken) {
+  if (prevToken == STok::SEMI_COLON) { return false; }
+  if (prevToken == STok::LCURLYB) { return false; }
+  if (prevToken == STok::RCURLYB) { return false; }
+  return true;
 }
 
 void ScalaLexer::saveState(State &state) {
@@ -310,9 +355,8 @@ void ScalaLexer::saveState(State &state) {
   state.token = getCurToken();
   state.tokenStr = getCurTokenStr();
 
-  // TODO:
-  //state.indentationLevel = curIndentationLevel;
-  //state.indentationMapSize = indentMap.size();
+  state.indentationLevel = curIndentationLevel;
+  state.indentationMapSize = indentMap.size();
 }
 
 void ScalaLexer::restoreState(State &state) {
@@ -321,11 +365,10 @@ void ScalaLexer::restoreState(State &state) {
   curTok = state.token;
   curTokStr = state.tokenStr;
 
-  // TODO:
-  //curIndentationLevel = state.indentationLevel;
-  //while (indentMap.size() > state.indentationMapSize) {
-  //  indentMap.erase(std::prev(indentMap.end()));
-  //}
+  curIndentationLevel = state.indentationLevel;
+  while (indentMap.size() > state.indentationMapSize) {
+    indentMap.erase(std::prev(indentMap.end()));
+  }
 }
 
 } // namespace

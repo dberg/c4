@@ -29,6 +29,7 @@ class ScalaLexer {
   STok curTok;
   std::string curTokStr;
   std::stringstream curTokStream;
+  int curIndentationLevel;
 
   ScalaTokenUtil tokUtil;
 
@@ -41,10 +42,19 @@ class ScalaLexer {
   STok getStringLiteralMultiLine();
   STok getToken();
 
+  void processIndentation(unsigned prevLine, unsigned curLine,
+    STok prevToken, STok curToken);
+
+  void increaseIndentLevel() { ++curIndentationLevel; }
+  void decreaseIndentLevel() { --curIndentationLevel; }
+
+  bool isLineWrap(STok prevToken);
+
 public:
+
   ScalaLexer(spSourceCodeStream &src, spDiagnosis &diag,
     ScalaLineIndentationMap &indentMap)
-    : src(src), diag(diag), indentMap(indentMap) {}
+    : src(src), diag(diag), curIndentationLevel(0), indentMap(indentMap) {}
 
   void getNextToken();
   STok getCurToken() { return curTok; }
