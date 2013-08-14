@@ -23,8 +23,8 @@ spLexId ScalaParser::parseLexId() {
  * semi ::= ‘;’ | nl {nl}
  */
 void ScalaParser::parseSemi(spSemi &semi) {
-  if (lexer->getCurToken() == STok::SEMI_COLON) {
-    semi->opt = Semi::Opt::SEMI_COLON;
+  if (lexer->getCurToken() == STok::SEMICOLON) {
+    semi->opt = Semi::Opt::SEMICOLON;
     semi->tokSemiColon = lexer->getCurTokenNode();
     lexer->getNextToken(); // consume ';'
     return;

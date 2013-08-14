@@ -155,8 +155,8 @@ TEST(ScalaParser, HelloWorld) {
   }
 
   spSemi semi = block->paBlockStatSemi[0].second;
-  ASSERT_EQ(Semi::Opt::SEMI_COLON, semi->opt);
-  ASSERT_EQ(STok::SEMI_COLON, semi->tokSemiColon->tok);
+  ASSERT_EQ(Semi::Opt::SEMICOLON, semi->opt);
+  ASSERT_EQ(STok::SEMICOLON, semi->tokSemiColon->tok);
   ASSERT_EQ(54, semi->tokSemiColon->ini);
   ASSERT_EQ(55, semi->tokSemiColon->end);
 }

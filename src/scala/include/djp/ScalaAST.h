@@ -422,7 +422,7 @@ struct PostfixExpr : ASTBase {
 struct Semi : ASTBase {
   enum class Opt {
     UNDEFINED,
-    SEMI_COLON,
+    SEMICOLON,
     NL,
   };
 

@@ -72,7 +72,7 @@ STok ScalaLexer::getToken() {
   //if ('>' == c) return getGreaterThenToken();
   //if ('<' == c) return getLessThenToken();
   if (',' == c) { curTokStream << c; return STok::COMMA; }
-  if (';' == c) { curTokStream << c; return STok::SEMI_COLON; }
+  if (';' == c) { curTokStream << c; return STok::SEMICOLON; }
   //if (':' == c) return TOK_OP_COLON;
   //if ('*' == c) return getMulToken();
   //if ('~' == c) return TOK_OP_TILDE;
@@ -343,9 +343,10 @@ void ScalaLexer::processIndentation(unsigned prevLine, unsigned curLine,
 }
 
 bool ScalaLexer::isLineWrap(STok prevToken) {
-  if (prevToken == STok::SEMI_COLON) { return false; }
+  if (prevToken == STok::SEMICOLON) { return false; }
   if (prevToken == STok::LCURLYB) { return false; }
   if (prevToken == STok::RCURLYB) { return false; }
+  if (indentMap.empty()) { return false; }
   return true;
 }
 

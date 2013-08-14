@@ -70,7 +70,7 @@ enum class STok : int {
 
   // Symbol Terminals
   COMMA = -53, // ,
-  SEMI_COLON = -54, // ;
+  SEMICOLON = -54, // ;
   LCURLYB = -55, // {
   RCURLYB = -56, // }
   LPAREN = -57, // (
