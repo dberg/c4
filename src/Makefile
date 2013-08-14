@@ -77,10 +77,13 @@ tests_scala = tests/scala
 CXXTESTFLAGS = -g3 $(CXX11FLAGS)
 
 .PHONY: all
-all: directories $(bin)/djp $(bin)/test-all
+all: directories $(bin)/djp $(bin)/djpd $(bin)/test-all
 
 .PHONY: djp
 djp: directories $(bin)/djp
+
+.PHONY: djpd
+djp: directories $(bin)/djpd
 
 .PHONY: clean
 clean:
@@ -111,12 +114,40 @@ $(bin)/djp: $(obj_bytecode)/BinOutput.o \
                $(obj_scala)/libscala.a \
                $(obj_common)/libcommon.a
 
+# main djpd
+$(bin)/djpd: $(obj_bytecode)/BinOutput.o \
+             $(obj_bytecode)/BinOutputCode.o \
+             $(obj_bytecode)/ParserBin.o \
+             $(obj_common)/libcommon.a \
+             $(obj_java)/libjava.a \
+             $(obj_scala)/libscala.a \
+             $(obj_djp)/Daemon.o \
+             $(obj_djp)/djpd.o
+	$(CXX) $(obj_djp)/Daemon.o \
+               $(obj_bytecode)/BinOutput.o \
+               $(obj_bytecode)/BinOutputCode.o \
+               $(obj_bytecode)/ParserBin.o \
+               $(CFLAGS) \
+               $(INC) \
+               $(obj_djp)/djpd.o -o $@ \
+               $(obj_java)/libjava.a \
+               $(obj_scala)/libscala.a \
+               $(obj_common)/libcommon.a
+
 # objects djp
 $(obj_djp)/CmdInput.o: $(libdir_djp)/CmdInput.cpp $(incdir_djp)/CmdInput.h
 	$(CXX) $(CFLAGS) $(INC) \
             -c $< -o $@
 
+$(obj_djp)/Daemon.o: $(libdir_djp)/Daemon.cpp $(incdir_djp)/Daemon.h
+	$(CXX) $(CFLAGS) $(INC) \
+            -c $< -o $@
+
 $(obj_djp)/djp.o: $(libdir_djp)/djp.cpp
+	$(CXX) $(CFLAGS) $(INC) \
+            -c $< -o $@
+
+$(obj_djp)/djpd.o: $(libdir_djp)/djpd.cpp
 	$(CXX) $(CFLAGS) $(INC) \
             -c $< -o $@
 
