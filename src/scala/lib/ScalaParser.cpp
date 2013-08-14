@@ -723,7 +723,8 @@ void ScalaParser::parseStableId(spStableId &stableId) {
  * TemplateBody ::= [nl] ‘{’ [SelfType] TemplateStat {semi TemplateStat} ‘}’
  */
 void ScalaParser::parseTemplateBody(spTemplateBody &tmplBody) {
-
+  // TODO:
+  (void) tmplBody;
 }
 
 /**
