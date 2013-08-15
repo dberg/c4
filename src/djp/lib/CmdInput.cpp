@@ -51,6 +51,17 @@ int CmdInput::processCmdArgs() {
       optOutEmacs = true;
       continue;
     }
+
+    // port number
+    if (arg.compare("-p") == 0 || arg.compare("--port") == 0) {
+      if (i + 1 >= argc) {
+        error = "Missing port number.";
+        return 1;
+      }
+
+      port = argv[++i];
+    }
+
   }
 
   return validateInput();
@@ -64,6 +75,11 @@ int CmdInput::validateInput() {
   // Filename is mandatory
   if (filename.empty()) {
     error = "Missing filename.";
+    return 1;
+  }
+
+  if (port.empty() && optDaemon) {
+    error = "Missing port number.";
     return 1;
   }
 

@@ -21,6 +21,7 @@ class CmdInput {
   bool optInBytecode;
   bool optOutEmacs;
   std::string filename;
+  std::string port;
 
   int validateInput();
 
@@ -55,6 +56,7 @@ public:
   bool isOptInBytecode() { return optInBytecode; }
 
   std::string getFilename() { return filename; }
+  std::string getPort() { return port; }
   std::string getError() { return error; }
 };
 
