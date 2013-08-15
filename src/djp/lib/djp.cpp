@@ -2,6 +2,7 @@
 #include <string>
 #include "djp/SourceCodeStream.h"
 #include "djp/CmdInput.h"
+#include "djp/Daemon.h"
 #include "djp/File.h"
 #include "djp/Parser.h"
 #include "djp/EmacsOutput.h"
@@ -98,6 +99,9 @@ int main(int argc, const char **argv) {
     return parseJavaFile(ci);
   } else if (ci.isOptInScala()) {
     return parseScalaFile(ci);
+  } else if (ci.isOptDaemon()) {
+    Daemon daemon;
+    daemon.start(ci);
   }
 
   return 0;

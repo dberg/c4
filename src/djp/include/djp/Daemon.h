@@ -2,19 +2,19 @@
 #ifndef __DAEMON_H__
 #define __DAEMON_H__
 #include <string>
+#include "CmdInput.h"
 
 namespace djp {
 
 class Daemon {
-  int argc;
-  const char **argv;
-  std::string error;
+
+  std::string errorMsg;
 
 public:
-  Daemon(int argc, const char **argv) : argc(argc), argv(argv) {}
-  int start();
+  Daemon() {}
+  int start(CmdInput &ci);
   int shutdown();
-  std::string getError() { return error; }
+  std::string getError() { return errorMsg; }
 };
 
 } // namespace

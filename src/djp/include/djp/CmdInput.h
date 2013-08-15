@@ -15,6 +15,7 @@ class CmdInput {
 
   // options
   bool optHelp;
+  bool optDaemon;
   bool optInJava;
   bool optInScala;
   bool optInBytecode;
@@ -33,18 +34,22 @@ public:
   std::string help =
     "Usage:\n"
     "  djp [-h, --help] \n"
-    "  djp [-i, --input] INPUT_OPTIONS [-f, --filename] FILENAME\n\n"
+    "  djp [-i, --input] INPUT_OPTIONS [-f, --filename] FILENAME\n"
+    "  djp [-d, --daemon] [-p, --port] "
+    "PORT_NUMBER [-f, --filename] FILENAME\n\n"
     "Where INPUT_OPTIONS is one of 'java', 'scala' or 'bytecode'.\n\n"
     "The output for 'java' and 'scala' inputs is 'emacs'. The output for the \n"
     "input type 'bytecode' is plain text.\n\n"
     "Examples:\n\n"
     "  djp -i java -f Foo.java\n"
     "  djp -i scala -f Bar.scala\n"
-    "  djp --input bytecode --filename Baz.class\n";
+    "  djp --input bytecode --filename Baz.class\n"
+    "  djp --daemon --port 8000 --filename /home/username/project\n";
 
   int processCmdArgs();
 
   bool isOptHelp() { return optHelp; }
+  bool isOptDaemon() { return optDaemon; }
   bool isOptInJava() { return optInJava; }
   bool isOptInScala() { return optInScala; }
   bool isOptInBytecode() { return optInBytecode; }

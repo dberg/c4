@@ -12,7 +12,7 @@ int CmdInput::processCmdArgs() {
       return 0;
     }
 
-    // input
+    // input type
     if (arg.compare("-i") == 0 || arg.compare("--input") == 0) {
       if (i + 1 >= argc) {
         error = "Missing input type.";
@@ -34,6 +34,7 @@ int CmdInput::processCmdArgs() {
       continue;
     }
 
+    // filename path
     if (arg.compare("-f") == 0 || arg.compare("--filename") == 0) {
       if (i + 1 >= argc) {
         error = "Missing filename.";
@@ -41,6 +42,14 @@ int CmdInput::processCmdArgs() {
       }
 
       filename = argv[++i];
+    }
+
+    // daemon mode
+    if (arg.compare("-d") == 0 || arg.compare("--daemon") == 0) {
+      optDaemon = true;
+      // Filename should point to the djp project file. ".djp"
+      optOutEmacs = true;
+      continue;
     }
   }
 
@@ -58,6 +67,8 @@ int CmdInput::validateInput() {
     return 1;
   }
 
+  // If we don't have the input type, and we don't have the daemon option
+  // we try to infer the output type based in the filename extension.
   bool result = optInJava || optInScala || optInBytecode;
   if (!result) {
     if (endsWith(filename, ".java")) {

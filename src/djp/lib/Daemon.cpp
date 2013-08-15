@@ -2,7 +2,7 @@
 
 namespace djp {
 
-int Daemon::start() {
+int Daemon::start(CmdInput &ci) {
   // TODO:
   return 0;
 }
