@@ -72,8 +72,8 @@ int CmdInput::processCmdArgs() {
  * @return 0 if input is valid and 1 if it's invalid
  */
 int CmdInput::validateInput() {
-  // Filename is mandatory
-  if (filename.empty()) {
+  // Filename is mandatory if not in deamon mode
+  if (filename.empty() && !optDaemon) {
     error = "Missing filename.";
     return 1;
   }
@@ -85,8 +85,8 @@ int CmdInput::validateInput() {
 
   // If we don't have the input type, and we don't have the daemon option
   // we try to infer the output type based in the filename extension.
-  bool result = optInJava || optInScala || optInBytecode;
-  if (!result) {
+  bool optIn = optInJava || optInScala || optInBytecode;
+  if (!optIn && !optDaemon) {
     if (endsWith(filename, ".java")) {
       optInJava = optOutEmacs = true;
     } else if (endsWith(filename, ".scala")) {
