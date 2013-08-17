@@ -70,13 +70,14 @@ enum class STok : int {
 
   // Symbol Terminals
   COMMA = -53, // ,
-  SEMICOLON = -54, // ;
-  LCURLYB = -55, // {
-  RCURLYB = -56, // }
-  LPAREN = -57, // (
-  RPAREN = -58, // )
-  LBRACKET = -59, // [
-  RBRACKET = -60, // ]
+  PERIOD = -54, // .
+  SEMICOLON = -55, // ;
+  LCURLYB = -56, // {
+  RCURLYB = -57, // }
+  LPAREN = -58, // (
+  RPAREN = -59, // )
+  LBRACKET = -60, // [
+  RBRACKET = -61, // ]
 };
 
 class ScalaTokenUtil {

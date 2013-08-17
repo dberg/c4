@@ -170,7 +170,9 @@ TEST(ScalaParser, HelloWorld) {
  * trait X extends Y with Z
  *
  * CompilationUnit
- *   'package' QualId semi
+ *   Packaging
+ *     'package'
+ *     QualId
  *   TopStatSeq
  *     TopStat(2)
  *       Import

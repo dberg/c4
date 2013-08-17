@@ -27,8 +27,8 @@
  * 2) Remove left recursion between Path and StableId. We first remove
  *    Path references in StableId while creating IdPeriod and PeriodId
  *
- * IdPeriod ::= ‘.’ id
- * PeriodId ::= id ‘.’
+ * IdPeriod ::= id ‘.’
+ * PeriodId ::= ‘.’ id
  *
  * StableId ::= id
  *            | StableId PeriodId
@@ -55,7 +55,8 @@ typedef struct ASTBase StringLiteral;
 typedef std::shared_ptr<StringLiteral> spStringLiteral;
 
 typedef std::shared_ptr<struct IdPeriod> spIdPeriod;
-typedef spIdPeriod spPeriodId;
+typedef struct IdPeriod PeriodId;
+typedef std::shared_ptr<PeriodId> spPeriodId;
 
 typedef std::shared_ptr<struct AnnotType> spAnnotType;
 typedef std::shared_ptr<struct ArgumentExprs> spArgumentExprs;
@@ -73,9 +74,11 @@ typedef std::shared_ptr<struct Exprs> spExprs;
 typedef std::shared_ptr<struct InfixExpr> spInfixExpr;
 typedef std::shared_ptr<struct Literal> spLiteral;
 typedef std::shared_ptr<struct ObjectDef> spObjectDef;
+typedef std::shared_ptr<struct Packaging> spPackaging;
 typedef std::shared_ptr<struct Path> spPath;
 typedef std::shared_ptr<struct PrefixExpr> spPrefixExpr;
 typedef std::shared_ptr<struct PostfixExpr> spPostfixExpr;
+typedef std::shared_ptr<struct QualId> spQualId;
 typedef std::shared_ptr<struct Semi> spSemi;
 typedef std::shared_ptr<struct SimpleExpr> spSimpleExpr;
 typedef std::shared_ptr<struct SimpleExpr1> spSimpleExpr1;
@@ -344,6 +347,14 @@ struct Exprs : ASTBase {
 };
 
 /**
+ * IdPeriod ::= id ‘.’
+ */
+struct IdPeriod : ASTBase {
+  spTokenNode tok;
+  spLexId id;
+};
+
+/**
  * InfixExpr ::= PrefixExpr
  *             | InfixExpr id [nl] InfixExpr
  */
@@ -409,6 +420,14 @@ struct ObjectDef : ASTBase {
 };
 
 /**
+ * Packaging ::= ‘package’ QualId [nl] ‘{’ TopStatSeq ‘}’
+ */
+struct Packaging : ASTBase {
+  spTokenNode tokPackage;
+  spQualId qualId;
+};
+
+/**
  * Path ::= StableId
  *        | [id ‘.’] ‘this’
  */
@@ -440,6 +459,14 @@ struct PrefixExpr : ASTBase {
 struct PostfixExpr : ASTBase {
   spInfixExpr infixExpr;
   // TODO: [id [nl]]
+};
+
+/**
+ * QualId ::= id {‘.’ id}
+ */
+struct QualId : ASTBase {
+  spLexId id;
+  std::vector<spPeriodId> periodIds;
 };
 
 /**
@@ -686,7 +713,7 @@ struct TopStat : ASTBase {
     TMPL_DEF,
     IMPORT,
     PACKAGING,
-    PACKAGE,
+    PACKAGE_OBJECT,
   };
 
   Opt opt;
@@ -695,6 +722,12 @@ struct TopStat : ASTBase {
   // std::vector<{Annotation [nl]}>
   // std::vector<{Modifier}>
   spTmplDef tmplDef;
+
+  // TODO: Import
+
+  spPackaging packaging;
+
+  // TODO: PackageObject
 
   TopStat() : opt(Opt::UNDEFINED) {}
 };

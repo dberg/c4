@@ -519,6 +519,23 @@ void ScalaParser::parseObjectDef(spObjectDef &objectDef) {
 }
 
 /**
+ * Packaging ::= ‘package’ QualId [nl] ‘{’ TopStatSeq ‘}’
+ */
+void ScalaParser::parsePackaging(spPackaging &packaging) {
+  packaging->tokPackage = lexer->getCurTokenNode();
+  lexer->getNextToken(); // consume package
+
+  packaging->qualId = spQualId(new QualId);
+  parseQualId(packaging->qualId);
+  if (packaging->qualId->err) {
+    packaging->addErr(-1);
+    return;
+  }
+
+  // TODO: [nl] ‘{’ TopStatSeq ‘}’
+}
+
+/**
  * Path ::= StableId
  *        | [id ‘.’] ‘this’
  */
@@ -532,6 +549,13 @@ void ScalaParser::parsePath(spPath &path) {
   }
 
   // TODO: [id ‘.’] ‘this’
+}
+
+/**
+ * PeriodId ::= ‘.’ id
+ */
+void ScalaParser::parsePeriodId(spPeriodId &periodId) {
+  // TODO:
 }
 
 /**
@@ -558,6 +582,32 @@ void ScalaParser::parsePostfixExpr(spPostfixExpr &postfixExpr) {
   }
 
   // TODO: [id [nl]]
+}
+
+/**
+ * QualId ::= id {‘.’ id}
+ */
+void ScalaParser::parseQualId(spQualId &qualId) {
+  qualId->id = parseLexId();
+  lexer->getNextToken(); // consume id
+
+  if (qualId->id->err) {
+    qualId->addErr(-1);
+    return;
+  }
+
+  State state;
+  while (lexer->getCurToken() == STok::PERIOD) {
+    saveState(state);
+    spPeriodId perId = spPeriodId(new PeriodId);
+    parsePeriodId(perId);
+    if (perId->err) {
+      restoreState(state);
+      return;
+    }
+
+    qualId->periodIds.push_back(perId);
+  }
 }
 
 /**
@@ -791,13 +841,23 @@ void ScalaParser::parseTmplDef(spTmplDef &tmplDef) {
  *           | PackageObject
  */
 void ScalaParser::parseTopStat(spTopStat &topStat) {
+  // Packaging
+  if (lexer->getCurToken() == STok::PACKAGE) {
+    topStat->opt = TopStat::Opt::PACKAGING;
+    topStat->packaging = spPackaging(new Packaging);
+    parsePackaging(topStat->packaging);
+    if (topStat->packaging->err) {
+      topStat->addErr(-1);
+    }
+    return;
+  }
+
   // TODO: {Annotation [nl]} {Modifier}
   topStat->opt = TopStat::Opt::TMPL_DEF;
   topStat->tmplDef = spTmplDef(new TmplDef);
   parseTmplDef(topStat->tmplDef);
 
   // TODO: Import
-  // TODO: Packaging
   // TODO:PackageObject
 }
 

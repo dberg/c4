@@ -60,7 +60,7 @@ STok ScalaLexer::getToken() {
   //if ('@' == c) return getAnnotationToken();
   //if ('\'' == c) return getCharacterLiteral();
   if ('"' == c) return getStringLiteral();
-  //if ('.' == c) return getPeriodStartingToken();
+  if ('.' == c) { curTokStream << c; return STok::PERIOD; }
   //if ('+' == c) return getPlusToken();
   //if ('-' == c) return getMinusToken();
   //if ('=' == c) return getEqualsToken();
