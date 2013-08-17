@@ -20,8 +20,9 @@ using namespace djp;
  *               Constr
  *                 AnnoType
  *                   SimpleType(3)
- *                     StableId(1)
- *                       id            <-- App
+ *                     StableId
+ *                       StableIdHead(1)
+ *                         id            <-- App
  *                 ArgumentExprs[0](3)
  *                   BlockExpr[0](2)
  *                     '{'
@@ -40,8 +41,9 @@ using namespace djp;
  *           SimpleExpr1(1)
  *             SimpleExpr1Head(2)
  *               Path
- *                 Stableid
- *                   id <-- println
+ *                 StableId
+ *                   StableIdHead
+ *                     id <-- println
  *             SimpleExpr1Tail(2)
  *               ArgumentExprs(1)
  *                 '('
@@ -93,10 +95,10 @@ TEST(ScalaParser, HelloWorld) {
   spSimpleType simpleType = constr->annotType->simpleType;
   ASSERT_EQ(SimpleType::Opt::STABLE_ID, simpleType->opt);
   spStableId stableId  = simpleType->stableId;
-  ASSERT_EQ(StableId::Opt::ID, stableId->opt);
-  ASSERT_EQ("App", stableId->id->val);
-  ASSERT_EQ(26, stableId->id->ini);
-  ASSERT_EQ(29, stableId->id->end);
+  ASSERT_EQ(StableIdHead::Opt::ID, stableId->head->opt);
+  ASSERT_EQ("App", stableId->head->id->val);
+  ASSERT_EQ(26, stableId->head->id->ini);
+  ASSERT_EQ(29, stableId->head->id->end);
 
   ASSERT_EQ(1, constr->argExprs.size());
   spArgumentExprs argExprs = constr->argExprs[0];
@@ -126,8 +128,8 @@ TEST(ScalaParser, HelloWorld) {
   spSimpleExpr1Head head = simpleExpr->simpleExpr1->head;
   ASSERT_EQ(SimpleExpr1Head::Opt::PATH, head->opt);
   ASSERT_EQ(Path::Opt::STABLE_ID, head->path->opt);
-  ASSERT_EQ(StableId::Opt::ID, head->path->stableId->opt);
-  ASSERT_EQ("println", head->path->stableId->id->val);
+  ASSERT_EQ(StableIdHead::Opt::ID, head->path->stableId->head->opt);
+  ASSERT_EQ("println", head->path->stableId->head->id->val);
 
   spSimpleExpr1Tail tail = simpleExpr->simpleExpr1->tail;
   ASSERT_EQ(ArgumentExprs::Opt::EXPRS, tail->argExprs->opt);
@@ -159,4 +161,36 @@ TEST(ScalaParser, HelloWorld) {
   ASSERT_EQ(STok::SEMICOLON, semi->tokSemiColon->tok);
   ASSERT_EQ(54, semi->tokSemiColon->ini);
   ASSERT_EQ(55, semi->tokSemiColon->end);
+}
+
+/**
+ * -----------------------------------------------------------------------------
+ * package test
+ * import com.company.utils._
+ * trait X extends Y with Z
+ *
+ * CompilationUnit
+ *   'package' QualId semi
+ *   TopStatSeq
+ *     TopStat
+ *       Import
+ *         'import'
+ *         ImportExpr
+ *           StableId(2)
+ *             Path
+ *             '.'
+ *             id
+ *           '_'
+ *
+ * -----------------------------------------------------------------------------
+ */
+TEST(ScalaParser, Trait) {
+  std::string filename = "Example.scala";
+  std::string buffer =
+    "package test\n"
+    "import com.company.utils._\n"
+    "trait X extends Y with Z";
+
+  ScalaParser parser(filename, buffer);
+  parser.parse();
 }

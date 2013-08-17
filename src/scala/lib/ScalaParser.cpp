@@ -702,21 +702,42 @@ void ScalaParser::parseSimpleType(spSimpleType &simpleType) {
 }
 
 /**
- * StableId ::= id
- *            | Path ‘.’ id
- *            | [id ’.’] ‘super’ [ClassQualifier] ‘.’ id
+ * StableId ::= StableIdHead StableIdTail | StableIdHead
  */
 void ScalaParser::parseStableId(spStableId &stableId) {
+  stableId->head = spStableIdHead(new StableIdHead);
+  parseStableIdHead(stableId->head);
+  if (stableId->head->err) {
+    stableId->addErr(-1);
+    return;
+  }
+
+  // TODO: StableIdTail
+}
+
+/**
+ * StableIdHead ::= id
+ *                | [IdPeriod] ‘this’ PeriodId
+ *                | [IdPeriod] ‘super’ [ClassQualifier] PeriodId
+ */
+void ScalaParser::parseStableIdHead(spStableIdHead &head) {
   spLexId id = parseLexId();
   lexer->getNextToken(); // consume 'id'
   if (id->err == false) {
-    stableId->opt = StableId::Opt::ID;
-    stableId->id = id;
+    head->opt = StableIdHead::Opt::ID;
+    head->id = id;
     return;
   }
 
   // TODO: Path ‘.’ id
   // TODO: [id ’.’] ‘super’ [ClassQualifier] ‘.’ id
+}
+
+/**
+ * StableIdTail ::= PeriodId StableIdTail | PeriodId
+ */
+void ScalaParser::parseStableIdTail(spStableIdTail &tail) {
+  // TODO:
 }
 
 /**

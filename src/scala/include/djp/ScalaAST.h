@@ -7,10 +7,9 @@
 #include "ScalaToken.h"
 
 /**
- * We have a few modifications in the grammar.
+ * We have applied a few modifications in the grammar.
  *
- * SimpleExpr1 was transformed to remove the left recursion into the following
- * production rules:
+ * 1) Remove left recursion in SimpleExpr1
  *
  * SimpleExpr1 ::= SimpleExpr1Head SimpleExpr1Tail | SimpleExpr1Head
  *
@@ -23,6 +22,28 @@
  *                   | XmlExpr
  *
  * SimpleExpr1Tail ::=  ArgumentExprs SimpleExpr1Tail | ArgumentExprs
+ *
+ *
+ * 2) Remove left recursion between Path and StableId. We first remove
+ *    Path references in StableId while creating IdPeriod and PeriodId
+ *
+ * IdPeriod ::= ‘.’ id
+ * PeriodId ::= id ‘.’
+ *
+ * StableId ::= id
+ *            | StableId PeriodId
+ *            | [IdPeriod] ‘this’ PeriodId
+ *            | [IdPeriod] ‘super’ [ClassQualifier] PeriodId
+ *
+ * and then we remove the StableId left recursion:
+ *
+ * StableId ::= StableIdHead StableIdTail | StableIdHead
+ *
+ * StableIdHead ::= id
+ *                | [IdPeriod] ‘this’ PeriodId
+ *                | [IdPeriod] ‘super’ [ClassQualifier] PeriodId
+ *
+ * StableIdTail ::= PeriodId StableIdTail | PeriodId
  */
 
 namespace djp {
@@ -32,6 +53,9 @@ typedef struct ASTBase LexId;
 typedef std::shared_ptr<LexId> spLexId;
 typedef struct ASTBase StringLiteral;
 typedef std::shared_ptr<StringLiteral> spStringLiteral;
+
+typedef std::shared_ptr<struct IdPeriod> spIdPeriod;
+typedef spIdPeriod spPeriodId;
 
 typedef std::shared_ptr<struct AnnotType> spAnnotType;
 typedef std::shared_ptr<struct ArgumentExprs> spArgumentExprs;
@@ -59,6 +83,8 @@ typedef std::shared_ptr<struct SimpleExpr1Head> spSimpleExpr1Head;
 typedef std::shared_ptr<struct SimpleExpr1Tail> spSimpleExpr1Tail;
 typedef std::shared_ptr<struct SimpleType> spSimpleType;
 typedef std::shared_ptr<struct StableId> spStableId;
+typedef std::shared_ptr<struct StableIdHead> spStableIdHead;
+typedef std::shared_ptr<struct StableIdTail> spStableIdTail;
 typedef std::shared_ptr<struct TemplateBody> spTemplateBody;
 typedef std::shared_ptr<struct TemplateStat> spTemplateStat;
 typedef std::shared_ptr<struct TmplDef> spTmplDef;
@@ -537,24 +563,43 @@ struct SimpleType : ASTBase {
 };
 
 /**
- * StableId ::= id
- *            | Path ‘.’ id
- *            | [id ’.’] ‘super’ [ClassQualifier] ‘.’ id
+ * StableId ::= StableIdHead StableIdTail | StableIdHead
  */
 struct StableId : ASTBase {
+  spStableIdHead head;
+  spStableIdTail tail;
+};
+
+/**
+ * StableIdHead ::= id
+ *                | [IdPeriod] ‘this’ PeriodId
+ *                | [IdPeriod] ‘super’ [ClassQualifier] PeriodId
+ */
+struct StableIdHead : ASTBase {
   enum class Opt {
     UNDEFINED,
     ID,
-    PATH,
+    THIS,
     SUPER,
   };
 
   Opt opt;
   spLexId id;
-  // TODO: Path ‘.’ id
-  // TODO: [id ’.’] ‘super’ [ClassQualifier] ‘.’ id
+  spIdPeriod idPeriod;
+  spPeriodId periodId;
+  spTokenNode tokThis;
+  spTokenNode tokSuper;
+  // TODO: ClassQualifier
 
-  StableId() : opt(Opt::UNDEFINED) {}
+  StableIdHead() : opt(Opt::UNDEFINED) {}
+};
+
+/**
+ * StableIdTail ::= PeriodId StableIdTail | PeriodId
+ */
+struct StableIdTail : ASTBase {
+  spPeriodId periodId;
+  spStableIdTail tail;
 };
 
 /**
