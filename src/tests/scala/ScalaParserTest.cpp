@@ -172,16 +172,34 @@ TEST(ScalaParser, HelloWorld) {
  * CompilationUnit
  *   'package' QualId semi
  *   TopStatSeq
- *     TopStat
+ *     TopStat(2)
  *       Import
  *         'import'
  *         ImportExpr
- *           StableId(2)
- *             Path
- *             '.'
- *             id
+ *           StableId
+ *             StableIdHead   <-- com.company.utils
+ *               id           <-- com
+ *             StableIdTail
+ *               PeriodId     <-- .company
+ *               StableIdTail
+ *                 PeriodId   <-- .utils
+ *           '.'
  *           '_'
- *
+ *     semi
+ *     TopStat(1)
+ *       TmplDef(3)
+ *         'trait'
+ *         TraitDef
+ *           id       <-- X
+ *           TraitTemplateOpt(1)
+ *             'extends'
+ *             TraitTemplate
+ *               TraitParents
+ *                 AnnotType  <-- Y
+ *                   SimpleType
+ *                 'with'
+ *                 AnnotType
+ *                   SimpleType
  * -----------------------------------------------------------------------------
  */
 TEST(ScalaParser, Trait) {
