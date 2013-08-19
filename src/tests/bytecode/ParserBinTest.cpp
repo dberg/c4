@@ -2,6 +2,7 @@
 #include <vector>
 #include "djp/File.h"
 #include "djp/ParserBin.h"
+#include "Util.h"
 #include "gtest/gtest.h"
 using namespace djp;
 
