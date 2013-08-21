@@ -12,8 +12,12 @@ using namespace djp;
 TEST(ParserScalaBin, HelloWorld) {
   std::vector<unsigned char> buffer;
   File file;
-  std::string filename =  current_dir + "/bytecode-classes/ScalaHelloWorld.class";
+  std::string filename =  current_dir
+    + "/bytecode-classes/scala/HelloWorld/HelloWorld.class";
   ASSERT_EQ(file.read(filename, buffer), 0);
   ParserBin parser(filename, buffer);
   parser.parse();
+
+  // TODO: HelloWorld$.class
+  // TODO: HelloWorld$delayedInit$body.class
 }

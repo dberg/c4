@@ -16,7 +16,8 @@ using namespace djp;
 TEST(ParserBin, HelloWorld) {
   std::vector<unsigned char> buffer;
   File file;
-  std::string filename =  current_dir + "/bytecode-classes/HelloWorld.class";
+  std::string filename =  current_dir
+    + "/bytecode-classes/java/HelloWorld.class";
   ASSERT_EQ(file.read(filename, buffer), 0);
   ParserBin parser(filename, buffer);
   parser.parse();

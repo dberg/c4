@@ -227,7 +227,7 @@ $(obj_scala)/ScalaLexer.o: $(libdir_scala)/ScalaLexer.cpp \
 .PHONY: bytecode-classes
 bytecode-classes:
 	mkdir -p $(bin)/bytecode-classes
-	cp $(tests_bytecode)/bytecode-classes/*.class $(bin)/bytecode-classes
+	cp -r $(tests_bytecode)/bytecode-classes/* $(bin)/bytecode-classes/
 
 .PHONY: run-all
 run-all:
