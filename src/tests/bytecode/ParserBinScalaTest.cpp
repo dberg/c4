@@ -536,6 +536,20 @@ TEST(ParserScalaBin, HelloWorld) {
     ASSERT_EQ("ScalaSig", str);
   }
 
+  ASSERT_EQ(CLASS_ACC_PUBLIC | CLASS_ACC_FINAL | CLASS_ACC_SUPER,
+    parser.classFile->access_flags);
+
+  ASSERT_EQ(2, parser.classFile->this_class);
+  ASSERT_EQ(CONSTANT_Class, parser.classFile->constant_pool->items[2]->tag);
+
+  // Our class inherits from java.lang.Object
+  ASSERT_EQ(4, parser.classFile->super_class);
+  ASSERT_EQ(CONSTANT_Class, parser.classFile->constant_pool->items[4]->tag);
+
+  ASSERT_EQ(0, parser.classFile->interfaces_count);
+
+  ASSERT_EQ(0, parser.classFile->fields_count);
+
   // TODO: HelloWorld$.class
   // TODO: HelloWorld$delayedInit$body.class
 }
