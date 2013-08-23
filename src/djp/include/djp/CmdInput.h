@@ -29,8 +29,8 @@ public:
 
   CmdInput(int argc, const char **argv)
     : argc(argc), argv(argv),
-      optHelp(false), optInJava(false), optInScala(false), optInBytecode(false),
-      optOutEmacs(false), filename("") {}
+      optHelp(false), optDaemon(false), optInJava(false), optInScala(false),
+      optInBytecode(false), optOutEmacs(false), filename("") {}
 
   std::string help =
     "Usage:\n"
