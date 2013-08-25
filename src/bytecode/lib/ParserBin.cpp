@@ -363,8 +363,9 @@ void ParserBin::parseAttributes(u2 attributesCount,
       //  break;
       //case ATTRIBUTE_TYPE_SYNTHETIC:
       //  break;
-      //case ATTRIBUTE_TYPE_SIGNATURE:
-      //  break;
+      case ATTRIBUTE_TYPE_SIGNATURE:
+        info->signature_index = getU2();
+        break;
       case ATTRIBUTE_TYPE_SOURCE_FILE:
         info->sourcefile_index = getU2();
         break;

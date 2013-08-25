@@ -416,7 +416,9 @@ struct AttributeInfo {
   // ATTRIBUTE_TYPE_INNER_CLASSES:
   // ATTRIBUTE_TYPE_ENCLOSING_METHOD:
   // ATTRIBUTE_TYPE_SYNTHETIC:
+
   // ATTRIBUTE_TYPE_SIGNATURE:
+  u2 signature_index;
 
   // ATTRIBUTE_TYPE_SOURCE_FILE
   u2 sourcefile_index;

@@ -550,6 +550,115 @@ TEST(ParserScalaBin, HelloWorld) {
 
   ASSERT_EQ(0, parser.classFile->fields_count);
 
+  // Methods: main
+  ASSERT_EQ(5, parser.classFile->methods_count);
+  ASSERT_EQ(5, parser.classFile->methods.size());
+
+  {
+    // Method 1
+    spMethodInfo method = parser.classFile->methods[0];
+    ASSERT_EQ(METHOD_ACC_PUBLIC | METHOD_ACC_STATIC, method->access_flags);
+
+    // name - main
+    ASSERT_EQ(9, method->name_index);
+    ASSERT_EQ(CONSTANT_Utf8, parser.classFile->constant_pool->items[9]->tag);
+
+    // descriptor - ([Ljava/lang/String;)V
+    ASSERT_EQ(10, method->descriptor_index);
+    ASSERT_EQ(CONSTANT_Utf8, parser.classFile->constant_pool->items[10]->tag);
+
+    // attributes - Code
+    ASSERT_EQ(1, method->attributes_count);
+    ASSERT_EQ(1, method->attributes.size());
+    spAttributeInfo info = method->attributes[0];
+    ASSERT_EQ(ATTRIBUTE_TYPE_CODE, info->type);
+    ASSERT_EQ(38, info->attribute_name_index); // Code
+    ASSERT_EQ(CONSTANT_Utf8, parser.classFile->constant_pool->items[38]->tag);
+    ASSERT_EQ(20, info->attribute_length);
+
+    // attribute info
+    spCodeAttribute code = info->code;
+    ASSERT_EQ(2, code->max_stack);
+    ASSERT_EQ(1, code->max_locals);
+    ASSERT_EQ(8, code->code_length);
+    ASSERT_EQ(8, code->code.size());
+    ASSERT_EQ(0, code->exception_table_length);
+    ASSERT_EQ(0, code->exceptions.size());
+
+    // code
+    ASSERT_EQ(0xB2, code->code[0]); // getstatic
+    u2 fieldref = code->code[1] << 8 | code->code[2]; // HelloWorld$.$MODULE$
+    ASSERT_EQ(16, fieldref);
+    ASSERT_EQ(0x2A, code->code[3]); // aload_0
+    ASSERT_EQ(0xB6, code->code[4]); // invokevirtual
+    u2 methodref = code->code[5] << 8 | code->code[6]; // HelloWorld$.main
+    ASSERT_EQ(18, methodref);
+    ASSERT_EQ(0xB1, code->code[7]); // return
+
+    ASSERT_EQ(0, code->attributes_count);
+    ASSERT_EQ(0, code->attributes.size());
+  }
+
+  {
+    // Method 2
+    spMethodInfo method = parser.classFile->methods[1];
+    ASSERT_EQ(METHOD_ACC_PUBLIC | METHOD_ACC_STATIC, method->access_flags);
+
+    // name - delayedInit
+    ASSERT_EQ(19, method->name_index);
+    ASSERT_EQ(CONSTANT_Utf8, parser.classFile->constant_pool->items[19]->tag);
+
+    // descriptor - (Lscala/Function0;)V
+    ASSERT_EQ(20, method->descriptor_index);
+    ASSERT_EQ(CONSTANT_Utf8, parser.classFile->constant_pool->items[20]->tag);
+
+    ASSERT_EQ(2, method->attributes_count);
+    ASSERT_EQ(2, method->attributes.size());
+
+    {
+      // attributes 1 - Code
+      spAttributeInfo info = method->attributes[0];
+      ASSERT_EQ(ATTRIBUTE_TYPE_CODE, info->type);
+      ASSERT_EQ(38, info->attribute_name_index); // Code
+      ASSERT_EQ(CONSTANT_Utf8, parser.classFile->constant_pool->items[38]->tag);
+      ASSERT_EQ(20, info->attribute_length);
+
+      // attribute info
+      spCodeAttribute code = info->code;
+      ASSERT_EQ(2, code->max_stack);
+      ASSERT_EQ(1, code->max_locals);
+      ASSERT_EQ(8, code->code_length);
+      ASSERT_EQ(8, code->code.size());
+      ASSERT_EQ(0, code->exception_table_length);
+      ASSERT_EQ(0, code->exceptions.size());
+
+      // code
+      ASSERT_EQ(0xB2, code->code[0]); // getstatic
+      u2 fieldref = code->code[1] << 8 | code->code[2]; // HelloWorld$.$MODULE$
+      ASSERT_EQ(16, fieldref);
+      ASSERT_EQ(0x2A, code->code[3]); // aload_0
+      ASSERT_EQ(0xB6, code->code[4]); // invokevirtual
+      // HelloWorld$.delayedInit
+      u2 methodref = code->code[5] << 8 | code->code[6];
+      ASSERT_EQ(22, methodref);
+      ASSERT_EQ(0xB1, code->code[7]); // return
+
+      ASSERT_EQ(0, code->attributes_count);
+      ASSERT_EQ(0, code->attributes.size());
+    }
+
+    {
+      // attributes 2 - Signature
+      spAttributeInfo info = method->attributes[1];
+      ASSERT_EQ(ATTRIBUTE_TYPE_SIGNATURE, info->type);
+      ASSERT_EQ(39, info->attribute_name_index); // Signature
+      ASSERT_EQ(CONSTANT_Utf8, parser.classFile->constant_pool->items[39]->tag);
+      ASSERT_EQ(2, info->attribute_length); // always 2
+      // (Lscala/Function0<Lscala/runtime/BoxedUnit;>;)V
+      ASSERT_EQ(40, info->signature_index);
+    }
+  }
+
   // TODO: HelloWorld$.class
   // TODO: HelloWorld$delayedInit$body.class
 }
