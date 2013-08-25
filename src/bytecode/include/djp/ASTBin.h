@@ -30,6 +30,9 @@ typedef std::shared_ptr<struct FieldInfo> spFieldInfo;
 typedef std::shared_ptr<struct MethodInfo> spMethodInfo;
 typedef std::shared_ptr<struct AttributeInfo> spAttributeInfo;
 typedef std::shared_ptr<struct CodeAttribute> spCodeAttribute;
+typedef std::shared_ptr<struct InnerClassesAttribute> spInnerClassesAttribute;
+typedef std::shared_ptr<struct InnerClassesAttributeClass>
+  spInnerClassesAttributeClass;
 typedef std::shared_ptr<struct ExceptionInfo> spExceptionInfo;
 typedef std::shared_ptr<struct LineNumberTable> spLineNumberTable;
 typedef std::shared_ptr<struct LineNumberTableInfo> spLineNumberTableInfo;
@@ -63,6 +66,19 @@ enum ClassAccessAndPropertyModifiers {
   CLASS_ACC_SYNTHETIC = 0x1000,
   CLASS_ACC_ANNOTATION = 0x2000,
   CLASS_ACC_ENUM = 0x4000,
+};
+
+enum NestedClassAccessAndPropertyFlags : int {
+  NESTED_ACC_PUBLIC = 0x0001, // Marked or implicitly public in source.
+  NESTED_ACC_PRIVATE = 0x0002, // Marked private in source.
+  NESTED_ACC_PROTECTED = 0x0004, // Marked protected in source.
+  NESTED_ACC_STATIC = 0x0008, // Marked or implicitly static in source.
+  NESTED_ACC_FINAL = 0x0010, // Marked final in source.
+  NESTED_ACC_INTERFACE = 0x0200, // Was an interface in source.
+  NESTED_ACC_ABSTRACT = 0x0400, // Marked or implicitly abstract in source.
+  NESTED_ACC_SYNTHETIC = 0x1000, // Declared synthetic; not present in the source code.
+  NESTED_ACC_ANNOTATION = 0x2000, // Declared as an annotation type.
+  NESTED_ACC_ENUM = 0x4000, // Declared as an enum type.
 };
 
 enum MethodAccessAndPropertyFlags {
@@ -412,12 +428,16 @@ struct AttributeInfo {
   spStackMapTable stackMapTable;
 
   // TODO:
-  // ATTRIBUTE_TYPE_EXCEPTIONS:
-  // ATTRIBUTE_TYPE_INNER_CLASSES:
-  // ATTRIBUTE_TYPE_ENCLOSING_METHOD:
-  // ATTRIBUTE_TYPE_SYNTHETIC:
+  // ATTRIBUTE_TYPE_EXCEPTIONS
 
-  // ATTRIBUTE_TYPE_SIGNATURE:
+  // ATTRIBUTE_TYPE_INNER_CLASSES
+  spInnerClassesAttribute innerClasses;
+
+  // TODO:
+  // ATTRIBUTE_TYPE_ENCLOSING_METHOD
+  // ATTRIBUTE_TYPE_SYNTHETIC
+
+  // ATTRIBUTE_TYPE_SIGNATURE
   u2 signature_index;
 
   // ATTRIBUTE_TYPE_SOURCE_FILE
@@ -472,6 +492,41 @@ struct CodeAttribute {
   u2 attributes_count;
   std::vector<spAttributeInfo> attributes;
 };
+
+/**
+ * InnerClasses_attribute {
+ *     u2 attribute_name_index;
+ *     u4 attribute_length;
+ *     u2 number_of_classes;
+ *     {   u2 inner_class_info_index;
+ *         u2 outer_class_info_index;
+ *         u2 inner_name_index;
+ *         u2 inner_class_access_flags;
+ *     } classes[number_of_classes];
+ * }
+*/
+struct InnerClassesAttribute {
+  // AttributeInfo
+  // u2 attribute_name_index;
+  // u4 attribute_length;
+  u2 number_of_classes;
+  std::vector<spInnerClassesAttributeClass> classes;
+};
+
+/**
+ * See InnerClassesAttribute
+ * u2 inner_class_info_index;
+ * u2 outer_class_info_index;
+ * u2 inner_name_index;
+ * u2 inner_class_access_flags;
+ */
+struct InnerClassesAttributeClass {
+  u2 inner_class_info_index;
+  u2 outer_class_info_index;
+  u2 inner_name_index;
+  u2 inner_class_access_flags;
+};
+
 
 struct ExceptionInfo {
   u2 start_pc;

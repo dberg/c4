@@ -289,6 +289,21 @@ void ParserBin::parseCPInvokeDynamic(spCPItem &item) {
   item->cInvokeDynamicInfo->name_and_type_index = getU2();
 }
 
+void ParserBin::parseInnerClassAttribute(
+  spInnerClassesAttribute &innerClasses) {
+  innerClasses->number_of_classes = getU2();
+  for (unsigned i = 0; i < innerClasses->number_of_classes; i++) {
+    spInnerClassesAttributeClass innerClass
+      = spInnerClassesAttributeClass(new InnerClassesAttributeClass);
+    innerClass->inner_class_info_index = getU2();
+    innerClass->outer_class_info_index = getU2();
+    innerClass->inner_name_index = getU2();
+    innerClass->inner_class_access_flags = getU2();
+
+    innerClasses->classes.push_back(innerClass);
+  }
+}
+
 void ParserBin::parseInterfaces(u2 interfaces_count) {
   if (!interfaces_count) {
     return;
@@ -357,8 +372,10 @@ void ParserBin::parseAttributes(u2 attributesCount,
       // TODO:
       //case ATTRIBUTE_TYPE_EXCEPTIONS:
       //  break;
-      //case ATTRIBUTE_TYPE_INNER_CLASSES:
-      //  break;
+      case ATTRIBUTE_TYPE_INNER_CLASSES:
+        info->innerClasses = spInnerClassesAttribute(new InnerClassesAttribute);
+        parseInnerClassAttribute(info->innerClasses);
+        break;
       //case ATTRIBUTE_TYPE_ENCLOSING_METHOD:
       //  break;
       //case ATTRIBUTE_TYPE_SYNTHETIC:

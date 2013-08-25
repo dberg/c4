@@ -433,7 +433,7 @@ TEST(ParserScalaBin, HelloWorld) {
   }
 
   {
-    // Item 36: CONSTANT_Class HelloWorld
+    // Item 36: CONSTANT_Class HelloWorld$delayedInit$body
     spCPItem item = parser.classFile->constant_pool->items[36];
     ASSERT_EQ(CONSTANT_Class, item->tag);
     spCClassInfo cClassInfo = item->cClassInfo;
@@ -550,7 +550,8 @@ TEST(ParserScalaBin, HelloWorld) {
 
   ASSERT_EQ(0, parser.classFile->fields_count);
 
-  // Methods: main
+  // Methods: main, delayedInit, args, scala$App$_setter_$executionStart_$eq
+  //          and executionStart
   ASSERT_EQ(5, parser.classFile->methods_count);
   ASSERT_EQ(5, parser.classFile->methods.size());
 
@@ -792,6 +793,53 @@ TEST(ParserScalaBin, HelloWorld) {
 
     ASSERT_EQ(0, code->attributes_count);
     ASSERT_EQ(0, code->attributes.size());
+  }
+
+  // attributes
+  ASSERT_EQ(4, parser.classFile->attributes_count);
+  ASSERT_EQ(4, parser.classFile->attributes.size());
+
+  {
+    // attribute 1 - SourceFile
+    spAttributeInfo info = parser.classFile->attributes[0];
+    ASSERT_EQ(ATTRIBUTE_TYPE_SOURCE_FILE, info->type);
+    ASSERT_EQ(41, info->attribute_name_index);
+    ASSERT_EQ(CONSTANT_Utf8, parser.classFile->constant_pool->items[41]->tag);
+    ASSERT_EQ(2, info->attribute_length);
+    ASSERT_EQ(5, info->sourcefile_index); // HelloWorld.scala
+  }
+
+  {
+    // attribute 2 - InnerClasses
+    spAttributeInfo info = parser.classFile->attributes[1];
+    ASSERT_EQ(ATTRIBUTE_TYPE_INNER_CLASSES, info->type);
+    ASSERT_EQ(42, info->attribute_name_index);
+    ASSERT_EQ(CONSTANT_Utf8, parser.classFile->constant_pool->items[42]->tag);
+    ASSERT_EQ(10, info->attribute_length);
+    ASSERT_EQ(1, info->innerClasses->number_of_classes);
+
+    {
+      // InnerClass 1
+      spInnerClassesAttributeClass innerClass  = info->innerClasses->classes[0];
+      // HelloWorld$delayedInit$body
+      ASSERT_EQ(36, innerClass->inner_class_info_index);
+      // HelloWorld
+      ASSERT_EQ(2, innerClass->outer_class_info_index);
+      // delayedInit$body
+      ASSERT_EQ(37, innerClass->inner_name_index);
+      u2 flags = NESTED_ACC_PUBLIC | NESTED_ACC_STATIC;
+      ASSERT_EQ(flags, innerClass->inner_class_access_flags);
+    }
+  }
+
+  {
+    // TODO:
+    // attribute 3
+  }
+
+  {
+    // TODO:
+    // attribute 4
   }
 
   // TODO: HelloWorld$.class
