@@ -659,6 +659,141 @@ TEST(ParserScalaBin, HelloWorld) {
     }
   }
 
+  {
+    // Method 3
+    spMethodInfo method = parser.classFile->methods[2];
+    ASSERT_EQ(METHOD_ACC_PUBLIC | METHOD_ACC_STATIC, method->access_flags);
+
+    // name - args
+    ASSERT_EQ(23, method->name_index);
+    ASSERT_EQ(CONSTANT_Utf8, parser.classFile->constant_pool->items[23]->tag);
+
+    // descriptor - ()[Ljava/lang/String;
+    ASSERT_EQ(24, method->descriptor_index);
+    ASSERT_EQ(CONSTANT_Utf8, parser.classFile->constant_pool->items[24]->tag);
+
+    // attributes - Code
+    ASSERT_EQ(1, method->attributes_count);
+    ASSERT_EQ(1, method->attributes.size());
+    spAttributeInfo info = method->attributes[0];
+    ASSERT_EQ(ATTRIBUTE_TYPE_CODE, info->type);
+    ASSERT_EQ(38, info->attribute_name_index); // Code
+    ASSERT_EQ(CONSTANT_Utf8, parser.classFile->constant_pool->items[38]->tag);
+    ASSERT_EQ(19, info->attribute_length);
+
+    // attribute info
+    spCodeAttribute code = info->code;
+    ASSERT_EQ(1, code->max_stack);
+    ASSERT_EQ(0, code->max_locals);
+    ASSERT_EQ(7, code->code_length);
+    ASSERT_EQ(7, code->code.size());
+    ASSERT_EQ(0, code->exception_table_length);
+    ASSERT_EQ(0, code->exceptions.size());
+
+    // code
+    ASSERT_EQ(0xB2, code->code[0]); // getstatic
+    u2 fieldref = code->code[1] << 8 | code->code[2]; // HelloWorld$.$MODULE$
+    ASSERT_EQ(16, fieldref);
+    ASSERT_EQ(0xB6, code->code[3]); // invokevirtual
+    u2 methodref = code->code[4] << 8 | code->code[5]; // HelloWorld$.args
+    ASSERT_EQ(26, methodref);
+    ASSERT_EQ(0xB0, code->code[6]); // areturn
+
+    ASSERT_EQ(0, code->attributes_count);
+    ASSERT_EQ(0, code->attributes.size());
+  }
+
+  {
+    // Method 4
+    spMethodInfo method = parser.classFile->methods[3];
+    ASSERT_EQ(METHOD_ACC_PUBLIC | METHOD_ACC_STATIC, method->access_flags);
+
+    // name - scala$App$_setter_$executionStart_$eq
+    ASSERT_EQ(27, method->name_index);
+    ASSERT_EQ(CONSTANT_Utf8, parser.classFile->constant_pool->items[27]->tag);
+
+    // descriptor - (J)V
+    ASSERT_EQ(28, method->descriptor_index);
+    ASSERT_EQ(CONSTANT_Utf8, parser.classFile->constant_pool->items[28]->tag);
+
+    // attributes - Code
+    ASSERT_EQ(1, method->attributes_count);
+    ASSERT_EQ(1, method->attributes.size());
+    spAttributeInfo info = method->attributes[0];
+    ASSERT_EQ(ATTRIBUTE_TYPE_CODE, info->type);
+    ASSERT_EQ(38, info->attribute_name_index); // Code
+    ASSERT_EQ(CONSTANT_Utf8, parser.classFile->constant_pool->items[38]->tag);
+    ASSERT_EQ(20, info->attribute_length);
+
+    // attribute info
+    spCodeAttribute code = info->code;
+    ASSERT_EQ(3, code->max_stack);
+    ASSERT_EQ(2, code->max_locals);
+    ASSERT_EQ(8, code->code_length);
+    ASSERT_EQ(8, code->code.size());
+    ASSERT_EQ(0, code->exception_table_length);
+    ASSERT_EQ(0, code->exceptions.size());
+
+    // code
+    ASSERT_EQ(0xB2, code->code[0]); // getstatic
+    u2 fieldref = code->code[1] << 8 | code->code[2]; // HelloWorld$.$MODULE$
+    ASSERT_EQ(16, fieldref);
+    ASSERT_EQ(0x1E, code->code[3]); // lload_0
+    ASSERT_EQ(0xB6, code->code[4]); // invokevirtual
+    // HelloWorld$.scala$App$_setter_$executionStart_$eq
+    u2 methodref = code->code[5] << 8 | code->code[6];
+    ASSERT_EQ(30, methodref);
+    ASSERT_EQ(0xB1, code->code[7]); // return
+
+    ASSERT_EQ(0, code->attributes_count);
+    ASSERT_EQ(0, code->attributes.size());
+  }
+
+  {
+    // Method 5
+    spMethodInfo method = parser.classFile->methods[4];
+    ASSERT_EQ(METHOD_ACC_PUBLIC | METHOD_ACC_STATIC, method->access_flags);
+
+    // name - executionStart
+    ASSERT_EQ(31, method->name_index);
+    ASSERT_EQ(CONSTANT_Utf8, parser.classFile->constant_pool->items[31]->tag);
+
+    // descriptor - ()J
+    ASSERT_EQ(32, method->descriptor_index);
+    ASSERT_EQ(CONSTANT_Utf8, parser.classFile->constant_pool->items[32]->tag);
+
+    // attributes - Code
+    ASSERT_EQ(1, method->attributes_count);
+    ASSERT_EQ(1, method->attributes.size());
+    spAttributeInfo info = method->attributes[0];
+    ASSERT_EQ(ATTRIBUTE_TYPE_CODE, info->type);
+    ASSERT_EQ(38, info->attribute_name_index); // Code
+    ASSERT_EQ(CONSTANT_Utf8, parser.classFile->constant_pool->items[38]->tag);
+    ASSERT_EQ(19, info->attribute_length);
+
+    // attribute info
+    spCodeAttribute code = info->code;
+    ASSERT_EQ(2, code->max_stack);
+    ASSERT_EQ(0, code->max_locals);
+    ASSERT_EQ(7, code->code_length);
+    ASSERT_EQ(7, code->code.size());
+    ASSERT_EQ(0, code->exception_table_length);
+    ASSERT_EQ(0, code->exceptions.size());
+
+    // code
+    ASSERT_EQ(0xB2, code->code[0]); // getstatic
+    u2 fieldref = code->code[1] << 8 | code->code[2]; // HelloWorld$.$MODULE$
+    ASSERT_EQ(16, fieldref);
+    ASSERT_EQ(0xB6, code->code[3]); // invokevirtual
+    // HelloWorld$.executionStart
+    u2 methodref = code->code[4] << 8 | code->code[5];
+    ASSERT_EQ(34, methodref);
+    ASSERT_EQ(0xAD, code->code[6]); // lreturn
+
+    ASSERT_EQ(0, code->attributes_count);
+    ASSERT_EQ(0, code->attributes.size());
+  }
+
   // TODO: HelloWorld$.class
   // TODO: HelloWorld$delayedInit$body.class
 }
