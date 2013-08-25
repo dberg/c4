@@ -3,6 +3,26 @@
 namespace djp {
 
 // -----------------------------------------------------------------------------
+// Function helpers
+// -----------------------------------------------------------------------------
+bool isElementValueConst(u1 tag) {
+  switch (tag) {
+    case 'B':
+    case 'C':
+    case 'D':
+    case 'F':
+    case 'I':
+    case 'J':
+    case 'S':
+    case 'Z':
+    case 's':
+      return true;
+    default:
+      return false;
+  }
+}
+
+// -----------------------------------------------------------------------------
 // Public interface
 // -----------------------------------------------------------------------------
 void ParserBin::parse() {
@@ -304,6 +324,78 @@ void ParserBin::parseInnerClassAttribute(
   }
 }
 
+void ParserBin::parseRuntimeVisibleAnnotationsAttribute(
+  spRuntimeVisibleAnnotationsAttribute &visibleAnnotations) {
+  visibleAnnotations->num_annotations = getU2();
+  for (unsigned i = 0; i < visibleAnnotations->num_annotations; i++) {
+    spAnnotationBin annotation = spAnnotationBin(new AnnotationBin);
+    parseAnnotation(annotation);
+    visibleAnnotations->annotations.push_back(annotation);
+  }
+}
+
+void ParserBin::parseAnnotation(spAnnotationBin &annotation) {
+  annotation->type_index = getU2();
+  u2 pairs = getU2();
+  annotation->num_element_value_pairs = pairs;
+  for (unsigned i = 0; i < pairs; i++) {
+    spElementValuePairBin pair = spElementValuePairBin(new ElementValuePairBin);
+    parseElementValuePair(pair);
+    annotation->elemValPairs.push_back(pair);
+  }
+}
+
+void ParserBin::parseElementValuePair(spElementValuePairBin &pair) {
+  pair->element_name_index = getU2();
+  pair->value = spElementValueBin(new ElementValueBin);
+  parseElementValue(pair->value);
+}
+
+void ParserBin::parseElementValue(spElementValueBin &value) {
+  u1 tag = getU1();
+  value->tag = tag;
+
+  // 'B', 'C', 'D', 'F', 'I', 'J', 'S', 'Z' or 's'
+  if (isElementValueConst(tag)) {
+    value->const_value_index = getU2();
+    return;
+  }
+
+  // enum
+  if (tag == 'e') {
+    value->type_name_index = getU2();
+    value->const_name_index = getU2();
+    return;
+  }
+
+  // class
+  if (tag == 'c') {
+    value->class_info_index = getU2();
+    return;
+  }
+
+  // annotation
+  if (tag == '@') {
+    value->annotation_value = spAnnotationBin(new AnnotationBin);
+    parseAnnotation(value->annotation_value);
+    return;
+  }
+
+  // array
+  if (tag == '[') {
+    u2 num_values = getU2();
+    value->num_values = num_values;
+    for (unsigned i = 0; i < num_values; i++) {
+      spElementValueBin value2 = spElementValueBin(new ElementValueBin);
+      parseElementValue(value2);
+      value->values.push_back(value2);
+    }
+    return;
+  }
+
+  // TODO: error
+}
+
 void ParserBin::parseInterfaces(u2 interfaces_count) {
   if (!interfaces_count) {
     return;
@@ -400,8 +492,12 @@ void ParserBin::parseAttributes(u2 attributesCount,
       //  break;
       //case ATTRIBUTE_TYPE_DEPRECATED:
       //  break;
-      //case ATTRIBUTE_TYPE_RUNTIME_VISIBLE_ANNOTATIONS:
-      //  break;
+      case ATTRIBUTE_TYPE_RUNTIME_VISIBLE_ANNOTATIONS:
+        info->visibleAnnotations = spRuntimeVisibleAnnotationsAttribute(
+          new RuntimeVisibleAnnotationsAttribute);
+        parseRuntimeVisibleAnnotationsAttribute(info->visibleAnnotations);
+        break;
+      // TODO:
       //case ATTRIBUTE_TYPE_RUNTIME_INVISIBLE_ANNOTATIONS:
       //  break;
       //case ATTRIBUTE_TYPE_RUNTIME_VISIBLE_PARAMETER_ANNOTATIONS:

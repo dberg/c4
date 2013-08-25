@@ -833,8 +833,13 @@ TEST(ParserScalaBin, HelloWorld) {
   }
 
   {
+    // attribute 3 - RuntimeVisibleAnnotations
+    spAttributeInfo info = parser.classFile->attributes[2];
+    ASSERT_EQ(ATTRIBUTE_TYPE_RUNTIME_VISIBLE_ANNOTATIONS, info->type);
+    ASSERT_EQ(43, info->attribute_name_index);
+    ASSERT_EQ(CONSTANT_Utf8, parser.classFile->constant_pool->items[43]->tag);
+    ASSERT_EQ(11, info->attribute_length);
     // TODO:
-    // attribute 3
   }
 
   {
