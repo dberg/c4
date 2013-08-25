@@ -52,6 +52,9 @@ class ScalaParser {
   void parseSimpleExpr1Head(spSimpleExpr1Head &head);
   void parseSimpleExpr1Tail(spSimpleExpr1Tail &tail);
   void parseSimpleType(spSimpleType &simpleType);
+  void parseSimpleTypeHead(spSimpleTypeHead &head);
+  void parseSimpleTypeTail(spSimpleTypeTail &tail);
+  void parseSimpleTypeTails(spSimpleTypeTails &tails);
   void parseStableId(spStableId &stableId);
   void parseStableIdHead(spStableIdHead &head);
   void parseStableIdTail(spStableIdTail &tail);

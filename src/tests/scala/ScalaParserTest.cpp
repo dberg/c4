@@ -19,10 +19,11 @@ using namespace djp;
  *             ClassParents
  *               Constr
  *                 AnnoType
- *                   SimpleType(3)
- *                     StableId
- *                       StableIdHead(1)
- *                         id            <-- App
+ *                   SimpleType
+ *                     SimpleTypeHead(1)
+ *                       StableId
+ *                         StableIdHead(1)
+ *                           id            <-- App
  *                 ArgumentExprs[0](3)
  *                   BlockExpr[0](2)
  *                     '{'
@@ -93,8 +94,8 @@ TEST(ScalaParser, HelloWorld) {
   spConstr constr = classTmplOpt->classTmpl->classParents->constr;
 
   spSimpleType simpleType = constr->annotType->simpleType;
-  ASSERT_EQ(SimpleType::Opt::STABLE_ID, simpleType->opt);
-  spStableId stableId  = simpleType->stableId;
+  ASSERT_EQ(SimpleTypeHead::Opt::STABLE_ID, simpleType->head->opt);
+  spStableId stableId  = simpleType->head->stableId;
   ASSERT_EQ(StableIdHead::Opt::ID, stableId->head->opt);
   ASSERT_EQ("App", stableId->head->id->val);
   ASSERT_EQ(26, stableId->head->id->ini);

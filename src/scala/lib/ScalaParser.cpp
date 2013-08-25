@@ -729,26 +729,51 @@ void ScalaParser::parseSimpleExpr1Tail(spSimpleExpr1Tail &tail) {
 }
 
 /**
- * SimpleType ::= SimpleType TypeArgs
- *              | SimpleType ‘#’ id
- *              | StableId
- *              | Path ‘.’ ‘type’
- *              | ‘(’ Types ’)’
+ * SimpleType ::= SimpleTypeHead SimpleTypeTails | SimpleTypeHead
  */
 void ScalaParser::parseSimpleType(spSimpleType &simpleType) {
-  // TODO: SimpleType TypeArgs
-  // TODO: SimpleType ‘#’ id
-
-  simpleType->opt = SimpleType::Opt::STABLE_ID;
-  simpleType->stableId = spStableId(new StableId);
-  parseStableId(simpleType->stableId);
-  if (simpleType->stableId->err) {
+  simpleType->head = spSimpleTypeHead(new SimpleTypeHead);
+  parseSimpleTypeHead(simpleType->head);
+  if (simpleType->head->err) {
     simpleType->addErr(-1);
+    return;
+  }
+
+  // TODO: SimpleTypeTails
+}
+
+/**
+ * SimpleTypeHead ::= StableId
+ *                  | Path ‘.’ ‘type’
+ *                  | ‘(’ Types ’)’
+ */
+void ScalaParser::parseSimpleTypeHead(spSimpleTypeHead &head) {
+  // StableId
+  head->opt = SimpleTypeHead::Opt::STABLE_ID;
+  head->stableId = spStableId(new StableId);
+  parseStableId(head->stableId);
+  if (head->stableId->err) {
+    head->addErr(-1);
     return;
   }
 
   // TODO: Path ‘.’ ‘type’
   // TODO: ‘(’ Types ’)’
+}
+
+/**
+ * SimpleTypeTail ::= TypeArgs | ‘#’ id
+ */
+void ScalaParser::parseSimpleTypeTail(spSimpleTypeTail &tail) {
+  // TODO: TypeArgs
+  // TODO: ‘#’ id
+}
+
+/**
+ * SimpleTypeTails ::= SimpleTypeTail SimpleTypeTails | SimpleTypeTail
+ */
+void ScalaParser::parseSimpleTypeTails(spSimpleTypeTails &tails) {
+  // TODO:
 }
 
 /**

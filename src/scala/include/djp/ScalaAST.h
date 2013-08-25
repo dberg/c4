@@ -23,7 +23,6 @@
  *
  * SimpleExpr1Tail ::=  ArgumentExprs SimpleExpr1Tail | ArgumentExprs
  *
- *
  * 2) Remove left recursion between Path and StableId. We first remove
  *    Path references in StableId while creating IdPeriod and PeriodId
  *
@@ -44,6 +43,18 @@
  *                | [IdPeriod] ‘super’ [ClassQualifier] PeriodId
  *
  * StableIdTail ::= PeriodId StableIdTail | PeriodId
+ *
+ * 3) Remove left recursion in SimpleType.
+ *
+ * SimpleType ::= SimpleTypeHead SimpleTypeTails | SimpleTypeHead
+ *
+ * SimpleTypeHead ::= StableId
+ *                  | Path ‘.’ ‘type’
+ *                  | ‘(’ Types ’)’
+ *
+ * SimpleTypeTails ::= SimpleTypeTail SimpleTypeTails | SimpleTypeTail
+ *
+ * SimpleTypeTail ::= TypeArgs | ‘#’ id
  */
 
 namespace djp {
@@ -85,6 +96,9 @@ typedef std::shared_ptr<struct SimpleExpr1> spSimpleExpr1;
 typedef std::shared_ptr<struct SimpleExpr1Head> spSimpleExpr1Head;
 typedef std::shared_ptr<struct SimpleExpr1Tail> spSimpleExpr1Tail;
 typedef std::shared_ptr<struct SimpleType> spSimpleType;
+typedef std::shared_ptr<struct SimpleTypeHead> spSimpleTypeHead;
+typedef std::shared_ptr<struct SimpleTypeTail> spSimpleTypeTail;
+typedef std::shared_ptr<struct SimpleTypeTails> spSimpleTypeTails;
 typedef std::shared_ptr<struct StableId> spStableId;
 typedef std::shared_ptr<struct StableIdHead> spStableIdHead;
 typedef std::shared_ptr<struct StableIdTail> spStableIdTail;
@@ -562,31 +576,60 @@ struct SimpleExpr1Tail : ASTBase {
 };
 
 /**
- * SimpleType ::= SimpleType TypeArgs
- *              | SimpleType ‘#’ id
- *              | StableId
- *              | Path ‘.’ ‘type’
- *              | ‘(’ Types ’)’
+ * SimpleType ::= SimpleTypeHead SimpleTypeTails | SimpleTypeHead
  */
 struct SimpleType : ASTBase {
+  spSimpleTypeHead head;
+  spSimpleTypeTails tails;
+};
+
+/**
+ * SimpleTypeHead ::= StableId
+ *                  | Path ‘.’ ‘type’
+ *                  | ‘(’ Types ’)’
+ */
+struct SimpleTypeHead : ASTBase {
   enum class Opt {
     UNDEFINED,
-    TYPE_ARGS,
-    HASH_ID,
     STABLE_ID,
-    PATH,
+    PATH_TYPE,
     TYPES,
   };
 
   Opt opt;
 
-  // TODO: SimpleType TypeArgs
-  // TODO: SimpleType '#' id
   spStableId stableId;
+
   // TODO: Path '.' 'type'
   // TODO: '(' Types ')'
 
-  SimpleType() : opt(Opt::UNDEFINED) {}
+  SimpleTypeHead() : opt(Opt::UNDEFINED) {}
+};
+
+/**
+ * SimpleTypeTail ::= TypeArgs | ‘#’ id
+ */
+struct SimpleTypeTail : ASTBase {
+  enum class Opt {
+    UNDEFINED,
+    TYPE_ARGS,
+    HASH_ID,
+  };
+
+  Opt opt;
+
+  // TODO: spTypeArgs
+  // TODO: ‘#’ id
+
+  SimpleTypeTail() : opt(Opt::UNDEFINED) {}
+};
+
+/**
+ * SimpleTypeTails ::= SimpleTypeTail SimpleTypeTails | SimpleTypeTail
+ */
+struct SimpleTypeTails : ASTBase {
+  spSimpleTypeTail tail;
+  spSimpleTypeTails tails;
 };
 
 /**
