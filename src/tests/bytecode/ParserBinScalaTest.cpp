@@ -839,12 +839,29 @@ TEST(ParserScalaBin, HelloWorld) {
     ASSERT_EQ(43, info->attribute_name_index);
     ASSERT_EQ(CONSTANT_Utf8, parser.classFile->constant_pool->items[43]->tag);
     ASSERT_EQ(11, info->attribute_length);
-    // TODO:
+    ASSERT_EQ(1, info->visibleAnnotations->num_annotations);
+
+    {
+      // annotation 1
+      spAnnotationBin ann = info->visibleAnnotations->annotations[0];
+      ASSERT_EQ(6, ann->type_index); // Lscala/reflect/ScalaSignature;
+      ASSERT_EQ(1, ann->num_element_value_pairs);
+
+      {
+        // element value pair 1
+        spElementValuePairBin pair = ann->elemValPairs[0];
+        ASSERT_EQ(7, pair->element_name_index); // bytes
+        ASSERT_EQ('s', pair->value->tag);
+        ASSERT_EQ(8, pair->value->const_value_index); // Item 8: 146 bytes
+      }
+    }
   }
 
   {
-    // TODO:
     // attribute 4
+    spAttributeInfo info = parser.classFile->attributes[3];
+    // ScalaSig
+    ASSERT_EQ(ATTRIBUTE_TYPE_UNKNOWN, info->type);
   }
 
   // TODO: HelloWorld$.class
