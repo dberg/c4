@@ -71,7 +71,7 @@ class ScalaParser {
 public:
   ScalaParser(const std::string filename, const std::string &buffer)
     : filename(filename), src(spSourceCodeStream(new SourceCodeStream(buffer))),
-      compUnit(spCompilationUnit(new CompilationUnit)), error(0)
+      compUnit(spCompilationUnit(new CompilationUnit))
   {
     diag = spDiagnosis(new Diagnosis);
     lexer = spScalaLexer(new ScalaLexer(src, diag, indentMap));
@@ -80,8 +80,6 @@ public:
   spDiagnosis diag;
   spCompilationUnit compUnit;
   ScalaLineIndentationMap indentMap;
-  int error;
-  std::string error_msg;
 
   void parse();
 };
