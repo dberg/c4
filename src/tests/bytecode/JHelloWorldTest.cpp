@@ -75,7 +75,7 @@ TEST(ParserBin, HelloWorld) {
     ASSERT_EQ(19, cMethodrefInfo->class_index);
     ASSERT_EQ(20, cMethodrefInfo->name_and_type_index);
 
-    // Assert that index 19 is a CONSTANT_Class and index 20 is 
+    // Assert that index 19 is a CONSTANT_Class and index 20 is
     // CONSTANT_NameAndType "(Ljava/lang/String;)V
     ASSERT_EQ(CONSTANT_Class, parser.classFile->constant_pool->items[19]->tag);
     ASSERT_EQ(CONSTANT_NameAndType,

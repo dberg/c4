@@ -271,8 +271,8 @@ $(bin)/test-scala: $(tests_scala)/ScalaTests.cpp \
 
 $(bin)/test-bytecode: bytecode-classes \
                       $(tests_bytecode)/BytecodeTests.cpp \
-                      $(tests_bytecode)/ParserBinTest.cpp \
-                      $(tests_bytecode)/ParserBinScalaTest.cpp \
+                      $(tests_bytecode)/JHelloWorldTest.cpp \
+                      $(tests_bytecode)/SHelloWorldTest.cpp \
                       $(gtest_obj)/libgtest.a
 
 	$(CXX) $(CXXTESTFLAGS) $(INC) -I$(gtest_inc) \
