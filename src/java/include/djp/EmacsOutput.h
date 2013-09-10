@@ -14,7 +14,7 @@
 namespace djp {
 
 /**
- * Emacs output for syntax highlighing.
+ * Emacs output for djp-mode.
  * The first position in the buffer is 1.
  */
 class EmacsOutput {
