@@ -7,6 +7,7 @@
 #include "djp/Parser.h"
 #include "djp/EmacsOutput.h"
 #include "djp/ScalaParser.h"
+#include "djp/ScalaEmacsOutput.h"
 #include "djp/ParserBin.h"
 #include "djp/BinOutput.h"
 
@@ -71,9 +72,9 @@ int parseScalaFile(CmdInput &ci) {
   ScalaParser parser(ci.getFilename(), buffer);
   parser.parse();
 
-  /*
-  ScalaEmacsOutput output(parser);
+  ScalaEmacsOutput output(parser.compUnit, parser.diag, parser.indentMap);
   output.build();
+  /*
   std::cout
     << output.outSH.str() << std::endl
     << output.outErr.str() << std::endl
