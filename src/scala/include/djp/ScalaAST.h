@@ -751,7 +751,7 @@ struct TmplDef : ASTBase {
  *           | PackageObject
  */
 struct TopStat : ASTBase {
-  enum Opt {
+  enum class Opt {
     UNDEFINED,
     TMPL_DEF,
     IMPORT,
