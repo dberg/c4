@@ -4,6 +4,7 @@
 #include "djp/Diagnosis.h"
 #include "djp/ScalaIndentation.h"
 #include "djp/ScalaAST.h"
+#include "djp/ScalaSyntaxHighlighting.h"
 using namespace djp::scala;
 
 namespace djp {

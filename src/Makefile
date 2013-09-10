@@ -206,7 +206,8 @@ $(obj_java)/SymbolTable.o: $(libdir_java)/SymbolTable.cpp \
 $(obj_scala)/libscala.a:  $(obj_scala)/ScalaIndentation.o \
                           $(obj_scala)/ScalaParser.o \
                           $(obj_scala)/ScalaLexer.o \
-                          $(obj_scala)/ScalaEmacsOutput.o
+                          $(obj_scala)/ScalaEmacsOutput.o \
+                          $(obj_scala)/ScalaSyntaxHighlighting.o
 	ar -rv $@ $+
 
 $(obj_scala)/ScalaIndentation.o: $(libdir_scala)/ScalaIndentation.cpp \
@@ -226,6 +227,11 @@ $(obj_scala)/ScalaLexer.o: $(libdir_scala)/ScalaLexer.cpp \
 
 $(obj_scala)/ScalaEmacsOutput.o: $(libdir_scala)/ScalaEmacsOutput.cpp \
                                  $(incdir_scala)/ScalaEmacsOutput.h
+	$(CXX) $(CFLAGS) $(INC) \
+            -c $< -o $@
+
+$(obj_scala)/ScalaSyntaxHighlighting.o: $(libdir_scala)/ScalaSyntaxHighlighting.cpp \
+                                        $(incdir_scala)/ScalaSyntaxHighlighting.h
 	$(CXX) $(CFLAGS) $(INC) \
             -c $< -o $@
 
