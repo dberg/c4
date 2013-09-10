@@ -1,6 +1,6 @@
 //-*- C++ -*-
-#ifndef __OUTPUT_H__
-#define __OUTPUT_H__
+#ifndef __EMACS_OUTPUT_H__
+#define __EMACS_OUTPUT_H__
 #include <iostream>
 #include <map>
 #include <sstream>
