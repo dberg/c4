@@ -10,6 +10,10 @@ namespace djp {
 class ScalaSyntaxHighlighting {
   spCompilationUnit compUnit;
 
+  void setKeyword(spTokenNode tok);
+
+  void setPackaging(spPackaging &packing);
+  void setTmplDef(spTmplDef &tmplDef);
   void setTopStat(spTopStat &topStat);
   void setTopStatSeq(spTopStatSeq &topStatSeq);
 
