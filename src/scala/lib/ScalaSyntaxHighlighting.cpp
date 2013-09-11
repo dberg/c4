@@ -13,6 +13,10 @@ void ScalaSyntaxHighlighting::build() {
   sh << "]";
 }
 
+std::string ScalaSyntaxHighlighting::get() {
+  return sh.str();
+}
+
 void ScalaSyntaxHighlighting::setTopStat(spTopStat &topStat) {
   if (topStat->opt == TopStat::Opt::TMPL_DEF) {
     // TODO:

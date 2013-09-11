@@ -13,12 +13,13 @@ class ScalaSyntaxHighlighting {
   void setTopStat(spTopStat &topStat);
   void setTopStatSeq(spTopStatSeq &topStatSeq);
 
-public:
   // Emacs output
   std::stringstream sh;
+public:
 
   ScalaSyntaxHighlighting(spCompilationUnit &compUnit) : compUnit(compUnit) {}
   void build();
+  std::string get();
 };
 
 } // namespace

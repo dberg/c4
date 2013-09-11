@@ -269,6 +269,7 @@ $(bin)/test-java: $(tests_java)/JavaTests.cpp \
 $(bin)/test-scala: $(tests_scala)/ScalaTests.cpp \
                    $(tests_scala)/ScalaParserTest.cpp \
                    $(tests_scala)/ScalaIndentationTest.cpp \
+                   $(tests_scala)/ScalaSyntaxHighlightingTest.cpp \
                    $(obj_common)/libcommon.a \
                    $(obj_scala)/libscala.a \
                    $(gtest_obj)/libgtest.a

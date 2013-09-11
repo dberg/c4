@@ -15,6 +15,8 @@ class ScalaEmacsOutput {
   ScalaLineIndentationMap &indentMap;
 
 public:
+  std::string sh; // syntax highlighting
+
   ScalaEmacsOutput(spCompilationUnit &compUnit, spDiagnosis &diag,
     ScalaLineIndentationMap &indentMap)
     : compUnit(compUnit), diag(diag), indentMap(indentMap) {}
