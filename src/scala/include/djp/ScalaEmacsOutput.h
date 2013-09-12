@@ -1,6 +1,7 @@
 //-*- C++ -*-
 #ifndef __SCALA_EMACS_OUTPUT_H__
 #define __SCALA_EMACS_OUTPUT_H__
+#include <memory>
 #include "djp/Diagnosis.h"
 #include "djp/ScalaIndentation.h"
 #include "djp/ScalaAST.h"

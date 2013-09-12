@@ -3,9 +3,9 @@
 namespace djp {
 
 void ScalaEmacsOutput::build() {
-  auto shOutput = ScalaSyntaxHighlighting(compUnit);
-  shOutput.build();
-  sh = shOutput.get();
+  auto shOutput = std::make_shared<ScalaSyntaxHighlighting>(compUnit);
+  shOutput->build();
+  sh = shOutput->get();
 }
 
 } // namespace
