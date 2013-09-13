@@ -31,7 +31,86 @@ void ScalaSyntaxHighlighting::setKeyword(spTokenNode tok) {
 // ----------------------------------------------------------------------------
 // AST
 // ----------------------------------------------------------------------------
+void ScalaSyntaxHighlighting::setAnnotType(spAnnotType &annotType) {
+  if (annotType->simpleType) {
+    setSimpleType(annotType->simpleType);
+  }
+
+  // TODO: std::vector<Annotation> annotations;
+}
+
+void ScalaSyntaxHighlighting::setClassParents(spClassParents &classParents) {
+  if (classParents->constr) {
+    setConstr(classParents->constr);
+  }
+
+  // TODO: std::vector<spTokenNode, spAnnotType> paTokNodeAnnotType;
+}
+
+void ScalaSyntaxHighlighting::setClassTemplate(spClassTemplate &classTmpl) {
+  // TODO: spEarlyDefs earlyDefs;
+
+  if (classTmpl->classParents) {
+    setClassParents(classTmpl->classParents);
+  }
+
+  // TODO: spTemplateBody tmplBody;
+}
+
+void ScalaSyntaxHighlighting::setClassTemplateOpt(
+  spClassTemplateOpt &classTmplOpt) {
+
+  if (classTmplOpt->opt == ClassTemplateOpt::Opt::CLASS_TEMPLATE) {
+    if (classTmplOpt->tokExtends) {
+      setKeyword(classTmplOpt->tokExtends);
+    }
+
+    if (classTmplOpt->classTmpl) {
+      setClassTemplate(classTmplOpt->classTmpl);
+    }
+
+    return;
+  }
+
+  if (classTmplOpt->opt == ClassTemplateOpt::Opt::TEMPLATE_BODY) {
+    if (classTmplOpt->tokExtends) {
+      setKeyword(classTmplOpt->tokExtends);
+    }
+
+    // TODO: tmplBody
+
+    return;
+  }
+}
+
+void ScalaSyntaxHighlighting::setConstr(spConstr &constr) {
+  if (constr->annotType) {
+    setAnnotType(constr->annotType);
+  }
+
+  // TODO:
+  //std::vector<spArgumentExprs> argExprs;
+}
+
+void ScalaSyntaxHighlighting::setLexId(spLexId &id) {
+  sh << "(djp-sh-identifier " << (id->ini + 1) << " " << (id->end + 1) << ")";
+}
+
+void ScalaSyntaxHighlighting::setObjectDef(spObjectDef &objectDef) {
+  if (objectDef->id) {
+    setLexId(objectDef->id);
+  }
+
+  if (objectDef->classTmplOpt) {
+    setClassTemplateOpt(objectDef->classTmplOpt);
+  }
+}
+
 void ScalaSyntaxHighlighting::setPackaging(spPackaging &packing) {
+  // TODO:
+}
+
+void ScalaSyntaxHighlighting::setSimpleType(spSimpleType &simpleType) {
   // TODO:
 }
 
@@ -62,10 +141,10 @@ void ScalaSyntaxHighlighting::setTmplDef(spTmplDef &tmplDef) {
       setKeyword(tmplDef->tokObject);
     }
 
-    // TODO:
-    //if (tmplDef->objectDef) {
-    //  setObjectDef(tmplDef->objectDef);
-    //}
+    if (tmplDef->objectDef) {
+      setObjectDef(tmplDef->objectDef);
+    }
+
     return;
   }
 

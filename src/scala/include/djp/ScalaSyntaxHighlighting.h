@@ -12,7 +12,15 @@ class ScalaSyntaxHighlighting {
 
   void setKeyword(spTokenNode tok);
 
+  void setAnnotType(spAnnotType &annotType);
+  void setClassParents(spClassParents &classParents);
+  void setClassTemplate(spClassTemplate &classTmpl);
+  void setClassTemplateOpt(spClassTemplateOpt &classTmplOpt);
+  void setConstr(spConstr &constr);
+  void setLexId(spLexId &id);
+  void setObjectDef(spObjectDef &objectDef);
   void setPackaging(spPackaging &packing);
+  void setSimpleType(spSimpleType &simpleType);
   void setTmplDef(spTmplDef &tmplDef);
   void setTopStat(spTopStat &topStat);
   void setTopStatSeq(spTopStatSeq &topStatSeq);
