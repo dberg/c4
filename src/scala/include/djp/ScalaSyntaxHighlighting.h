@@ -36,6 +36,7 @@ class ScalaSyntaxHighlighting {
   void setPeriodId(spPeriodId &periodId);
   void setPostfixExpr(spPostfixExpr &postfixExpr);
   void setPrefixExpr(spPrefixExpr &prefixExpr);
+  void setQualId(spQualId &qualId);
   void setSemi(spSemi semi);
   void setSimpleExpr(spSimpleExpr &simpleExpr);
   void setSimpleExpr1(spSimpleExpr1 &simpleExpr1);

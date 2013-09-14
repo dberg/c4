@@ -31,3 +31,20 @@ TEST(ScalaSyntaxHighlighting, HelloWorld) {
 
   ASSERT_EQ(expected, output.sh);
 }
+
+TEST(ScalaSyntaxHighlighting, Trait) {
+  std::string filename = "HelloWorld.scala";
+  std::string buffer =
+    "package test\n"
+    "import com.company.utils._\n"
+    "trait X extends Y with Z";
+
+  ScalaParser parser(filename, buffer);
+  parser.parse();
+
+  ScalaEmacsOutput output(parser.compUnit, parser.diag, parser.indentMap);
+  output.build();
+
+  // TODO:
+  // output.sh
+}

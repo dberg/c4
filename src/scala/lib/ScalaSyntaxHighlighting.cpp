@@ -348,7 +348,13 @@ void ScalaSyntaxHighlighting::setObjectDef(spObjectDef &objectDef) {
 }
 
 void ScalaSyntaxHighlighting::setPackaging(spPackaging &packing) {
-  // TODO:
+  if (packing->tokPackage) {
+    setKeyword(packing->tokPackage);
+  }
+
+  if (packing->qualId) {
+    setQualId(packing->qualId);
+  }
 }
 
 void ScalaSyntaxHighlighting::setPath(spPath &path) {
@@ -366,7 +372,13 @@ void ScalaSyntaxHighlighting::setPath(spPath &path) {
 }
 
 void ScalaSyntaxHighlighting::setPeriodId(spPeriodId &periodId) {
-  // TODO:
+  if (periodId->tok) {
+    setOp(periodId->tok);
+  }
+
+  if (periodId->id) {
+    setLexId(periodId->id);
+  }
 }
 
 void ScalaSyntaxHighlighting::setPostfixExpr(spPostfixExpr &postfixExpr) {
@@ -382,6 +394,16 @@ void ScalaSyntaxHighlighting::setPrefixExpr(spPrefixExpr &prefixExpr) {
 
   if (prefixExpr->simpleExpr) {
     setSimpleExpr(prefixExpr->simpleExpr);
+  }
+}
+
+void ScalaSyntaxHighlighting::setQualId(spQualId &qualId) {
+  if (qualId->id) {
+    setLexId(qualId->id);
+  }
+
+  for (auto periodId : qualId->periodIds) {
+    setPeriodId(periodId);
   }
 }
 
