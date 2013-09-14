@@ -507,6 +507,7 @@ struct Semi : ASTBase {
 struct SimpleExpr : ASTBase {
   enum class Opt {
     UNDEFINED,
+    NEW,
     BLOCK_EXPR,
     SIMPLE_EXPR1,
   };
