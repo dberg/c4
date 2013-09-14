@@ -456,6 +456,84 @@ void ScalaParser::parseExprs(spExprs &exprs) {
 }
 
 /**
+ * Import ::= ‘import’ ImportExpr {‘,’ ImportExpr}
+ */
+void ScalaParser::parseImport(spImport &import) {
+  // import
+  import->tokImport = lexer->getCurTokenNode();
+  lexer->getNextToken();
+
+  import->importExpr = spImportExpr(new ImportExpr);
+  parseImportExpr(import->importExpr);
+  if (import->importExpr->err) {
+    import->addErr(-1);
+    return;
+  }
+
+  State state;
+  while (lexer->getCurToken() == STok::COMMA) {
+    saveState(state);
+    // ,
+    auto comma = lexer->getCurTokenNode();
+    lexer->getNextToken();
+
+    // ImportExpr
+    auto importExpr = spImportExpr(new ImportExpr);
+    parseImportExpr(importExpr);
+    if (importExpr->err) {
+      restoreState(state);
+      return;
+    }
+
+    import->pairs.push_back(std::make_pair(comma, importExpr));
+  }
+}
+
+/**
+ * ImportExpr ::= StableId ‘.’ (id | '_' | ImportSelectors)
+ */
+void ScalaParser::parseImportExpr(spImportExpr &importExpr) {
+  // StableId
+  importExpr->stableId = spStableId(new StableId);
+  parseStableId(importExpr->stableId);
+  if (importExpr->stableId->err) {
+    importExpr->addErr(-1);
+    return;
+  }
+
+  // '.'
+  if (lexer->getCurToken() != STok::PERIOD) {
+    importExpr->addErr(ERR_EXP_PERIOD);
+    return;
+  }
+
+  importExpr->tokPeriod = lexer->getCurTokenNode();
+  lexer->getNextToken();
+
+  // We now have to check one of each
+  // (id | '_' | ImportSelectors)
+
+  // id
+  if (lexer->getCurToken() == STok::ID) {
+    importExpr->id = parseLexId();
+    lexer->getNextToken();
+    return;
+  }
+
+  // '_'
+  if (lexer->getCurToken() == STok::UNDERSCORE) {
+    importExpr->tokUnderscore = lexer->getCurTokenNode();
+    lexer->getNextToken(); // consume '_'
+    return;
+  }
+
+  // TODO:
+  // ImportSelectors
+
+  importExpr->addErr(-1);
+}
+
+/**
  * InfixExpr ::= PrefixExpr
  *             | InfixExpr id [nl] InfixExpr
  */
@@ -877,12 +955,23 @@ void ScalaParser::parseTopStat(spTopStat &topStat) {
     return;
   }
 
+  // Import
+  if (lexer->getCurToken() == STok::IMPORT) {
+    topStat->opt = TopStat::Opt::IMPORT;
+    topStat->import = spImport(new Import);
+    parseImport(topStat->import);
+    if (topStat->import->err) {
+      topStat->addErr(-1);
+    }
+    return;
+  }
+
+  // TmplDef
   // TODO: {Annotation [nl]} {Modifier}
   topStat->opt = TopStat::Opt::TMPL_DEF;
   topStat->tmplDef = spTmplDef(new TmplDef);
   parseTmplDef(topStat->tmplDef);
 
-  // TODO: Import
   // TODO:PackageObject
 }
 

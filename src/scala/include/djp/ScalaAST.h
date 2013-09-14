@@ -82,6 +82,8 @@ typedef std::shared_ptr<struct Constr> spConstr;
 typedef std::shared_ptr<struct Expr> spExpr;
 typedef std::shared_ptr<struct Expr1> spExpr1;
 typedef std::shared_ptr<struct Exprs> spExprs;
+typedef std::shared_ptr<struct Import> spImport;
+typedef std::shared_ptr<struct ImportExpr> spImportExpr;
 typedef std::shared_ptr<struct InfixExpr> spInfixExpr;
 typedef std::shared_ptr<struct Literal> spLiteral;
 typedef std::shared_ptr<struct ObjectDef> spObjectDef;
@@ -366,6 +368,27 @@ struct Exprs : ASTBase {
 struct IdPeriod : ASTBase {
   spTokenNode tok;
   spLexId id;
+};
+
+/**
+ * Import ::= ‘import’ ImportExpr {‘,’ ImportExpr}
+ */
+struct Import : ASTBase {
+  spTokenNode tokImport;
+  spImportExpr importExpr;
+  std::vector<std::pair<spTokenNode, spImportExpr>> pairs;
+};
+
+/**
+ * ImportExpr ::= StableId ‘.’ (id | ‘_’ | ImportSelectors)
+ */
+struct ImportExpr : ASTBase {
+  spStableId stableId;
+  spTokenNode tokPeriod;
+  spLexId id;
+  spTokenNode tokUnderscore;
+  // TODO:
+  //spImportSelectors importSelectors;
 };
 
 /**
@@ -767,7 +790,7 @@ struct TopStat : ASTBase {
   // std::vector<{Modifier}>
   spTmplDef tmplDef;
 
-  // TODO: Import
+  spImport import;
 
   spPackaging packaging;
 
