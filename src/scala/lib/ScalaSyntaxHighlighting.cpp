@@ -28,6 +28,14 @@ void ScalaSyntaxHighlighting::setKeyword(spTokenNode tok) {
   sh << "(djp-sh-keyword " << (tok->ini + 1) << " " << (tok->end + 1) << ")";
 }
 
+void ScalaSyntaxHighlighting::setOp(spTokenNode tok) {
+  setOp(tok->ini + 1, tok->end + 1);
+}
+
+void ScalaSyntaxHighlighting::setOp(unsigned int ini, unsigned int end) {
+  sh << "(djp-sh-op " << ini << " " << end << ")";
+}
+
 // ----------------------------------------------------------------------------
 // AST
 // ----------------------------------------------------------------------------
@@ -37,6 +45,92 @@ void ScalaSyntaxHighlighting::setAnnotType(spAnnotType &annotType) {
   }
 
   // TODO: std::vector<Annotation> annotations;
+}
+
+void ScalaSyntaxHighlighting::setArgumentExprs(spArgumentExprs &argExprs) {
+  if (argExprs->opt == ArgumentExprs::Opt::EXPRS) {
+    if (argExprs->tokLParen) {
+      setOp(argExprs->tokLParen);
+    }
+
+    if (argExprs->exprs) {
+      setExprs(argExprs->exprs);
+    }
+
+    if (argExprs->tokRParen) {
+      setOp(argExprs->tokRParen);
+    }
+
+    return;
+  }
+
+  if (argExprs->opt == ArgumentExprs::Opt::EXPRS_POSTFIX_EXPR) {
+    // TODO:
+    return;
+  }
+
+  if (argExprs->opt == ArgumentExprs::Opt::BLOCK_EXPR) {
+    if (argExprs->blockExpr) {
+      setBlockExpr(argExprs->blockExpr);
+    }
+    return;
+  }
+}
+
+void ScalaSyntaxHighlighting::setBlock(spBlock &block) {
+  for (auto pair : block->paBlockStatSemi) {
+    auto blockStat = pair.first;
+
+    if (blockStat) {
+      setBlockStat(blockStat);
+    }
+
+    auto semi = pair.second;
+    if (semi) {
+      setSemi(semi);
+    }
+  }
+}
+
+void ScalaSyntaxHighlighting::setBlockExpr(spBlockExpr &blockExpr) {
+  if (blockExpr->opt == BlockExpr::Opt::CASE) {
+    // TODO:
+    return;
+  }
+
+  if (blockExpr->opt == BlockExpr::Opt::BLOCK) {
+    if (blockExpr->tokLCurlyB) {
+      setOp(blockExpr->tokLCurlyB);
+    }
+
+    if (blockExpr->block) {
+      setBlock(blockExpr->block);
+    }
+
+    if (blockExpr->tokRCurlyB) {
+      setOp(blockExpr->tokRCurlyB);
+    }
+    return;
+  }
+}
+
+void ScalaSyntaxHighlighting::setBlockStat(spBlockStat &blockStat) {
+  if (blockStat->opt == BlockStat::Opt::DEF) {
+    // TODO:
+    return;
+  }
+
+  if (blockStat->opt == BlockStat::Opt::TMPL_DEF) {
+    // TODO:
+    return;
+  }
+
+  if (blockStat->opt == BlockStat::Opt::EXPR1) {
+    if (blockStat->expr1) {
+      setExpr1(blockStat->expr1);
+    }
+    return;
+  }
 }
 
 void ScalaSyntaxHighlighting::setClassParents(spClassParents &classParents) {
@@ -88,12 +182,159 @@ void ScalaSyntaxHighlighting::setConstr(spConstr &constr) {
     setAnnotType(constr->annotType);
   }
 
+  for (auto argExprs : constr->argExprs) {
+    setArgumentExprs(argExprs);
+  }
+}
+
+void ScalaSyntaxHighlighting::setExpr(spExpr expr) {
+  if (expr->opt == Expr::Opt::EXPR) {
+    // TODO:
+    return;
+  }
+
+  if (expr->opt == Expr::Opt::EXPR1) {
+    if (expr->expr1) {
+      setExpr1(expr->expr1);
+    }
+    return;
+  }
+}
+
+void ScalaSyntaxHighlighting::setExpr1(spExpr1 &expr1) {
+  if (expr1->opt == Expr1::Opt::IF) {
+    // TODO:
+    return;
+  }
+
+  if (expr1->opt == Expr1::Opt::WHILE) {
+    // TODO:
+    return;
+  }
+
+  if (expr1->opt == Expr1::Opt::TRY) {
+    // TODO:
+    return;
+  }
+
+  if (expr1->opt == Expr1::Opt::DO) {
+    // TODO:
+    return;
+  }
+
+  if (expr1->opt == Expr1::Opt::FOR) {
+    // TODO:
+    return;
+  }
+
+  if (expr1->opt == Expr1::Opt::THROW) {
+    // TODO:
+    return;
+  }
+
+  if (expr1->opt == Expr1::Opt::RETURN) {
+    // TODO:
+    return;
+  }
+
+  if (expr1->opt == Expr1::Opt::ID_EQUALS_EXPR) {
+    // TODO:
+    return;
+  }
+
+  if (expr1->opt == Expr1::Opt::SIMPLE_EXPR1) {
+    // TODO:
+    return;
+  }
+
+  if (expr1->opt == Expr1::Opt::POSTFIX_EXPR) {
+    if (expr1->postfixExpr) {
+      setPostfixExpr(expr1->postfixExpr);
+    }
+    return;
+  }
+
+  if (expr1->opt == Expr1::Opt::POSTFIX_EXPR_ASCRIPTION) {
+    // TODO:
+    return;
+  }
+
+  if (expr1->opt == Expr1::Opt::POSTFIX_EXPR_MATCH) {
+    // TODO:
+    return;
+  }
+}
+
+void ScalaSyntaxHighlighting::setExprs(spExprs exprs) {
+  if (exprs->expr) {
+    setExpr(exprs->expr);
+  }
+
+  for (auto pair : exprs->pairs) {
+    setOp(pair.first + 1, pair.first + 2);
+    setExpr(pair.second);
+  }
+}
+
+void ScalaSyntaxHighlighting::setIdPeriod(spIdPeriod &idPeriod) {
   // TODO:
-  //std::vector<spArgumentExprs> argExprs;
+}
+
+void ScalaSyntaxHighlighting::setInfixExpr(spInfixExpr &infixExpr) {
+  if (infixExpr->opt == InfixExpr::Opt::PREFIX) {
+    if (infixExpr->prefixExpr) {
+      setPrefixExpr(infixExpr->prefixExpr);
+    }
+    return;
+  }
+
+  if (infixExpr->opt == InfixExpr::Opt::INFIX) {
+    // TODO:
+    return;
+  }
 }
 
 void ScalaSyntaxHighlighting::setLexId(spLexId &id) {
   sh << "(djp-sh-identifier " << (id->ini + 1) << " " << (id->end + 1) << ")";
+}
+
+void ScalaSyntaxHighlighting::setLiteral(spLiteral &literal) {
+  if (literal->opt == Literal::Opt::INTEGER) {
+    // TODO:
+    return;
+  }
+
+  if (literal->opt == Literal::Opt::FLOATING_POINT) {
+    // TODO:
+    return;
+  }
+
+  if (literal->opt == Literal::Opt::BOOLEAN) {
+    // TODO:
+    return;
+  }
+
+  if (literal->opt == Literal::Opt::CHARACTER) {
+    // TODO:
+    return;
+  }
+
+  if (literal->opt == Literal::Opt::STRING) {
+    if (literal->strLit) {
+      setStringLiteral(literal->strLit);
+    }
+    return;
+  }
+
+  if (literal->opt == Literal::Opt::SYMBOL) {
+    // TODO:
+    return;
+  }
+
+  if (literal->opt == Literal::Opt::NULL_LITERAL) {
+    // TODO:
+    return;
+  }
 }
 
 void ScalaSyntaxHighlighting::setObjectDef(spObjectDef &objectDef) {
@@ -110,8 +351,227 @@ void ScalaSyntaxHighlighting::setPackaging(spPackaging &packing) {
   // TODO:
 }
 
-void ScalaSyntaxHighlighting::setSimpleType(spSimpleType &simpleType) {
+void ScalaSyntaxHighlighting::setPath(spPath &path) {
+  if (path->opt == Path::Opt::STABLE_ID) {
+    if (path->stableId) {
+      setStableId(path->stableId);
+    }
+    return;
+  }
+
+  if (path->opt == Path::Opt::THIS) {
+    // TODO:
+    return;
+  }
+}
+
+void ScalaSyntaxHighlighting::setPeriodId(spPeriodId &periodId) {
   // TODO:
+}
+
+void ScalaSyntaxHighlighting::setPostfixExpr(spPostfixExpr &postfixExpr) {
+  if (postfixExpr->infixExpr) {
+    setInfixExpr(postfixExpr->infixExpr);
+  }
+}
+
+void ScalaSyntaxHighlighting::setPrefixExpr(spPrefixExpr &prefixExpr) {
+  if (prefixExpr->tok) {
+    setOp(prefixExpr->tok);
+  }
+
+  if (prefixExpr->simpleExpr) {
+    setSimpleExpr(prefixExpr->simpleExpr);
+  }
+}
+
+void ScalaSyntaxHighlighting::setSemi(spSemi semi) {
+  if (semi->tokSemiColon) {
+    setOp(semi->tokSemiColon);
+  }
+}
+
+void ScalaSyntaxHighlighting::setSimpleExpr(spSimpleExpr &simpleExpr) {
+  if (simpleExpr->opt == SimpleExpr::Opt::NEW) {
+    // TODO:
+    return;
+  }
+
+  if (simpleExpr->opt == SimpleExpr::Opt::BLOCK_EXPR) {
+    // TODO:
+    return;
+  }
+
+  if (simpleExpr->opt == SimpleExpr::Opt::SIMPLE_EXPR1) {
+    if (simpleExpr->simpleExpr1) {
+      setSimpleExpr1(simpleExpr->simpleExpr1);
+    }
+    return;
+  }
+}
+
+void ScalaSyntaxHighlighting::setSimpleExpr1(spSimpleExpr1 &simpleExpr1) {
+  if (simpleExpr1->head) {
+    setSimpleExpr1Head(simpleExpr1->head);
+  }
+
+  if (simpleExpr1->tail) {
+    setSimpleExpr1Tail(simpleExpr1->tail);
+  }
+}
+
+void ScalaSyntaxHighlighting::setSimpleExpr1Head(spSimpleExpr1Head &head) {
+  if (head->opt == SimpleExpr1Head::Opt::LITERAL) {
+    if (head->literal) {
+      setLiteral(head->literal);
+    }
+
+    return;
+  }
+
+  if (head->opt == SimpleExpr1Head::Opt::PATH) {
+    if (head->path) {
+      setPath(head->path);
+    }
+    return;
+  }
+
+  if (head->opt == SimpleExpr1Head::Opt::UNDERSCORE) {
+    // TODO:
+    return;
+  }
+
+  if (head->opt == SimpleExpr1Head::Opt::EXPRS) {
+    // TODO:
+    return;
+  }
+
+  if (head->opt == SimpleExpr1Head::Opt::SIMPLE_EXPR_ID) {
+    // TODO:
+    return;
+  }
+
+  if (head->opt == SimpleExpr1Head::Opt::SIMPLE_EXPR_TYPE_ARGS) {
+    // TODO:
+    return;
+  }
+
+  if (head->opt == SimpleExpr1Head::Opt::XMLEXPR) {
+    // TODO:
+    return;
+  }
+}
+
+void ScalaSyntaxHighlighting::setSimpleExpr1Tail(spSimpleExpr1Tail &tail) {
+  if (tail->argExprs) {
+    setArgumentExprs(tail->argExprs);
+  }
+
+  if (tail->tail) {
+    setSimpleExpr1Tail(tail->tail);
+  }
+}
+
+void ScalaSyntaxHighlighting::setSimpleType(spSimpleType &simpleType) {
+  if (simpleType->head) {
+    setSimpleTypeHead(simpleType->head);
+  }
+
+  if (simpleType->tails) {
+    setSimpleTypeTails(simpleType->tails);
+  }
+}
+
+void ScalaSyntaxHighlighting::setSimpleTypeHead(spSimpleTypeHead &head) {
+  if (head->opt == SimpleTypeHead::Opt::STABLE_ID) {
+    if (head->stableId) {
+      setStableId(head->stableId);
+    }
+    return;
+  }
+
+  // TODO:
+  //if (head->opt == SimpleTypeHead::Opt::PATH_TYPE) {
+  //  return;
+  //}
+
+  // TODO:
+  //if (head->opt == SimpleTypeHead::Opt::TYPES) {
+  //  return;
+  //}
+}
+
+void ScalaSyntaxHighlighting::setSimpleTypeTails(spSimpleTypeTails &tails) {
+  // TODO:
+}
+
+void ScalaSyntaxHighlighting::setStableId(spStableId &stableId) {
+  if (stableId->head) {
+    setStableIdHead(stableId->head);
+  }
+
+  if (stableId->tail) {
+    setStableIdTail(stableId->tail);
+  }
+}
+
+void ScalaSyntaxHighlighting::setStableIdHead(spStableIdHead &head) {
+  if (head->opt == StableIdHead::Opt::ID) {
+    if (head->id) {
+      setLexId(head->id);
+    }
+
+    return;
+  }
+
+  if (head->opt == StableIdHead::Opt::THIS) {
+    if (head->idPeriod) {
+      setIdPeriod(head->idPeriod);
+    }
+
+    if (head->tokThis) {
+      setKeyword(head->tokThis);
+    }
+
+    if (head->periodId) {
+      setPeriodId(head->periodId);
+    }
+
+    return;
+  }
+
+  if (head->opt == StableIdHead::Opt::SUPER) {
+    if (head->idPeriod) {
+      setIdPeriod(head->idPeriod);
+    }
+
+    if (head->tokSuper) {
+      setKeyword(head->tokSuper);
+    }
+
+    // TODO:
+    //if (head->classQualifier) {
+    //  setClassQualifier(head->classQualifier);
+    //}
+
+    if (head->periodId) {
+      setPeriodId(head->periodId);
+    }
+
+    return;
+  }
+}
+
+void ScalaSyntaxHighlighting::setStableIdTail(spStableIdTail &tail) {
+  // TODO:
+}
+
+void ScalaSyntaxHighlighting::setStringLiteral(spStringLiteral &strLit) {
+  sh << "(djp-sh-string-literal "
+     << (strLit->ini + 1)
+     << " "
+     << (strLit->end + 1)
+     << ")";
 }
 
 void ScalaSyntaxHighlighting::setTmplDef(spTmplDef &tmplDef) {

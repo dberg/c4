@@ -14,6 +14,20 @@ TEST(ScalaSyntaxHighlighting, HelloWorld) {
   ScalaEmacsOutput output(parser.compUnit, parser.diag, parser.indentMap);
   output.build();
 
-  // TODO:
-  // output.sh;
+  std::string expected =
+    "["
+    "(djp-sh-keyword 1 7)"           // object
+    "(djp-sh-identifier 8 18)"       // HelloWorld
+    "(djp-sh-keyword 19 26)"         // extends
+    "(djp-sh-identifier 27 30)"      // App
+    "(djp-sh-op 31 32)"              // {
+    "(djp-sh-identifier 33 40)"      // println
+    "(djp-sh-op 40 41)"              // (
+    "(djp-sh-string-literal 41 54)"  // "Hello world
+    "(djp-sh-op 54 55)"              // )"
+    "(djp-sh-op 55 56)"              // ;
+    "(djp-sh-op 57 58)"              // }
+    "]";
+
+  ASSERT_EQ(expected, output.sh);
 }
