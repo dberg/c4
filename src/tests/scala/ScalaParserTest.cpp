@@ -41,9 +41,9 @@ using namespace djp;
  *         SimpleExpr(3)
  *           SimpleExpr1(1)
  *             SimpleExpr1Head(2)
- *               Path
+ *               Path(1)
  *                 StableId
- *                   StableIdHead
+ *                   StableIdHead(1)
  *                     id <-- println
  *             SimpleExpr1Tail(2)
  *               ArgumentExprs(1)
