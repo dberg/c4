@@ -26,10 +26,12 @@ class ScalaLexer {
   spSourceCodeStream src;
   spDiagnosis diag;
 
+  // current token information
   STok curTok;
   std::string curTokStr;
   std::stringstream curTokStream;
   int curIndentationLevel;
+  bool seenLinebreak;
 
   ScalaTokenUtil tokUtil;
 
@@ -65,6 +67,8 @@ public:
 
   void saveState(State &state);
   void restoreState(State &state);
+
+  bool getSeenLineBreak() { return seenLinebreak; }
 };
 
 } // namespace

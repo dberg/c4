@@ -300,6 +300,10 @@ void ScalaLexer::getNextToken() {
   curTok = getToken();
   curTokStr = curTokStream.str();
 
+  // Flag to indicate if there was a line break between the previous token
+  // and the current token.
+  seenLinebreak = !(line == src->getLine());
+
   processIndentation(line, src->getLine(), token, curTok);
 }
 
