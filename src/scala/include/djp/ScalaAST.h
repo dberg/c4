@@ -233,11 +233,10 @@ struct ArgumentExprs : ASTBase {
 };
 
 /**
- * CompilationUnit ::= {‘package’ QualId semi} TopStatSeq
+ * CompilationUnit ::= {'package' QualId semi} TopStatSeq
  */
 struct CompilationUnit : ASTBase {
-  // TODO:
-  // std::vector<{‘package’ QualId semi}>
+  std::vector<std::tuple<spTokenNode, spQualId, spSemi>> tuples;
   spTopStatSeq topStatSeq;
 };
 
@@ -371,7 +370,7 @@ struct IdPeriod : ASTBase {
 };
 
 /**
- * Import ::= ‘import’ ImportExpr {‘,’ ImportExpr}
+ * Import ::= 'import' ImportExpr {',' ImportExpr}
  */
 struct Import : ASTBase {
   spTokenNode tokImport;
@@ -804,8 +803,7 @@ struct TopStat : ASTBase {
  */
 struct TopStatSeq : ASTBase {
   spTopStat topStat;
-  // TODO:
-  // std::vector<{semi TopStat}>
+  std::vector<std::pair<spSemi, spTopStat>> pairs;
 };
 
 }} // namespace
