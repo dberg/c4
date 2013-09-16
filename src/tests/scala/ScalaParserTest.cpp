@@ -214,4 +214,40 @@ TEST(ScalaParser, Trait) {
 
   ScalaParser parser(filename, buffer);
   parser.parse();
+
+  {
+    // package test
+    ASSERT_EQ(1, parser.compUnit->tuples.size());
+    auto tuple = parser.compUnit->tuples[0];
+
+    auto tokPackage = std::get<0>(tuple);
+    ASSERT_EQ(STok::PACKAGE, tokPackage->tok);
+
+    auto qualId = std::get<1>(tuple);
+    ASSERT_EQ("test", qualId->id->val);
+
+    auto semi = std::get<2>(tuple);
+    ASSERT_EQ(Semi::Opt::NL, semi->opt);
+  }
+
+  {
+    // import com.company.utils._\n
+    auto topStat = parser.compUnit->topStatSeq->topStat;
+    ASSERT_EQ(TopStat::Opt::IMPORT, topStat->opt);
+
+    auto import = topStat->import;
+    ASSERT_EQ(STok::IMPORT, import->tokImport->tok);
+
+    ASSERT_EQ("com", import->importExpr->stableId->head->id->val);
+    //ASSERT_EQ(STok::PERIOD,
+    //  import->importExpr->stableId->tail->periodId->tok->tok);
+    //ASSERT_EQ("company",
+    //  import->importExpr->stableId->tail->periodId->id->val);
+    //ASSERT_EQ(STok::PERIOD,
+    //  import->importExpr->stableId->tail->tail->periodId->tok->tok);
+    //ASSERT_EQ("utils",
+    //  import->importExpr->stableId->tail->tail->periodId->id->val);
+
+    // TODO:
+  }
 }

@@ -30,7 +30,15 @@ void ScalaParser::parseSemi(spSemi &semi) {
     return;
   }
 
-  // TODO: nl {nl}
+  // nl {nl}
+  // We only check we've seen a linebreak and we don't keep track of its
+  // position or if we've seen more than one linebreak.
+  if (lexer->getSeenLineBreak()) {
+    semi->opt = Semi::Opt::NL;
+    return;
+  }
+
+  semi->addErr(ERR_EXP_NL);
 }
 
 spStringLiteral ScalaParser::parseStringLiteral() {
@@ -330,13 +338,30 @@ void ScalaParser::parseClassTemplateOpt(spClassTemplateOpt &classTmplOpt) {
 }
 
 /**
- * CompilationUnit ::= {‘package’ QualId semi} TopStatSeq
+ * CompilationUnit ::= {'package' QualId semi} TopStatSeq
  */
 void ScalaParser::parseCompilationUnit() {
-  // TODO:
-  //if (lexer->getCurToken() == STok::PACKAGE) {
-  //
-  //}
+  while (lexer->getCurToken() == STok::PACKAGE) {
+    auto tok = lexer->getCurTokenNode();
+    lexer->getNextToken(); // consume token
+
+    auto qualId = spQualId(new QualId);
+    parseQualId(qualId);
+    if (qualId->err) {
+      compUnit->addErr(-1);
+      break;
+    }
+
+    auto semi = spSemi(new Semi);
+    parseSemi(semi);
+    if (semi->err) {
+      compUnit->addErr(-1);
+      break;
+    }
+
+    compUnit->tuples.push_back(std::tuple<spTokenNode, spQualId, spSemi>(
+      tok, qualId, semi));
+  }
 
   // TopStatSeq
   compUnit->topStatSeq = spTopStatSeq(new TopStatSeq);
@@ -456,7 +481,7 @@ void ScalaParser::parseExprs(spExprs &exprs) {
 }
 
 /**
- * Import ::= ‘import’ ImportExpr {‘,’ ImportExpr}
+ * Import ::= 'import' ImportExpr {',' ImportExpr}
  */
 void ScalaParser::parseImport(spImport &import) {
   // import
@@ -985,8 +1010,22 @@ void ScalaParser::parseTopStatSeq(spTopStatSeq &topStatSeq) {
     topStatSeq->addErr(-1);
   }
 
-  // TODO:
   // {semi TopStat}
+  while (true) {
+    auto semi = spSemi(new Semi);
+    parseSemi(semi);
+    if (semi->err) {
+      return;
+    }
+
+    auto topStat = spTopStat(new TopStat);
+    parseTopStat(topStat);
+    if (topStat->err) {
+      return;
+    }
+
+    topStatSeq->pairs.push_back(make_pair(semi, topStat));
+  }
 }
 
 void ScalaParser::parse() {

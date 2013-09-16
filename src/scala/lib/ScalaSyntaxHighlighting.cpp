@@ -9,7 +9,13 @@ namespace djp {
 void ScalaSyntaxHighlighting::build() {
   // Compilation Unit
   sh << "[";
-  // TODO: std::vector<{‘package’ QualId semi}>
+
+  for (auto tuple : compUnit->tuples) {
+    setKeyword(std::get<0>(tuple));
+    setQualId(std::get<1>(tuple));
+    setSemi(std::get<2>(tuple));
+  }
+
   if (compUnit->topStatSeq) {
     setTopStatSeq(compUnit->topStatSeq);
   }
@@ -676,7 +682,10 @@ void ScalaSyntaxHighlighting::setTopStatSeq(spTopStatSeq &topStatSeq) {
     setTopStat(topStatSeq->topStat);
   }
 
-  // TODO: std::vector<{semi TopStat}>
+  for (auto pair : topStatSeq->pairs) {
+    setSemi(pair.first);
+    setTopStat(pair.second);
+  }
 }
 
 } // namespace
