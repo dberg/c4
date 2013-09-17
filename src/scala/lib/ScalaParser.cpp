@@ -890,7 +890,17 @@ void ScalaParser::parseStableId(spStableId &stableId) {
     return;
   }
 
-  // TODO: StableIdTail
+  // StableIdTail
+  State state;
+  saveState(state);
+  auto tail = spStableIdTail(new StableIdTail);
+  parseStableIdTail(tail);
+  if (tail->err) {
+    restoreState(state);
+    return;
+  }
+
+  stableId->tail = tail;
 }
 
 /**
@@ -907,8 +917,8 @@ void ScalaParser::parseStableIdHead(spStableIdHead &head) {
     return;
   }
 
-  // TODO: Path ‘.’ id
-  // TODO: [id ’.’] ‘super’ [ClassQualifier] ‘.’ id
+  // TODO: Path '.' id
+  // TODO: [id '.'] ‘super’ [ClassQualifier] '.' id
 }
 
 /**
@@ -923,7 +933,6 @@ void ScalaParser::parseStableIdTail(spStableIdTail &tail) {
  */
 void ScalaParser::parseTemplateBody(spTemplateBody &tmplBody) {
   // TODO:
-  (void) tmplBody;
 }
 
 /**
