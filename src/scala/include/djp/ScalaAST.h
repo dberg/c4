@@ -15,9 +15,9 @@
  *
  * SimpleExpr1Head ::= Literal
  *                   | Path
- *                   | ‘_’
- *                   | ‘(’ [Exprs] ‘)’
- *                   | SimpleExpr ‘.’ id
+ *                   | '_'
+ *                   | '(' [Exprs] ')'
+ *                   | SimpleExpr '.' id
  *                   | SimpleExpr TypeArgs
  *                   | XmlExpr
  *
@@ -26,21 +26,21 @@
  * 2) Remove left recursion between Path and StableId. We first remove
  *    Path references in StableId while creating IdPeriod and PeriodId
  *
- * IdPeriod ::= id ‘.’
- * PeriodId ::= ‘.’ id
+ * IdPeriod ::= id '.'
+ * PeriodId ::= '.' id
  *
  * StableId ::= id
  *            | StableId PeriodId
- *            | [IdPeriod] ‘this’ PeriodId
- *            | [IdPeriod] ‘super’ [ClassQualifier] PeriodId
+ *            | [IdPeriod] 'this' PeriodId
+ *            | [IdPeriod] 'super' [ClassQualifier] PeriodId
  *
  * and then we remove the StableId left recursion:
  *
  * StableId ::= StableIdHead StableIdTail | StableIdHead
  *
  * StableIdHead ::= id
- *                | [IdPeriod] ‘this’ PeriodId
- *                | [IdPeriod] ‘super’ [ClassQualifier] PeriodId
+ *                | [IdPeriod] 'this' PeriodId
+ *                | [IdPeriod] 'super' [ClassQualifier] PeriodId
  *
  * StableIdTail ::= PeriodId StableIdTail | PeriodId
  *
@@ -49,12 +49,12 @@
  * SimpleType ::= SimpleTypeHead SimpleTypeTails | SimpleTypeHead
  *
  * SimpleTypeHead ::= StableId
- *                  | Path ‘.’ ‘type’
- *                  | ‘(’ Types ’)’
+ *                  | Path '.' 'type'
+ *                  | '(' Types ')'
  *
  * SimpleTypeTails ::= SimpleTypeTail SimpleTypeTails | SimpleTypeTail
  *
- * SimpleTypeTail ::= TypeArgs | ‘#’ id
+ * SimpleTypeTail ::= TypeArgs | '#' id
  */
 
 namespace djp {
@@ -162,8 +162,8 @@ struct Block : ASTBase {
 };
 
 /**
- * BlockExpr ::= ‘{’ CaseClauses ‘}’
- *             | ‘{’ Block ‘}’
+ * BlockExpr ::= '{' CaseClauses '}'
+ *             | '{' Block '}'
  */
 struct BlockExpr : ASTBase {
   enum class Opt {
@@ -174,7 +174,7 @@ struct BlockExpr : ASTBase {
 
   Opt opt;
   spTokenNode tokLCurlyB;
-  // TODO: ‘{’ CaseClauses ‘}’
+  // TODO: '{' CaseClauses '}'
   spBlock block;
   spTokenNode tokRCurlyB;
 
@@ -183,7 +183,7 @@ struct BlockExpr : ASTBase {
 
 /**
  * BlockStat ::= Import
- *             | {Annotation} [‘implicit’ | ‘lazy’] Def
+ *             | {Annotation} ['implicit' | 'lazy'] Def
  *             | {Annotation} {LocalModifier} TmplDef
  *             | Expr1
  */
@@ -198,7 +198,7 @@ struct BlockStat : ASTBase {
   Opt opt;
 
   // TODO: Import
-  // TODO: {Annotation} [‘implicit’ | ‘lazy’] Def
+  // TODO: {Annotation} ['implicit' | 'lazy'] Def
   // TODO: {Annotation} {LocalModifier} TmplDef
   spExpr1 expr1;
 
@@ -207,8 +207,8 @@ struct BlockStat : ASTBase {
 
 
 /**
- * ArgumentExprs ::= ‘(’ [Exprs] ‘)’
- *                 | ‘(’ [Exprs ‘,’] PostfixExpr ‘:’ ‘_’ ‘*’ ’)’
+ * ArgumentExprs ::= '(' [Exprs] ')'
+ *                 | '(' [Exprs ','] PostfixExpr ':' '_' '*' ')'
  *                 | [nl] BlockExpr
  */
 struct ArgumentExprs : ASTBase {
@@ -225,7 +225,7 @@ struct ArgumentExprs : ASTBase {
   spTokenNode tokComma;
   spExprs exprs;
   spPostfixExpr postfixExpr;
-  // TODO: ‘:’ ‘_’ ‘*’
+  // TODO: ':' '_' '*'
   // TODO: [nl]
   spBlockExpr blockExpr;
 
@@ -241,7 +241,7 @@ struct CompilationUnit : ASTBase {
 };
 
 /**
- * ClassParents ::= Constr {‘with’ AnnotType}
+ * ClassParents ::= Constr {'with' AnnotType}
  */
 struct ClassParents : ASTBase {
   spConstr constr;
@@ -258,8 +258,8 @@ struct ClassTemplate : ASTBase {
 };
 
 /**
- * ClassTemplateOpt ::= ‘extends’ ClassTemplate
- *                    | [[‘extends’] TemplateBody]
+ * ClassTemplateOpt ::= 'extends' ClassTemplate
+ *                    | [['extends'] TemplateBody]
  */
 struct ClassTemplateOpt : ASTBase {
   enum class Opt {
@@ -285,7 +285,7 @@ struct Constr : ASTBase {
 };
 
 /**
- * Expr ::= (Bindings | [‘implicit’] id | ‘_’) ‘=>’ Expr
+ * Expr ::= (Bindings | ['implicit'] id | '_') '=>' Expr
  *        | Expr1
  */
 struct Expr : ASTBase {
@@ -296,27 +296,27 @@ struct Expr : ASTBase {
   };
 
   Opt opt;
-  // TODO: (Bindings | [‘implicit’] id | ‘_’) ‘=>’ Expr
+  // TODO: (Bindings | ['implicit'] id | '_') '=>' Expr
   spExpr1 expr1;
 
   Expr() : opt(Opt::UNDEFINED) {}
 };
 
 /**
- * Expr1 ::= ‘if’ ‘(’ Expr ‘)’ {nl} Expr [[semi] else Expr]
- *         | ‘while’ ‘(’ Expr ‘)’ {nl} Expr
- *         | ‘try’ ‘{’ Block ‘}’ [‘catch’ ‘{’ CaseClauses ‘}’]
- *           [‘finally’ Expr]
- *         | ‘do’ Expr [semi] ‘while’ ‘(’ Expr ’)’
- *         | ‘for’ (‘(’ Enumerators ‘)’ | ‘{’ Enumerators ‘}’)
- *           {nl} [‘yield’] Expr
- *         | ‘throw’ Expr
- *         | ‘return’ [Expr]
- *         | [SimpleExpr ‘.’] id ‘=’ Expr
- *         | SimpleExpr1 ArgumentExprs ‘=’ Expr
+ * Expr1 ::= 'if' '(' Expr ')' {nl} Expr [[semi] else Expr]
+ *         | 'while' '(' Expr ')' {nl} Expr
+ *         | 'try' '{' Block '}' ['catch' '{' CaseClauses '}']
+ *           ['finally' Expr]
+ *         | 'do' Expr [semi] 'while' '(' Expr ')'
+ *         | 'for' ('(' Enumerators ')' | '{' Enumerators '}')
+ *           {nl} ['yield'] Expr
+ *         | 'throw' Expr
+ *         | 'return' [Expr]
+ *         | [SimpleExpr '.'] id '=' Expr
+ *         | SimpleExpr1 ArgumentExprs '=' Expr
  *         | PostfixExpr
  *         | PostfixExpr Ascription
- *         | PostfixExpr ‘match’ ‘{’ CaseClauses ‘}’
+ *         | PostfixExpr 'match' '{' CaseClauses '}'
  */
 struct Expr1 : ASTBase {
   enum class Opt {
@@ -337,24 +337,24 @@ struct Expr1 : ASTBase {
 
   Opt opt;
 
-  // TODO: ‘if’ ‘(’ Expr ‘)’ {nl} Expr [[semi] else Expr]
-  // TODO: ‘while’ ‘(’ Expr ‘)’ {nl} Expr
-  // TODO: ‘try’ ‘{’ Block ‘}’ [‘catch’ ‘{’ CaseClauses ‘}’] [‘finally’ Expr]
-  // TODO: ‘do’ Expr [semi] ‘while’ ‘(’ Expr ’)’
-  // TODO: ‘for’ (‘(’ Enumerators ‘)’ | ‘{’ Enumerators ‘}’) {nl} [‘yield’] Expr
-  // TODO: ‘throw’ Expr
-  // TODO: ‘return’ [Expr]
-  // TODO: [SimpleExpr ‘.’] id ‘=’ Expr
-  // TODO: SimpleExpr1 ArgumentExprs ‘=’ Expr
+  // TODO: 'if' '(' Expr ')' {nl} Expr [[semi] else Expr]
+  // TODO: 'while' '(' Expr ')' {nl} Expr
+  // TODO: 'try' '{' Block '}' ['catch' '{' CaseClauses '}'] ['finally' Expr]
+  // TODO: 'do' Expr [semi] 'while' '(' Expr ')'
+  // TODO: 'for' ('(' Enumerators ')' | '{' Enumerators '}') {nl} ['yield'] Expr
+  // TODO: 'throw' Expr
+  // TODO: 'return' [Expr]
+  // TODO: [SimpleExpr '.'] id '=' Expr
+  // TODO: SimpleExpr1 ArgumentExprs '=' Expr
   spPostfixExpr postfixExpr;
   // TODO: PostfixExpr Ascription
-  // TODO: PostfixExpr ‘match’ ‘{’ CaseClauses ‘}’
+  // TODO: PostfixExpr 'match' '{' CaseClauses '}'
 
   Expr1() : opt(Opt::UNDEFINED) {}
 };
 
 /**
- * Exprs ::= Expr {‘,’ Expr}
+ * Exprs ::= Expr {',' Expr}
  */
 struct Exprs : ASTBase {
   spExpr expr;
@@ -362,7 +362,7 @@ struct Exprs : ASTBase {
 };
 
 /**
- * IdPeriod ::= id ‘.’
+ * IdPeriod ::= id '.'
  */
 struct IdPeriod : ASTBase {
   spTokenNode tok;
@@ -379,7 +379,7 @@ struct Import : ASTBase {
 };
 
 /**
- * ImportExpr ::= StableId ‘.’ (id | ‘_’ | ImportSelectors)
+ * ImportExpr ::= StableId '.' (id | '_' | ImportSelectors)
  */
 struct ImportExpr : ASTBase {
   spStableId stableId;
@@ -409,13 +409,13 @@ struct InfixExpr : ASTBase {
 };
 
 /**
- * Literal ::= [‘-’] integerLiteral
- *           | [‘-’] floatingPointLiteral
+ * Literal ::= ['-'] integerLiteral
+ *           | ['-'] floatingPointLiteral
  *           | booleanLiteral
  *           | characterLiteral
  *           | stringLiteral
  *           | symbolLiteral
- *           | ‘null’
+ *           | 'null'
  */
 struct Literal : ASTBase {
   enum class Opt {
@@ -431,8 +431,8 @@ struct Literal : ASTBase {
 
   Opt opt;
 
-  // TODO: [‘-’] integerLiteral
-  // TODO: [‘-’] floatingPointLiteral
+  // TODO: ['-'] integerLiteral
+  // TODO: ['-'] floatingPointLiteral
   // TODO: booleanLiteral
   // TODO: characterLiteral
 
@@ -441,7 +441,7 @@ struct Literal : ASTBase {
 
   // TODO: symbolLiteral
 
-  // ‘null’
+  // 'null'
   spTokenNode tokNull;
 
   Literal() : opt(Opt::UNDEFINED) {}
@@ -456,7 +456,7 @@ struct ObjectDef : ASTBase {
 };
 
 /**
- * Packaging ::= ‘package’ QualId [nl] ‘{’ TopStatSeq ‘}’
+ * Packaging ::= 'package' QualId [nl] '{' TopStatSeq '}'
  */
 struct Packaging : ASTBase {
   spTokenNode tokPackage;
@@ -465,7 +465,7 @@ struct Packaging : ASTBase {
 
 /**
  * Path ::= StableId
- *        | [id ‘.’] ‘this’
+ *        | [id '.'] 'this'
  */
 struct Path : ASTBase {
   enum class Opt {
@@ -476,13 +476,13 @@ struct Path : ASTBase {
 
   Opt opt;
   spStableId stableId;
-  // TODO: [id ‘.’] ‘this’
+  // TODO: [id '.'] 'this'
 
   Path() : opt(Opt::UNDEFINED) {}
 };
 
 /**
- * PrefixExpr ::= [‘-’ | ‘+’ | ‘~’ | ‘!’] SimpleExpr
+ * PrefixExpr ::= ['-' | '+' | '~' | '!'] SimpleExpr
  */
 struct PrefixExpr : ASTBase {
   spTokenNode tok;
@@ -498,7 +498,7 @@ struct PostfixExpr : ASTBase {
 };
 
 /**
- * QualId ::= id {‘.’ id}
+ * QualId ::= id {'.' id}
  */
 struct QualId : ASTBase {
   spLexId id;
@@ -506,7 +506,7 @@ struct QualId : ASTBase {
 };
 
 /**
- * semi ::= ‘;’ | nl {nl}
+ * semi ::= ';' | nl {nl}
  */
 struct Semi : ASTBase {
   enum class Opt {
@@ -522,9 +522,9 @@ struct Semi : ASTBase {
 };
 
 /**
- * SimpleExpr ::= ‘new’ (ClassTemplate | TemplateBody)
+ * SimpleExpr ::= 'new' (ClassTemplate | TemplateBody)
  *              | BlockExpr
- *              | SimpleExpr1 [‘_’]
+ *              | SimpleExpr1 ['_']
  */
 struct SimpleExpr : ASTBase {
   enum class Opt {
@@ -534,10 +534,10 @@ struct SimpleExpr : ASTBase {
     SIMPLE_EXPR1,
   };
 
-  // TODO: ‘new’ (ClassTemplate | TemplateBody)
+  // TODO: 'new' (ClassTemplate | TemplateBody)
   spBlockExpr blockExpr;
   spSimpleExpr1 simpleExpr1;
-  // TODO: [‘_’]
+  // TODO: ['_']
 
   Opt opt;
 
@@ -555,9 +555,9 @@ struct SimpleExpr1 : ASTBase {
 /**
  * SimpleExpr1Head ::= Literal
  *                   | Path
- *                   | ‘_’
- *                   | ‘(’ [Exprs] ‘)’
- *                   | SimpleExpr ‘.’ id
+ *                   | '_'
+ *                   | '(' [Exprs] ')'
+ *                   | SimpleExpr '.' id
  *                   | SimpleExpr TypeArgs
  *                   | XmlExpr
  */
@@ -581,9 +581,9 @@ struct SimpleExpr1Head : ASTBase {
   // Path
   spPath path;
 
-  // TODO: ‘_’
-  // TODO: ‘(’ [Exprs] ‘)’
-  // TODO: SimpleExpr ‘.’ id
+  // TODO: '_'
+  // TODO: '(' [Exprs] ')'
+  // TODO: SimpleExpr '.' id
   // TODO: SimpleExpr TypeArgs
   // TODO: XmlExpr
 
@@ -608,8 +608,8 @@ struct SimpleType : ASTBase {
 
 /**
  * SimpleTypeHead ::= StableId
- *                  | Path ‘.’ ‘type’
- *                  | ‘(’ Types ’)’
+ *                  | Path '.' 'type'
+ *                  | '(' Types ')'
  */
 struct SimpleTypeHead : ASTBase {
   enum class Opt {
@@ -630,7 +630,7 @@ struct SimpleTypeHead : ASTBase {
 };
 
 /**
- * SimpleTypeTail ::= TypeArgs | ‘#’ id
+ * SimpleTypeTail ::= TypeArgs | '#' id
  */
 struct SimpleTypeTail : ASTBase {
   enum class Opt {
@@ -642,7 +642,7 @@ struct SimpleTypeTail : ASTBase {
   Opt opt;
 
   // TODO: spTypeArgs
-  // TODO: ‘#’ id
+  // TODO: '#' id
 
   SimpleTypeTail() : opt(Opt::UNDEFINED) {}
 };
@@ -665,8 +665,8 @@ struct StableId : ASTBase {
 
 /**
  * StableIdHead ::= id
- *                | [IdPeriod] ‘this’ PeriodId
- *                | [IdPeriod] ‘super’ [ClassQualifier] PeriodId
+ *                | [IdPeriod] 'this' PeriodId
+ *                | [IdPeriod] 'super' [ClassQualifier] PeriodId
  */
 struct StableIdHead : ASTBase {
   enum class Opt {
@@ -696,7 +696,7 @@ struct StableIdTail : ASTBase {
 };
 
 /**
- * TemplateBody ::= [nl] ‘{’ [SelfType] TemplateStat {semi TemplateStat} ‘}’
+ * TemplateBody ::= [nl] '{' [SelfType] TemplateStat {semi TemplateStat} '}'
  */
 struct TemplateBody : ASTBase {
   spTokenNode lCurlyB;
@@ -734,9 +734,9 @@ struct TemplateStat : ASTBase {
 };
 
 /**
- * TmplDef ::= [‘case’] ‘class’ ClassDef
- *           | [‘case’] ‘object’ ObjectDef
- *           | ‘trait’ TraitDef
+ * TmplDef ::= ['case'] 'class' ClassDef
+ *           | ['case'] 'object' ObjectDef
+ *           | 'trait' TraitDef
  */
 struct TmplDef : ASTBase {
   enum class Opt {
