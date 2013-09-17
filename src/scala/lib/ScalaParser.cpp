@@ -486,7 +486,7 @@ void ScalaParser::parseExprs(spExprs &exprs) {
 void ScalaParser::parseImport(spImport &import) {
   // import
   import->tokImport = lexer->getCurTokenNode();
-  lexer->getNextToken();
+  lexer->getNextToken(); // consume 'import'
 
   import->importExpr = spImportExpr(new ImportExpr);
   parseImportExpr(import->importExpr);
@@ -655,14 +655,28 @@ void ScalaParser::parsePath(spPath &path) {
 }
 
 /**
- * PeriodId ::= ‘.’ id
+ * PeriodId ::= '.' id
  */
 void ScalaParser::parsePeriodId(spPeriodId &periodId) {
-  // TODO:
+  // '.'
+  if (lexer->getCurToken() != STok::PERIOD) {
+    periodId->addErr(ERR_EXP_PERIOD);
+    return;
+  }
+
+  periodId->tok = lexer->getCurTokenNode();
+  lexer->getNextToken(); // consume '.'
+
+  // id
+  periodId->id = parseLexId();
+  lexer->getNextToken(); // consume id
+  if (periodId->id->err) {
+    periodId->addErr(-1);
+  }
 }
 
 /**
- * PrefixExpr ::= [‘-’ | ‘+’ | ‘~’ | ‘!’] SimpleExpr
+ * PrefixExpr ::= ['-' | '+' | '~' | '!'] SimpleExpr
  */
 void ScalaParser::parsePrefixExpr(spPrefixExpr &prefixExpr) {
   // TODO: [‘-’ | ‘+’ | ‘~’ | ‘!’]
@@ -925,7 +939,23 @@ void ScalaParser::parseStableIdHead(spStableIdHead &head) {
  * StableIdTail ::= PeriodId StableIdTail | PeriodId
  */
 void ScalaParser::parseStableIdTail(spStableIdTail &tail) {
-  // TODO:
+  tail->periodId = spPeriodId(new PeriodId);
+  parsePeriodId(tail->periodId);
+  if (tail->periodId->err) {
+    tail->addErr(-1);
+    return;
+  }
+
+  // StableIdTail
+  State state;
+  saveState(state);
+  auto tail2 = spStableIdTail(new StableIdTail);
+  parseStableIdTail(tail2);
+  if (tail2->err) {
+    return;
+  }
+
+  tail->tail = tail2;
 }
 
 /**
