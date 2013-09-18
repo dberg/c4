@@ -90,9 +90,14 @@ STok ScalaLexer::getToken() {
   // Identifier
   //if (isScalaLetter(c)) return getTokenIdentifier(c);
 
+  // id :: = plainid
+  // plainid ::= varid
   if (islower(c)) return getLowerToken(c);
-
+  // plainid ::= upper idrest
   if (is_upper(c)) return getUpperToken(c);
+  // TODO: plainid ::= op
+
+  // TODO: id ::= `stringLit`
 
   return STok::ERROR;
 }
@@ -215,6 +220,7 @@ STok ScalaLexer::getLowerToken(char c) {
 
 /**
  * STok::ID starting with the production rule 'upper'
+ * @returns STok::ID || STok::UNDERSCORE
  */
 STok ScalaLexer::getUpperToken(char c) {
   curTokStream << c;
@@ -225,6 +231,11 @@ STok ScalaLexer::getUpperToken(char c) {
       src->ungetChar(1);
       break;
     }
+  }
+
+  std::string str = curTokStream.str();
+  if (str.compare("_") == 0) {
+    return STok::UNDERSCORE;
   }
 
   return STok::ID;
