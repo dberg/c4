@@ -241,12 +241,15 @@ TEST(ScalaParser, Trait) {
     ASSERT_EQ("com", import->importExpr->stableId->head->id->val);
     ASSERT_EQ(STok::PERIOD,
       import->importExpr->stableId->tail->periodId->tok->tok);
-    //ASSERT_EQ("company",
-    //  import->importExpr->stableId->tail->periodId->id->val);
-    //ASSERT_EQ(STok::PERIOD,
-    //  import->importExpr->stableId->tail->tail->periodId->tok->tok);
-    //ASSERT_EQ("utils",
-    //  import->importExpr->stableId->tail->tail->periodId->id->val);
+    ASSERT_EQ("company",
+      import->importExpr->stableId->tail->periodId->id->val);
+    ASSERT_EQ(STok::PERIOD,
+      import->importExpr->stableId->tail->tail->periodId->tok->tok);
+    ASSERT_EQ("utils",
+      import->importExpr->stableId->tail->tail->periodId->id->val);
+
+    ASSERT_EQ(STok::PERIOD, import->importExpr->tokPeriod->tok);
+    ASSERT_EQ(STok::UNDERSCORE, import->importExpr->tokUnderscore->tok);
 
     // TODO:
   }
