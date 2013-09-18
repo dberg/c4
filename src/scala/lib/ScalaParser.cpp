@@ -515,7 +515,7 @@ void ScalaParser::parseImport(spImport &import) {
 }
 
 /**
- * ImportExpr ::= StableId ‘.’ (id | '_' | ImportSelectors)
+ * ImportExpr ::= StableId '.' (id | '_' | ImportSelectors)
  */
 void ScalaParser::parseImportExpr(spImportExpr &importExpr) {
   // StableId
@@ -952,6 +952,7 @@ void ScalaParser::parseStableIdTail(spStableIdTail &tail) {
   auto tail2 = spStableIdTail(new StableIdTail);
   parseStableIdTail(tail2);
   if (tail2->err) {
+    restoreState(state);
     return;
   }
 
