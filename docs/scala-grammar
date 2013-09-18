@@ -18,7 +18,7 @@ plainid ::= upper idrest
         | op
 
 id ::= plainid
-     | '\'' stringLit '\''
+     | ` stringLit `
 
 idrest ::= {letter | digit} ['_' op]
 
