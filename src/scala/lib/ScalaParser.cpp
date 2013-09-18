@@ -999,6 +999,7 @@ void ScalaParser::parseTmplDef(spTmplDef &tmplDef) {
   }
 
   // TODO: ‘trait’ TraitDef
+  tmplDef->addErr(-1);
 }
 
 /**
@@ -1035,6 +1036,10 @@ void ScalaParser::parseTopStat(spTopStat &topStat) {
   topStat->opt = TopStat::Opt::TMPL_DEF;
   topStat->tmplDef = spTmplDef(new TmplDef);
   parseTmplDef(topStat->tmplDef);
+  if (topStat->tmplDef->err) {
+    topStat->addErr(-1);
+    return;
+  }
 
   // TODO:PackageObject
 }
