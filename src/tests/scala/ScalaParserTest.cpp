@@ -239,8 +239,8 @@ TEST(ScalaParser, Trait) {
     ASSERT_EQ(STok::IMPORT, import->tokImport->tok);
 
     ASSERT_EQ("com", import->importExpr->stableId->head->id->val);
-    //ASSERT_EQ(STok::PERIOD,
-    //  import->importExpr->stableId->tail->periodId->tok->tok);
+    ASSERT_EQ(STok::PERIOD,
+      import->importExpr->stableId->tail->periodId->tok->tok);
     //ASSERT_EQ("company",
     //  import->importExpr->stableId->tail->periodId->id->val);
     //ASSERT_EQ(STok::PERIOD,
