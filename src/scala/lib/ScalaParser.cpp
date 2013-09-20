@@ -967,29 +967,29 @@ void ScalaParser::parseTemplateBody(spTemplateBody &tmplBody) {
 }
 
 /**
- * TmplDef ::= [‘case’] ‘class’ ClassDef
- *           | [‘case’] ‘object’ ObjectDef
- *           | ‘trait’ TraitDef
+ * TmplDef ::= ['case'] 'class' ClassDef
+ *           | ['case'] 'object' ObjectDef
+ *           | 'trait' TraitDef
  */
 void ScalaParser::parseTmplDef(spTmplDef &tmplDef) {
-  // ‘case’
+  // 'case'
   if (lexer->getCurToken() == STok::CASE) {
     tmplDef->tokCase = lexer->getCurTokenNode();
     lexer->getNextToken();
   }
 
-  // TODO: [‘case’] ‘class’ ClassDef
+  // TODO: ['case'] 'class' ClassDef
   if (lexer->getCurToken() == STok::CLASS) {
     // TODO:
     return;
   }
 
-  // [‘case’] ‘object’ ObjectDef
+  // ['case'] 'object' ObjectDef
   if (lexer->getCurToken() == STok::OBJECT) {
     tmplDef->opt = TmplDef::Opt::CASE_OBJECT;
 
     tmplDef->tokObject = lexer->getCurTokenNode();
-    lexer->getNextToken();
+    lexer->getNextToken(); // consume 'case'
 
     tmplDef->objectDef = spObjectDef(new ObjectDef);
     parseObjectDef(tmplDef->objectDef);
@@ -999,7 +999,22 @@ void ScalaParser::parseTmplDef(spTmplDef &tmplDef) {
     return;
   }
 
-  // TODO: ‘trait’ TraitDef
+  // 'trait' TraitDef
+  if (lexer->getCurToken() == STok::TRAIT) {
+    tmplDef->opt = TmplDef::Opt::TRAIT;
+
+    tmplDef->tokTrait = lexer->getCurTokenNode();
+    lexer->getNextToken(); // consume 'trait'
+
+    tmplDef->traitDef = spTraitDef(new TraitDef);
+    parseTraitDef(tmplDef->traitDef);
+    if (tmplDef->traitDef->err) {
+      tmplDef->addErr(-1);
+    }
+
+    return;
+  }
+
   tmplDef->addErr(-1);
 }
 
@@ -1071,6 +1086,35 @@ void ScalaParser::parseTopStatSeq(spTopStatSeq &topStatSeq) {
 
     topStatSeq->pairs.push_back(make_pair(semi, topStat));
   }
+}
+
+/**
+ * TraitDef ::= id [TypeParamClause] TraitTemplateOpt
+ */
+void ScalaParser::parseTraitDef(spTraitDef &traitDef) {
+  // id
+  traitDef->id = parseLexId();
+  lexer->getNextToken(); // consume id
+  if (traitDef->id->err) {
+    traitDef->addErr(-1);
+    return;
+  }
+
+  // TODO: [TypeParamClause]
+
+  // TraitTemplateOpt
+  traitDef->traitTemplateOpt = spTraitTemplateOpt(new TraitTemplateOpt);
+  parseTraitTemplateOpt(traitDef->traitTemplateOpt);
+  if (traitDef->traitTemplateOpt->err) {
+    traitDef->addErr(-1);
+  }
+}
+
+/**
+ * TraitTemplateOpt ::= 'extends' TraitTemplate | [['extends'] TemplateBody]
+ */
+void ScalaParser::parseTraitTemplateOpt(spTraitTemplateOpt &traitTemplateOpt) {
+  // TODO:
 }
 
 void ScalaParser::parse() {

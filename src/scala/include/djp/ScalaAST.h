@@ -110,6 +110,9 @@ typedef std::shared_ptr<struct TmplDef> spTmplDef;
 typedef std::shared_ptr<struct TokenNode> spTokenNode;
 typedef std::shared_ptr<struct TopStat> spTopStat;
 typedef std::shared_ptr<struct TopStatSeq> spTopStatSeq;
+typedef std::shared_ptr<struct TraitDef> spTraitDef;
+typedef std::shared_ptr<struct TraitTemplate> spTraitTemplate;
+typedef std::shared_ptr<struct TraitTemplateOpt> spTraitTemplateOpt;
 
 // ----------------------------------------------------------------------------
 // Helper nodes
@@ -761,8 +764,7 @@ struct TmplDef : ASTBase {
 
   // OPT_TRAIT
   spTokenNode tokTrait;
-  // TODO:
-  //spTraitDef traitDef;
+  spTraitDef traitDef;
 
   TmplDef() : opt(Opt::UNDEFINED) {}
 };
@@ -804,6 +806,33 @@ struct TopStat : ASTBase {
 struct TopStatSeq : ASTBase {
   spTopStat topStat;
   std::vector<std::pair<spSemi, spTopStat>> pairs;
+};
+
+/**
+ * TraitDef ::= id [TypeParamClause] TraitTemplateOpt
+ */
+struct TraitDef : ASTBase {
+  spLexId id;
+  // spTypeParamClause typeParamClause
+  spTraitTemplateOpt traitTemplateOpt;
+};
+
+/**
+ * TraitTemplate ::= [EarlyDefs] TraitParents [TemplateBody]
+ */
+struct TraitTemplate : ASTBase {
+  // TODO: [EarlyDefs]
+  // TODO: TraitParents
+  // TODO: [TemplateBody]
+};
+
+/**
+ * TraitTemplateOpt ::= 'extends' TraitTemplate | [['extends'] TemplateBody]
+ */
+struct TraitTemplateOpt : ASTBase {
+  spTokenNode tokExtends;
+  spTraitTemplate traitTemplate;
+  spTemplateBody templateBody;
 };
 
 }} // namespace
