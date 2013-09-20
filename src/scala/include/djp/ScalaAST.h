@@ -830,9 +830,19 @@ struct TraitTemplate : ASTBase {
  * TraitTemplateOpt ::= 'extends' TraitTemplate | [['extends'] TemplateBody]
  */
 struct TraitTemplateOpt : ASTBase {
+  enum class Opt {
+    UNDEFINED,
+    TRAIT_TEMPLATE,
+    TEMPLATE_BODY,
+  };
+
+  Opt opt;
+
   spTokenNode tokExtends;
   spTraitTemplate traitTemplate;
   spTemplateBody templateBody;
+
+  TraitTemplateOpt() : opt(Opt::UNDEFINED) {}
 };
 
 }} // namespace

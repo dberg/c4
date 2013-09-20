@@ -1111,10 +1111,56 @@ void ScalaParser::parseTraitDef(spTraitDef &traitDef) {
 }
 
 /**
+ * TraitTemplate ::= [EarlyDefs] TraitParents [TemplateBody]
+ */
+void ScalaParser::parseTraitTemplate(spTraitTemplate &traitTemplate) {
+  // TODO:
+}
+
+/**
  * TraitTemplateOpt ::= 'extends' TraitTemplate | [['extends'] TemplateBody]
  */
 void ScalaParser::parseTraitTemplateOpt(spTraitTemplateOpt &traitTemplateOpt) {
-  // TODO:
+  // TemplateBody
+  if (lexer->getCurToken() != STok::TRAIT) {
+    traitTemplateOpt->opt = TraitTemplateOpt::Opt::TEMPLATE_BODY;
+    traitTemplateOpt->templateBody = spTemplateBody(new TemplateBody);
+    parseTemplateBody(traitTemplateOpt->templateBody);
+    if (traitTemplateOpt->templateBody->err) {
+      traitTemplateOpt->addErr(-1);
+    }
+
+    return;
+  }
+
+  // 'extends' is mandatory
+  if (lexer->getCurToken() != STok::TRAIT) {
+    traitTemplateOpt->addErr(ERR_EXP_TRAIT);
+    return;
+  }
+
+  traitTemplateOpt->tokExtends = lexer->getCurTokenNode();
+  lexer->getNextToken(); // consume 'extends'
+
+  // We have two options: TraitTemplate or TemplateBody. We try each.
+  State state;
+  saveState(state);
+
+  auto traitTemplate = spTraitTemplate(new TraitTemplate);
+  parseTraitTemplate(traitTemplate);
+  if (traitTemplate->err == false) {
+    traitTemplateOpt->opt = TraitTemplateOpt::Opt::TRAIT_TEMPLATE;
+    traitTemplateOpt->traitTemplate = traitTemplate;
+    return;
+  }
+
+  restoreState(state);
+  traitTemplateOpt->opt = TraitTemplateOpt::Opt::TEMPLATE_BODY;
+  traitTemplateOpt->templateBody = spTemplateBody(new TemplateBody);
+  parseTemplateBody(traitTemplateOpt->templateBody);
+  if (traitTemplateOpt->templateBody->err) {
+    traitTemplateOpt->addErr(-1);
+  }
 }
 
 void ScalaParser::parse() {

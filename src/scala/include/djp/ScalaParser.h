@@ -65,6 +65,7 @@ class ScalaParser {
   void parseTopStat(spTopStat &topStat);
   void parseTopStatSeq(spTopStatSeq &topStatSeq);
   void parseTraitDef(spTraitDef &traitDef);
+  void parseTraitTemplate(spTraitTemplate &traitTemplate);
   void parseTraitTemplateOpt(spTraitTemplateOpt &traitTemplateOpt);
 
   // helper methods
