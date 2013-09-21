@@ -69,7 +69,7 @@ make CXX=g++
 Java emacs mode (djp-mode) installation
 -------------------------------------------------------------------------------
 
-1. Open the file $SRC/djp-mode/djp-mode.el and set the variable
+1. Open the file $SRC/emacs-modes/djp-mode/djp-mode.el and set the variable
 
 ```elisp
 (defvar djp-executable "$BIN/djp")
@@ -78,7 +78,7 @@ Java emacs mode (djp-mode) installation
 2. Add the following to your .emacs or init.el file:
 
 ```elisp
-(add-to-list 'load-path "$SRC/djp-mode")
+(add-to-list 'load-path "$SRC/emacs-modes/djp-mode")
 (autoload 'djp-mode "djp-mode" "Major mode for Java." t)
 (add-to-list 'auto-mode-alist '("\\.java$" . djp-mode))
 ```
