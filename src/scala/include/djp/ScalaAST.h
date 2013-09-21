@@ -111,6 +111,7 @@ typedef std::shared_ptr<struct TokenNode> spTokenNode;
 typedef std::shared_ptr<struct TopStat> spTopStat;
 typedef std::shared_ptr<struct TopStatSeq> spTopStatSeq;
 typedef std::shared_ptr<struct TraitDef> spTraitDef;
+typedef std::shared_ptr<struct TraitParents> spTraitParents;
 typedef std::shared_ptr<struct TraitTemplate> spTraitTemplate;
 typedef std::shared_ptr<struct TraitTemplateOpt> spTraitTemplateOpt;
 
@@ -818,11 +819,19 @@ struct TraitDef : ASTBase {
 };
 
 /**
+ * TraitParents ::= AnnotType {'with' AnnotType}
+ */
+struct TraitParents : ASTBase {
+  spAnnotType annotType;
+  std::vector<std::pair<spTokenNode, spAnnotType>> pairs;
+};
+
+/**
  * TraitTemplate ::= [EarlyDefs] TraitParents [TemplateBody]
  */
 struct TraitTemplate : ASTBase {
   // TODO: [EarlyDefs]
-  // TODO: TraitParents
+  spTraitParents traitParents;
   // TODO: [TemplateBody]
 };
 

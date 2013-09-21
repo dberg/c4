@@ -198,11 +198,19 @@ TEST(ScalaParser, HelloWorld) {
  *             'extends'
  *             TraitTemplate
  *               TraitParents
- *                 AnnotType  <-- Y
+ *                 AnnotType
  *                   SimpleType
+ *                     SimpleTypeHead
+ *                       StableId
+ *                         StableIdHead
+ *                           id    <-- Y
  *                 'with'
  *                 AnnotType
  *                   SimpleType
+ *                     SimpleTypeHead
+ *                       StableId
+ *                         StableIdHead
+ *                           id   <-- Z
  * -----------------------------------------------------------------------------
  */
 TEST(ScalaParser, Trait) {
@@ -251,6 +259,35 @@ TEST(ScalaParser, Trait) {
     ASSERT_EQ(STok::PERIOD, import->importExpr->tokPeriod->tok);
     ASSERT_EQ(STok::UNDERSCORE, import->importExpr->tokUnderscore->tok);
 
-    // TODO:
+    // trait X extends Y with Z
+    {
+      ASSERT_EQ(1, parser.compUnit->topStatSeq->pairs.size());
+      auto topStat = parser.compUnit->topStatSeq->pairs[0].second;
+      ASSERT_EQ(TopStat::Opt::TMPL_DEF, topStat->opt);
+
+      auto tmplDef = topStat->tmplDef;
+      ASSERT_EQ(TmplDef::Opt::TRAIT, tmplDef->opt);
+      ASSERT_EQ(STok::TRAIT, tmplDef->tokTrait->tok);
+
+      // X
+      auto traitDef = tmplDef->traitDef;
+      ASSERT_EQ("X", traitDef->id->val);
+
+      auto tmplOpt = traitDef->traitTemplateOpt;
+      ASSERT_EQ(TraitTemplateOpt::Opt::TRAIT_TEMPLATE, tmplOpt->opt);
+      ASSERT_EQ(STok::EXTENDS, tmplOpt->tokExtends->tok);
+
+      auto parents = tmplOpt->traitTemplate->traitParents;
+      ASSERT_EQ("Y",
+        parents->annotType->simpleType->head->stableId->head->id->val);
+      ASSERT_EQ(1, parents->pairs.size());
+
+      auto tokWith = parents->pairs[0].first;
+      ASSERT_EQ(STok::WITH, tokWith->tok);
+
+      auto annotType = parents->pairs[0].second;
+      ASSERT_EQ("Z",
+        annotType->simpleType->head->stableId->head->id->val);
+    }
   }
 }

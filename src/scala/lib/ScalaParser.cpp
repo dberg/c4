@@ -1111,10 +1111,49 @@ void ScalaParser::parseTraitDef(spTraitDef &traitDef) {
 }
 
 /**
+ * TraitParents ::= AnnotType {'with' AnnotType}
+ */
+void ScalaParser::parseTraitParents(spTraitParents &parents) {
+  // AnnotType
+  parents->annotType = spAnnotType(new AnnotType);
+  parseAnnotType(parents->annotType);
+  if (parents->annotType->err) {
+    parents->addErr(-1);
+    return;
+  }
+
+  State state;
+  while (lexer->getCurToken() == STok::WITH) {
+    saveState(state);
+
+    auto tok = lexer->getCurTokenNode();
+    lexer->getNextToken(); // consume 'with'
+
+    auto annotType = spAnnotType(new AnnotType);
+    parseAnnotType(annotType);
+    if (annotType->err) {
+      restoreState(state);
+      return;
+    }
+
+    parents->pairs.push_back(std::make_pair(tok, annotType));
+  }
+}
+
+/**
  * TraitTemplate ::= [EarlyDefs] TraitParents [TemplateBody]
  */
 void ScalaParser::parseTraitTemplate(spTraitTemplate &traitTemplate) {
-  // TODO:
+  // TODO: [EarlyDefs]
+
+  traitTemplate->traitParents = spTraitParents(new TraitParents);
+  parseTraitParents(traitTemplate->traitParents);
+  if (traitTemplate->traitParents->err) {
+    traitTemplate->addErr(-1);
+    return;
+  }
+
+  // TODO: [TemplateBody]
 }
 
 /**
@@ -1122,7 +1161,7 @@ void ScalaParser::parseTraitTemplate(spTraitTemplate &traitTemplate) {
  */
 void ScalaParser::parseTraitTemplateOpt(spTraitTemplateOpt &traitTemplateOpt) {
   // TemplateBody
-  if (lexer->getCurToken() != STok::TRAIT) {
+  if (lexer->getCurToken() != STok::EXTENDS) {
     traitTemplateOpt->opt = TraitTemplateOpt::Opt::TEMPLATE_BODY;
     traitTemplateOpt->templateBody = spTemplateBody(new TemplateBody);
     parseTemplateBody(traitTemplateOpt->templateBody);
@@ -1134,7 +1173,7 @@ void ScalaParser::parseTraitTemplateOpt(spTraitTemplateOpt &traitTemplateOpt) {
   }
 
   // 'extends' is mandatory
-  if (lexer->getCurToken() != STok::TRAIT) {
+  if (lexer->getCurToken() != STok::EXTENDS) {
     traitTemplateOpt->addErr(ERR_EXP_TRAIT);
     return;
   }
