@@ -45,6 +45,25 @@ TEST(ScalaSyntaxHighlighting, Trait) {
   ScalaEmacsOutput output(parser.compUnit, parser.diag, parser.indentMap);
   output.build();
 
-  // TODO:
-  // output.sh
+  std::string expected =
+    "["
+    "(djp-sh-keyword 1 8)"        // package
+    "(djp-sh-identifier 9 13)"    // test
+    "(djp-sh-keyword 14 20)"      // import
+    "(djp-sh-identifier 21 24)"   // com
+    "(djp-sh-op 24 25)"           // .
+    "(djp-sh-identifier 25 32)"   // company
+    "(djp-sh-op 32 33)"           // .
+    "(djp-sh-identifier 33 38)"   // utils
+    "(djp-sh-op 38 39)"           // .
+    "(djp-sh-op 39 40)"           // _
+    "(djp-sh-keyword 41 46)"      // trait
+    "(djp-sh-identifier 47 48)"   // X
+    "(djp-sh-keyword 49 56)"      // extends
+    "(djp-sh-identifier 57 58)"   // Y
+    "(djp-sh-keyword 59 63)"      // with
+    "(djp-sh-identifier 65 66)"   // Z
+    "]";
+
+  ASSERT_EQ(expected, output.sh);
 }

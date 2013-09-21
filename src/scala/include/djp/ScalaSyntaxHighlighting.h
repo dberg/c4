@@ -27,6 +27,8 @@ class ScalaSyntaxHighlighting {
   void setExpr1(spExpr1 &expr1);
   void setExprs(spExprs exprs);
   void setIdPeriod(spIdPeriod &idPeriod);
+  void setImport(spImport &import);
+  void setImportExpr(spImportExpr &importExpr);
   void setInfixExpr(spInfixExpr &infixExpr);
   void setLexId(spLexId &id);
   void setLiteral(spLiteral &literal);
@@ -52,6 +54,11 @@ class ScalaSyntaxHighlighting {
   void setTmplDef(spTmplDef &tmplDef);
   void setTopStat(spTopStat &topStat);
   void setTopStatSeq(spTopStatSeq &topStatSeq);
+  void setTraitDef(spTraitDef &traitDef);
+  void setTraitParents(spTraitParents &parents);
+  void setTraitTemplate(spTraitTemplate &traitTemplate);
+  void setTraitTemplateOpt(spTraitTemplateOpt &traitTemplateOpt);
+
 
   // Emacs output
   std::stringstream sh;

@@ -286,6 +286,46 @@ void ScalaSyntaxHighlighting::setIdPeriod(spIdPeriod &idPeriod) {
   // TODO:
 }
 
+void ScalaSyntaxHighlighting::setImport(spImport &import) {
+  if (import->tokImport) {
+    setKeyword(import->tokImport);
+  }
+
+  if (import->importExpr) {
+    setImportExpr(import->importExpr);
+  }
+
+  for (auto pair : import->pairs) {
+    setOp(pair.first);
+    setImportExpr(pair.second);
+  }
+}
+
+void ScalaSyntaxHighlighting::setImportExpr(spImportExpr &importExpr) {
+  if (importExpr->stableId) {
+    setStableId(importExpr->stableId);
+  }
+
+  if (importExpr->tokPeriod) {
+    setOp(importExpr->tokPeriod);
+  }
+
+  if (importExpr->id) {
+    setLexId(importExpr->id);
+    return;
+  }
+
+  if (importExpr->tokUnderscore) {
+    setOp(importExpr->tokUnderscore);
+    return;
+  }
+
+  // TODO:
+  //if (importExpr->importSelectors) {
+  //  setImportSelectors(importExpr->importSelectors);
+  //}
+}
+
 void ScalaSyntaxHighlighting::setInfixExpr(spInfixExpr &infixExpr) {
   if (infixExpr->opt == InfixExpr::Opt::PREFIX) {
     if (infixExpr->prefixExpr) {
@@ -591,7 +631,13 @@ void ScalaSyntaxHighlighting::setStableIdHead(spStableIdHead &head) {
 }
 
 void ScalaSyntaxHighlighting::setStableIdTail(spStableIdTail &tail) {
-  // TODO:
+  if (tail->periodId) {
+    setPeriodId(tail->periodId);
+  }
+
+  if (tail->tail) {
+    setStableIdTail(tail->tail);
+  }
 }
 
 void ScalaSyntaxHighlighting::setStringLiteral(spStringLiteral &strLit) {
@@ -641,10 +687,9 @@ void ScalaSyntaxHighlighting::setTmplDef(spTmplDef &tmplDef) {
       setKeyword(tmplDef->tokTrait);
     }
 
-    // TODO:
-    //if (tmplDef->traitDef) {
-    //  setTraitDef(tmplDef->traitDef);
-    //}
+    if (tmplDef->traitDef) {
+      setTraitDef(tmplDef->traitDef);
+    }
 
     return;
   }
@@ -660,7 +705,7 @@ void ScalaSyntaxHighlighting::setTopStat(spTopStat &topStat) {
   }
 
   if (topStat->opt == TopStat::Opt::IMPORT) {
-    // TODO:
+    setImport(topStat->import);
     return;
   }
 
@@ -685,6 +730,66 @@ void ScalaSyntaxHighlighting::setTopStatSeq(spTopStatSeq &topStatSeq) {
   for (auto pair : topStatSeq->pairs) {
     setSemi(pair.first);
     setTopStat(pair.second);
+  }
+}
+
+void ScalaSyntaxHighlighting::setTraitDef(spTraitDef &traitDef) {
+  if (traitDef->id) {
+    setLexId(traitDef->id);
+  }
+
+  // TODO: typeParamClause
+
+  if (traitDef->traitTemplateOpt) {
+    setTraitTemplateOpt(traitDef->traitTemplateOpt);
+  }
+}
+
+void ScalaSyntaxHighlighting::setTraitParents(spTraitParents &parents) {
+  if (parents->annotType) {
+    setAnnotType(parents->annotType);
+  }
+
+  for (auto pair : parents->pairs) {
+    setKeyword(pair.first);
+    setAnnotType(pair.second);
+  }
+}
+
+void ScalaSyntaxHighlighting::setTraitTemplate(spTraitTemplate &traitTemplate) {
+  // TODO: [EarlyDefs]
+
+  if (traitTemplate->traitParents) {
+    setTraitParents(traitTemplate->traitParents);
+  }
+
+  // TODO: [TemplateBody]
+}
+
+void ScalaSyntaxHighlighting::setTraitTemplateOpt(
+  spTraitTemplateOpt &traitTemplateOpt) {
+
+  if (traitTemplateOpt->opt == TraitTemplateOpt::Opt::TRAIT_TEMPLATE) {
+    if (traitTemplateOpt->tokExtends) {
+      setKeyword(traitTemplateOpt->tokExtends);
+    }
+
+    if (traitTemplateOpt->traitTemplate) {
+      setTraitTemplate(traitTemplateOpt->traitTemplate);
+    }
+
+    return;
+  }
+
+  if (traitTemplateOpt->opt == TraitTemplateOpt::Opt::TEMPLATE_BODY) {
+    if (traitTemplateOpt->tokExtends) {
+      setKeyword(traitTemplateOpt->tokExtends);
+    }
+
+    // TODO:
+    //if (traitTemplateOpt->templateBody) {
+    //  setTemplateBody(traitTemplateOpt->templateBody);
+    //}
   }
 }
 
