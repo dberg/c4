@@ -30,11 +30,11 @@ std::string ScalaSyntaxHighlighting::get() {
 // ----------------------------------------------------------------------------
 // Helpers
 // ----------------------------------------------------------------------------
-void ScalaSyntaxHighlighting::setKeyword(spTokenNode tok) {
+void ScalaSyntaxHighlighting::setKeyword(spTokenNode &tok) {
   sh << "(c4s-sh-keyword " << (tok->ini + 1) << " " << (tok->end + 1) << ")";
 }
 
-void ScalaSyntaxHighlighting::setOp(spTokenNode tok) {
+void ScalaSyntaxHighlighting::setOp(spTokenNode &tok) {
   setOp(tok->ini + 1, tok->end + 1);
 }
 
@@ -193,7 +193,7 @@ void ScalaSyntaxHighlighting::setConstr(spConstr &constr) {
   }
 }
 
-void ScalaSyntaxHighlighting::setExpr(spExpr expr) {
+void ScalaSyntaxHighlighting::setExpr(spExpr &expr) {
   if (expr->opt == Expr::Opt::EXPR) {
     // TODO:
     return;
@@ -271,7 +271,7 @@ void ScalaSyntaxHighlighting::setExpr1(spExpr1 &expr1) {
   }
 }
 
-void ScalaSyntaxHighlighting::setExprs(spExprs exprs) {
+void ScalaSyntaxHighlighting::setExprs(spExprs &exprs) {
   if (exprs->expr) {
     setExpr(exprs->expr);
   }
@@ -453,7 +453,7 @@ void ScalaSyntaxHighlighting::setQualId(spQualId &qualId) {
   }
 }
 
-void ScalaSyntaxHighlighting::setSemi(spSemi semi) {
+void ScalaSyntaxHighlighting::setSemi(spSemi &semi) {
   if (semi->tokSemiColon) {
     setOp(semi->tokSemiColon);
   }

@@ -11,8 +11,8 @@ using namespace c4::scala;
 namespace c4 {
 
 class ScalaEmacsOutput {
-  spCompilationUnit compUnit;
-  spDiagnosis diag;
+  spCompilationUnit &compUnit;
+  spDiagnosis &diag;
   ScalaLineIndentationMap &indentMap;
 
 public:

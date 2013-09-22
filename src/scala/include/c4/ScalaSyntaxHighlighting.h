@@ -8,10 +8,10 @@ using namespace c4::scala;
 namespace c4 {
 
 class ScalaSyntaxHighlighting {
-  spCompilationUnit compUnit;
+  spCompilationUnit &compUnit;
 
-  void setKeyword(spTokenNode tok);
-  void setOp(spTokenNode tok);
+  void setKeyword(spTokenNode &tok);
+  void setOp(spTokenNode &tok);
   void setOp(unsigned int ini, unsigned int end);
 
   void setAnnotType(spAnnotType &annotType);
@@ -23,9 +23,9 @@ class ScalaSyntaxHighlighting {
   void setClassTemplate(spClassTemplate &classTmpl);
   void setClassTemplateOpt(spClassTemplateOpt &classTmplOpt);
   void setConstr(spConstr &constr);
-  void setExpr(spExpr expr);
+  void setExpr(spExpr &expr);
   void setExpr1(spExpr1 &expr1);
-  void setExprs(spExprs exprs);
+  void setExprs(spExprs &exprs);
   void setIdPeriod(spIdPeriod &idPeriod);
   void setImport(spImport &import);
   void setImportExpr(spImportExpr &importExpr);
@@ -39,7 +39,7 @@ class ScalaSyntaxHighlighting {
   void setPostfixExpr(spPostfixExpr &postfixExpr);
   void setPrefixExpr(spPrefixExpr &prefixExpr);
   void setQualId(spQualId &qualId);
-  void setSemi(spSemi semi);
+  void setSemi(spSemi &semi);
   void setSimpleExpr(spSimpleExpr &simpleExpr);
   void setSimpleExpr1(spSimpleExpr1 &simpleExpr1);
   void setSimpleExpr1Head(spSimpleExpr1Head &head);
