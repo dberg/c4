@@ -4,13 +4,12 @@
 #include <string>
 #include <sstream>
 #include <vector>
+#include "djp/SourceCodeStream.h"
+#include "djp/Diagnosis.h"
+#include "djp/Indentation.h"
 #include "AST.h"
-#include "Diagnosis.h"
-#include "ErrorCodes.h"
-#include "Indentation.h"
 #include "Lexer.h"
 #include "ParserState.h"
-#include "SourceCodeStream.h"
 #include "SymbolTable.h"
 #include "Token.h"
 

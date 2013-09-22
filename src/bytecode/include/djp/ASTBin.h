@@ -8,6 +8,7 @@
 
 namespace djp {
 
+typedef std::shared_ptr<struct AnnotationBin> spAnnotationBin;
 typedef std::shared_ptr<struct ClassFile> spClassFile;
 typedef std::shared_ptr<struct CPInfo> spCPInfo;
 typedef std::shared_ptr<struct CPItem> spCPItem;
@@ -30,6 +31,13 @@ typedef std::shared_ptr<struct FieldInfo> spFieldInfo;
 typedef std::shared_ptr<struct MethodInfo> spMethodInfo;
 typedef std::shared_ptr<struct AttributeInfo> spAttributeInfo;
 typedef std::shared_ptr<struct CodeAttribute> spCodeAttribute;
+typedef std::shared_ptr<struct InnerClassesAttribute> spInnerClassesAttribute;
+typedef std::shared_ptr<struct InnerClassesAttributeClass>
+  spInnerClassesAttributeClass;
+typedef std::shared_ptr<struct RuntimeVisibleAnnotationsAttribute>
+  spRuntimeVisibleAnnotationsAttribute;
+typedef std::shared_ptr<struct ElementValueBin> spElementValueBin;
+typedef std::shared_ptr<struct ElementValuePairBin> spElementValuePairBin;
 typedef std::shared_ptr<struct ExceptionInfo> spExceptionInfo;
 typedef std::shared_ptr<struct LineNumberTable> spLineNumberTable;
 typedef std::shared_ptr<struct LineNumberTableInfo> spLineNumberTableInfo;
@@ -63,6 +71,19 @@ enum ClassAccessAndPropertyModifiers {
   CLASS_ACC_SYNTHETIC = 0x1000,
   CLASS_ACC_ANNOTATION = 0x2000,
   CLASS_ACC_ENUM = 0x4000,
+};
+
+enum NestedClassAccessAndPropertyFlags : int {
+  NESTED_ACC_PUBLIC = 0x0001, // Marked or implicitly public in source.
+  NESTED_ACC_PRIVATE = 0x0002, // Marked private in source.
+  NESTED_ACC_PROTECTED = 0x0004, // Marked protected in source.
+  NESTED_ACC_STATIC = 0x0008, // Marked or implicitly static in source.
+  NESTED_ACC_FINAL = 0x0010, // Marked final in source.
+  NESTED_ACC_INTERFACE = 0x0200, // Was an interface in source.
+  NESTED_ACC_ABSTRACT = 0x0400, // Marked or implicitly abstract in source.
+  NESTED_ACC_SYNTHETIC = 0x1000, // Declared synthetic; not present in the source code.
+  NESTED_ACC_ANNOTATION = 0x2000, // Declared as an annotation type.
+  NESTED_ACC_ENUM = 0x4000, // Declared as an enum type.
 };
 
 enum MethodAccessAndPropertyFlags {
@@ -412,11 +433,17 @@ struct AttributeInfo {
   spStackMapTable stackMapTable;
 
   // TODO:
-  // ATTRIBUTE_TYPE_EXCEPTIONS:
-  // ATTRIBUTE_TYPE_INNER_CLASSES:
-  // ATTRIBUTE_TYPE_ENCLOSING_METHOD:
-  // ATTRIBUTE_TYPE_SYNTHETIC:
-  // ATTRIBUTE_TYPE_SIGNATURE:
+  // ATTRIBUTE_TYPE_EXCEPTIONS
+
+  // ATTRIBUTE_TYPE_INNER_CLASSES
+  spInnerClassesAttribute innerClasses;
+
+  // TODO:
+  // ATTRIBUTE_TYPE_ENCLOSING_METHOD
+  // ATTRIBUTE_TYPE_SYNTHETIC
+
+  // ATTRIBUTE_TYPE_SIGNATURE
+  u2 signature_index;
 
   // ATTRIBUTE_TYPE_SOURCE_FILE
   u2 sourcefile_index;
@@ -431,7 +458,11 @@ struct AttributeInfo {
   // ATTRIBUTE_TYPE_LOCAL_VARIABLE_TABLE:
   // ATTRIBUTE_TYPE_LOCAL_VARIABLE_TYPE_TABLE:
   // ATTRIBUTE_TYPE_DEPRECATED:
+
   // ATTRIBUTE_TYPE_RUNTIME_VISIBLE_ANNOTATIONS:
+  spRuntimeVisibleAnnotationsAttribute visibleAnnotations;
+
+  // TODO:
   // ATTRIBUTE_TYPE_RUNTIME_INVISIBLE_ANNOTATIONS:
   // ATTRIBUTE_TYPE_RUNTIME_VISIBLE_PARAMETER_ANNOTATIONS:
   // ATTRIBUTE_TYPE_RUNTIME_INVISIBLE_PARAMETER_ANNOTATIONS:
@@ -469,6 +500,122 @@ struct CodeAttribute {
   std::vector<spExceptionInfo> exceptions;
   u2 attributes_count;
   std::vector<spAttributeInfo> attributes;
+};
+
+/**
+ * InnerClasses_attribute {
+ *     u2 attribute_name_index;
+ *     u4 attribute_length;
+ *     u2 number_of_classes;
+ *     {   u2 inner_class_info_index;
+ *         u2 outer_class_info_index;
+ *         u2 inner_name_index;
+ *         u2 inner_class_access_flags;
+ *     } classes[number_of_classes];
+ * }
+*/
+struct InnerClassesAttribute {
+  // AttributeInfo
+  // u2 attribute_name_index;
+  // u4 attribute_length;
+  u2 number_of_classes;
+  std::vector<spInnerClassesAttributeClass> classes;
+};
+
+/**
+ * See InnerClassesAttribute
+ * u2 inner_class_info_index;
+ * u2 outer_class_info_index;
+ * u2 inner_name_index;
+ * u2 inner_class_access_flags;
+ */
+struct InnerClassesAttributeClass {
+  u2 inner_class_info_index;
+  u2 outer_class_info_index;
+  u2 inner_name_index;
+  u2 inner_class_access_flags;
+};
+
+/**
+ * RuntimeVisibleAnnotations_attribute {
+ *     u2         attribute_name_index;
+ *     u4         attribute_length;
+ *     u2         num_annotations;
+ *     annotation annotations[num_annotations];
+ * }
+*/
+struct RuntimeVisibleAnnotationsAttribute {
+  // AttributeInfo
+  // u2 attribute_name_index;
+  // u4 attribute_length;
+  u2 num_annotations;
+  std::vector<spAnnotationBin> annotations;
+};
+
+/**
+ * Annotation {
+ *     u2 type_index;
+ *     u2 num_element_value_pairs;
+ *     {  u2 element_name_index;
+ *        element_value value;
+ *     } element_value_pairs[num_element_value_pairs];
+ * }
+*/
+struct AnnotationBin {
+  u2 type_index;
+  u2 num_element_value_pairs;
+  std::vector<spElementValuePairBin> elemValPairs;
+};
+
+/**
+ * @see Annotation
+ * u2 element_name_index;
+ * element_value value;
+ */
+struct ElementValuePairBin {
+  u2 element_name_index;
+  spElementValueBin value;
+};
+
+/**
+ * element_value {
+ *        u1 tag;
+ *        union {
+ *            u2 const_value_index;
+ *            {   u2 type_name_index;
+ *                u2 const_name_index;
+ *            } enum_const_value;
+ *            u2 class_info_index;
+ *            annotation annotation_value;
+ *            {   u2            num_values;
+ *                element_value values[num_values];
+ *            } array_value;
+ *        } value;
+ * }
+ *
+ * Tag values:
+ *   1) Primitives: 'B', 'C', 'D', 'F', 'I', 'J', 'S', and 'Z'
+ *   2) s: String, e: enum constant, c: class, @: annotation type and [: array
+ */
+struct ElementValueBin {
+  u1 tag;
+
+  // primitives
+  u2 const_value_index;
+
+  // enum
+  u2 type_name_index;
+  u2 const_name_index;
+
+  // class
+  u2 class_info_index;
+
+  // annotation
+  spAnnotationBin annotation_value;
+
+  // array
+  u2 num_values;
+  std::vector<spElementValueBin> values;
 };
 
 struct ExceptionInfo {

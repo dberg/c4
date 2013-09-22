@@ -48,7 +48,7 @@ bool isSign(char c) {
 //-----------------------------------------------------------------------------
 // LiteralSupport Class
 //-----------------------------------------------------------------------------
-int LiteralSupport::getLiteralNumber(char c, std::stringstream &ss) {
+LiteralToken LiteralSupport::getLiteralNumber(char c, std::stringstream &ss) {
   if (c == '0') {
     return getTokWithLeadingZero(ss);
   }
@@ -63,7 +63,7 @@ int LiteralSupport::getLiteralNumber(char c, std::stringstream &ss) {
  * The strings tream already have '.' at this point and we know by
  * previously peeking ahead that we have at least one digit.
  */
-int LiteralSupport::getDecimalFloatingPointStartingWithAPeriod(
+LiteralToken LiteralSupport::getDecimalFloatingPointStartingWithAPeriod(
   std::stringstream &ss) {
 
   // Consume all digits
@@ -79,7 +79,7 @@ int LiteralSupport::getDecimalFloatingPointStartingWithAPeriod(
     ss << src->getChar(); // consume suffix
   }
 
-  return TOK_DECIMAL_FLOATING_POINT_LITERAL;
+  return LiteralToken::DECIMAL_FLOATING_POINT;
 }
 
 /**
@@ -88,16 +88,16 @@ int LiteralSupport::getDecimalFloatingPointStartingWithAPeriod(
  * starts with a period to be parsed by its own method.
  * See getDecimalFloatingPointStartingWithAPeriod.
  */
-int LiteralSupport::getDecimalNumeralOrDecimalFloatingPoint(
+LiteralToken LiteralSupport::getDecimalNumeralOrDecimalFloatingPoint(
   char previous_c, std::stringstream &ss) {
 
   if (!isdigit(previous_c)) {
-    return TOK_ERROR;
+    return LiteralToken::ERROR;
   }
 
-  int tok = getDecimalNumeral(ss);
+  LiteralToken tok = getDecimalNumeral(ss);
 
-  if (tok == TOK_DECIMAL_NUMERAL_WITH_INT_TYPE_SUFFIX) {
+  if (tok == LiteralToken::DECIMAL_NUMERAL_WITH_INT_TYPE_SUFFIX) {
     return tok;
   }
 
@@ -138,14 +138,14 @@ int LiteralSupport::getDecimalNumeralOrDecimalFloatingPoint(
   // FloatTypeSuffix
   if (isFloatTypeSuffix(peek)) {
     ss << src->getChar(); // consume suffix
-    return TOK_DECIMAL_FLOATING_POINT_LITERAL;
+    return LiteralToken::DECIMAL_FLOATING_POINT;
   }
 
   if (seenPeriod == false && seenExponentPart == false) {
-    return TOK_ERROR;
+    return LiteralToken::ERROR;
   }
 
-  return TOK_DECIMAL_FLOATING_POINT_LITERAL;
+  return LiteralToken::DECIMAL_FLOATING_POINT;
 }
 
 // ----------------------------------------------------------------------------
@@ -154,15 +154,16 @@ int LiteralSupport::getDecimalNumeralOrDecimalFloatingPoint(
 
 /**
  * The string stream contains the value '0b' or '0B'.
- * Returns TOK_BINARY_NUMERAL | TOK_BINARY_NUMERAL_WITH_INT_TYPE_SUFFIX |
- * TOK_ERROR.
+ * @returns BINARY_NUMERAL |
+ *          BINARY_NUMERAL_WITH_INT_TYPE_SUFFIX |
+ *          ERROR.
  */
-int LiteralSupport::getBinaryNumeral(std::stringstream &ss) {
+LiteralToken LiteralSupport::getBinaryNumeral(std::stringstream &ss) {
   // Lookahead and confirm that we have valid binary digit.
   char c = src->getChar();
   if (!isBinaryDigit(c)) {
     src->ungetChar(3);
-    return TOK_ERROR;
+    return LiteralToken::ERROR;
   }
 
   // Append bin digit we've just consumed
@@ -175,44 +176,44 @@ int LiteralSupport::getBinaryNumeral(std::stringstream &ss) {
   char peek = src->peekChar();
   if (isIntegerTypeSuffix(peek)) {
     ss << src->getChar(); // append and consume suffix
-    return TOK_BINARY_NUMERAL_WITH_INT_TYPE_SUFFIX;
+    return LiteralToken::BINARY_NUMERAL_WITH_INT_TYPE_SUFFIX;
   }
 
-  return TOK_BINARY_NUMERAL;
+  return LiteralToken::BINARY_NUMERAL;
 }
 
 /**
- * Returns TOK_DECIMAL_NUMERAL | TOK_DECIMAL_NUMERAL_WITH_INT_TYPE_SUFFIX
+ * @returns DECIMAL_NUMERAL |
+ *          DECIMAL_NUMERAL_WITH_INT_TYPE_SUFFIX
  */
-int LiteralSupport::getDecimalNumeral(std::stringstream &ss) {
+LiteralToken LiteralSupport::getDecimalNumeral(std::stringstream &ss) {
   consumeDigitsPOrUnderscores(ss, isDecimalDigit);
 
   // Check int type suffix
   char peek = src->peekChar();
   if (isIntegerTypeSuffix(peek)) {
     ss << src->getChar(); // append and consume suffix
-    return TOK_DECIMAL_NUMERAL_WITH_INT_TYPE_SUFFIX;
+    return LiteralToken::DECIMAL_NUMERAL_WITH_INT_TYPE_SUFFIX;
   }
 
-  return TOK_DECIMAL_NUMERAL;
+  return LiteralToken::DECIMAL_NUMERAL;
 }
 
 /**
  * The string stream contains the value '0x' or '0X'.
- * Returns
- * TOK_HEX_NUMERAL
- * TOK_HEX_NUMERAL_WITH_INT_TYPE_SUFFIX
- * TOK_HEXADECIMAL_FLOATING_POINT_LITERAL
- * TOK_ERROR
+ * @returns HEX_NUMERAL |
+ *          HEX_NUMERAL_WITH_INT_TYPE_SUFFIX |
+ *          HEXADECIMAL_FLOATING_POINT_LITERAL |
+ *          ERROR
  */
-int LiteralSupport::getHexNumeral(std::stringstream &ss) {
+LiteralToken LiteralSupport::getHexNumeral(std::stringstream &ss) {
   // We save the start position of the numeral for error diagnosis.
   int start = src->getCursor() - 2;
 
   // Lookahead and confirm that we have valid hex digit.
   if (!(isHexDigit(src->peekChar()) || src->peekChar() == '.')) {
     diag->addErr(ERR_NVAL_HEX, start, src->getCursor());
-    return TOK_ERROR;
+    return LiteralToken::ERROR;
   }
 
   bool seenPeriod = false;
@@ -221,7 +222,7 @@ int LiteralSupport::getHexNumeral(std::stringstream &ss) {
     if (!isHexDigit(src->peekChar(1))) {
       src->ungetChar(2);
       diag->addErr(ERR_NVAL_HEX, start, src->getCursor());
-      return TOK_ERROR;
+      return LiteralToken::ERROR;
     }
 
     ss << src->getChar(); // consume '.'
@@ -248,17 +249,17 @@ int LiteralSupport::getHexNumeral(std::stringstream &ss) {
     char peek = src->peekChar();
     if (isIntegerTypeSuffix(peek)) {
       ss << src->getChar(); // append and consume suffix
-      return TOK_HEX_NUMERAL_WITH_INT_TYPE_SUFFIX;
+      return LiteralToken::HEX_NUMERAL_WITH_INT_TYPE_SUFFIX;
     }
 
-    return TOK_HEX_NUMERAL;
+    return LiteralToken::HEX_NUMERAL;
   }
 
   // We have a floating point.
   // The binary exponent indicator is mandatory.
   if (!isBinaryExponentIndicator(src->peekChar())) {
     diag->addErr(ERR_NVAL_HEX, start, src->getCursor());
-    return TOK_ERROR;
+    return LiteralToken::ERROR;
   }
 
   // Consume the binary exponent indicator: 'p' or 'P'
@@ -274,7 +275,7 @@ int LiteralSupport::getHexNumeral(std::stringstream &ss) {
   if (digitCount <= 0) {
     // Invalid or missing Signed integer
     diag->addErr(ERR_NVAL_HEX, start, src->getCursor());
-    return TOK_ERROR;
+    return LiteralToken::ERROR;
   }
 
   // FloatTypeSuffix(opt)
@@ -282,23 +283,23 @@ int LiteralSupport::getHexNumeral(std::stringstream &ss) {
     ss << src->getChar(); // consume one of: 'f', 'F', 'd' or 'D'
   }
 
-  return TOK_HEXADECIMAL_FLOATING_POINT_LITERAL;
+  return LiteralToken::HEXADECIMAL_FLOATING_POINT_LITERAL;
 }
 
 /**
  * Returns TOK_OCTAL_NUMERAL | TOK_OCTAL_NUMERAL_WITH_INT_TYPE_SUFFIX
  */
-int LiteralSupport::getOctalNumeral(std::stringstream &ss) {
+LiteralToken LiteralSupport::getOctalNumeral(std::stringstream &ss) {
   consumeDigitsPOrUnderscores(ss, isOctalDigit);
 
   // Check int type suffix
   char peek = src->peekChar();
   if (isIntegerTypeSuffix(peek)) {
     ss << src->getChar(); // append and consume suffix
-    return TOK_OCTAL_NUMERAL_WITH_INT_TYPE_SUFFIX;
+    return LiteralToken::OCTAL_NUMERAL_WITH_INT_TYPE_SUFFIX;
   }
 
-  return TOK_OCTAL_NUMERAL;
+  return LiteralToken::OCTAL_NUMERAL;
 }
 
 // -----------------------------------------------------------------------------
@@ -370,12 +371,12 @@ int LiteralSupport::consumeExponentPart(std::stringstream &ss) {
   return 0;
 }
 
-int LiteralSupport::getTokWithLeadingZero(std::stringstream &ss) {
+LiteralToken LiteralSupport::getTokWithLeadingZero(std::stringstream &ss) {
   // Decimal numeral
   char lookahead = src->getChar();
   if (lookahead == 'l' || lookahead == 'L') {
     ss << '0'; ss << lookahead;
-    return TOK_DECIMAL_NUMERAL_WITH_INT_TYPE_SUFFIX;
+    return LiteralToken::DECIMAL_NUMERAL_WITH_INT_TYPE_SUFFIX;
   }
 
   // Hex numeral
@@ -399,14 +400,14 @@ int LiteralSupport::getTokWithLeadingZero(std::stringstream &ss) {
   // Float and Double
   if (isFloatTypeSuffix(lookahead)) {
     ss << '0'; ss << lookahead;
-    return TOK_DECIMAL_FLOATING_POINT_LITERAL;
+    return LiteralToken::DECIMAL_FLOATING_POINT;
   }
 
   // Decimal numeral, stand alone zero
   if (!isDecimalDigit(lookahead) && lookahead != '.') {
     src->ungetChar(1);
     ss << '0';
-    return TOK_DECIMAL_NUMERAL;
+    return LiteralToken::DECIMAL_NUMERAL;
   }
 
   // We might have a floating point number or a series of zeros so we let

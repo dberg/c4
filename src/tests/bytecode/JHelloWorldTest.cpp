@@ -1,28 +1,10 @@
-#include <dlfcn.h>
-#include <stdint.h>
-#include <libgen.h>
 #include <string>
 #include <vector>
 #include "djp/File.h"
 #include "djp/ParserBin.h"
+#include "Util.h"
 #include "gtest/gtest.h"
 using namespace djp;
-
-std::string getCurrentDir() {
-  Dl_info dlinfo;
-  void *p = (void *) (intptr_t) getCurrentDir;
-  if (dladdr(p, &dlinfo)) {
-    char *filename = strdup(dlinfo.dli_fname);
-    std::string dir = dirname(filename);
-    free(filename);
-    return dir;
-  }
-
-  // failed to get current directory
-  return "";
-}
-
-std::string current_dir = getCurrentDir();
 
 /**
  * public class HelloWorld {
@@ -34,7 +16,8 @@ std::string current_dir = getCurrentDir();
 TEST(ParserBin, HelloWorld) {
   std::vector<unsigned char> buffer;
   File file;
-  std::string filename =  current_dir + "/test-classes/HelloWorld.class";
+  std::string filename =  current_dir
+    + "/bytecode-classes/java/HelloWorld.class";
   ASSERT_EQ(file.read(filename, buffer), 0);
   ParserBin parser(filename, buffer);
   parser.parse();
@@ -92,7 +75,7 @@ TEST(ParserBin, HelloWorld) {
     ASSERT_EQ(19, cMethodrefInfo->class_index);
     ASSERT_EQ(20, cMethodrefInfo->name_and_type_index);
 
-    // Assert that index 19 is a CONSTANT_Class and index 20 is 
+    // Assert that index 19 is a CONSTANT_Class and index 20 is
     // CONSTANT_NameAndType "(Ljava/lang/String;)V
     ASSERT_EQ(CONSTANT_Class, parser.classFile->constant_pool->items[19]->tag);
     ASSERT_EQ(CONSTANT_NameAndType,

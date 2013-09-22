@@ -5,6 +5,8 @@
 
 namespace djp {
 
+bool endsWith(std::string const &str, std::string const &end);
+
 class CmdInput {
 
   int argc;
@@ -13,35 +15,47 @@ class CmdInput {
 
   // options
   bool optHelp;
-  bool optBinary;
-  bool optEmacs;
+  bool optDaemon;
+  bool optInJava;
+  bool optInScala;
+  bool optInBytecode;
+  bool optOutEmacs;
   std::string filename;
+  std::string port;
+
+  int validateInput();
 
 public:
 
   CmdInput(int argc, const char **argv)
     : argc(argc), argv(argv),
-      optHelp(false), optBinary(false), optEmacs(false), filename("") {}
+      optHelp(false), optDaemon(false), optInJava(false), optInScala(false),
+      optInBytecode(false), optOutEmacs(false), filename("") {}
 
   std::string help =
     "Usage:\n"
-    "  djp [-h, --help] | [-b, --binary] | [--emacs] filename\n"
-    "\n"
-    "  --emacs          Parse java files\n"
-    "  - b, --binary    Parse binary .class files\n"
-    "  - h, --help      Show this help message\n"
-    "\n"
-    "Examples:\n"
-    "\n"
-    "  djp --emacs MyClass.java\n"
-    "  djp -b MyClass.class\n";
-
+    "  djp [-h, --help] \n"
+    "  djp [-i, --input] INPUT_OPTIONS [-f, --filename] FILENAME\n"
+    "  djp [-d, --daemon] [-p, --port] PORT_NUMBER\n\n"
+    "Where INPUT_OPTIONS is one of 'java', 'scala' or 'bytecode'.\n\n"
+    "The output for 'java' or 'scala' input types is 'emacs'.\n"
+    "The output for the input type 'bytecode' is plain text.\n\n"
+    "Examples:\n\n"
+    "  djp -i java -f Foo.java\n"
+    "  djp -i scala -f Bar.scala\n"
+    "  djp --input bytecode --filename Baz.class\n"
+    "  djp --daemon --port 8000\n";
 
   int processCmdArgs();
+
   bool isOptHelp() { return optHelp; }
-  bool isOptBinary() { return optBinary; }
-  bool isOptEmacs() { return optEmacs; }
+  bool isOptDaemon() { return optDaemon; }
+  bool isOptInJava() { return optInJava; }
+  bool isOptInScala() { return optInScala; }
+  bool isOptInBytecode() { return optInBytecode; }
+
   std::string getFilename() { return filename; }
+  std::string getPort() { return port; }
   std::string getError() { return error; }
 };
 

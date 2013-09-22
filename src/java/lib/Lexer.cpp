@@ -3,6 +3,47 @@
 namespace djp {
 
 //-----------------------------------------------------------------------------
+// Literal Support Java Helper
+//-----------------------------------------------------------------------------
+int toJavaTok(LiteralToken litTok) {
+  if (litTok == LiteralToken::ERROR)
+    return TOK_ERROR;
+
+  if (litTok == LiteralToken::BINARY_NUMERAL)
+    return TOK_BINARY_NUMERAL;
+
+  if (litTok == LiteralToken::BINARY_NUMERAL_WITH_INT_TYPE_SUFFIX)
+    return TOK_BINARY_NUMERAL_WITH_INT_TYPE_SUFFIX;
+
+  if (litTok == LiteralToken::DECIMAL_NUMERAL)
+    return TOK_DECIMAL_NUMERAL;
+
+  if (litTok == LiteralToken::DECIMAL_NUMERAL_WITH_INT_TYPE_SUFFIX)
+    return TOK_DECIMAL_NUMERAL_WITH_INT_TYPE_SUFFIX;
+
+  if (litTok == LiteralToken::DECIMAL_FLOATING_POINT)
+    return TOK_DECIMAL_FLOATING_POINT_LITERAL;
+
+  if (litTok == LiteralToken::HEX_NUMERAL)
+    return TOK_HEX_NUMERAL;
+
+  if (litTok == LiteralToken::HEX_NUMERAL_WITH_INT_TYPE_SUFFIX)
+    return TOK_HEX_NUMERAL_WITH_INT_TYPE_SUFFIX;
+
+  if (litTok == LiteralToken::HEXADECIMAL_FLOATING_POINT_LITERAL)
+    return TOK_HEXADECIMAL_FLOATING_POINT_LITERAL;
+
+  if (litTok == LiteralToken::OCTAL_NUMERAL)
+    return TOK_OCTAL_NUMERAL;
+
+  if (litTok == LiteralToken::OCTAL_NUMERAL_WITH_INT_TYPE_SUFFIX)
+    return TOK_OCTAL_NUMERAL_WITH_INT_TYPE_SUFFIX;
+
+  return TOK_ERROR;
+}
+
+
+//-----------------------------------------------------------------------------
 // Helpers
 //-----------------------------------------------------------------------------
 bool isJavaLetter(char c) {
@@ -484,7 +525,7 @@ int Lexer::getMulToken() {
 */
 int Lexer::getNumberToken(char c) {
   std::stringstream ss;
-  int tok = litSupport->getLiteralNumber(c, ss);
+  int tok = toJavaTok(litSupport->getLiteralNumber(c, ss));
   curTokenStr = ss.str();
   return tok;
 }
@@ -498,7 +539,8 @@ int Lexer::getPeriodStartingToken() {
 
   // If we have a digit following '.' this is a decimal floating point literal.
   if (isdigit(src->peekChar())) {
-    int tok = litSupport->getDecimalFloatingPointStartingWithAPeriod(ss);
+    int tok = toJavaTok(
+      litSupport->getDecimalFloatingPointStartingWithAPeriod(ss));
     curTokenStr = ss.str();
     return tok;
   }

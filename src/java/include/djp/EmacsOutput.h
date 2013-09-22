@@ -1,21 +1,20 @@
 //-*- C++ -*-
-#ifndef __OUTPUT_H__
-#define __OUTPUT_H__
-#include "AST.h"
-#include "Diagnosis.h"
-#include "ErrorCodes.h"
-#include "Indentation.h"
-#include "Parser.h"
-#include "SymbolTable.h"
-#include "Token.h"
+#ifndef __EMACS_OUTPUT_H__
+#define __EMACS_OUTPUT_H__
 #include <iostream>
 #include <map>
 #include <sstream>
+#include "djp/Diagnosis.h"
+#include "djp/Indentation.h"
+#include "AST.h"
+#include "Parser.h"
+#include "SymbolTable.h"
+#include "Token.h"
 
 namespace djp {
 
 /**
- * Emacs output for syntax highlighing.
+ * Emacs output for djp-mode.
  * The first position in the buffer is 1.
  */
 class EmacsOutput {

@@ -8,6 +8,8 @@
 
 namespace djp {
 
+bool isElementValueConst(u1 tag);
+
 class ParserBin {
 
   enum ParserBinErr {
@@ -40,6 +42,12 @@ class ParserBin {
   void parseCPMethodHandle(spCPItem &item);
   void parseCPMethodType(spCPItem &item);
   void parseCPInvokeDynamic(spCPItem &item);
+  void parseInnerClassAttribute(spInnerClassesAttribute &innerClasses);
+  void parseRuntimeVisibleAnnotationsAttribute(
+    spRuntimeVisibleAnnotationsAttribute &visibleAnnotations);
+  void parseAnnotation(spAnnotationBin &annotation);
+  void parseElementValue(spElementValueBin &value);
+  void parseElementValuePair(spElementValuePairBin &pair);
   void parseInterfaces(u2 interfaces_count);
   void parseFields(u2 fields_count);
   void parseMethods(u2 methods_count);
