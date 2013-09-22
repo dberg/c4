@@ -1,10 +1,10 @@
 #include <string>
 #include <vector>
-#include "djp/File.h"
-#include "djp/ParserBin.h"
+#include "c4/File.h"
+#include "c4/ParserBin.h"
 #include "Util.h"
 #include "gtest/gtest.h"
-using namespace djp;
+using namespace c4;
 
 /**
  * public class HelloWorld {

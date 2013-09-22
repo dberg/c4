@@ -1,6 +1,6 @@
-#include "djp/BinOutput.h"
+#include "c4/BinOutput.h"
 
-namespace djp {
+namespace c4 {
 
 void BinOutput::build() {
   buildHeader();

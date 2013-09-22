@@ -6,7 +6,7 @@
 #include <libgen.h>
 #include <string>
 
-namespace djp {
+namespace c4 {
 std::string getCurrentDir() {
   Dl_info dlinfo;
   void *p = (void *) (intptr_t) getCurrentDir;

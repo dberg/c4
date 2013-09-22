@@ -1,8 +1,8 @@
 #include <iostream>
-#include "djp/Parser.h"
-#include "djp/SymbolTable.h"
+#include "c4/Parser.h"
+#include "c4/SymbolTable.h"
 #include "gtest/gtest.h"
-using namespace djp;
+using namespace c4;
 
 // |------------+-------+-----+-----+------+----+----------|
 // | type       | scope | pos | end | line | id | metadata |

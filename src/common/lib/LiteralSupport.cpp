@@ -1,6 +1,6 @@
-#include "djp/LiteralSupport.h"
+#include "c4/LiteralSupport.h"
 
-namespace djp {
+namespace c4 {
 
 //-----------------------------------------------------------------------------
 // Helpers

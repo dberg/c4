@@ -1,8 +1,8 @@
 #include <iostream>
-#include "djp/Indentation.h"
-#include "djp/Parser.h"
+#include "c4/Indentation.h"
+#include "c4/Parser.h"
 #include "gtest/gtest.h"
-using namespace djp;
+using namespace c4;
 
 TEST(Indentation, Class) {
   std::string filename = "Test.java";

@@ -1,6 +1,6 @@
-#include "djp/BinOutput.h"
+#include "c4/BinOutput.h"
 
-namespace djp {
+namespace c4 {
 
 u4 BinOutputCode::getCodeU4() {
   u4 result = getCodeU1() << 24;

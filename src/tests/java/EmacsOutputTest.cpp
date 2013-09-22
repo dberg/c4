@@ -1,9 +1,9 @@
 #include <iostream>
 #include <string>
-#include "djp/EmacsOutput.h"
-#include "djp/Parser.h"
+#include "c4/EmacsOutput.h"
+#include "c4/Parser.h"
 #include "gtest/gtest.h"
-using namespace djp;
+using namespace c4;
 
 TEST(EmacsOutput, PackageDeclaration) {
   std::string filename = "Test.java";
@@ -15,12 +15,12 @@ TEST(EmacsOutput, PackageDeclaration) {
   output.build();
   std::string expected =
     "["
-    "(djp-sh-annotation-tok-at 1 2)"
-    "(djp-sh-identifier 2 13)"
-    "(djp-sh-keyword 14 21)"
-    "(djp-sh-identifier 22 25)"
-    "(djp-sh-op 25 26)"
-    "(djp-sh-identifier 26 30)]";
+    "(c4-sh-annotation-tok-at 1 2)"
+    "(c4-sh-identifier 2 13)"
+    "(c4-sh-keyword 14 21)"
+    "(c4-sh-identifier 22 25)"
+    "(c4-sh-op 25 26)"
+    "(c4-sh-identifier 26 30)]";
   ASSERT_EQ(expected, output.outSH.str());
 }
 
@@ -38,30 +38,30 @@ TEST(EmacsOutput, ImportDeclaration) {
   output.build();
   std::string expected =
     "["
-    "(djp-sh-keyword 1 7)"
-    "(djp-sh-identifier 8 11)"
-    "(djp-sh-op 11 12)"
-    "(djp-sh-identifier 12 17)"
-    "(djp-sh-op 17 18)"
-    "(djp-sh-identifier 18 23)"
-    "(djp-sh-keyword 25 31)"
-    "(djp-sh-identifier 32 35)"
-    "(djp-sh-op 35 36)"
-    "(djp-sh-identifier 36 41)"
-    "(djp-sh-op 41 43)"
-    "(djp-sh-keyword 45 51)"
-    "(djp-sh-keyword 52 58)"
-    "(djp-sh-identifier 59 62)"
-    "(djp-sh-op 62 63)"
-    "(djp-sh-identifier 63 68)"
-    "(djp-sh-op 68 69)"
-    "(djp-sh-identifier 69 74)"
-    "(djp-sh-keyword 76 82)"
-    "(djp-sh-keyword 83 89)"
-    "(djp-sh-identifier 90 93)"
-    "(djp-sh-op 93 94)"
-    "(djp-sh-identifier 94 99)"
-    "(djp-sh-op 99 101)]";
+    "(c4-sh-keyword 1 7)"
+    "(c4-sh-identifier 8 11)"
+    "(c4-sh-op 11 12)"
+    "(c4-sh-identifier 12 17)"
+    "(c4-sh-op 17 18)"
+    "(c4-sh-identifier 18 23)"
+    "(c4-sh-keyword 25 31)"
+    "(c4-sh-identifier 32 35)"
+    "(c4-sh-op 35 36)"
+    "(c4-sh-identifier 36 41)"
+    "(c4-sh-op 41 43)"
+    "(c4-sh-keyword 45 51)"
+    "(c4-sh-keyword 52 58)"
+    "(c4-sh-identifier 59 62)"
+    "(c4-sh-op 62 63)"
+    "(c4-sh-identifier 63 68)"
+    "(c4-sh-op 68 69)"
+    "(c4-sh-identifier 69 74)"
+    "(c4-sh-keyword 76 82)"
+    "(c4-sh-keyword 83 89)"
+    "(c4-sh-identifier 90 93)"
+    "(c4-sh-op 93 94)"
+    "(c4-sh-identifier 94 99)"
+    "(c4-sh-op 99 101)]";
   ASSERT_EQ(expected, output.outSH.str());
 }
 
@@ -75,11 +75,11 @@ TEST(EmacsOutput, NormalClassDeclaration) {
   output.build();
   std::string expected =
     "["
-    "(djp-sh-keyword 1 7)"
-    "(djp-sh-keyword 8 13)"
-    "(djp-sh-reference-type-id 14 18)"
-    "(djp-sh-keyword 19 26)"
-    "(djp-sh-reference-type-id 27 31)]";
+    "(c4-sh-keyword 1 7)"
+    "(c4-sh-keyword 8 13)"
+    "(c4-sh-reference-type-id 14 18)"
+    "(c4-sh-keyword 19 26)"
+    "(c4-sh-reference-type-id 27 31)]";
   ASSERT_EQ(expected, output.outSH.str());
 }
 
@@ -92,11 +92,11 @@ TEST(EmacsOutput, ClassConstructor) {
   output.build();
   std::string expected =
     "["
-    "(djp-sh-keyword 1 6)"
-    "(djp-sh-reference-type-id 7 10)"
-    "(djp-sh-identifier 13 16)"
-    "(djp-sh-op 19 20)"
-    "(djp-sh-op 20 21)]";
+    "(c4-sh-keyword 1 6)"
+    "(c4-sh-reference-type-id 7 10)"
+    "(c4-sh-identifier 13 16)"
+    "(c4-sh-op 19 20)"
+    "(c4-sh-op 20 21)]";
   ASSERT_EQ(expected, output.outSH.str());
 }
 
@@ -109,15 +109,15 @@ TEST(EmacsOutput, ClassConstructorParameters) {
   output.build();
   std::string expected =
     "["
-    "(djp-sh-keyword 1 6)"
-    "(djp-sh-reference-type-id 7 10)"
-    "(djp-sh-identifier 13 16)"
-    "(djp-sh-keyword 17 20)"
-    "(djp-sh-identifier 21 22)"
-    "(djp-sh-keyword 24 30)"
-    "(djp-sh-identifier 31 32)"
-    "(djp-sh-op 34 35)"
-    "(djp-sh-op 35 36)]";
+    "(c4-sh-keyword 1 6)"
+    "(c4-sh-reference-type-id 7 10)"
+    "(c4-sh-identifier 13 16)"
+    "(c4-sh-keyword 17 20)"
+    "(c4-sh-identifier 21 22)"
+    "(c4-sh-keyword 24 30)"
+    "(c4-sh-identifier 31 32)"
+    "(c4-sh-op 34 35)"
+    "(c4-sh-op 35 36)]";
   ASSERT_EQ(expected, output.outSH.str());
 }
 
@@ -130,24 +130,24 @@ TEST(EmacsOutput, Expression2Rest) {
   output.build();
   std::string expected =
     "["
-    "(djp-sh-keyword 1 6)"
-    "(djp-sh-reference-type-id 7 8)"
-    "(djp-sh-keyword 11 15)" // void
-    "(djp-sh-identifier 16 17)" // m
-    "(djp-sh-op 17 18)" // (
-    "(djp-sh-op 18 19)" // )
-    "(djp-sh-op 20 21)" // {
-    "(djp-sh-keyword 22 24)" // if
-    "(djp-sh-op 25 26)" // (
-    "(djp-sh-identifier 26 27)" // x
-    "(djp-sh-op 28 30)" // ==
-    "(djp-sh-keyword 31 35)" // null
-    "(djp-sh-op 35 36)" // )
-    "(djp-sh-op 37 38)" // {
-    "(djp-sh-keyword 39 45)" // return
-    "(djp-sh-op 45 46)" // ;
-    "(djp-sh-op 47 48)" // }
-    "(djp-sh-op 48 49)]"; // }
+    "(c4-sh-keyword 1 6)"
+    "(c4-sh-reference-type-id 7 8)"
+    "(c4-sh-keyword 11 15)" // void
+    "(c4-sh-identifier 16 17)" // m
+    "(c4-sh-op 17 18)" // (
+    "(c4-sh-op 18 19)" // )
+    "(c4-sh-op 20 21)" // {
+    "(c4-sh-keyword 22 24)" // if
+    "(c4-sh-op 25 26)" // (
+    "(c4-sh-identifier 26 27)" // x
+    "(c4-sh-op 28 30)" // ==
+    "(c4-sh-keyword 31 35)" // null
+    "(c4-sh-op 35 36)" // )
+    "(c4-sh-op 37 38)" // {
+    "(c4-sh-keyword 39 45)" // return
+    "(c4-sh-op 45 46)" // ;
+    "(c4-sh-op 47 48)" // }
+    "(c4-sh-op 48 49)]"; // }
 
   ASSERT_EQ(expected, output.outSH.str());
 }

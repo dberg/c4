@@ -1,7 +1,7 @@
 #include <iostream>
-#include "djp/ScalaParser.h"
+#include "c4/ScalaParser.h"
 #include "gtest/gtest.h"
-using namespace djp;
+using namespace c4;
 
 /**
  * -----------------------------------------------------------------------------

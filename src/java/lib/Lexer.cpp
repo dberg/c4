@@ -1,6 +1,6 @@
-#include "djp/Lexer.h"
+#include "c4/Lexer.h"
 
-namespace djp {
+namespace c4 {
 
 //-----------------------------------------------------------------------------
 // Literal Support Java Helper

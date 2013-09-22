@@ -1,6 +1,6 @@
-#include "djp/Diagnosis.h"
+#include "c4/Diagnosis.h"
 
-namespace djp {
+namespace c4 {
 
 /**
  * Add Diagnosis error that can be used by parser clients.

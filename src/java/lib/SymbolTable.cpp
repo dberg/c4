@@ -1,7 +1,7 @@
-#include "djp/Token.h"
-#include "djp/SymbolTable.h"
+#include "c4/Token.h"
+#include "c4/SymbolTable.h"
 
-namespace djp {
+namespace c4 {
 
 void ST::addSym(int type, unsigned pos, unsigned end, unsigned line,
   const std::string metadata) {

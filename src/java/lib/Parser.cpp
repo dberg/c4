@@ -1,6 +1,6 @@
-#include "djp/Parser.h"
+#include "c4/Parser.h"
 
-namespace djp {
+namespace c4 {
 
 // Helper functions
 bool isAssignmentOperator(int token) {

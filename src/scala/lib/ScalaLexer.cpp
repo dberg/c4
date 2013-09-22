@@ -1,6 +1,6 @@
-#include "djp/ScalaLexer.h"
+#include "c4/ScalaLexer.h"
 
-namespace djp {
+namespace c4 {
 
 // -----------------------------------------------------------------------------
 // Helper functions

@@ -1,6 +1,6 @@
-#include "djp/SourceCodeStream.h"
+#include "c4/SourceCodeStream.h"
 
-namespace djp {
+namespace c4 {
 
 /**
  * Return the next char in the buffer or '\0' if we hit the end of the buffer.

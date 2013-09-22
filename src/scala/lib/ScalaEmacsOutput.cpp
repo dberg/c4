@@ -1,6 +1,6 @@
-#include "djp/ScalaEmacsOutput.h"
+#include "c4/ScalaEmacsOutput.h"
 
-namespace djp {
+namespace c4 {
 
 void ScalaEmacsOutput::build() {
   auto shOutput = std::make_shared<ScalaSyntaxHighlighting>(compUnit);

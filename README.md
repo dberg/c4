@@ -1,7 +1,7 @@
-Djp
+C4
 ================================================================================
 
-Djp is a collection of emacs modes and parsers for Java 7, Scala 2.10 and the JVM bytecode.
+C4 is a collection of emacs modes and parsers for Java 7, Scala 2.10 and the JVM bytecode.
 
 The java emacs mode provides:
 
@@ -22,11 +22,11 @@ If you checkout the project like this:
 
 ```bash
 cd ~
-git clone git@github.com:dberg/djp.git
-SRC=~/djp/src
+git clone git@github.com:dberg/c4.git
+SRC=~/c4/src
 ```
 
-$SRC is the path to /home/your_user/djp/src.
+$SRC is the path to /home/your_user/c4/src.
 
 The variable $BIN is the location of the 'bin' directory in the project.
 
@@ -37,19 +37,19 @@ The path to bin is affected by the BUILDTYPE, which has two possible values: Deb
 Example. Assuming your username is 'ichigo' and you run the build in Release mode:
 
 ```bash
-SRC=/home/ichigo/djp/src
-BIN=/home/ichigo/djp/src/out/Release/bin
+SRC=/home/ichigo/c4/src
+BIN=/home/ichigo/c4/src/out/Release/bin
 ```
 
 
 Build
 --------------------------------------------------------------------------------
 
-To build djp in Release mode:
+To build c4 in Release mode:
 
 ```bash
-git clone git://github.com/dberg/djp.git
-cd djp/src
+git clone git://github.com/dberg/c4.git
+cd c4/src
 make BUILDTYPE=Release
 ```
 
@@ -66,21 +66,21 @@ make CXX=g++
 ```
 
 
-Java emacs mode (djp-mode) installation
+Java emacs mode (c4-java-mode) installation
 -------------------------------------------------------------------------------
 
-1. Open the file $SRC/emacs-modes/djp-mode/djp-mode.el and set the variable
+1. Open the file $SRC/emacs-modes/c4-java-mode/c4-java-mode.el and set the variable
 
 ```elisp
-(defvar djp-executable "$BIN/djp")
+(defvar c4-executable "$BIN/c4")
 ```
 
 2. Add the following to your .emacs or init.el file:
 
 ```elisp
-(add-to-list 'load-path "$SRC/emacs-modes/djp-mode")
-(autoload 'djp-mode "djp-mode" "Major mode for Java." t)
-(add-to-list 'auto-mode-alist '("\\.java$" . djp-mode))
+(add-to-list 'load-path "$SRC/emacs-modes/c4-java-mode")
+(autoload 'c4-java-mode "c4-java-mode" "Major mode for Java." t)
+(add-to-list 'auto-mode-alist '("\\.java$" . c4-java-mode))
 ```
 
 
@@ -89,10 +89,10 @@ Running from the command line
 
 ```bash
 # Print usage information
-$BIN/djp --help
+$BIN/c4 --help
 
 # Print the emacs output of a java source file
-$BIN/djp -i java -f MyClass.java
+$BIN/c4 -i java -f MyClass.java
 ```
 
 

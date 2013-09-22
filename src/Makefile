@@ -40,30 +40,30 @@ builddir_common = $(builddir)/common
 builddir_java = $(builddir)/java
 builddir_scala = $(builddir)/scala
 builddir_bytecode = $(builddir)/bytecode
-builddir_djp = $(builddir)/djp
+builddir_c4 = $(builddir)/c4
 
 obj_common = $(builddir)/common/obj
 obj_java = $(builddir)/java/obj
 obj_scala = $(builddir)/scala/obj
 obj_bytecode = $(builddir)/bytecode/obj
-obj_djp = $(builddir)/djp/obj
+obj_c4 = $(builddir)/c4/obj
 
 bin = $(builddir)/bin
 
-incdir_common := common/include/djp
-incdir_java := java/include/djp
-incdir_scala := scala/include/djp
-incdir_bytecode := bytecode/include/djp
-incdir_djp := djp/include/djp
+incdir_common := common/include/c4
+incdir_java := java/include/c4
+incdir_scala := scala/include/c4
+incdir_bytecode := bytecode/include/c4
+incdir_c4 := c4/include/c4
 INC = -I$(dir $(incdir_common)) -I$(dir $(incdir_java)) \
   -I$(dir $(incdir_scala)) -I$(dir $(incdir_bytecode)) \
-  -I$(dir $(incdir_djp))
+  -I$(dir $(incdir_c4))
 
 libdir_common := common/lib
 libdir_java := java/lib
 libdir_scala := scala/lib
 libdir_bytecode := bytecode/lib
-libdir_djp := djp/lib
+libdir_c4 := c4/lib
 
 # Tests
 # Google Test r652
@@ -77,13 +77,13 @@ tests_scala = tests/scala
 CXXTESTFLAGS = -g3 $(CXX11FLAGS)
 
 .PHONY: all
-all: directories $(bin)/djp $(bin)/test-all
+all: directories $(bin)/c4 $(bin)/test-all
 
-.PHONY: djp
-djp: directories $(bin)/djp
+.PHONY: c4
+c4: directories $(bin)/c4
 
-.PHONY: djpd
-djp: directories $(bin)/djpd
+.PHONY: c4d
+c4: directories $(bin)/c4d
 
 .PHONY: clean
 clean:
@@ -92,40 +92,40 @@ clean:
 .PHONY: directories
 directories:
 	mkdir -p $(obj_common) $(obj_java) $(obj_scala) \
-          $(obj_bytecode) $(obj_djp) $(bin) $(gtest_obj)
+          $(obj_bytecode) $(obj_c4) $(bin) $(gtest_obj)
 
-# main djp
-$(bin)/djp: $(obj_bytecode)/BinOutput.o \
+# main c4
+$(bin)/c4: $(obj_bytecode)/BinOutput.o \
             $(obj_bytecode)/BinOutputCode.o \
             $(obj_bytecode)/ParserBin.o \
             $(obj_common)/libcommon.a \
             $(obj_java)/libjava.a \
             $(obj_scala)/libscala.a \
-            $(obj_djp)/CmdInput.o \
-            $(obj_djp)/Daemon.o \
-            $(obj_djp)/djp.o
-	$(CXX) $(obj_djp)/CmdInput.o \
-               $(obj_djp)/Daemon.o \
+            $(obj_c4)/CmdInput.o \
+            $(obj_c4)/Daemon.o \
+            $(obj_c4)/c4.o
+	$(CXX) $(obj_c4)/CmdInput.o \
+               $(obj_c4)/Daemon.o \
                $(obj_bytecode)/BinOutput.o \
                $(obj_bytecode)/BinOutputCode.o \
                $(obj_bytecode)/ParserBin.o \
                $(CFLAGS) \
                $(INC) \
-               $(obj_djp)/djp.o -o $@ \
+               $(obj_c4)/c4.o -o $@ \
                $(obj_java)/libjava.a \
                $(obj_scala)/libscala.a \
                $(obj_common)/libcommon.a
 
-# objects djp
-$(obj_djp)/CmdInput.o: $(libdir_djp)/CmdInput.cpp $(incdir_djp)/CmdInput.h
+# objects c4
+$(obj_c4)/CmdInput.o: $(libdir_c4)/CmdInput.cpp $(incdir_c4)/CmdInput.h
 	$(CXX) $(CFLAGS) $(INC) \
             -c $< -o $@
 
-$(obj_djp)/Daemon.o: $(libdir_djp)/Daemon.cpp $(incdir_djp)/Daemon.h
+$(obj_c4)/Daemon.o: $(libdir_c4)/Daemon.cpp $(incdir_c4)/Daemon.h
 	$(CXX) $(CFLAGS) $(INC) \
             -c $< -o $@
 
-$(obj_djp)/djp.o: $(libdir_djp)/djp.cpp
+$(obj_c4)/c4.o: $(libdir_c4)/c4.cpp
 	$(CXX) $(CFLAGS) $(INC) \
             -c $< -o $@
 

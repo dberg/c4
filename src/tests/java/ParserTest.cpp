@@ -1,10 +1,10 @@
 #include <iostream>
-#include "djp/Diagnosis.h"
-#include "djp/EmacsOutput.h"
-#include "djp/Parser.h"
-#include "djp/SymbolTable.h"
+#include "c4/Diagnosis.h"
+#include "c4/EmacsOutput.h"
+#include "c4/Parser.h"
+#include "c4/SymbolTable.h"
 #include "gtest/gtest.h"
-using namespace djp;
+using namespace c4;
 
 /**
  * -----------------------------------------------------------------------------

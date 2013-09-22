@@ -1,6 +1,6 @@
-#include "djp/ScalaIndentation.h"
+#include "c4/ScalaIndentation.h"
 
-namespace djp {
+namespace c4 {
 
 void addIndentation(ScalaLineIndentationMap &indentMap, int line, int level,
   bool lineWrap, STok token, int offset) {

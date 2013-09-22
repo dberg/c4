@@ -1,7 +1,7 @@
-#include "djp/Util.h"
+#include "c4/Util.h"
 #include <sstream>
 
-namespace djp {
+namespace c4 {
 
 const std::string itos(unsigned long l) {
   std::stringstream s; s << l;

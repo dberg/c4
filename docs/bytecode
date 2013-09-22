@@ -1,0 +1,56 @@
+object HelloWorld extends App { println("Hello world"); }
+
+01 Utf8        HelloWorld
+02 Class       1
+03 Utf8        java/lang/Object
+04 Class       3
+05 Utf8        HelloWorld.scala
+06 Utf8        Lscala/reflect/ScalaSignature;
+07 Utf8        bytes
+08 Utf8        ...
+09 Utf8        main
+10 Utf8        ([Ljava/lang/String;)V
+11 Utf8        HelloWorld$
+12 Class       11
+13 Utf8        MODULE$
+14 Utf8        LHelloWorld$;
+15 NameAndType 13 14
+16 Fieldref    12 15
+17 NameAndType 9  10
+18 Methodref   12 17
+19 Utf8        delayedInit
+20 Utf8        (Lscala/Function0;)V
+21 NameAndType 19 20
+22 Methodref   12 21
+23 utf         args
+24 Utf8        ()[Ljava/lang/String;
+25 NameAndType 23 24
+26 Methodref   12 25
+27 Utf8        scala$App$_setter_$executionStart_$eq
+28 Utf8        (J)V
+29 NameAndType 27 28
+30 Methodref   12 29
+31 Utf8        executionStart
+32 Utf8        ()J
+33 NameAndType 31 32
+34 Methodref   12 33
+35 Utf8        HelloWorld$delayedInit$body
+36 Class       35
+37 Utf8        delayedInit$body
+38 Utf8        Code
+39 Utf8        Signature
+40 Utf8        (Lscala/Function0<Lscala/runtime/BoxedUnit;>;)V
+41 Utf8        SourceFile
+42 Utf8        InnerClasses
+43 Utf8        RuntimeVisibleAnnotations
+44 Utf8        ScalaSig
+
+access_flags CLASS_ACC_PUBLIC | CLASS_ACC_FINAL | CLASS_ACC_SUPER
+
+this_class 2
+super_class 4
+interfaces_count 0
+fields_count 0
+
+methods_count 5
+(main, delayedInit, args, scala$App$_setter_$executionStart_$eq executionStart)

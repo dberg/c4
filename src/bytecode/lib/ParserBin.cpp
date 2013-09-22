@@ -1,6 +1,6 @@
-#include "djp/ParserBin.h"
+#include "c4/ParserBin.h"
 
-namespace djp {
+namespace c4 {
 
 // -----------------------------------------------------------------------------
 // Function helpers

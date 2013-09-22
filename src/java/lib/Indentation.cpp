@@ -1,6 +1,6 @@
-#include "djp/Indentation.h"
+#include "c4/Indentation.h"
 
-namespace djp {
+namespace c4 {
 
 void addIndentation(LineIndentationMap &indentMap, int line, int level,
   bool lineWrap, int token, int offset) {

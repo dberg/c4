@@ -1,7 +1,7 @@
-#include "djp/ScalaParser.h"
+#include "c4/ScalaParser.h"
 #include <iostream>
 
-namespace djp {
+namespace c4 {
 
 // -----------------------------------------------------------------------------
 // Lexical grammar

@@ -1,6 +1,6 @@
-#include "djp/EmacsOutput.h"
+#include "c4/EmacsOutput.h"
 
-namespace djp {
+namespace c4 {
 void EmacsOutput::build() {
   buildSyntaxHighlighting();
   buildErrors();
@@ -94,7 +94,7 @@ void EmacsOutput::setAnnotation(const spAnnotation &annotation) {
   if (annotation->qualifiedId) {
     // '@'
     unsigned pos = annotation->posTokAt + 1;
-    outSH << "(djp-sh-annotation-tok-at "
+    outSH << "(c4j-sh-annotation-tok-at "
           << pos << " " << (pos + 1) << ")";
     setQualifiedId(annotation->qualifiedId);
   }
@@ -175,7 +175,7 @@ void EmacsOutput::setAnnotationTypeDeclaration(
 
   if (annotationDecl->posAt) {
     unsigned pos = annotationDecl->posAt + 1;
-    outSH << "(djp-sh-annotation-tok-at "
+    outSH << "(c4j-sh-annotation-tok-at "
       << pos << " " << (pos + 1) << ")";
   }
 
@@ -435,7 +435,7 @@ void EmacsOutput::setCatchType(const spCatchType &catchType) {
 
 void EmacsOutput::setCharacterLiteral(const spCharacterLiteral &charLiteral) {
   if (charLiteral->pos && charLiteral->val.size()) {
-    outSH << "(djp-sh-literal-char "
+    outSH << "(c4j-sh-literal-char "
       << charLiteral->pos + 1 << " "
       << (charLiteral->pos + charLiteral->val.size() + 1);
     outSH << ")";
@@ -524,7 +524,7 @@ void EmacsOutput::setComments() {
   if (comments.size() == 0) { return; }
 
   for (unsigned int i = 0; i < comments.size(); i++) {
-    outSH << "(djp-sh-comment " << (comments[i]->posIni + 1) << " "
+    outSH << "(c4j-sh-comment " << (comments[i]->posIni + 1) << " "
       << (comments[i]->posEnd + 2) << ")";
   }
 }
@@ -984,7 +984,7 @@ void EmacsOutput::setFloatingPointLiteral(
   const spFloatingPointLiteral &fpLiteral) {
 
   if (fpLiteral->pos && fpLiteral->value.size()) {
-    outSH << "(djp-sh-literal-number "
+    outSH << "(c4j-sh-literal-number "
       << (fpLiteral->pos + 1) << " "
       << (fpLiteral->pos + fpLiteral->value.size() + 1) << ")";
   }
@@ -1219,12 +1219,12 @@ void EmacsOutput::setIdentifier(const spIdentifier &identifier, IdentifierOpt op
   int end = ini + identifier->value.length();
 
   if (opt == EmacsOutput::OPT_IDENTIFIER_REFERENCE_TYPE) {
-    outSH << "(djp-sh-reference-type-id "
+    outSH << "(c4j-sh-reference-type-id "
       << ini << " " << end << ")";
     return;
   }
 
-  outSH << "(djp-sh-identifier " << ini << " " << end << ")";
+  outSH << "(c4j-sh-identifier " << ini << " " << end << ")";
 }
 
 void EmacsOutput::setIdentifierSuffix(const spIdentifierSuffix &idSuffix) {
@@ -1392,7 +1392,7 @@ void EmacsOutput::setInnerCreator(const spInnerCreator &innerCreator) {
 
 void EmacsOutput::setIntegerLiteral(const spIntegerLiteral &intLiteral) {
   if (intLiteral->pos && intLiteral->value.size()) {
-    outSH << "(djp-sh-literal-number "
+    outSH << "(c4j-sh-literal-number "
       << (intLiteral->pos + 1) << " "
       << (intLiteral->pos + intLiteral->value.size() + 1) << ")";
   }
@@ -1587,7 +1587,7 @@ void EmacsOutput::setKeyword(const spTokenExp &token) {
 }
 
 void EmacsOutput::setKeyword(int ini, int end) {
-  outSH << "(djp-sh-keyword " << ini << " " << end << ")";
+  outSH << "(c4j-sh-keyword " << ini << " " << end << ")";
 }
 
 void EmacsOutput::setLiteral(const spLiteral &literal) {
@@ -1903,7 +1903,7 @@ void EmacsOutput::setNormalInterfaceDeclaration(
 void EmacsOutput::setOp(unsigned int ini, int len) {
   ini++;
   unsigned int end = ini + len;
-  outSH << "(djp-sh-op " << ini << " " << end << ")";
+  outSH << "(c4j-sh-op " << ini << " " << end << ")";
 }
 
 void EmacsOutput::setPackageDeclaration(const spPackageDeclaration &pkgDecl) {
@@ -2367,7 +2367,7 @@ void EmacsOutput::setStatementExpression(const spStatementExpression &stmtExpr) 
 void EmacsOutput::setStringLiteral(const spStringLiteral &strLiteral) {
   unsigned ini = strLiteral->pos + 1;
   unsigned end = ini + strLiteral->val.length();
-  outSH << "(djp-sh-string-literal " << ini << " " << end << ")";
+  outSH << "(c4j-sh-string-literal " << ini << " " << end << ")";
 }
 
 void EmacsOutput::setSuperSuffix(const spSuperSuffix &superSuffix) {

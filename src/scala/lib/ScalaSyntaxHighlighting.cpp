@@ -1,6 +1,6 @@
-#include "djp/ScalaSyntaxHighlighting.h"
+#include "c4/ScalaSyntaxHighlighting.h"
 
-namespace djp {
+namespace c4 {
 
 // ----------------------------------------------------------------------------
 // Public interface
@@ -31,7 +31,7 @@ std::string ScalaSyntaxHighlighting::get() {
 // Helpers
 // ----------------------------------------------------------------------------
 void ScalaSyntaxHighlighting::setKeyword(spTokenNode tok) {
-  sh << "(djp-sh-keyword " << (tok->ini + 1) << " " << (tok->end + 1) << ")";
+  sh << "(c4s-sh-keyword " << (tok->ini + 1) << " " << (tok->end + 1) << ")";
 }
 
 void ScalaSyntaxHighlighting::setOp(spTokenNode tok) {
@@ -39,7 +39,7 @@ void ScalaSyntaxHighlighting::setOp(spTokenNode tok) {
 }
 
 void ScalaSyntaxHighlighting::setOp(unsigned int ini, unsigned int end) {
-  sh << "(djp-sh-op " << ini << " " << end << ")";
+  sh << "(c4s-sh-op " << ini << " " << end << ")";
 }
 
 // ----------------------------------------------------------------------------
@@ -341,7 +341,7 @@ void ScalaSyntaxHighlighting::setInfixExpr(spInfixExpr &infixExpr) {
 }
 
 void ScalaSyntaxHighlighting::setLexId(spLexId &id) {
-  sh << "(djp-sh-identifier " << (id->ini + 1) << " " << (id->end + 1) << ")";
+  sh << "(c4s-sh-identifier " << (id->ini + 1) << " " << (id->end + 1) << ")";
 }
 
 void ScalaSyntaxHighlighting::setLiteral(spLiteral &literal) {
@@ -641,7 +641,7 @@ void ScalaSyntaxHighlighting::setStableIdTail(spStableIdTail &tail) {
 }
 
 void ScalaSyntaxHighlighting::setStringLiteral(spStringLiteral &strLit) {
-  sh << "(djp-sh-string-literal "
+  sh << "(c4s-sh-string-literal "
      << (strLit->ini + 1)
      << " "
      << (strLit->end + 1)
