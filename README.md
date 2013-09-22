@@ -66,21 +66,21 @@ make CXX=g++
 ```
 
 
-Java emacs mode (c4-java-mode) installation
+Java emacs mode (c4j-mode) installation
 -------------------------------------------------------------------------------
 
-1. Open the file $SRC/emacs-modes/c4-java-mode/c4-java-mode.el and set the variable
+1. Open the file $SRC/emacs-modes/c4j-mode/c4j-mode.el and set the variable
 
 ```elisp
-(defvar c4-executable "$BIN/c4")
+(defvar c4j-executable "$BIN/c4")
 ```
 
 2. Add the following to your .emacs or init.el file:
 
 ```elisp
-(add-to-list 'load-path "$SRC/emacs-modes/c4-java-mode")
-(autoload 'c4-java-mode "c4-java-mode" "Major mode for Java." t)
-(add-to-list 'auto-mode-alist '("\\.java$" . c4-java-mode))
+(add-to-list 'load-path "$SRC/emacs-modes/c4j-mode")
+(autoload 'c4j-mode "c4j-mode" "Major mode for Java." t)
+(add-to-list 'auto-mode-alist '("\\.java$" . c4j-mode))
 ```
 
 
