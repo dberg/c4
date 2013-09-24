@@ -179,10 +179,7 @@ c4s-errors, c4s-symbol-table and c4s-indentation-table."
     ;; 2. array with error info
     (setq c4s-errors (eval (car tmp)))
     (setq tmp (read-from-string compiler-output (cdr tmp)))
-    ;; 3. array with symbol table
-    (setq c4s-symbol-table (eval (car tmp)))
-    (setq tmp (read-from-string compiler-output (cdr tmp)))
-    ;; 4. hash-table with indentation info
+    ;; 3. hash-table with indentation info
     (setq c4s-indentation-table (eval (car tmp)))))
 
 (defun c4s-do-syntax-highlight ()

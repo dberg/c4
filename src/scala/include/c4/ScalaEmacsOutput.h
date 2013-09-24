@@ -17,6 +17,8 @@ class ScalaEmacsOutput {
 
 public:
   std::string sh; // syntax highlighting
+  std::string errors;
+  std::string indentation;
 
   ScalaEmacsOutput(spCompilationUnit &compUnit, spDiagnosis &diag,
     ScalaLineIndentationMap &indentMap)

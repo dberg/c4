@@ -74,7 +74,9 @@ int parseScalaFile(CmdInput &ci) {
 
   ScalaEmacsOutput output(parser.compUnit, parser.diag, parser.indentMap);
   output.build();
-  std::cout << output.sh;
+  std::cout << output.sh << std::endl
+    << output.errors << std::endl
+    << output.indentation;
   return 0;
 }
 
