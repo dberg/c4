@@ -15,6 +15,11 @@ class ScalaEmacsOutput {
   spDiagnosis &diag;
   ScalaLineIndentationMap &indentMap;
 
+  ErrorUtil errUtil;
+
+  void setErrors(const std::vector<spError> &diagErrors);
+  void setIndentation();
+
 public:
   std::string sh; // syntax highlighting
   std::string errors;
