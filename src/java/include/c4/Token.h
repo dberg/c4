@@ -4,7 +4,7 @@
 #include <map>
 #include <string>
 
-namespace c4 {
+namespace c4j {
 
 enum Token {
   TOK_EOF = -1,

@@ -8,13 +8,12 @@
 #include "ScalaLexer.h"
 #include "ScalaParserState.h"
 #include "ScalaToken.h"
-using namespace c4::scala;
 
-namespace c4 {
+namespace c4s {
 
 class ScalaParser {
   const std::string filename;
-  spSourceCodeStream src;
+  c4::spSourceCodeStream src;
   spScalaLexer lexer;
 
   // lexical grammar
@@ -76,14 +75,15 @@ class ScalaParser {
 
 public:
   ScalaParser(const std::string filename, const std::string &buffer)
-    : filename(filename), src(spSourceCodeStream(new SourceCodeStream(buffer))),
+    : filename(filename),
+      src(c4::spSourceCodeStream(new c4::SourceCodeStream(buffer))),
       compUnit(spCompilationUnit(new CompilationUnit))
   {
-    diag = spDiagnosis(new Diagnosis);
+    diag = c4::spDiagnosis(new c4::Diagnosis);
     lexer = spScalaLexer(new ScalaLexer(src, diag, indentMap));
   }
 
-  spDiagnosis diag;
+  c4::spDiagnosis diag;
   spCompilationUnit compUnit;
   ScalaLineIndentationMap indentMap;
 

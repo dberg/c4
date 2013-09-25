@@ -3,7 +3,7 @@
 #define __PARSER_STATE_H__
 #include <string>
 
-namespace c4 {
+namespace c4j {
 
 // Current State of the Parser. We use this to perform lookaheads, backtrack
 // or consult previous state data if necessary.

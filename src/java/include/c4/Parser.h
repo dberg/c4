@@ -13,7 +13,7 @@
 #include "SymbolTable.h"
 #include "Token.h"
 
-namespace c4 {
+namespace c4j {
 
 // Helper functions
 bool isAssignmentOperator(int token);
@@ -38,7 +38,7 @@ bool isVariableModifier(int token);
 
 class Parser {
   const std::string filename;
-  spSourceCodeStream src;
+  c4::spSourceCodeStream src;
   spLexer lexer;
   std::vector<std::string> scopes;
   TokenUtil tokenUtil;
@@ -221,15 +221,16 @@ class Parser {
 public:
   Parser(
     const std::string filename, const std::string &buffer)
-    : filename(filename), src(spSourceCodeStream(new SourceCodeStream(buffer))),
+    : filename(filename),
+      src(c4::spSourceCodeStream(new c4::SourceCodeStream(buffer))),
       compilationUnit(spCompilationUnit(new CompilationUnit)),
       error(0), error_msg("")
   {
-    diag = spDiagnosis(new Diagnosis);
+    diag = c4::spDiagnosis(new c4::Diagnosis);
     lexer = spLexer(new Lexer(src, diag, indentMap));
   }
 
-  spDiagnosis diag;
+  c4::spDiagnosis diag;
   spCompilationUnit compilationUnit;
   std::vector<spComment> comments;
   LineIndentationMap indentMap;

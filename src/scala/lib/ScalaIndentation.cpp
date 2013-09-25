@@ -1,6 +1,6 @@
 #include "c4/ScalaIndentation.h"
 
-namespace c4 {
+namespace c4s {
 
 void addIndentation(ScalaLineIndentationMap &indentMap, int line, int level,
   bool lineWrap, STok token, int offset) {

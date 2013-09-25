@@ -3,7 +3,7 @@
 #include "c4/EmacsOutput.h"
 #include "c4/Parser.h"
 #include "gtest/gtest.h"
-using namespace c4;
+using namespace c4j;
 
 TEST(EmacsOutput, PackageDeclaration) {
   std::string filename = "Test.java";

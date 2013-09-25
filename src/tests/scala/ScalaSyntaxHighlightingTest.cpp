@@ -2,7 +2,7 @@
 #include "c4/ScalaEmacsOutput.h"
 #include "c4/ScalaParser.h"
 #include "gtest/gtest.h"
-using namespace c4;
+using namespace c4s;
 
 TEST(ScalaSyntaxHighlighting, HelloWorld) {
   std::string filename = "HelloWorld.scala";

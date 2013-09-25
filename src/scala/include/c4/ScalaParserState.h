@@ -4,8 +4,7 @@
 #include <string>
 #include "ScalaToken.h"
 
-namespace c4 {
-namespace scala {
+namespace c4s {
 
 // Current State of the Parser. We use this to perform lookaheads, backtrack
 // or consult previous state data if necessary.
@@ -21,6 +20,5 @@ struct State {
   State() : diagErrorsSize(0), cursor(0), line(0) {}
 };
 
-} // namespace scala
-} // namespace c4
+} // namespace
 #endif

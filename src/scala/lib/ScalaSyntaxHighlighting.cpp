@@ -1,6 +1,6 @@
 #include "c4/ScalaSyntaxHighlighting.h"
 
-namespace c4 {
+namespace c4s {
 
 // ----------------------------------------------------------------------------
 // Public interface

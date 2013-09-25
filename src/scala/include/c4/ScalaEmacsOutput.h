@@ -6,18 +6,17 @@
 #include "c4/ScalaIndentation.h"
 #include "c4/ScalaAST.h"
 #include "c4/ScalaSyntaxHighlighting.h"
-using namespace c4::scala;
 
-namespace c4 {
+namespace c4s {
 
 class ScalaEmacsOutput {
   spCompilationUnit &compUnit;
-  spDiagnosis &diag;
+  c4::spDiagnosis &diag;
   ScalaLineIndentationMap &indentMap;
 
-  ErrorUtil errUtil;
+  c4::ErrorUtil errUtil;
 
-  void setErrors(const std::vector<spError> &diagErrors);
+  void setErrors(const std::vector<c4::spError> &diagErrors);
   void setIndentation();
 
 public:
@@ -25,7 +24,7 @@ public:
   std::string errors;
   std::string indentation;
 
-  ScalaEmacsOutput(spCompilationUnit &compUnit, spDiagnosis &diag,
+  ScalaEmacsOutput(spCompilationUnit &compUnit, c4::spDiagnosis &diag,
     ScalaLineIndentationMap &indentMap)
     : compUnit(compUnit), diag(diag), indentMap(indentMap) {}
 

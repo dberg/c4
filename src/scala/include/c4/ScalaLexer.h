@@ -11,9 +11,8 @@
 #include "ScalaAST.h"
 #include "ScalaParserState.h"
 #include "ScalaToken.h"
-using namespace c4::scala;
 
-namespace c4 {
+namespace c4s {
 
 class ScalaLexer;
 typedef std::shared_ptr<ScalaLexer> spScalaLexer;
@@ -23,8 +22,8 @@ bool is_idrest(char c);
 
 class ScalaLexer {
 
-  spSourceCodeStream src;
-  spDiagnosis diag;
+  c4::spSourceCodeStream src;
+  c4::spDiagnosis diag;
 
   // current token information
   STok curTok;
@@ -54,7 +53,7 @@ class ScalaLexer {
 
 public:
 
-  ScalaLexer(spSourceCodeStream &src, spDiagnosis &diag,
+  ScalaLexer(c4::spSourceCodeStream &src, c4::spDiagnosis &diag,
     ScalaLineIndentationMap &indentMap)
     : src(src), diag(diag), curIndentationLevel(0), indentMap(indentMap) {}
 

@@ -2,7 +2,7 @@
 #include "c4/Indentation.h"
 #include "c4/Parser.h"
 #include "gtest/gtest.h"
-using namespace c4;
+using namespace c4j;
 
 TEST(Indentation, Class) {
   std::string filename = "Test.java";

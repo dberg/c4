@@ -1,6 +1,6 @@
 #include "c4/ScalaLexer.h"
 
-namespace c4 {
+namespace c4s {
 
 // -----------------------------------------------------------------------------
 // Helper functions
@@ -145,12 +145,12 @@ STok ScalaLexer::getEscapeSequence() {
   //   \ OctalDigit
   //   \ OctalDigit OctalDigit
   //   \ ZeroToThree OctalDigit OctalDigit
-  if (isOctalDigit(src->peekChar())) {
+  if (c4::isOctalDigit(src->peekChar())) {
     char c = src->getChar(); // consume first octal digit
     curTokStream << c;
-    if (isOctalDigit(src->peekChar())) {
+    if (c4::isOctalDigit(src->peekChar())) {
       curTokStream << src->getChar(); // consume second octal digit
-      if (isOctalDigit(src->peekChar())) {
+      if (c4::isOctalDigit(src->peekChar())) {
         curTokStream << src->getChar(); // consume third octal digit
         // at this point the first octal digit must be a number
         // from zero to three
@@ -180,7 +180,7 @@ STok ScalaLexer::getEscapeSequence() {
 
     // HexDigit{4}
     for (int i = 0; i < 4; i++) {
-      if (isHexDigit(src->peekChar())) {
+      if (c4::isHexDigit(src->peekChar())) {
         curTokStream << src->getChar(); // consume hex digit
       } else {
         return STok::ERROR;

@@ -1,7 +1,7 @@
 #include "c4/Token.h"
 #include "c4/SymbolTable.h"
 
-namespace c4 {
+namespace c4j {
 
 void ST::addSym(int type, unsigned pos, unsigned end, unsigned line,
   const std::string metadata) {

@@ -5,7 +5,7 @@
 #include <memory>
 #include <map>
 
-namespace c4 {
+namespace c4s {
 
 struct ScalaIndentation {
   int level;

@@ -1,6 +1,6 @@
 #include "c4/ScalaEmacsOutput.h"
 
-namespace c4 {
+namespace c4s {
 
 /**
  * Syntax highlighting, Errors and Indentation.
@@ -14,7 +14,7 @@ void ScalaEmacsOutput::build() {
   setIndentation();
 }
 
-void ScalaEmacsOutput::setErrors(const std::vector<spError> &diagErrors) {
+void ScalaEmacsOutput::setErrors(const std::vector<c4::spError> &diagErrors) {
   std::stringstream ss;
 
   ss << "[";

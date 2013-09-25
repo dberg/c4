@@ -3,9 +3,8 @@
 #define __SCALA_SYNTAX_HIGHLIGHTING_H__
 #include <sstream>
 #include "c4/ScalaAST.h"
-using namespace c4::scala;
 
-namespace c4 {
+namespace c4s {
 
 class ScalaSyntaxHighlighting {
   spCompilationUnit &compUnit;

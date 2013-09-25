@@ -1,42 +1,42 @@
 #include "c4/Lexer.h"
 
-namespace c4 {
+namespace c4j {
 
 //-----------------------------------------------------------------------------
 // Literal Support Java Helper
 //-----------------------------------------------------------------------------
-int toJavaTok(LiteralToken litTok) {
-  if (litTok == LiteralToken::ERROR)
+int toJavaTok(c4::LiteralToken litTok) {
+  if (litTok == c4::LiteralToken::ERROR)
     return TOK_ERROR;
 
-  if (litTok == LiteralToken::BINARY_NUMERAL)
+  if (litTok == c4::LiteralToken::BINARY_NUMERAL)
     return TOK_BINARY_NUMERAL;
 
-  if (litTok == LiteralToken::BINARY_NUMERAL_WITH_INT_TYPE_SUFFIX)
+  if (litTok == c4::LiteralToken::BINARY_NUMERAL_WITH_INT_TYPE_SUFFIX)
     return TOK_BINARY_NUMERAL_WITH_INT_TYPE_SUFFIX;
 
-  if (litTok == LiteralToken::DECIMAL_NUMERAL)
+  if (litTok == c4::LiteralToken::DECIMAL_NUMERAL)
     return TOK_DECIMAL_NUMERAL;
 
-  if (litTok == LiteralToken::DECIMAL_NUMERAL_WITH_INT_TYPE_SUFFIX)
+  if (litTok == c4::LiteralToken::DECIMAL_NUMERAL_WITH_INT_TYPE_SUFFIX)
     return TOK_DECIMAL_NUMERAL_WITH_INT_TYPE_SUFFIX;
 
-  if (litTok == LiteralToken::DECIMAL_FLOATING_POINT)
+  if (litTok == c4::LiteralToken::DECIMAL_FLOATING_POINT)
     return TOK_DECIMAL_FLOATING_POINT_LITERAL;
 
-  if (litTok == LiteralToken::HEX_NUMERAL)
+  if (litTok == c4::LiteralToken::HEX_NUMERAL)
     return TOK_HEX_NUMERAL;
 
-  if (litTok == LiteralToken::HEX_NUMERAL_WITH_INT_TYPE_SUFFIX)
+  if (litTok == c4::LiteralToken::HEX_NUMERAL_WITH_INT_TYPE_SUFFIX)
     return TOK_HEX_NUMERAL_WITH_INT_TYPE_SUFFIX;
 
-  if (litTok == LiteralToken::HEXADECIMAL_FLOATING_POINT_LITERAL)
+  if (litTok == c4::LiteralToken::HEXADECIMAL_FLOATING_POINT_LITERAL)
     return TOK_HEXADECIMAL_FLOATING_POINT_LITERAL;
 
-  if (litTok == LiteralToken::OCTAL_NUMERAL)
+  if (litTok == c4::LiteralToken::OCTAL_NUMERAL)
     return TOK_OCTAL_NUMERAL;
 
-  if (litTok == LiteralToken::OCTAL_NUMERAL_WITH_INT_TYPE_SUFFIX)
+  if (litTok == c4::LiteralToken::OCTAL_NUMERAL_WITH_INT_TYPE_SUFFIX)
     return TOK_OCTAL_NUMERAL_WITH_INT_TYPE_SUFFIX;
 
   return TOK_ERROR;
@@ -441,12 +441,12 @@ int Lexer::getEscapeSequence(std::stringstream &ss) {
   //   \ OctalDigit
   //   \ OctalDigit OctalDigit
   //   \ ZeroToThree OctalDigit OctalDigit
-  if (isOctalDigit(src->peekChar())) {
+  if (c4::isOctalDigit(src->peekChar())) {
     char c = src->getChar(); // consume first octal digit
     ss << c;
-    if (isOctalDigit(src->peekChar())) {
+    if (c4::isOctalDigit(src->peekChar())) {
       ss << src->getChar(); // consume second octal digit
-      if (isOctalDigit(src->peekChar())) {
+      if (c4::isOctalDigit(src->peekChar())) {
         ss << src->getChar(); // consume third octal digit
         // at this point the first octal digit must be a number
         // from zero to three
@@ -476,7 +476,7 @@ int Lexer::getEscapeSequence(std::stringstream &ss) {
 
     // HexDigit{4}
     for (int i = 0; i < 4; i++) {
-      if (isHexDigit(src->peekChar())) {
+      if (c4::isHexDigit(src->peekChar())) {
         ss << src->getChar(); // consume hex digit
       } else {
         return TOK_ERROR;

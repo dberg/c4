@@ -1,7 +1,7 @@
 #include "c4/ScalaParser.h"
 #include <iostream>
 
-namespace c4 {
+namespace c4s {
 
 // -----------------------------------------------------------------------------
 // Lexical grammar
@@ -9,7 +9,7 @@ namespace c4 {
 spLexId ScalaParser::parseLexId() {
   spLexId lId = spLexId(new LexId);
   if (lexer->getCurToken() != STok::ID) {
-    lId->addErr(ERR_EXP_IDENTIFIER);
+    lId->addErr(c4::ERR_EXP_IDENTIFIER);
     return lId;
   }
 
@@ -38,13 +38,13 @@ void ScalaParser::parseSemi(spSemi &semi) {
     return;
   }
 
-  semi->addErr(ERR_EXP_NL);
+  semi->addErr(c4::ERR_EXP_NL);
 }
 
 spStringLiteral ScalaParser::parseStringLiteral() {
   spStringLiteral strLit = spStringLiteral(new StringLiteral);
   if (lexer->getCurToken() != STok::STRING_LITERAL) {
-    strLit->addErr(ERR_EXP_STRING_LITERAL);
+    strLit->addErr(c4::ERR_EXP_STRING_LITERAL);
     return strLit;
   }
 
@@ -98,7 +98,7 @@ void ScalaParser::parseArgumentExprs(spArgumentExprs &argExprs) {
   lexer->getNextToken(); // consume '('
 
   if (argExprs->tokLParen->tok != STok::LPAREN) {
-    argExprs->addErr(ERR_EXP_LPAREN);
+    argExprs->addErr(c4::ERR_EXP_LPAREN);
     return;
   }
 
@@ -129,7 +129,7 @@ void ScalaParser::parseArgumentExprs(spArgumentExprs &argExprs) {
 
     // ')'
     if (lexer->getCurToken() != STok::RPAREN) {
-      argExprs->addErr(ERR_EXP_RPAREN);
+      argExprs->addErr(c4::ERR_EXP_RPAREN);
       return;
     }
 
@@ -146,7 +146,7 @@ void ScalaParser::parseArgumentExprs(spArgumentExprs &argExprs) {
   }
 
   if (lexer->getCurToken() != STok::COMMA) {
-    argExprs->addErr(ERR_EXP_COMMA);
+    argExprs->addErr(c4::ERR_EXP_COMMA);
     return;
   }
 
@@ -162,7 +162,7 @@ void ScalaParser::parseArgumentExprs(spArgumentExprs &argExprs) {
 
   // ')'
   if (lexer->getCurToken() != STok::RPAREN) {
-    argExprs->addErr(ERR_EXP_RPAREN);
+    argExprs->addErr(c4::ERR_EXP_RPAREN);
     return;
   }
 
@@ -228,7 +228,7 @@ void ScalaParser::parseBlockExpr(spBlockExpr &blockExpr) {
   spTokenNode tokLCurlyB = lexer->getCurTokenNode();
   lexer->getNextToken(); // consume '{'
   if (tokLCurlyB->tok != STok::LCURLYB) {
-    blockExpr->addErr(addErr(ERR_EXP_LCURLY_BRACKET));
+    blockExpr->addErr(addErr(c4::ERR_EXP_LCURLY_BRACKET));
     return;
   }
 
@@ -247,7 +247,7 @@ void ScalaParser::parseBlockExpr(spBlockExpr &blockExpr) {
   spTokenNode tokRCurlyB = lexer->getCurTokenNode();
   lexer->getNextToken(); // consume '}'
   if (tokRCurlyB->tok != STok::RCURLYB) {
-    blockExpr->addErr(addErr(ERR_EXP_RCURLY_BRACKET));
+    blockExpr->addErr(addErr(c4::ERR_EXP_RCURLY_BRACKET));
     return;
   }
 
@@ -528,7 +528,7 @@ void ScalaParser::parseImportExpr(spImportExpr &importExpr) {
 
   // '.'
   if (lexer->getCurToken() != STok::PERIOD) {
-    importExpr->addErr(ERR_EXP_PERIOD);
+    importExpr->addErr(c4::ERR_EXP_PERIOD);
     return;
   }
 
@@ -660,7 +660,7 @@ void ScalaParser::parsePath(spPath &path) {
 void ScalaParser::parsePeriodId(spPeriodId &periodId) {
   // '.'
   if (lexer->getCurToken() != STok::PERIOD) {
-    periodId->addErr(ERR_EXP_PERIOD);
+    periodId->addErr(c4::ERR_EXP_PERIOD);
     return;
   }
 
@@ -1174,7 +1174,7 @@ void ScalaParser::parseTraitTemplateOpt(spTraitTemplateOpt &traitTemplateOpt) {
 
   // 'extends' is mandatory
   if (lexer->getCurToken() != STok::EXTENDS) {
-    traitTemplateOpt->addErr(ERR_EXP_TRAIT);
+    traitTemplateOpt->addErr(c4::ERR_EXP_TRAIT);
     return;
   }
 

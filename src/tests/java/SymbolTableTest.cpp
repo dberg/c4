@@ -2,7 +2,7 @@
 #include "c4/Parser.h"
 #include "c4/SymbolTable.h"
 #include "gtest/gtest.h"
-using namespace c4;
+using namespace c4j;
 
 // |------------+-------+-----+-----+------+----+----------|
 // | type       | scope | pos | end | line | id | metadata |

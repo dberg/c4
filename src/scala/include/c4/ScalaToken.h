@@ -4,7 +4,7 @@
 #include <unordered_map>
 #include <string>
 
-namespace c4 {
+namespace c4s {
 
 enum class STok : int {
   ERROR = -1,

@@ -27,9 +27,6 @@ bool isBinaryDigit(char c);
 bool isDecimalDigit(char c);
 bool isHexDigit(char c);
 bool isOctalDigit(char c);
-bool isJavaLetter(char c);
-bool isJavaLetterOrDigit(char c);
-int toJavaTok(LiteralToken litTok);
 
 class LiteralSupport;
 typedef std::shared_ptr<LiteralSupport> spLiteralSupport;

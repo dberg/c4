@@ -57,8 +57,7 @@
  * SimpleTypeTail ::= TypeArgs | '#' id
  */
 
-namespace c4 {
-namespace scala {
+namespace c4s {
 
 typedef struct ASTBase LexId;
 typedef std::shared_ptr<LexId> spLexId;
@@ -854,6 +853,6 @@ struct TraitTemplateOpt : ASTBase {
   TraitTemplateOpt() : opt(Opt::UNDEFINED) {}
 };
 
-}} // namespace
+} // namespace
 
 #endif

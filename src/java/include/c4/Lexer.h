@@ -13,7 +13,11 @@
 #include "ParserState.h"
 #include "Token.h"
 
-namespace c4 {
+namespace c4j {
+
+int toJavaTok(c4::LiteralToken litTok);
+bool isJavaLetter(char c);
+bool isJavaLetterOrDigit(char c);
 
 class Lexer;
 typedef std::shared_ptr<Lexer> spLexer;
@@ -24,9 +28,9 @@ class Lexer {
   std::string curTokenStr;
   bool isPrevTokenSwitchLabelColon;
   int curIndentationLevel;
-  spDiagnosis diag;
-  spSourceCodeStream src;
-  spLiteralSupport litSupport;
+  c4::spDiagnosis diag;
+  c4::spSourceCodeStream src;
+  c4::spLiteralSupport litSupport;
   TokenUtil tokenUtil;
   std::vector<spComment> comments;
   LineIndentationMap &indentMap;
@@ -57,11 +61,11 @@ class Lexer {
   bool isLineWrap(int prevToken);
 
 public:
-  Lexer(spSourceCodeStream &src, spDiagnosis &diag,
+  Lexer(c4::spSourceCodeStream &src, c4::spDiagnosis &diag,
     LineIndentationMap &indentMap)
     : curToken(0), curTokenStr(""), isPrevTokenSwitchLabelColon(false),
       curIndentationLevel(0), diag(diag), src(src),
-      litSupport(spLiteralSupport(new LiteralSupport(src, diag))),
+      litSupport(c4::spLiteralSupport(new c4::LiteralSupport(src, diag))),
       indentMap(indentMap) {}
 
   void getNextToken();

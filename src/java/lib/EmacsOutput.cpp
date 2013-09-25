@@ -1,6 +1,6 @@
 #include "c4/EmacsOutput.h"
 
-namespace c4 {
+namespace c4j {
 void EmacsOutput::build() {
   buildSyntaxHighlighting();
   buildErrors();
@@ -775,7 +775,7 @@ void EmacsOutput::setEnumDeclaration(spEnumDeclaration &enumDecl) {
   }
 }
 
-void EmacsOutput::setErrors(const std::vector<spError> &errors) {
+void EmacsOutput::setErrors(const std::vector<c4::spError> &errors) {
   for (std::size_t i = 0; i < errors.size(); i++) {
     outErr << "("
       << (errors[i]->ini + 1) << " "

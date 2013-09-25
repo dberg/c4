@@ -11,7 +11,7 @@
 #include "SymbolTable.h"
 #include "Token.h"
 
-namespace c4 {
+namespace c4j {
 
 /**
  * Emacs output for c4-mode.
@@ -23,11 +23,11 @@ class EmacsOutput {
   spCompilationUnit compilationUnit;
   std::vector<spComment> comments;
   ST st;
-  spDiagnosis diag;
+  c4::spDiagnosis diag;
   LineIndentationMap &indentMap;
 
   TokenUtil tokenUtil;
-  ErrorUtil errUtil;
+  c4::ErrorUtil errUtil;
 
   // Symbol table types translation to elisp
   typedef std::map<int, std::string> STTypes;
@@ -98,7 +98,7 @@ class EmacsOutput {
   void setEnumConstant(const spEnumConstant &enumConst);
   void setEnumConstants(const spEnumConstants &enumConsts);
   void setEnumDeclaration(spEnumDeclaration &enumDecl);
-  void setErrors(const std::vector<spError> &errors);
+  void setErrors(const std::vector<c4::spError> &errors);
   void setExplicitGenericInvocation(
     const spExplicitGenericInvocation &explGenInvocation);
   void setExplicitGenericInvocationSuffix(

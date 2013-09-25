@@ -108,7 +108,7 @@
  *   [AnnotationTypeElementDeclarations]
  * See note in the top of this file.
  */
-namespace c4 {
+namespace c4j {
 
 typedef std::shared_ptr<struct Annotation> spAnnotation;
 typedef std::shared_ptr<struct AnnotationElement> spAnnotationElement;

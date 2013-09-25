@@ -1,6 +1,6 @@
 #include "c4/Indentation.h"
 
-namespace c4 {
+namespace c4j {
 
 void addIndentation(LineIndentationMap &indentMap, int line, int level,
   bool lineWrap, int token, int offset) {

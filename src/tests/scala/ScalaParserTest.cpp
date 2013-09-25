@@ -1,7 +1,7 @@
 #include <iostream>
 #include "c4/ScalaParser.h"
 #include "gtest/gtest.h"
-using namespace c4;
+using namespace c4s;
 
 /**
  * -----------------------------------------------------------------------------

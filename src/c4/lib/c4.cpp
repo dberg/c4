@@ -41,7 +41,7 @@ int parseJavaFile(CmdInput &ci) {
     return 1;
   }
 
-  Parser parser(ci.getFilename(), buffer);
+  c4j::Parser parser(ci.getFilename(), buffer);
   parser.parse();
   if (parser.error) {
     std::cerr << "Error( " << parser.error << "): "
@@ -49,7 +49,7 @@ int parseJavaFile(CmdInput &ci) {
     return 1;
   }
 
-  EmacsOutput output(parser);
+  c4j::EmacsOutput output(parser);
   output.build();
   std::cout
     << output.outSH.str() << std::endl
@@ -69,10 +69,10 @@ int parseScalaFile(CmdInput &ci) {
     return 1;
   }
 
-  ScalaParser parser(ci.getFilename(), buffer);
+  c4s::ScalaParser parser(ci.getFilename(), buffer);
   parser.parse();
 
-  ScalaEmacsOutput output(parser.compUnit, parser.diag, parser.indentMap);
+  c4s::ScalaEmacsOutput output(parser.compUnit, parser.diag, parser.indentMap);
   output.build();
   std::cout << output.sh << std::endl
     << output.errors << std::endl

@@ -4,7 +4,7 @@
 #include <memory>
 #include <map>
 
-namespace c4 {
+namespace c4j {
 
 struct Indentation {
   int level;

@@ -6,7 +6,7 @@
 #include <string>
 #include <vector>
 
-namespace c4 {
+namespace c4j {
 
 enum SymbolType {
   // Logical units
