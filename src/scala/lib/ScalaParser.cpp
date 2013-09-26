@@ -919,8 +919,8 @@ void ScalaParser::parseStableId(spStableId &stableId) {
 
 /**
  * StableIdHead ::= id
- *                | [IdPeriod] ‘this’ PeriodId
- *                | [IdPeriod] ‘super’ [ClassQualifier] PeriodId
+ *                | [IdPeriod] 'this' PeriodId
+ *                | [IdPeriod] 'super' [ClassQualifier] PeriodId
  */
 void ScalaParser::parseStableIdHead(spStableIdHead &head) {
   spLexId id = parseLexId();
@@ -931,8 +931,8 @@ void ScalaParser::parseStableIdHead(spStableIdHead &head) {
     return;
   }
 
-  // TODO: Path '.' id
-  // TODO: [id '.'] ‘super’ [ClassQualifier] '.' id
+  // TODO: [IdPeriod] 'this' PeriodId
+  // TODO: [IdPeriod] 'super' [ClassQualifier] PeriodId
 }
 
 /**
