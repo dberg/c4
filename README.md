@@ -32,7 +32,7 @@ The variable $BIN is the location of the 'bin' directory in the project.
 
 The $BIN directory contains the binaries produced by the build process.
 
-The path to bin is affected by the BUILDTYPE, which has two possible values: Debug or Release. Check the Build section for more information.
+The path to bin is affected by the variable BUILDTYPE, which has two possible values: Debug or Release. Check the Build section for more information.
 
 Example. Assuming your username is 'ichigo' and you run the build in Release mode:
 
@@ -53,14 +53,14 @@ cd c4/src
 make BUILDTYPE=Release
 ```
 
-The default BUILDTYPE is Debug and will produce binaries with debugging symbols. The Release mode will produce optmized binaries.
+The default value for BUILDTYPE is Debug and will produce binaries with debugging symbols. The Release mode will produce optimized binaries.
 
 The default compiler is clang if you're running OSX and gcc if you're running GNU/Linux.
 
-You can set the flag CXX to indicate your compiler of choice. For example:
+You can set the flag CXX to use your compiler of choice. For example:
 
 ```bash
-make CXX=clang
+make CXX=clang++
 # or
 make CXX=g++
 ```
@@ -84,7 +84,7 @@ Java emacs mode (c4j-mode) installation
 ```
 
 
-Running from the command line
+Running c4 from the command line
 -------------------------------------------------------------------------------
 
 ```bash
