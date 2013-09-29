@@ -302,21 +302,15 @@ void ScalaSyntaxHighlighting::setImport(spImport &import) {
 }
 
 void ScalaSyntaxHighlighting::setImportExpr(spImportExpr &importExpr) {
-  if (importExpr->stableId) {
-    setStableId(importExpr->stableId);
+  if (importExpr->qualId) {
+    setQualId(importExpr->qualId);
   }
 
   if (importExpr->tokPeriod) {
     setOp(importExpr->tokPeriod);
-  }
-
-  if (importExpr->id) {
-    setLexId(importExpr->id);
-    return;
-  }
-
-  if (importExpr->tokUnderscore) {
-    setOp(importExpr->tokUnderscore);
+    if (importExpr->tokUnderscore) {
+      setOp(importExpr->tokUnderscore);
+    }
     return;
   }
 

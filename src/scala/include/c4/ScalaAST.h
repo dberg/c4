@@ -55,6 +55,10 @@
  * SimpleTypeTails ::= SimpleTypeTail SimpleTypeTails | SimpleTypeTail
  *
  * SimpleTypeTail ::= TypeArgs | '#' id
+ *
+ * 4) Fix ImportExpr
+ *
+ * ImportExpr ::= QualId [ ('.' '_') | ImportSelectors ]
  */
 
 namespace c4s {
@@ -382,12 +386,11 @@ struct Import : ASTBase {
 };
 
 /**
- * ImportExpr ::= StableId '.' (id | '_' | ImportSelectors)
+ * ImportExpr ::= QualId [ ('.' '_') | ImportSelectors ]
  */
 struct ImportExpr : ASTBase {
-  spStableId stableId;
+  spQualId qualId;
   spTokenNode tokPeriod;
-  spLexId id;
   spTokenNode tokUnderscore;
   // TODO:
   //spImportSelectors importSelectors;

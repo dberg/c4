@@ -515,47 +515,39 @@ void ScalaParser::parseImport(spImport &import) {
 }
 
 /**
- * ImportExpr ::= StableId '.' (id | '_' | ImportSelectors)
+ * ImportExpr ::= QualId [ ('.' '_') | ImportSelectors ]
  */
 void ScalaParser::parseImportExpr(spImportExpr &importExpr) {
-  // StableId
-  importExpr->stableId = spStableId(new StableId);
-  parseStableId(importExpr->stableId);
-  if (importExpr->stableId->err) {
+  // QualId
+  importExpr->qualId = spQualId(new QualId);
+  parseQualId(importExpr->qualId);
+  if (importExpr->qualId->err) {
     importExpr->addErr(-1);
     return;
   }
 
-  // '.'
-  if (lexer->getCurToken() != STok::PERIOD) {
-    importExpr->addErr(c4::ERR_EXP_PERIOD);
-    return;
-  }
+  // ('.' '_')
+  if (lexer->getCurToken() == STok::PERIOD) {
+    // '.'
+    importExpr->tokPeriod = lexer->getCurTokenNode();
+    lexer->getNextToken(); // consume '.'
 
-  importExpr->tokPeriod = lexer->getCurTokenNode();
-  lexer->getNextToken();
+    // '_'
+    if (lexer->getCurToken() == STok::UNDERSCORE) {
+      importExpr->tokUnderscore = lexer->getCurTokenNode();
+      lexer->getNextToken(); // consume '_'
+      return;
+    }
 
-  // We now have to check one of each
-  // (id | '_' | ImportSelectors)
-
-  // id
-  if (lexer->getCurToken() == STok::ID) {
-    importExpr->id = parseLexId();
-    lexer->getNextToken();
-    return;
-  }
-
-  // '_'
-  if (lexer->getCurToken() == STok::UNDERSCORE) {
-    importExpr->tokUnderscore = lexer->getCurTokenNode();
-    lexer->getNextToken(); // consume '_'
+    importExpr->addErr(c4::ERR_EXP_UNDERSCORE);
     return;
   }
 
   // TODO:
   // ImportSelectors
-
-  importExpr->addErr(-1);
+  if (lexer->getCurToken() == STok::LCURLYB) {
+    importExpr->addErr(-1);
+  }
 }
 
 /**

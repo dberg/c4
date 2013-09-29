@@ -165,6 +165,67 @@ TEST(ScalaParser, HelloWorld) {
 }
 
 /**
+ * import com.A.utils._
+ * import com.A.C
+ *
+ * CompilationUnit
+ *   TopStatSeq
+ *     TopStat(2)
+ *       Import
+ *         'import'
+ *         ImportExpr
+ *           QualId      <-- 'com.A.utils'
+ *           '.'
+ *           '_'
+ *     semi
+ *     TopStat(2)
+ *       Import
+ *         ImportExpr
+ *           QualId      <-- 'com.A.C'
+ */
+TEST(ScalaParser, Imports) {
+  std::string filename = "Example.scala";
+  std::string buffer =
+    "import com.A.utils._\n"
+    "import com.A.C\n";
+
+  ScalaParser parser(filename, buffer);
+  parser.parse();
+
+  // import com.A.utils._
+  {
+    auto topStat = parser.compUnit->topStatSeq->topStat;
+    ASSERT_EQ(TopStat::Opt::IMPORT, topStat->opt);
+
+    auto import = topStat->import;
+    ASSERT_EQ(STok::IMPORT, import->tokImport->tok);
+
+    ASSERT_EQ("com", import->importExpr->qualId->id->val);
+    ASSERT_EQ(2, import->importExpr->qualId->periodIds.size());
+
+    {
+      auto periodId = import->importExpr->qualId->periodIds[0];
+      ASSERT_EQ(STok::PERIOD, periodId->tok->tok);
+      ASSERT_EQ("A", periodId->id->val);
+    }
+
+    {
+      auto periodId = import->importExpr->qualId->periodIds[1];
+      ASSERT_EQ(STok::PERIOD, periodId->tok->tok);
+      ASSERT_EQ("utils", periodId->id->val);
+    }
+
+    ASSERT_EQ(STok::PERIOD, import->importExpr->tokPeriod->tok);
+    ASSERT_EQ(STok::UNDERSCORE, import->importExpr->tokUnderscore->tok);
+  }
+
+  // import com.A.C
+  {
+    ASSERT_EQ(1, parser.compUnit->topStatSeq->pairs.size());
+  }
+}
+
+/**
  * -----------------------------------------------------------------------------
  * package test
  * import com.company.utils._
@@ -246,15 +307,19 @@ TEST(ScalaParser, Trait) {
     auto import = topStat->import;
     ASSERT_EQ(STok::IMPORT, import->tokImport->tok);
 
-    ASSERT_EQ("com", import->importExpr->stableId->head->id->val);
-    ASSERT_EQ(STok::PERIOD,
-      import->importExpr->stableId->tail->periodId->tok->tok);
-    ASSERT_EQ("company",
-      import->importExpr->stableId->tail->periodId->id->val);
-    ASSERT_EQ(STok::PERIOD,
-      import->importExpr->stableId->tail->tail->periodId->tok->tok);
-    ASSERT_EQ("utils",
-      import->importExpr->stableId->tail->tail->periodId->id->val);
+    ASSERT_EQ("com", import->importExpr->qualId->id->val);
+
+    {
+      auto periodId = import->importExpr->qualId->periodIds[0];
+      ASSERT_EQ(STok::PERIOD, periodId->tok->tok);
+      ASSERT_EQ("company", periodId->id->val);
+    }
+
+    {
+      auto periodId = import->importExpr->qualId->periodIds[1];
+      ASSERT_EQ(STok::PERIOD, periodId->tok->tok);
+      ASSERT_EQ("utils", periodId->id->val);
+    }
 
     ASSERT_EQ(STok::PERIOD, import->importExpr->tokPeriod->tok);
     ASSERT_EQ(STok::UNDERSCORE, import->importExpr->tokUnderscore->tok);
