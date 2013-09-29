@@ -169,7 +169,6 @@
 The output of the compiler is used to build c4j-syntax-highlighting,
 c4j-errors, c4j-symbol-table and c4j-indentation-table."
   (let (cmd compiler-output tmp)
-    (debug)
     (write-region (point-min) (point-max) c4j-tmp-buffer)
     (setq cmd (concat c4j-executable " -i java -f " c4j-tmp-buffer))
     (setq compiler-output (shell-command-to-string cmd))
