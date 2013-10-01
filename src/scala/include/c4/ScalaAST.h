@@ -58,7 +58,7 @@
  *
  * 4) Fix ImportExpr
  *
- * ImportExpr ::= QualId [ ('.' '_') | ImportSelectors ]
+ * ImportExpr ::= QualId [ ('.' '_') | '.' ImportSelectors ]
  */
 
 namespace c4s {
@@ -87,6 +87,8 @@ typedef std::shared_ptr<struct Expr1> spExpr1;
 typedef std::shared_ptr<struct Exprs> spExprs;
 typedef std::shared_ptr<struct Import> spImport;
 typedef std::shared_ptr<struct ImportExpr> spImportExpr;
+typedef std::shared_ptr<struct ImportSelector> spImportSelector;
+typedef std::shared_ptr<struct ImportSelectors> spImportSelectors;
 typedef std::shared_ptr<struct InfixExpr> spInfixExpr;
 typedef std::shared_ptr<struct Literal> spLiteral;
 typedef std::shared_ptr<struct ObjectDef> spObjectDef;
@@ -386,14 +388,33 @@ struct Import : ASTBase {
 };
 
 /**
- * ImportExpr ::= QualId [ ('.' '_') | ImportSelectors ]
+ * ImportExpr ::= QualId [ ('.' '_') | '.' ImportSelectors ]
  */
 struct ImportExpr : ASTBase {
   spQualId qualId;
   spTokenNode tokPeriod;
   spTokenNode tokUnderscore;
-  // TODO:
-  //spImportSelectors importSelectors;
+  spImportSelectors importSelectors;
+};
+
+/**
+ * ImportSelector ::= id ['=>' id | '=>' '_']
+ */
+struct ImportSelector : ASTBase {
+  spLexId id;
+  spTokenNode rArrow;
+  spTokenNode tokUnderscore;
+};
+
+/**
+ * ImportSelectors ::= '{' {ImportSelector ','} (ImportSelector | '_') '}'
+ */
+struct ImportSelectors : ASTBase {
+  spTokenNode tokLCurlyB;
+  spTokenNode tokRCurlyB;
+  std::vector<std::pair<spImportSelector, spTokenNode>> pairs;
+  spImportSelector importSelector;
+  spTokenNode tokUnderscore;
 };
 
 /**
