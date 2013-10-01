@@ -39,6 +39,8 @@ class ScalaParser {
   void parseExprs(spExprs &exprs);
   void parseImport(spImport &import);
   void parseImportExpr(spImportExpr &importExpr);
+  void parseImportSelector(spImportSelector &importSelector);
+  void parseImportSelectors(spImportSelectors &importSelectors);
   void parseInfixExpr(spInfixExpr &infixExpr);
   void parseLiteral(spLiteral &literal);
   void parseObjectDef(spObjectDef &objectDef);

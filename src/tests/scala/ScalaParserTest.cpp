@@ -166,7 +166,8 @@ TEST(ScalaParser, HelloWorld) {
 
 /**
  * import com.A.utils._
- * import com.A.C
+ * import com.B.C
+ * import com.D.{E,F}
  *
  * CompilationUnit
  *   TopStatSeq
@@ -181,13 +182,18 @@ TEST(ScalaParser, HelloWorld) {
  *     TopStat(2)
  *       Import
  *         ImportExpr
- *           QualId      <-- 'com.A.C'
+ *           QualId      <-- 'com.B.C'
+ *     semi
+ *     TopStat(2)
+ *       Import
+ *         ImportExpr
  */
 TEST(ScalaParser, Imports) {
   std::string filename = "Example.scala";
   std::string buffer =
     "import com.A.utils._\n"
-    "import com.A.C\n";
+    "import com.B.C\n"
+    "import com.D.{E,F}\n";
 
   ScalaParser parser(filename, buffer);
   parser.parse();
@@ -219,9 +225,34 @@ TEST(ScalaParser, Imports) {
     ASSERT_EQ(STok::UNDERSCORE, import->importExpr->tokUnderscore->tok);
   }
 
-  // import com.A.C
+  ASSERT_EQ(2, parser.compUnit->topStatSeq->pairs.size());
+
+  // import com.B.C
+
+  // import com.D.{E,F}
   {
-    ASSERT_EQ(1, parser.compUnit->topStatSeq->pairs.size());
+    auto topStat = parser.compUnit->topStatSeq->pairs[1].second;
+    ASSERT_EQ(TopStat::Opt::IMPORT, topStat->opt);
+
+    auto import = topStat->import;
+    ASSERT_EQ(STok::IMPORT, import->tokImport->tok);
+
+    ASSERT_EQ("com", import->importExpr->qualId->id->val);
+    ASSERT_EQ(1, import->importExpr->qualId->periodIds.size());
+
+    // .D
+    {
+      auto periodId = import->importExpr->qualId->periodIds[0];
+      ASSERT_EQ(STok::PERIOD, periodId->tok->tok);
+      ASSERT_EQ("D", periodId->id->val);
+    }
+
+    // .{E,F}
+    auto selectors = import->importExpr->importSelectors;
+    ASSERT_EQ(STok::LCURLYB, selectors->tokLCurlyB->tok);
+    ASSERT_EQ("F", selectors->importSelector->id->val);
+    ASSERT_EQ(1, selectors->pairs.size());
+    ASSERT_EQ(STok::RCURLYB, selectors->tokRCurlyB->tok);
   }
 }
 

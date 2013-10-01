@@ -515,7 +515,7 @@ void ScalaParser::parseImport(spImport &import) {
 }
 
 /**
- * ImportExpr ::= QualId [ ('.' '_') | ImportSelectors ]
+ * ImportExpr ::= QualId [ ('.' '_') | '.' ImportSelectors ]
  */
 void ScalaParser::parseImportExpr(spImportExpr &importExpr) {
   // QualId
@@ -526,28 +526,89 @@ void ScalaParser::parseImportExpr(spImportExpr &importExpr) {
     return;
   }
 
-  // ('.' '_')
-  if (lexer->getCurToken() == STok::PERIOD) {
-    // '.'
-    importExpr->tokPeriod = lexer->getCurTokenNode();
-    lexer->getNextToken(); // consume '.'
-
-    // '_'
-    if (lexer->getCurToken() == STok::UNDERSCORE) {
-      importExpr->tokUnderscore = lexer->getCurTokenNode();
-      lexer->getNextToken(); // consume '_'
-      return;
-    }
-
-    importExpr->addErr(c4::ERR_EXP_UNDERSCORE);
+  if (lexer->getCurToken() != STok::PERIOD) {
     return;
   }
 
-  // TODO:
-  // ImportSelectors
-  if (lexer->getCurToken() == STok::LCURLYB) {
+  importExpr->tokPeriod = lexer->getCurTokenNode();
+  lexer->getNextToken(); // consume '.'
+
+  // ('.' '_')
+  if (lexer->getCurToken() == STok::UNDERSCORE) {
+    importExpr->tokUnderscore = lexer->getCurTokenNode();
+    lexer->getNextToken(); // consume '_'
+    return;
+  }
+
+  // '.' ImportSelectors
+  importExpr->importSelectors = spImportSelectors(new ImportSelectors);
+  parseImportSelectors(importExpr->importSelectors);
+  if (importExpr->importSelectors->err) {
     importExpr->addErr(-1);
   }
+}
+
+/**
+ * ImportSelector ::= id ['=>' id | '=>' '_']
+ */
+void ScalaParser::parseImportSelector(spImportSelector &importSelector) {
+  importSelector->id = parseLexId();
+  lexer->getNextToken(); // consume id
+  if (importSelector->id->err) {
+    importSelector->addErr(-1);
+    return;
+  }
+
+  // TODO: ['=>' id | '=>' '_']
+}
+
+
+/**
+ * ImportSelectors ::= '{' {ImportSelector ','} (ImportSelector | '_') '}'
+ */
+void ScalaParser::parseImportSelectors(spImportSelectors &importSelectors) {
+  if (lexer->getCurToken() != STok::LCURLYB) {
+    importSelectors->addErr(c4::ERR_EXP_LCURLY_BRACKET);
+    return;
+  }
+
+  importSelectors->tokLCurlyB = lexer->getCurTokenNode();
+  lexer->getNextToken(); // consume '{'
+
+  while (true) {
+    if (lexer->getCurToken() == STok::UNDERSCORE) {
+      importSelectors->tokUnderscore = lexer->getCurTokenNode();
+      lexer->getNextToken(); // consume '_'
+      break;
+    }
+
+    spImportSelector importSelector = spImportSelector(new ImportSelector);
+    parseImportSelector(importSelector);
+    if (importSelector->err) {
+      importSelectors->addErr(-1);
+      return;
+    }
+
+    // {ImportSelector ','}
+    if (lexer->getCurToken() == STok::COMMA) {
+      spTokenNode tokComma = lexer->getCurTokenNode();
+      lexer->getNextToken(); // consume ','
+      importSelectors->pairs.push_back(std::make_pair(
+        importSelector, tokComma));
+      continue;
+    }
+
+    importSelectors->importSelector = importSelector;
+    break;
+  }
+
+  if (lexer->getCurToken() != STok::RCURLYB) {
+    importSelectors->addErr(c4::ERR_EXP_RCURLY_BRACKET);
+    return;
+  }
+
+  importSelectors->tokRCurlyB = lexer->getCurTokenNode();
+  lexer->getNextToken(); // consume '}'
 }
 
 /**
