@@ -72,6 +72,7 @@ typedef std::shared_ptr<struct IdPeriod> spIdPeriod;
 typedef struct IdPeriod PeriodId;
 typedef std::shared_ptr<PeriodId> spPeriodId;
 
+typedef std::shared_ptr<struct Annotation> spAnnotation;;
 typedef std::shared_ptr<struct AnnotType> spAnnotType;
 typedef std::shared_ptr<struct ArgumentExprs> spArgumentExprs;
 typedef std::shared_ptr<struct Block> spBlock;
@@ -153,6 +154,15 @@ struct TokenNode : ASTBase {
 // ----------------------------------------------------------------------------
 // AST based in the Scala grammar
 // ----------------------------------------------------------------------------
+
+/**
+ * Annotation ::= '@' SimpleType {ArgumentExprs}
+ */
+struct Annotation : ASTBase {
+  spTokenNode tokAt;
+  spSimpleType simpleType;
+  std::vector<spArgumentExprs> argExprs;
+};
 
 /**
  * AnnotType ::= SimpleType {Annotation}
@@ -810,8 +820,9 @@ struct TopStat : ASTBase {
 
   Opt opt;
 
+  std::vector<spAnnotation> annotations;
+
   // TODO:
-  // std::vector<{Annotation [nl]}>
   // std::vector<{Modifier}>
   spTmplDef tmplDef;
 

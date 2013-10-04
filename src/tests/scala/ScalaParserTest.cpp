@@ -387,3 +387,73 @@ TEST(ScalaParser, Trait) {
     }
   }
 }
+
+/**
+ * @Api(Array(new ApiParam(k = \"value\")))
+ * trait X
+ *
+ * CompilationUnit
+ *   TopStatSeq
+ *     TopStat
+ *       Annotation
+ *         @                    <--- @
+ *         SimpleType
+ *           SimpleTypeHead
+ *             StableId
+ *               id             <--- Api
+ *         ArgumentExprs[0]
+ *           '('                <--- (
+ *             Exprs
+ *               Exprs
+ *                 Expr
+ *                   Expr1*
+ *           ')'
+ *       TmplDef
+ *
+ * ---> new ApiParam(k = \"value\")
+ * Expr1*(10)
+ *   PostfixExpr
+ *     InfixExpr
+ *       PrefixExpr
+ *         SimpleExpr(1)
+ *           'new'
+ *           ClassTemplate
+ *             ClassParents
+ *               Constr
+ *                 AnnotType
+ *                   SimpleType
+ *                     SimpleTypeHead
+ *                       StableId
+ *                         id          <--- ApiParam
+ *                 ArgumentExprs[0]
+ *                   '('
+ *                   Exprs
+ *                     Expr
+ *                       Expr1**
+ *                   ')'
+ *
+ * Expr1**(8)
+ *   id                                 <-- k
+ *   '='
+ *   Expr
+ *     Expr1
+ *       PostfixExpr
+ *         InfixExpr
+ *           PrefixExpr
+ *             SimpleExpr(3)
+ *               SimpleExpr1
+ *                 SimpleExpr1Head
+ *                   Literal
+ *                     stringLiteral    <-- "value"
+ */
+TEST(ScalaParser, Annotations) {
+  std::string filename = "Example.scala";
+  std::string buffer =
+    "@Api(Array(new ApiParam(k = \"value\")))"
+    "trait X extends Y with Z";
+
+  ScalaParser parser(filename, buffer);
+  parser.parse();
+
+  // TODO:
+}
