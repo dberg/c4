@@ -101,8 +101,8 @@ TEST(ScalaParser, HelloWorld) {
   ASSERT_EQ(26, stableId->head->id->ini);
   ASSERT_EQ(29, stableId->head->id->end);
 
-  ASSERT_EQ(1, constr->argExprs.size());
-  spArgumentExprs argExprs = constr->argExprs[0];
+  ASSERT_EQ(1, constr->argExprsVec.size());
+  spArgumentExprs argExprs = constr->argExprsVec[0];
   ASSERT_EQ(ArgumentExprs::Opt::BLOCK_EXPR, argExprs->opt);
 
   spBlockExpr blockExpr = argExprs->blockExpr;
@@ -400,18 +400,36 @@ TEST(ScalaParser, Trait) {
  *         SimpleType
  *           SimpleTypeHead
  *             StableId
- *               id             <--- Api
+ *               StableIdHead
+ *                 id           <--- Api
  *         ArgumentExprs[0]
  *           '('                <--- (
- *             Exprs
- *               Exprs
- *                 Expr
- *                   Expr1*
+ *           Exprs
+ *             Expr
+ *               Expr1*
  *           ')'
  *       TmplDef
  *
+ * ---> Array(new ApiParam(k = \"value\"))
+ * Expr1*
+ *   PostfixExpr
+ *     InfixExpr
+ *       PrefixExpr
+ *         SimpleExpr(3)
+ *           SimpleExpr1
+ *             SimpleExpr1Head
+ *               Path
+ *                 StableId     <-- Array
+ *             SimpleExpr1Tail
+ *               ArgumentExprs(1)
+ *                 '('
+ *                 Exprs
+ *                   Expr
+ *                     Expr1**
+ *                 ')'
+ *
  * ---> new ApiParam(k = \"value\")
- * Expr1*(10)
+ * Expr1**(10)
  *   PostfixExpr
  *     InfixExpr
  *       PrefixExpr
@@ -429,10 +447,10 @@ TEST(ScalaParser, Trait) {
  *                   '('
  *                   Exprs
  *                     Expr
- *                       Expr1**
+ *                       Expr1***
  *                   ')'
  *
- * Expr1**(8)
+ * Expr1***(8)
  *   id                                 <-- k
  *   '='
  *   Expr
@@ -450,10 +468,53 @@ TEST(ScalaParser, Annotations) {
   std::string filename = "Example.scala";
   std::string buffer =
     "@Api(Array(new ApiParam(k = \"value\")))"
-    "trait X extends Y with Z";
+    "trait X";
 
   ScalaParser parser(filename, buffer);
   parser.parse();
 
-  // TODO:
+  auto topStat = parser.compUnit->topStatSeq->topStat;
+  ASSERT_EQ(TopStat::Opt::TMPL_DEF, topStat->opt);
+
+  ASSERT_EQ(1, topStat->annotations.size());
+  auto annotation = topStat->annotations[0];
+  ASSERT_EQ(STok::AT, annotation->tokAt->tok);
+  ASSERT_EQ("Api", annotation->simpleType->head->stableId->head->id->val);
+
+  ASSERT_EQ(1, annotation->argExprsVec.size());
+  auto argExprs1 = annotation->argExprsVec[0];
+  ASSERT_EQ(ArgumentExprs::Opt::EXPRS, argExprs1->opt);
+  ASSERT_EQ(STok::LPAREN, argExprs1->tokLParen->tok);
+  ASSERT_EQ(STok::RPAREN, argExprs1->tokRParen->tok);
+
+  auto expr1 = argExprs1->exprs->expr->expr1;
+  ASSERT_EQ(Expr1::Opt::POSTFIX_EXPR, expr1->opt);
+
+  auto simpleExpr =  expr1->postfixExpr->infixExpr->prefixExpr->simpleExpr;
+  ASSERT_EQ(SimpleExpr::Opt::SIMPLE_EXPR1, simpleExpr->opt);
+
+  {
+    // (new ApiParam ...
+    auto argExprs = simpleExpr->simpleExpr1->tail->argExprs;
+    auto expr1 = argExprs->exprs->expr->expr1;
+
+    auto simpleExpr = expr1->postfixExpr->infixExpr->prefixExpr->simpleExpr;
+    ASSERT_EQ(SimpleExpr::Opt::NEW, simpleExpr->opt);
+
+    {
+      ASSERT_EQ(1,
+        simpleExpr->classTmpl->classParents->constr->argExprsVec.size());
+      auto argExprs =
+        simpleExpr->classTmpl->classParents->constr->argExprsVec[0];
+
+      auto expr1 = argExprs->exprs->expr->expr1;
+      ASSERT_EQ(Expr1::Opt::ID_EQUALS_EXPR, expr1->opt);
+
+      ASSERT_EQ("k", expr1->id->val);
+      ASSERT_EQ(STok::EQUALS, expr1->tokEquals->tok);
+      ASSERT_EQ("\"value\"",
+       expr1->expr->expr1->postfixExpr->infixExpr->prefixExpr
+       ->simpleExpr->simpleExpr1->head->literal->strLit->val);
+    }
+  }
 }

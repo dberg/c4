@@ -23,6 +23,7 @@ class ScalaParser {
 
   // grammar
   void buildParseTree();
+  void parseAnnotation(spAnnotation &annotation);
   void parseAnnotType(spAnnotType &annotType);
   void parseArgumentExprs(spArgumentExprs &argExprs);
   void parseArgumentExprsHelper(spArgumentExprs &argExprs);

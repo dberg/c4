@@ -161,7 +161,7 @@ struct TokenNode : ASTBase {
 struct Annotation : ASTBase {
   spTokenNode tokAt;
   spSimpleType simpleType;
-  std::vector<spArgumentExprs> argExprs;
+  std::vector<spArgumentExprs> argExprsVec;
 };
 
 /**
@@ -300,7 +300,7 @@ struct ClassTemplateOpt : ASTBase {
  */
 struct Constr : ASTBase {
   spAnnotType annotType;
-  std::vector<spArgumentExprs> argExprs;
+  std::vector<spArgumentExprs> argExprsVec;
 };
 
 /**
@@ -363,7 +363,14 @@ struct Expr1 : ASTBase {
   // TODO: 'for' ('(' Enumerators ')' | '{' Enumerators '}') {nl} ['yield'] Expr
   // TODO: 'throw' Expr
   // TODO: 'return' [Expr]
-  // TODO: [SimpleExpr '.'] id '=' Expr
+
+  // [SimpleExpr '.'] id '=' Expr
+  spSimpleExpr simpleExpr;
+  spTokenNode tokPeriod;
+  spLexId id;
+  spTokenNode tokEquals;
+  spExpr expr;
+
   // TODO: SimpleExpr1 ArgumentExprs '=' Expr
   spPostfixExpr postfixExpr;
   // TODO: PostfixExpr Ascription
@@ -571,7 +578,9 @@ struct SimpleExpr : ASTBase {
     SIMPLE_EXPR1,
   };
 
-  // TODO: 'new' (ClassTemplate | TemplateBody)
+  spTokenNode tokNew;
+  spClassTemplate classTmpl;
+  spTemplateBody tmplBody;
   spBlockExpr blockExpr;
   spSimpleExpr1 simpleExpr1;
   // TODO: ['_']

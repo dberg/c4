@@ -57,13 +57,13 @@ STok ScalaLexer::getToken() {
   while (isspace(c)) c = src->getChar();
   if (!c) return STok::END_OF_FILE;
 
-  //if ('@' == c) return getAnnotationToken();
+  if ('@' == c) { curTokStream << c; return STok::AT; }
   //if ('\'' == c) return getCharacterLiteral();
   if ('"' == c) return getStringLiteral();
   if ('.' == c) { curTokStream << c; return STok::PERIOD; }
   //if ('+' == c) return getPlusToken();
   //if ('-' == c) return getMinusToken();
-  //if ('=' == c) return getEqualsToken();
+  if ('=' == c) return getEqualsToken(c);
   //if ('/' == c) return getCommentOrDivToken();
   //if ('&' == c) return getAmpersandToken();
   //if ('|' == c) return getPipeToken();
@@ -191,6 +191,20 @@ STok ScalaLexer::getEscapeSequence() {
   }
 
   return STok::ERROR;
+}
+
+/**
+ * STok::EQUALS | STok::EQUALS_GT
+ */
+STok ScalaLexer::getEqualsToken(char c) {
+  curTokStream << c;
+
+  if (src->peekChar() == '>') {
+    curTokStream << src->getChar();
+    return STok::EQUALS_GT;
+  }
+
+  return STok::EQUALS;
 }
 
 /**

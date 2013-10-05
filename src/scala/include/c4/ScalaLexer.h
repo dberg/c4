@@ -37,6 +37,7 @@ class ScalaLexer {
   ScalaLineIndentationMap &indentMap;
 
   STok getEscapeSequence();
+  STok getEqualsToken(char c);
   STok getLowerToken(char c);
   STok getUpperToken(char c);
   STok getStringLiteral();

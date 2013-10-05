@@ -188,7 +188,7 @@ void ScalaSyntaxHighlighting::setConstr(spConstr &constr) {
     setAnnotType(constr->annotType);
   }
 
-  for (auto argExprs : constr->argExprs) {
+  for (auto argExprs : constr->argExprsVec) {
     setArgumentExprs(argExprs);
   }
 }
