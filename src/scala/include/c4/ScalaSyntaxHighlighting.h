@@ -13,6 +13,7 @@ class ScalaSyntaxHighlighting {
   void setOp(spTokenNode &tok);
   void setOp(unsigned int ini, unsigned int end);
 
+  void setAnnotation(spAnnotation &annotation);
   void setAnnotType(spAnnotType &annotType);
   void setArgumentExprs(spArgumentExprs &argExprs);
   void setBlock(spBlock &block);
@@ -50,6 +51,8 @@ class ScalaSyntaxHighlighting {
   void setStableIdHead(spStableIdHead &head);
   void setStableIdTail(spStableIdTail &tail);
   void setStringLiteral(spStringLiteral &strLit);
+  void setTemplateBody(spTemplateBody &tmplBody);
+  void setTemplateStat(spTemplateStat &tmplStat);
   void setTmplDef(spTmplDef &tmplDef);
   void setTopStat(spTopStat &topStat);
   void setTopStatSeq(spTopStatSeq &topStatSeq);

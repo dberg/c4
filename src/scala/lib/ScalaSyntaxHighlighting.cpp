@@ -45,6 +45,20 @@ void ScalaSyntaxHighlighting::setOp(unsigned int ini, unsigned int end) {
 // ----------------------------------------------------------------------------
 // AST
 // ----------------------------------------------------------------------------
+void ScalaSyntaxHighlighting::setAnnotation(spAnnotation &annotation) {
+  if (annotation->tokAt) {
+    setOp(annotation->tokAt);
+  }
+
+  if (annotation->simpleType) {
+    setSimpleType(annotation->simpleType);
+  }
+
+  for (auto argExprs : annotation->argExprsVec) {
+    setArgumentExprs(argExprs);
+  }
+}
+
 void ScalaSyntaxHighlighting::setAnnotType(spAnnotType &annotType) {
   if (annotType->simpleType) {
     setSimpleType(annotType->simpleType);
@@ -249,7 +263,11 @@ void ScalaSyntaxHighlighting::setExpr1(spExpr1 &expr1) {
   }
 
   if (expr1->opt == Expr1::Opt::SIMPLE_EXPR1) {
-    // TODO:
+    if (expr1->simpleExpr) { setSimpleExpr(expr1->simpleExpr); }
+    if (expr1->tokPeriod) { setOp(expr1->tokPeriod); }
+    if (expr1->id) { setLexId(expr1->id); }
+    if (expr1->tokEquals) { setOp(expr1->tokEquals); }
+    if (expr1->expr) { setExpr(expr1->expr); }
     return;
   }
 
@@ -455,7 +473,9 @@ void ScalaSyntaxHighlighting::setSemi(spSemi &semi) {
 
 void ScalaSyntaxHighlighting::setSimpleExpr(spSimpleExpr &simpleExpr) {
   if (simpleExpr->opt == SimpleExpr::Opt::NEW) {
-    // TODO:
+    if (simpleExpr->tokNew) { setKeyword(simpleExpr->tokNew); }
+    if (simpleExpr->classTmpl) { setClassTemplate(simpleExpr->classTmpl); }
+    if (simpleExpr->tmplBody) { setTemplateBody(simpleExpr->tmplBody); }
     return;
   }
 
@@ -642,6 +662,36 @@ void ScalaSyntaxHighlighting::setStringLiteral(spStringLiteral &strLit) {
      << ")";
 }
 
+void ScalaSyntaxHighlighting::setTemplateBody(spTemplateBody &tmplBody) {
+  if (tmplBody->lCurlyB) { setOp(tmplBody->lCurlyB); }
+  // TODO: SelfType
+  if (tmplBody->tmplStat) { setTemplateStat(tmplBody->tmplStat); }
+  // TODO: {semi TemplateStat}
+  if (tmplBody->rCurlyB) { setOp(tmplBody->rCurlyB); }
+}
+
+void ScalaSyntaxHighlighting::setTemplateStat(spTemplateStat &tmplStat) {
+  if (tmplStat->opt == TemplateStat::Opt::IMPORT) {
+    // TODO:
+    return;
+  }
+
+  if (tmplStat->opt == TemplateStat::Opt::DEF) {
+    // TODO:
+    return;
+  }
+
+  if (tmplStat->opt == TemplateStat::Opt::DCL) {
+    // TODO:
+    return;
+  }
+
+  if (tmplStat->opt == TemplateStat::Opt::EXPR) {
+    // TODO:
+    return;
+  }
+}
+
 void ScalaSyntaxHighlighting::setTmplDef(spTmplDef &tmplDef) {
   if (tmplDef->opt == TmplDef::Opt::CASE_CLASS) {
     // 'case'
@@ -691,7 +741,13 @@ void ScalaSyntaxHighlighting::setTmplDef(spTmplDef &tmplDef) {
 
 void ScalaSyntaxHighlighting::setTopStat(spTopStat &topStat) {
   if (topStat->opt == TopStat::Opt::TMPL_DEF) {
-    // TODO: {Annotation [nl]} {Modifier}
+    // {Annotation [nl]}
+    for (auto annotation : topStat->annotations) {
+      setAnnotation(annotation);
+    }
+
+    // TODO: {Modifier}
+
     if (topStat->tmplDef) {
       setTmplDef(topStat->tmplDef);
     }
@@ -780,10 +836,9 @@ void ScalaSyntaxHighlighting::setTraitTemplateOpt(
       setKeyword(traitTemplateOpt->tokExtends);
     }
 
-    // TODO:
-    //if (traitTemplateOpt->templateBody) {
-    //  setTemplateBody(traitTemplateOpt->templateBody);
-    //}
+    if (traitTemplateOpt->templateBody) {
+      setTemplateBody(traitTemplateOpt->templateBody);
+    }
   }
 }
 
