@@ -311,6 +311,31 @@ void ScalaParser::parseBlockStat(spBlockStat &blockStat) {
 }
 
 /**
+ * ClassDef ::= id [TypeParamClause] {ConstrAnnotation} [AccessModifier]
+ *              ClassParamClauses ClassTemplateOpt
+ */
+void ScalaParser::parseClassDef(spClassDef &classDef) {
+  classDef->id = parseLexId();
+  lexer->getNextToken(); // consume id
+  if (classDef->id->err) {
+    classDef->addErr(-1);
+    return;
+  }
+
+  // TODO: [TypeParamClause]
+  // TODO: {ConstrAnnotation}
+  // TODO: [AccessModifier]
+  // TODO: ClassParamClauses
+
+  // ClassTemplateOpt
+  classDef->classTmplOpt = spClassTemplateOpt(new ClassTemplateOpt);
+  parseClassTemplateOpt(classDef->classTmplOpt);
+  if (classDef->classTmplOpt->err) {
+    classDef->addErr(-1);
+  }
+}
+
+/**
  * ClassParents ::= Constr {'with' AnnotType}
  */
 void ScalaParser::parseClassParents(spClassParents &classParents) {
@@ -428,6 +453,94 @@ void ScalaParser::parseConstr(spConstr &constr) {
 
     constr->argExprsVec.push_back(argExprs);
   }
+}
+
+/**
+ * Def ::= PatVarDef
+ *       | 'def' FunDef
+ *       | 'type' {nl} TypeDef
+ *       | TmplDef
+ */
+void ScalaParser::parseDef(spDef &def) {
+
+  // TODO: PatVarDef
+
+  {
+    // 'def' FunDef
+    if (lexer->getCurToken() == STok::DEF) {
+      def->opt = Def::Opt::DEF;
+      def->tokDef = lexer->getCurTokenNode();
+      lexer->getNextToken(); // consume 'def'
+
+      def->funDef = spFunDef(new FunDef);
+      parseFunDef(def->funDef);
+      if (def->funDef->err) {
+        def->addErr(-1);
+      }
+      return;
+    }
+  }
+
+  // TODO: 'type' {nl} TypeDef
+  // TODO: TmplDef
+
+  def->addErr(-1);
+}
+
+/**
+ * FunDef ::= FunSig [':' Type] '=' Expr
+ *          | FunSig [nl] '{' Block '}'
+ *          | 'this' ParamClause ParamClauses
+ *            ('=' ConstrExpr | [nl] ConstrBlock)
+ */
+void ScalaParser::parseFunDef(spFunDef &funDef) {
+  {
+    // FunSig [':' Type] '=' Expr
+    funDef->opt = FunDef::Opt::FUN_SIG_EQUALS_EXPR;
+    funDef->funSig = spFunSig(new FunSig);
+    parseFunSig(funDef->funSig);
+    if (funDef->funSig->err) {
+      funDef->addErr(-1);
+      return;
+    }
+
+    // TODO: [':' Type]
+
+    if (lexer->getCurToken() != STok::EQUALS) {
+      funDef->addErr(c4::ERR_EXP_OP_EQUALS);
+      return;
+    }
+
+    funDef->tokEquals = lexer->getCurTokenNode();
+    lexer->getNextToken(); // consume '='
+
+    funDef->expr = spExpr(new Expr);
+    parseExpr(funDef->expr);
+    if (funDef->expr->err) {
+      funDef->addErr(-1);
+    }
+
+    return;
+  }
+
+  // TODO: FunSig [nl] '{' Block '}'
+
+  // TODO: 'this' ParamClause ParamClauses ('=' ConstrExpr | [nl] ConstrBlock)
+
+  funDef->addErr(-1);
+}
+
+/**
+ * FunSig ::= id [FunTypeParamClause] ParamClauses
+ */
+void ScalaParser::parseFunSig(spFunSig &funSig) {
+  funSig->id = parseLexId();
+  lexer->getNextToken(); // consume 'id'
+  if (funSig->id->err) {
+    funSig->addErr(-1);
+    return;
+  }
+  // TODO: [FunTypeParamClause] ParamClauses
 }
 
 /**
@@ -700,8 +813,47 @@ void ScalaParser::parseInfixExpr(spInfixExpr &infixExpr) {
  *           | 'null'
  */
 void ScalaParser::parseLiteral(spLiteral &literal) {
-  // TODO: ['-'] integerLiteral
-  // TODO: ['-'] floatingPointLiteral
+  // ['-'] integerLiteral
+  // ['-'] floatingPointLiteral
+  bool seenMinus = false;
+  if (lexer->getCurToken() == STok::MINUS) {
+    seenMinus = true;
+    literal->tokMinus = lexer->getCurTokenNode();
+    lexer->getNextToken(); // consume '-'
+  }
+
+  STok tok = lexer->getCurToken();
+  if (tok == STok::DECIMAL_NUMERAL
+    || tok == STok::DECIMAL_NUMERAL_WITH_INT_TYPE_SUFFIX
+    || tok == STok::HEX_NUMERAL
+    || tok == STok::HEX_NUMERAL_WITH_INT_TYPE_SUFFIX
+    || tok == STok::OCTAL_NUMERAL) {
+
+    literal->opt = Literal::Opt::INTEGER;
+    literal->intLit = spIntegerLiteral(new IntegerLiteral);
+    literal->intLit->ini = lexer->getCurTokenIni();
+    literal->intLit->end = lexer->getCurTokenEnd();
+    literal->intLit->val = lexer->getCurTokenStr();
+
+    lexer->getNextToken(); // consume decimal
+    return;
+  }
+
+  if (tok == STok::DECIMAL_FLOATING_POINT_LITERAL
+    || tok == STok::HEXADECIMAL_FLOATING_POINT_LITERAL) {
+
+    literal->opt = Literal::Opt::FLOATING_POINT;
+    literal->fpLit = spFloatingPointLiteral(new FloatingPointLiteral);
+    literal->fpLit->ini = lexer->getCurTokenIni();
+    literal->fpLit->end = lexer->getCurTokenEnd();
+    literal->fpLit->val = lexer->getCurTokenStr();
+
+    lexer->getNextToken(); // consume fp
+    return;
+  }
+
+  if (seenMinus) { literal->addErr(-1); return; }
+
   // TODO: booleanLiteral
   // TODO: characterLiteral
 
@@ -1110,7 +1262,61 @@ void ScalaParser::parseStableIdTail(spStableIdTail &tail) {
  * TemplateBody ::= [nl] '{' [SelfType] TemplateStat {semi TemplateStat} '}'
  */
 void ScalaParser::parseTemplateBody(spTemplateBody &tmplBody) {
-  // TODO:
+  // '{'
+  if (lexer->getCurToken() != STok::LCURLYB) {
+    tmplBody->addErr(c4::ERR_EXP_LCURLY_BRACKET);
+    return;
+  }
+
+  tmplBody->tokLCurlyB = lexer->getCurTokenNode();
+  lexer->getNextToken(); // consume '{'
+
+  // TODO: [SelfType]
+
+  // TemplateStat
+  tmplBody->tmplStat = spTemplateStat(new TemplateStat);
+  parseTemplateStat(tmplBody->tmplStat);
+  if (tmplBody->tmplStat->err) {
+    tmplBody->addErr(-1);
+    return;
+  }
+
+  // TODO: {semi TemplateStat}
+
+  // '}'
+  if (lexer->getCurToken() != STok::RCURLYB) {
+    tmplBody->addErr(c4::ERR_EXP_RCURLY_BRACKET);
+    return;
+  }
+
+  tmplBody->tokRCurlyB = lexer->getCurTokenNode();
+  lexer->getNextToken(); // consume '}'
+}
+
+/**
+ * TemplateStat ::= Import
+ *                | {Annotation [nl]} {Modifier} Def
+ *                | {Annotation [nl]} {Modifier} Dcl
+ *                | Expr
+ */
+void ScalaParser::parseTemplateStat(spTemplateStat &tmplStat) {
+  // TODO: Import
+
+  {
+    // {Annotation [nl]} {Modifier} Def
+    // TODO: {Annotation [nl]} {Modifier}
+    tmplStat->opt = TemplateStat::Opt::DEF;
+    tmplStat->def = spDef(new Def);
+    parseDef(tmplStat->def);
+    if (tmplStat->def->err) {
+      tmplStat->addErr(-1);
+      return;
+    }
+  }
+
+  // TODO: {Annotation [nl]} {Modifier} Dcl
+
+  // TODO: Expr
 }
 
 /**
@@ -1119,15 +1325,41 @@ void ScalaParser::parseTemplateBody(spTemplateBody &tmplBody) {
  *           | 'trait' TraitDef
  */
 void ScalaParser::parseTmplDef(spTmplDef &tmplDef) {
+  // 'trait' TraitDef
+  if (lexer->getCurToken() == STok::TRAIT) {
+    tmplDef->opt = TmplDef::Opt::TRAIT;
+
+    tmplDef->tokTrait = lexer->getCurTokenNode();
+    lexer->getNextToken(); // consume 'trait'
+
+    tmplDef->traitDef = spTraitDef(new TraitDef);
+    parseTraitDef(tmplDef->traitDef);
+    if (tmplDef->traitDef->err) {
+      tmplDef->addErr(-1);
+    }
+
+    return;
+  }
+
   // 'case'
   if (lexer->getCurToken() == STok::CASE) {
     tmplDef->tokCase = lexer->getCurTokenNode();
     lexer->getNextToken();
   }
 
-  // TODO: ['case'] 'class' ClassDef
+  // ['case'] 'class' ClassDef
   if (lexer->getCurToken() == STok::CLASS) {
-    // TODO:
+    tmplDef->opt = TmplDef::Opt::CASE_CLASS;
+
+    tmplDef->tokClass = lexer->getCurTokenNode();
+    lexer->getNextToken(); // consume 'class'
+
+    tmplDef->classDef = spClassDef(new ClassDef);
+    parseClassDef(tmplDef->classDef);
+    if (tmplDef->classDef->err) {
+      tmplDef->addErr(-1);
+    }
+
     return;
   }
 
@@ -1143,22 +1375,6 @@ void ScalaParser::parseTmplDef(spTmplDef &tmplDef) {
     if (tmplDef->objectDef->err) {
       tmplDef->addErr(-1);
     }
-    return;
-  }
-
-  // 'trait' TraitDef
-  if (lexer->getCurToken() == STok::TRAIT) {
-    tmplDef->opt = TmplDef::Opt::TRAIT;
-
-    tmplDef->tokTrait = lexer->getCurTokenNode();
-    lexer->getNextToken(); // consume 'trait'
-
-    tmplDef->traitDef = spTraitDef(new TraitDef);
-    parseTraitDef(tmplDef->traitDef);
-    if (tmplDef->traitDef->err) {
-      tmplDef->addErr(-1);
-    }
-
     return;
   }
 

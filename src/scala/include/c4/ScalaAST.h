@@ -65,8 +65,14 @@ namespace c4s {
 
 typedef struct ASTBase LexId;
 typedef std::shared_ptr<LexId> spLexId;
+
+// Literals
 typedef struct ASTBase StringLiteral;
 typedef std::shared_ptr<StringLiteral> spStringLiteral;
+typedef struct ASTBase IntegerLiteral;
+typedef std::shared_ptr<IntegerLiteral> spIntegerLiteral;
+typedef struct ASTBase FloatingPointLiteral;
+typedef std::shared_ptr<FloatingPointLiteral> spFloatingPointLiteral;
 
 typedef std::shared_ptr<struct IdPeriod> spIdPeriod;
 typedef struct IdPeriod PeriodId;
@@ -79,13 +85,17 @@ typedef std::shared_ptr<struct Block> spBlock;
 typedef std::shared_ptr<struct BlockExpr> spBlockExpr;
 typedef std::shared_ptr<struct BlockStat> spBlockStat;
 typedef std::shared_ptr<struct CompilationUnit> spCompilationUnit;
+typedef std::shared_ptr<struct ClassDef> spClassDef;
 typedef std::shared_ptr<struct ClassParents> spClassParents;
 typedef std::shared_ptr<struct ClassTemplate> spClassTemplate;
 typedef std::shared_ptr<struct ClassTemplateOpt> spClassTemplateOpt;
 typedef std::shared_ptr<struct Constr> spConstr;
+typedef std::shared_ptr<struct Def> spDef;
 typedef std::shared_ptr<struct Expr> spExpr;
 typedef std::shared_ptr<struct Expr1> spExpr1;
 typedef std::shared_ptr<struct Exprs> spExprs;
+typedef std::shared_ptr<struct FunDef> spFunDef;
+typedef std::shared_ptr<struct FunSig> spFunSig;
 typedef std::shared_ptr<struct Import> spImport;
 typedef std::shared_ptr<struct ImportExpr> spImportExpr;
 typedef std::shared_ptr<struct ImportSelector> spImportSelector;
@@ -260,6 +270,19 @@ struct CompilationUnit : ASTBase {
 };
 
 /**
+ * ClassDef ::= id [TypeParamClause] {ConstrAnnotation} [AccessModifier]
+ *              ClassParamClauses ClassTemplateOpt
+ */
+struct ClassDef : ASTBase {
+  spLexId id;
+  // TODO: [TypeParamClause]
+  // TODO: {ConstrAnnotation}
+  // TODO: [AccessModifier]
+  // TODO: ClassParamClauses
+  spClassTemplateOpt classTmplOpt;
+};
+
+/**
  * ClassParents ::= Constr {'with' AnnotType}
  */
 struct ClassParents : ASTBase {
@@ -301,6 +324,34 @@ struct ClassTemplateOpt : ASTBase {
 struct Constr : ASTBase {
   spAnnotType annotType;
   std::vector<spArgumentExprs> argExprsVec;
+};
+
+/**
+ * Def ::= PatVarDef
+ *       | 'def' FunDef
+ *       | 'type' {nl} TypeDef
+ *       | TmplDef
+ */
+struct Def : ASTBase {
+  enum class Opt {
+    UNDEFINED,
+    DEF,
+    TYPE,
+    TMPL_DEF,
+  };
+
+  Opt opt;
+
+  // TODO: PatVarDef
+
+  // 'def' FunDef
+  spTokenNode tokDef;
+  spFunDef funDef;
+
+  // TODO: 'type' {nl} TypeDef
+  // TODO: TmplDef
+
+  Def() : opt(Opt::UNDEFINED) {}
 };
 
 /**
@@ -385,6 +436,46 @@ struct Expr1 : ASTBase {
 struct Exprs : ASTBase {
   spExpr expr;
   std::vector<std::pair<unsigned int, spExpr>> pairs;
+};
+
+/**
+ * FunDef ::= FunSig [':' Type] '=' Expr
+ *          | FunSig [nl] '{' Block '}'
+ *          | 'this' ParamClause ParamClauses
+ *            ('=' ConstrExpr | [nl] ConstrBlock)
+ */
+struct FunDef : ASTBase {
+  enum class Opt {
+    UNDEFINED,
+    FUN_SIG_EQUALS_EXPR,
+    FUN_SIG_BLOCK,
+    THIS_PARAM_CLAUSE,
+  };
+
+  Opt opt;
+
+  // FunSig [':' Type] '=' Expr
+  spFunSig funSig;
+  spTokenNode tokColon;
+  // TODO: spType type;
+  spTokenNode tokEquals;
+  spExpr expr;
+
+  // TODO:
+  // FunSig [nl] '{' Block '}'
+  // 'this' ParamClause ParamClauses
+  // ('=' ConstrExpr | [nl] ConstrBlock)
+
+  FunDef() : opt(Opt::UNDEFINED) {}
+};
+
+/**
+ * FunSig ::= id [FunTypeParamClause] ParamClauses
+ */
+struct FunSig : ASTBase {
+  spLexId id;
+  // TODO: [FunTypeParamClause]
+  // TODO: spParamClauses paramClauses;
 };
 
 /**
@@ -475,8 +566,14 @@ struct Literal : ASTBase {
 
   Opt opt;
 
-  // TODO: ['-'] integerLiteral
-  // TODO: ['-'] floatingPointLiteral
+  spTokenNode tokMinus;
+
+  // ['-'] integerLiteral
+  spIntegerLiteral intLit;
+
+  // ['-'] floatingPointLiteral
+  spFloatingPointLiteral fpLit;
+
   // TODO: booleanLiteral
   // TODO: characterLiteral
 
@@ -745,13 +842,13 @@ struct StableIdTail : ASTBase {
  * TemplateBody ::= [nl] '{' [SelfType] TemplateStat {semi TemplateStat} '}'
  */
 struct TemplateBody : ASTBase {
-  spTokenNode lCurlyB;
+  spTokenNode tokLCurlyB;
   // TODO:
   //spSelfType selfType;
   spTemplateStat tmplStat;
   // TODO:
   //std::vector<pair<spSemi, spTemplateStat>> paSemiTmplStat;
-  spTokenNode rCurlyB;
+  spTokenNode tokRCurlyB;
 };
 
 /**
@@ -773,7 +870,7 @@ struct TemplateStat : ASTBase {
   // TODO: spImport import;
   // TODO: std::vector<spAnnotation> annotations;
   // TODO: std::vector<spModifier> modifiers;
-  // TODO: spDef def;
+  spDef def;
   // TODO: spExpr expr;
 
   TemplateStat() : opt(Opt::UNDEFINED) {}
@@ -799,7 +896,7 @@ struct TmplDef : ASTBase {
 
   // OPT_CASE_CLASS
   spTokenNode tokClass;
-  // TODO: spClassDef classDef;
+  spClassDef classDef;
 
   // OPT_CASE_OBJECT
   spTokenNode tokObject;

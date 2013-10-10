@@ -30,11 +30,15 @@ class ScalaParser {
   void parseBlock(spBlock &block);
   void parseBlockExpr(spBlockExpr &blockExpr);
   void parseBlockStat(spBlockStat &blockStat);
+  void parseClassDef(spClassDef &classDef);
   void parseClassParents(spClassParents &classParents);
   void parseClassTemplate(spClassTemplate &classTmpl);
   void parseClassTemplateOpt(spClassTemplateOpt &classTmplOpt);
   void parseCompilationUnit();
   void parseConstr(spConstr &constr);
+  void parseDef(spDef &def);
+  void parseFunDef(spFunDef &funDef);
+  void parseFunSig(spFunSig &funSig);
   void parseExpr(spExpr &expr);
   void parseExpr1(spExpr1 &expr1);
   void parseExprs(spExprs &exprs);
@@ -63,6 +67,7 @@ class ScalaParser {
   void parseStableIdHead(spStableIdHead &head);
   void parseStableIdTail(spStableIdTail &tail);
   void parseTemplateBody(spTemplateBody &tmplBody);
+  void parseTemplateStat(spTemplateStat &tmplStat);
   void parseTmplDef(spTmplDef &tmplDef);
   void parseTopStat(spTopStat &topStat);
   void parseTopStatSeq(spTopStatSeq &topStatSeq);

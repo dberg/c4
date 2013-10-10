@@ -2,6 +2,50 @@
 
 namespace c4s {
 
+//-----------------------------------------------------------------------------
+// Literal Support Java Helper
+//-----------------------------------------------------------------------------
+STok toScalaTok(c4::LiteralToken litTok) {
+  if (litTok == c4::LiteralToken::ERROR)
+    return STok::ERROR;
+
+  /*
+  // TODO:
+  if (litTok == c4::LiteralToken::BINARY_NUMERAL)
+    return TOK_BINARY_NUMERAL;
+
+  if (litTok == c4::LiteralToken::BINARY_NUMERAL_WITH_INT_TYPE_SUFFIX)
+    return TOK_BINARY_NUMERAL_WITH_INT_TYPE_SUFFIX;
+  */
+
+  if (litTok == c4::LiteralToken::DECIMAL_NUMERAL)
+    return STok::DECIMAL_NUMERAL;
+
+  if (litTok == c4::LiteralToken::DECIMAL_NUMERAL_WITH_INT_TYPE_SUFFIX)
+    return STok::DECIMAL_NUMERAL_WITH_INT_TYPE_SUFFIX;
+
+  if (litTok == c4::LiteralToken::DECIMAL_FLOATING_POINT)
+    return STok::DECIMAL_FLOATING_POINT_LITERAL;
+
+  if (litTok == c4::LiteralToken::HEX_NUMERAL)
+    return STok::HEX_NUMERAL;
+
+  if (litTok == c4::LiteralToken::HEX_NUMERAL_WITH_INT_TYPE_SUFFIX)
+    return STok::HEX_NUMERAL_WITH_INT_TYPE_SUFFIX;
+
+  if (litTok == c4::LiteralToken::HEXADECIMAL_FLOATING_POINT_LITERAL)
+    return STok::HEXADECIMAL_FLOATING_POINT_LITERAL;
+
+  if (litTok == c4::LiteralToken::OCTAL_NUMERAL)
+    return STok::OCTAL_NUMERAL;
+
+  if (litTok == c4::LiteralToken::OCTAL_NUMERAL_WITH_INT_TYPE_SUFFIX)
+    return STok::OCTAL_NUMERAL_WITH_INT_TYPE_SUFFIX;
+
+  return STok::ERROR;
+}
+
+
 // -----------------------------------------------------------------------------
 // Helper functions
 // -----------------------------------------------------------------------------
@@ -85,7 +129,7 @@ STok ScalaLexer::getToken() {
   if (']' == c) { curTokStream << c; return STok::RBRACKET; }
   //if ('?' == c) return TOK_OP_QUESTION_MARK;
 
-  //if (isdigit(c)) return getNumberToken(c);
+  if (isdigit(c)) return getNumberToken(c);
 
   // Identifier
   //if (isScalaLetter(c)) return getTokenIdentifier(c);
@@ -230,6 +274,11 @@ STok ScalaLexer::getLowerToken(char c) {
   }
 
   return STok::ID;
+}
+
+STok ScalaLexer::getNumberToken(char c) {
+  STok tok = toScalaTok(litSupport->getLiteralNumber(c, curTokStream));
+  return tok;
 }
 
 /**

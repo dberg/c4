@@ -518,3 +518,73 @@ TEST(ScalaParser, Annotations) {
     }
   }
 }
+
+/**
+ * class A { def x = 10 }
+ *
+ * CompilationUnit
+ *   TopStatSeq
+ *     TopStat
+ *       TmplDef(1)
+ *         'class'
+ *         ClassDef
+ *           id
+ *           ClassTemplateOpt
+ *             TemplateBody
+ *               '{'
+ *               TemplateStat(2)
+ *                 Def*
+ *               '}'
+ *
+ * Def(2)*
+ *   'def'
+ *   FunDef(1)
+ *     FunSig
+ *       id                                  <-- x
+ *     '='
+ *     Expr
+ *       Expr1
+ *         PostfixExpr
+ *           InfixExpr
+ *             PrefixExpr
+ *               SimpleExpr(3)
+ *                 SimpleExpr1
+ *                   SimpleExpr1Head
+ *                     Literal(1)
+ *                       integerLiteral      <-- 10
+ */
+TEST(ScalaParser, Methods) {
+  std::string filename = "Example.scala";
+  std::string buffer = "class A { def x = 10 }";
+
+  ScalaParser parser(filename, buffer);
+  parser.parse();
+
+  auto tmplDef = parser.compUnit->topStatSeq->topStat->tmplDef;
+  ASSERT_EQ(TmplDef::Opt::CASE_CLASS, tmplDef->opt);
+  ASSERT_EQ(STok::CLASS, tmplDef->tokClass->tok);
+  ASSERT_EQ("A", tmplDef->classDef->id->val);
+
+  auto classTmplOpt = tmplDef->classDef->classTmplOpt;
+  ASSERT_EQ(ClassTemplateOpt::Opt::TEMPLATE_BODY, classTmplOpt->opt);
+
+  auto tmplStat = classTmplOpt->tmplBody->tmplStat;
+  ASSERT_EQ(TemplateStat::Opt::DEF, tmplStat->opt);
+
+  auto def = tmplStat->def;
+  ASSERT_EQ(Def::Opt::DEF, def->opt);
+  ASSERT_EQ(STok::DEF, def->tokDef->tok);
+
+  auto funDef = def->funDef;
+  ASSERT_EQ(FunDef::Opt::FUN_SIG_EQUALS_EXPR, funDef->opt);
+  ASSERT_EQ("x", funDef->funSig->id->val);
+  ASSERT_EQ(STok::EQUALS, funDef->tokEquals->tok);
+
+  auto simpleExpr = funDef->expr->expr1->postfixExpr
+    ->infixExpr->prefixExpr->simpleExpr;
+  ASSERT_EQ(SimpleExpr::Opt::SIMPLE_EXPR1, simpleExpr->opt);
+
+  auto literal = simpleExpr->simpleExpr1->head->literal;
+  ASSERT_EQ(Literal::Opt::INTEGER, literal->opt);
+  ASSERT_EQ("10", literal->intLit->val);
+}

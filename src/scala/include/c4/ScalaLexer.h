@@ -17,6 +17,8 @@ namespace c4s {
 class ScalaLexer;
 typedef std::shared_ptr<ScalaLexer> spScalaLexer;
 
+STok toScalaTok(c4::LiteralToken litTok);
+
 // Helper functions
 bool is_idrest(char c);
 
@@ -35,11 +37,13 @@ class ScalaLexer {
   ScalaTokenUtil tokUtil;
 
   ScalaLineIndentationMap &indentMap;
+  c4::spLiteralSupport litSupport;
 
   STok getEscapeSequence();
   STok getEqualsToken(char c);
   STok getLowerToken(char c);
   STok getUpperToken(char c);
+  STok getNumberToken(char c);
   STok getStringLiteral();
   STok getStringLiteralMultiLine();
   STok getToken();
@@ -56,7 +60,8 @@ public:
 
   ScalaLexer(c4::spSourceCodeStream &src, c4::spDiagnosis &diag,
     ScalaLineIndentationMap &indentMap)
-    : src(src), diag(diag), curIndentationLevel(0), indentMap(indentMap) {}
+    : src(src), diag(diag), curIndentationLevel(0), indentMap(indentMap),
+      litSupport(c4::spLiteralSupport(new c4::LiteralSupport(src, diag))) {}
 
   void getNextToken();
   STok getCurToken() { return curTok; }

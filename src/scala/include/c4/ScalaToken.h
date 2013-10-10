@@ -67,6 +67,14 @@ enum class STok : int {
 
   // Literals
   STRING_LITERAL,
+  DECIMAL_NUMERAL,
+  DECIMAL_NUMERAL_WITH_INT_TYPE_SUFFIX,
+  DECIMAL_FLOATING_POINT_LITERAL,
+  HEX_NUMERAL,
+  HEX_NUMERAL_WITH_INT_TYPE_SUFFIX,
+  HEXADECIMAL_FLOATING_POINT_LITERAL,
+  OCTAL_NUMERAL,
+  OCTAL_NUMERAL_WITH_INT_TYPE_SUFFIX,
 
   // Symbol Terminals
   COMMA = -53, // ,
@@ -78,6 +86,9 @@ enum class STok : int {
   RPAREN = -59, // )
   LBRACKET = -60, // [
   RBRACKET = -61, // ]
+
+  MINUS = -62, // -
+  PLUS = -63, // +
 };
 
 class ScalaTokenUtil {

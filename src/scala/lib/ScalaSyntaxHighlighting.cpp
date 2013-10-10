@@ -258,7 +258,11 @@ void ScalaSyntaxHighlighting::setExpr1(spExpr1 &expr1) {
   }
 
   if (expr1->opt == Expr1::Opt::ID_EQUALS_EXPR) {
-    // TODO:
+    if (expr1->simpleExpr) { setSimpleExpr(expr1->simpleExpr); }
+    if (expr1->tokPeriod) { setOp(expr1->tokPeriod); }
+    if (expr1->id) { setLexId(expr1->id); }
+    if (expr1->tokEquals) { setOp(expr1->tokEquals); }
+    if (expr1->expr) { setExpr(expr1->expr); }
     return;
   }
 
@@ -663,11 +667,11 @@ void ScalaSyntaxHighlighting::setStringLiteral(spStringLiteral &strLit) {
 }
 
 void ScalaSyntaxHighlighting::setTemplateBody(spTemplateBody &tmplBody) {
-  if (tmplBody->lCurlyB) { setOp(tmplBody->lCurlyB); }
+  if (tmplBody->tokLCurlyB) { setOp(tmplBody->tokLCurlyB); }
   // TODO: SelfType
   if (tmplBody->tmplStat) { setTemplateStat(tmplBody->tmplStat); }
   // TODO: {semi TemplateStat}
-  if (tmplBody->rCurlyB) { setOp(tmplBody->rCurlyB); }
+  if (tmplBody->tokRCurlyB) { setOp(tmplBody->tokRCurlyB); }
 }
 
 void ScalaSyntaxHighlighting::setTemplateStat(spTemplateStat &tmplStat) {
