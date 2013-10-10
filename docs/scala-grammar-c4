@@ -355,7 +355,7 @@ TmplDef ::= ['case'] 'class' ClassDef
           | 'trait' TraitDef
 
 ClassDef ::= id [TypeParamClause] {ConstrAnnotation} [AccessModifier]
-           | ClassParamClauses ClassTemplateOpt
+             ClassParamClauses ClassTemplateOpt
 
 TraitDef ::= id [TypeParamClause] TraitTemplateOpt
 
