@@ -543,7 +543,7 @@ TEST(ScalaParser, Annotations) {
  *       id                                  <-- x
  *     '='
  *     Expr
- *       Expr1
+ *       Expr1(10)
  *         PostfixExpr
  *           InfixExpr
  *             PrefixExpr

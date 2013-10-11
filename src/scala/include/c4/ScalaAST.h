@@ -335,6 +335,7 @@ struct Constr : ASTBase {
 struct Def : ASTBase {
   enum class Opt {
     UNDEFINED,
+    PAT_VAR_DEF,
     DEF,
     TYPE,
     TMPL_DEF,

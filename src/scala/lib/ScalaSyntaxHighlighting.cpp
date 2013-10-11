@@ -153,6 +153,21 @@ void ScalaSyntaxHighlighting::setBlockStat(spBlockStat &blockStat) {
   }
 }
 
+void ScalaSyntaxHighlighting::setClassDef(spClassDef &classDef) {
+  if (classDef->id) {
+    setLexId(classDef->id);
+  }
+
+  // TODO: [TypeParamClause]
+  // TODO: {ConstrAnnotation}
+  // TODO: [AccessModifier]
+  // TODO: ClassParamClauses
+
+  if (classDef->classTmplOpt) {
+    setClassTemplateOpt(classDef->classTmplOpt);
+  }
+}
+
 void ScalaSyntaxHighlighting::setClassParents(spClassParents &classParents) {
   if (classParents->constr) {
     setConstr(classParents->constr);
@@ -191,7 +206,9 @@ void ScalaSyntaxHighlighting::setClassTemplateOpt(
       setKeyword(classTmplOpt->tokExtends);
     }
 
-    // TODO: tmplBody
+    if (classTmplOpt->tmplBody) {
+      setTemplateBody(classTmplOpt->tmplBody);
+    }
 
     return;
   }
@@ -204,6 +221,29 @@ void ScalaSyntaxHighlighting::setConstr(spConstr &constr) {
 
   for (auto argExprs : constr->argExprsVec) {
     setArgumentExprs(argExprs);
+  }
+}
+
+void ScalaSyntaxHighlighting::setDef(spDef &def) {
+  if (def->opt == Def::Opt::PAT_VAR_DEF) {
+    // TODO:
+    return;
+  }
+
+  if (def->opt == Def::Opt::DEF) {
+    if (def->tokDef) { setKeyword(def->tokDef); }
+    if (def->funDef) { setFunDef(def->funDef); }
+    return;
+  }
+
+  if (def->opt == Def::Opt::TYPE) {
+    // TODO:
+    return;
+  }
+
+  if (def->opt == Def::Opt::TMPL_DEF) {
+    // TODO:
+    return;
   }
 }
 
@@ -304,6 +344,32 @@ void ScalaSyntaxHighlighting::setExprs(spExprs &exprs) {
   }
 }
 
+void ScalaSyntaxHighlighting::setFunDef(spFunDef &funDef) {
+  if (funDef->opt == FunDef::Opt::FUN_SIG_EQUALS_EXPR) {
+    // FunSig [':' Type] '=' Expr
+    if (funDef->funSig) { setFunSig(funDef->funSig); }
+    if (funDef->tokColon) { setOp(funDef->tokColon); }
+    // TODO: Type
+    if (funDef->tokEquals) { setOp(funDef->tokEquals); }
+    if (funDef->expr) { setExpr(funDef->expr); }
+  }
+
+  if (funDef->opt == FunDef::Opt::FUN_SIG_BLOCK) {
+    // TODO: FunSig [nl] '{' Block '}'
+  }
+
+  if (funDef->opt == FunDef::Opt::THIS_PARAM_CLAUSE) {
+    // TODO: 'this' ParamClause ParamClauses
+    //       ('=' ConstrExpr | [nl] ConstrBlock)
+  }
+}
+
+void ScalaSyntaxHighlighting::setFunSig(spFunSig &funSig) {
+  if (funSig->id) { setLexId(funSig->id); }
+  // TODO: [FunTypeParamClause]
+  // TODO: spParamClauses paramClauses;
+}
+
 void ScalaSyntaxHighlighting::setIdPeriod(spIdPeriod &idPeriod) {
   // TODO:
 }
@@ -356,13 +422,21 @@ void ScalaSyntaxHighlighting::setInfixExpr(spInfixExpr &infixExpr) {
   }
 }
 
+void ScalaSyntaxHighlighting::setIntegerLiteral(spIntegerLiteral &intLit) {
+  sh << "(c4s-sh-literal-number "
+     << (intLit->ini + 1)
+     << " "
+     << (intLit->end + 1)
+     << ")";
+}
+
 void ScalaSyntaxHighlighting::setLexId(spLexId &id) {
   sh << "(c4s-sh-identifier " << (id->ini + 1) << " " << (id->end + 1) << ")";
 }
 
 void ScalaSyntaxHighlighting::setLiteral(spLiteral &literal) {
   if (literal->opt == Literal::Opt::INTEGER) {
-    // TODO:
+    setIntegerLiteral(literal->intLit);
     return;
   }
 
@@ -447,16 +521,13 @@ void ScalaSyntaxHighlighting::setPostfixExpr(spPostfixExpr &postfixExpr) {
   if (postfixExpr->infixExpr) {
     setInfixExpr(postfixExpr->infixExpr);
   }
+
+  // TODO: if (postfixExpr->id) { setLexId(postfixExpr->id); }
 }
 
 void ScalaSyntaxHighlighting::setPrefixExpr(spPrefixExpr &prefixExpr) {
-  if (prefixExpr->tok) {
-    setOp(prefixExpr->tok);
-  }
-
-  if (prefixExpr->simpleExpr) {
-    setSimpleExpr(prefixExpr->simpleExpr);
-  }
+  if (prefixExpr->tok) { setOp(prefixExpr->tok); }
+  if (prefixExpr->simpleExpr) { setSimpleExpr(prefixExpr->simpleExpr); }
 }
 
 void ScalaSyntaxHighlighting::setQualId(spQualId &qualId) {
@@ -681,7 +752,7 @@ void ScalaSyntaxHighlighting::setTemplateStat(spTemplateStat &tmplStat) {
   }
 
   if (tmplStat->opt == TemplateStat::Opt::DEF) {
-    // TODO:
+    if (tmplStat->def) { setDef(tmplStat->def); }
     return;
   }
 
@@ -707,10 +778,10 @@ void ScalaSyntaxHighlighting::setTmplDef(spTmplDef &tmplDef) {
       setKeyword(tmplDef->tokClass);
     }
 
-    // TODO:
-    //if (tmplDef->classDef) {
-    //  setClassDef(tmplDef->classDef);
-    //}
+    if (tmplDef->classDef) {
+      setClassDef(tmplDef->classDef);
+    }
+
     return;
   }
 
