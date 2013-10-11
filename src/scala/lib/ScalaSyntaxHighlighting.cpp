@@ -436,7 +436,7 @@ void ScalaSyntaxHighlighting::setLexId(spLexId &id) {
 
 void ScalaSyntaxHighlighting::setLiteral(spLiteral &literal) {
   if (literal->opt == Literal::Opt::INTEGER) {
-    setIntegerLiteral(literal->intLit);
+    if (literal->intLit) { setIntegerLiteral(literal->intLit); }
     return;
   }
 
@@ -456,9 +456,7 @@ void ScalaSyntaxHighlighting::setLiteral(spLiteral &literal) {
   }
 
   if (literal->opt == Literal::Opt::STRING) {
-    if (literal->strLit) {
-      setStringLiteral(literal->strLit);
-    }
+    if (literal->strLit) { setStringLiteral(literal->strLit); }
     return;
   }
 
