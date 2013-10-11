@@ -95,145 +95,96 @@ directories:
           $(obj_bytecode) $(obj_c4) $(bin) $(gtest_obj)
 
 # main c4
-$(bin)/c4: $(obj_bytecode)/BinOutput.o \
-            $(obj_bytecode)/BinOutputCode.o \
-            $(obj_bytecode)/ParserBin.o \
-            $(obj_common)/libcommon.a \
-            $(obj_java)/libjava.a \
-            $(obj_scala)/libscala.a \
-            $(obj_c4)/CmdInput.o \
-            $(obj_c4)/Daemon.o \
-            $(obj_c4)/c4.o
-	$(CXX) $(obj_c4)/CmdInput.o \
-               $(obj_c4)/Daemon.o \
-               $(obj_bytecode)/BinOutput.o \
-               $(obj_bytecode)/BinOutputCode.o \
-               $(obj_bytecode)/ParserBin.o \
-               $(CFLAGS) \
-               $(INC) \
-               $(obj_c4)/c4.o -o $@ \
-               $(obj_java)/libjava.a \
-               $(obj_scala)/libscala.a \
-               $(obj_common)/libcommon.a
+$(bin)/c4: \
+  $(obj_bytecode)/BinOutput.o \
+  $(obj_bytecode)/BinOutputCode.o \
+  $(obj_bytecode)/ParserBin.o \
+  $(obj_common)/libcommon.a \
+  $(obj_java)/libjava.a \
+  $(obj_scala)/libscala.a \
+  $(obj_c4)/CmdInput.o \
+  $(obj_c4)/Daemon.o \
+  $(obj_c4)/c4.o
+	$(CXX) \
+  $(obj_c4)/CmdInput.o \
+  $(obj_c4)/Daemon.o \
+  $(obj_bytecode)/BinOutput.o \
+  $(obj_bytecode)/BinOutputCode.o \
+  $(obj_bytecode)/ParserBin.o \
+  $(CFLAGS) \
+  $(INC) \
+  $(obj_c4)/c4.o -o $@ \
+  $(obj_java)/libjava.a \
+  $(obj_scala)/libscala.a \
+  $(obj_common)/libcommon.a
 
 # objects c4
-$(obj_c4)/CmdInput.o: $(libdir_c4)/CmdInput.cpp $(incdir_c4)/CmdInput.h
-	$(CXX) $(CFLAGS) $(INC) \
-            -c $< -o $@
-
-$(obj_c4)/Daemon.o: $(libdir_c4)/Daemon.cpp $(incdir_c4)/Daemon.h
-	$(CXX) $(CFLAGS) $(INC) \
-            -c $< -o $@
+$(obj_c4)/%.o: \
+  $(libdir_c4)/%.cpp \
+  $(incdir_c4)/%.h
+	$(CXX) $(CFLAGS) \
+  $(INC) \
+  -c $< -o $@
 
 $(obj_c4)/c4.o: $(libdir_c4)/c4.cpp
-	$(CXX) $(CFLAGS) $(INC) \
-            -c $< -o $@
+	$(CXX) $(CFLAGS) \
+    $(INC) \
+  -c $< -o $@
 
 # objects common - libcommon
-$(obj_common)/libcommon.a: $(obj_common)/Diagnosis.o \
-                           $(obj_common)/LiteralSupport.o \
-                           $(obj_common)/SourceCodeStream.o \
-                           $(obj_common)/Util.o
+$(obj_common)/libcommon.a: \
+  $(obj_common)/Diagnosis.o \
+  $(obj_common)/LiteralSupport.o \
+  $(obj_common)/SourceCodeStream.o \
+  $(obj_common)/Util.o
 	ar -rv $@ $+
 
-$(obj_common)/Diagnosis.o: $(libdir_common)/Diagnosis.cpp \
-                           $(incdir_common)/Diagnosis.h
-	$(CXX) $(CFLAGS) $(INC) \
-            -c $< -o $@
-
-$(obj_common)/LiteralSupport.o: $(libdir_common)/LiteralSupport.cpp \
-                                $(incdir_common)/LiteralSupport.h
-	$(CXX) $(CFLAGS) $(INC) \
-            -c $< -o $@
-
-$(obj_common)/SourceCodeStream.o: $(libdir_common)/SourceCodeStream.cpp \
-                                  $(incdir_common)/SourceCodeStream.h
-	$(CXX) $(CFLAGS) $(INC) \
-            -c $< -o $@
-
-$(obj_common)/Util.o: $(libdir_common)/Util.cpp $(incdir_common)/Util.h
-	$(CXX) $(CFLAGS) $(INC) \
-            -c $< -o $@
+$(obj_common)/%.o: \
+  $(libdir_common)/%.cpp \
+  $(incdir_common)/%.h
+	$(CXX) $(CFLAGS) \
+  $(INC) \
+  -c $< -o $@
 
 # objects bytecode
-$(obj_bytecode)/ParserBin.o: $(libdir_bytecode)/ParserBin.cpp \
-                             $(incdir_bytecode)/ParserBin.h
-	$(CXX) $(CFLAGS) $(INC) \
-            -c $< -o $@
-
-$(obj_bytecode)/BinOutput.o: $(libdir_bytecode)/BinOutput.cpp \
-                             $(incdir_bytecode)/BinOutput.h
-	$(CXX) $(CFLAGS) $(INC) \
-            -c $< -o $@
-
-$(obj_bytecode)/BinOutputCode.o: $(libdir_bytecode)/BinOutputCode.cpp \
-                                 $(incdir_bytecode)/BinOutputCode.h
-	$(CXX) $(CFLAGS) $(INC) \
-            -c $< -o $@
+$(obj_bytecode)/%.o: \
+  $(libdir_bytecode)/%.cpp \
+  $(incdir_bytecode)/%.h
+	$(CXX) $(CFLAGS) \
+  $(INC) \
+  -c $< -o $@
 
 # objects java - libjava
-$(obj_java)/libjava.a: $(obj_java)/Indentation.o \
-                       $(obj_java)/Lexer.o \
-                       $(obj_java)/Parser.o \
-                       $(obj_java)/SymbolTable.o \
-                       $(obj_java)/EmacsOutput.o
+$(obj_java)/libjava.a: \
+  $(obj_java)/Indentation.o \
+  $(obj_java)/Lexer.o \
+  $(obj_java)/Parser.o \
+  $(obj_java)/SymbolTable.o \
+  $(obj_java)/EmacsOutput.o
 	ar -rv $@ $+
 
-$(obj_java)/Indentation.o: $(libdir_java)/Indentation.cpp \
-                           $(incdir_java)/Indentation.h
-	$(CXX) $(CFLAGS) $(INC) \
-            -c $< -o $@
-
-$(obj_java)/Lexer.o: $(libdir_java)/Lexer.cpp $(incdir_java)/Lexer.h
-	$(CXX) $(CFLAGS) $(INC) \
-            -c $< -o $@
-
-$(obj_java)/Parser.o: $(libdir_java)/Parser.cpp $(incdir_java)/Parser.h
-	$(CXX) $(CFLAGS) $(INC) \
-            -c $< -o $@
-
-$(obj_java)/EmacsOutput.o: $(libdir_java)/EmacsOutput.cpp \
-                           $(incdir_java)/EmacsOutput.h
-	$(CXX) $(CFLAGS) $(INC) \
-            -c $< -o $@
-
-$(obj_java)/SymbolTable.o: $(libdir_java)/SymbolTable.cpp \
-                           $(incdir_java)/SymbolTable.h
-	$(CXX) $(CFLAGS) $(INC) \
-            -c $< -o $@
+$(obj_java)/%.o: \
+  $(libdir_java)/%.cpp \
+  $(incdir_java)/%.h
+	$(CXX) $(CFLAGS) \
+  $(INC) \
+  -c $< -o $@
 
 # objects scala - libscala
-$(obj_scala)/libscala.a:  $(obj_scala)/ScalaIndentation.o \
-                          $(obj_scala)/ScalaParser.o \
-                          $(obj_scala)/ScalaLexer.o \
-                          $(obj_scala)/ScalaEmacsOutput.o \
-                          $(obj_scala)/ScalaSyntaxHighlighting.o
+$(obj_scala)/libscala.a: \
+  $(obj_scala)/ScalaIndentation.o \
+  $(obj_scala)/ScalaParser.o \
+  $(obj_scala)/ScalaLexer.o \
+  $(obj_scala)/ScalaEmacsOutput.o \
+  $(obj_scala)/ScalaSyntaxHighlighting.o
 	ar -rv $@ $+
 
-$(obj_scala)/ScalaIndentation.o: $(libdir_scala)/ScalaIndentation.cpp \
-                                 $(incdir_scala)/ScalaIndentation.h
-	$(CXX) $(CFLAGS) $(INC) \
-            -c $< -o $@
-
-$(obj_scala)/ScalaParser.o: $(libdir_scala)/ScalaParser.cpp \
-                            $(incdir_scala)/ScalaParser.h
-	$(CXX) $(CFLAGS) $(INC) \
-            -c $< -o $@
-
-$(obj_scala)/ScalaLexer.o: $(libdir_scala)/ScalaLexer.cpp \
-                           $(incdir_scala)/ScalaParser.h
-	$(CXX) $(CFLAGS) $(INC) \
-            -c $< -o $@
-
-$(obj_scala)/ScalaEmacsOutput.o: $(libdir_scala)/ScalaEmacsOutput.cpp \
-                                 $(incdir_scala)/ScalaEmacsOutput.h
-	$(CXX) $(CFLAGS) $(INC) \
-            -c $< -o $@
-
-$(obj_scala)/ScalaSyntaxHighlighting.o: $(libdir_scala)/ScalaSyntaxHighlighting.cpp \
-                                        $(incdir_scala)/ScalaSyntaxHighlighting.h
-	$(CXX) $(CFLAGS) $(INC) \
-            -c $< -o $@
+$(obj_scala)/%.o: \
+  $(libdir_scala)/%.cpp \
+  $(incdir_scala)/%.h
+	$(CXX) $(CFLAGS) \
+  $(INC) \
+  -c $< -o $@
 
 # tests
 .PHONY: bytecode-classes
@@ -249,55 +200,66 @@ run-all:
 .PHONY: $(bin)/test-all
 $(bin)/test-all: run-all $(bin)/test-java $(bin)/test-scala $(bin)/test-bytecode
 
-$(bin)/test-java: $(tests_java)/JavaTests.cpp \
-                  $(tests_java)/EmacsOutputTest.cpp \
-                  $(tests_java)/IndentationTest.cpp \
-                  $(tests_java)/ParserTest.cpp \
-                  $(tests_java)/SymbolTableTest.cpp \
-                  $(obj_common)/libcommon.a \
-                  $(obj_java)/libjava.a \
-                  $(gtest_obj)/libgtest.a
+$(bin)/test-java: \
+  $(tests_java)/JavaTests.cpp \
+  $(tests_java)/EmacsOutputTest.cpp \
+  $(tests_java)/IndentationTest.cpp \
+  $(tests_java)/ParserTest.cpp \
+  $(tests_java)/SymbolTableTest.cpp \
+  $(obj_common)/libcommon.a \
+  $(obj_java)/libjava.a \
+  $(gtest_obj)/libgtest.a
 
-	$(CXX) $(CXXTESTFLAGS) $(INC) -I$(gtest_inc) \
-            $(tests_java)/JavaTests.cpp \
-            -o $@ \
-            $(obj_java)/libjava.a \
-            $(obj_common)/libcommon.a \
-            $(gtest_obj)/libgtest.a \
-            -lpthread
+	$(CXX) $(CXXTESTFLAGS) \
+    $(INC) \
+    -I$(gtest_inc) \
+  $(tests_java)/JavaTests.cpp \
+  -o $@ \
+  $(obj_java)/libjava.a \
+  $(obj_common)/libcommon.a \
+  $(gtest_obj)/libgtest.a \
+  -lpthread
 
-$(bin)/test-scala: $(tests_scala)/ScalaTests.cpp \
-                   $(tests_scala)/ScalaParserTest.cpp \
-                   $(tests_scala)/ScalaIndentationTest.cpp \
-                   $(tests_scala)/ScalaSyntaxHighlightingTest.cpp \
-                   $(obj_common)/libcommon.a \
-                   $(obj_scala)/libscala.a \
-                   $(gtest_obj)/libgtest.a
+$(bin)/test-scala: \
+  $(tests_scala)/ScalaTests.cpp \
+  $(tests_scala)/ScalaParserTest.cpp \
+  $(tests_scala)/ScalaIndentationTest.cpp \
+  $(tests_scala)/ScalaSyntaxHighlightingTest.cpp \
+  $(obj_common)/libcommon.a \
+  $(obj_scala)/libscala.a \
+  $(gtest_obj)/libgtest.a
 
-	$(CXX) $(CXXTESTFLAGS) $(INC) -I$(gtest_inc) \
-            $(tests_scala)/ScalaTests.cpp \
-            -o $@ \
-            $(obj_scala)/libscala.a \
-            $(obj_common)/libcommon.a \
-            $(gtest_obj)/libgtest.a \
-            -lpthread
+	$(CXX) $(CXXTESTFLAGS) \
+    $(INC) \
+    -I$(gtest_inc) \
+  $(tests_scala)/ScalaTests.cpp \
+  -o $@ \
+  $(obj_scala)/libscala.a \
+  $(obj_common)/libcommon.a \
+  $(gtest_obj)/libgtest.a \
+  -lpthread
 
-$(bin)/test-bytecode: bytecode-classes \
-                      $(tests_bytecode)/BytecodeTests.cpp \
-                      $(tests_bytecode)/JHelloWorldTest.cpp \
-                      $(tests_bytecode)/SHelloWorldTest.cpp \
-                      $(gtest_obj)/libgtest.a
+$(bin)/test-bytecode: \
+  bytecode-classes \
+  $(tests_bytecode)/BytecodeTests.cpp \
+  $(tests_bytecode)/JHelloWorldTest.cpp \
+  $(tests_bytecode)/SHelloWorldTest.cpp \
+  $(gtest_obj)/libgtest.a
 
-	$(CXX) $(CXXTESTFLAGS) $(INC) -I$(gtest_inc) \
-            $(tests_bytecode)/BytecodeTests.cpp \
-            $(obj_bytecode)/ParserBin.o \
-            -o $@ \
-            $(gtest_obj)/libgtest.a \
-            -lpthread -ldl
+	$(CXX) $(CXXTESTFLAGS) \
+    $(INC) \
+    -I$(gtest_inc) \
+  $(tests_bytecode)/BytecodeTests.cpp \
+  $(obj_bytecode)/ParserBin.o \
+  -o $@ \
+  $(gtest_obj)/libgtest.a \
+  -lpthread -ldl
 
 $(gtest_obj)/libgtest.a: $(gtest_obj)/gtest-all.o
 	ar -rv $@ $<
 
 $(gtest_obj)/gtest-all.o: $(gtest_dir)/src/gtest-all.cc
-	$(CXX) $(CXXTESTFLAGS) -I$(gtest_dir)/include -I$(gtest_dir) \
-            -c $< -o $@
+	$(CXX) $(CXXTESTFLAGS) \
+    -I$(gtest_dir)/include \
+    -I$(gtest_dir) \
+  -c $< -o $@
