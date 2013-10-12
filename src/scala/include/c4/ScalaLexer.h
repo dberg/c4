@@ -35,10 +35,13 @@ class ScalaLexer {
   bool seenLinebreak;
 
   ScalaTokenUtil tokUtil;
-
+  std::vector<spComment> comments;
   ScalaLineIndentationMap &indentMap;
   c4::spLiteralSupport litSupport;
 
+  void clearCurTokenStr();
+
+  STok getCommentOrDivToken();
   STok getEscapeSequence();
   STok getEqualsToken(char c);
   STok getLowerToken(char c);
@@ -74,6 +77,8 @@ public:
   void restoreState(State &state);
 
   bool getSeenLineBreak() { return seenLinebreak; }
+
+  std::vector<spComment>& getComments() { return comments; }
 };
 
 } // namespace

@@ -108,7 +108,7 @@ STok ScalaLexer::getToken() {
   //if ('+' == c) return getPlusToken();
   //if ('-' == c) return getMinusToken();
   if ('=' == c) return getEqualsToken(c);
-  //if ('/' == c) return getCommentOrDivToken();
+  if ('/' == c) return getCommentOrDivToken();
   //if ('&' == c) return getAmpersandToken();
   //if ('|' == c) return getPipeToken();
   //if ('^' == c) return getCarretToken();
@@ -144,6 +144,75 @@ STok ScalaLexer::getToken() {
   // TODO: id ::= `stringLit`
 
   return STok::ERROR;
+}
+
+/**
+ * A forward slash character indicates a comment, divisor or an assignment
+ * operation. Comments are pre-processed but since we do all parsing in one
+ * pass we store the comments data in the lexer and call getToken() again.
+ * We also update the indentation table here.
+ */
+STok ScalaLexer::getCommentOrDivToken() {
+  curTokStream << '/';
+
+  // We peek 1 char ahead to confirm it's a comment,
+  // and which type of comment this is.
+  if (src->peekChar() == '/') {
+    addIndentationIfAbsent(indentMap, src->getLine(),
+      curIndentationLevel, false, STok::COMMENT);
+    spComment comment = spComment(new Comment);
+    curTokStream << src->getChar(); // consume 2nd '/'
+    char c;
+    while ((c = src->getChar()) && c != '\n') { curTokStream << c; }
+    curTokStr = curTokStream.str();
+    comment->val = curTokStream.str();
+    comment->ini = getCurTokenIni();
+    comment->end = getCurTokenEnd();
+    clearCurTokenStr();
+    comments.push_back(comment);
+    return getToken();
+  }
+
+  if (src->peekChar() == '*') {
+    addIndentationIfAbsent(indentMap, src->getLine(),
+      curIndentationLevel, false, STok::COMMENT);
+
+    spComment comment = spComment(new Comment);
+
+    int offset = src->peekChar(1) == '*' ? 1 : 0; // javadoc offset
+    curTokStream << src->getChar(); // consume '*'
+    char c;
+    while ((c = src->getChar())) {
+      curTokStream << c;
+
+      if (c == '\n') {
+        addIndentation(indentMap, src->getLine(),
+          curIndentationLevel, false, STok::COMMENT, offset);
+      }
+
+      if (c == '*' && src->peekChar() == '/') {
+        curTokStream << src->getChar(); // consume final '/'
+        curTokStr = curTokStream.str();
+        comment->val = curTokStream.str();
+        comment->ini = getCurTokenIni();
+        comment->end = getCurTokenEnd();
+        clearCurTokenStr();
+        comments.push_back(comment);
+        return getToken();
+      }
+    }
+
+    return STok::END_OF_FILE;
+  }
+
+  // Divisor
+  // We look 1 char ahead to decided if we have '/='.
+  if (src->peekChar() == '=') {
+    curTokStream << src->getChar(); // conume '='
+    return STok::SLASH_EQUALS;
+  }
+
+  return STok::DIV;
 }
 
 /**
@@ -360,11 +429,15 @@ STok ScalaLexer::getStringLiteralMultiLine() {
   return STok::ERROR;
 }
 
-void ScalaLexer::getNextToken() {
+void ScalaLexer::clearCurTokenStr() {
   // clear string stream
   curTokStr = "";
   curTokStream.str("");
   curTokStream.clear();
+}
+
+void ScalaLexer::getNextToken() {
+  clearCurTokenStr();
 
   // Save current data for indentation processing
   unsigned line = src->getLine();

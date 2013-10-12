@@ -5,6 +5,171 @@ using namespace c4s;
 
 /**
  * -----------------------------------------------------------------------------
+ * @Api(Array(new ApiParam(k = \"value\")))
+ * trait X
+ * -----------------------------------------------------------------------------
+ * CompilationUnit
+ *   TopStatSeq
+ *     TopStat
+ *       Annotation
+ *         @                    <--- @
+ *         SimpleType
+ *           SimpleTypeHead
+ *             StableId
+ *               StableIdHead
+ *                 id           <--- Api
+ *         ArgumentExprs[0]
+ *           '('                <--- (
+ *           Exprs
+ *             Expr
+ *               Expr1*
+ *           ')'
+ *       TmplDef
+ *
+ * ---> Array(new ApiParam(k = \"value\"))
+ * Expr1*
+ *   PostfixExpr
+ *     InfixExpr
+ *       PrefixExpr
+ *         SimpleExpr(3)
+ *           SimpleExpr1
+ *             SimpleExpr1Head
+ *               Path
+ *                 StableId     <-- Array
+ *             SimpleExpr1Tail
+ *               ArgumentExprs(1)
+ *                 '('
+ *                 Exprs
+ *                   Expr
+ *                     Expr1**
+ *                 ')'
+ *
+ * ---> new ApiParam(k = \"value\")
+ * Expr1**(10)
+ *   PostfixExpr
+ *     InfixExpr
+ *       PrefixExpr
+ *         SimpleExpr(1)
+ *           'new'
+ *           ClassTemplate
+ *             ClassParents
+ *               Constr
+ *                 AnnotType
+ *                   SimpleType
+ *                     SimpleTypeHead
+ *                       StableId
+ *                         id          <--- ApiParam
+ *                 ArgumentExprs[0]
+ *                   '('
+ *                   Exprs
+ *                     Expr
+ *                       Expr1***
+ *                   ')'
+ *
+ * Expr1***(8)
+ *   id                                 <-- k
+ *   '='
+ *   Expr
+ *     Expr1
+ *       PostfixExpr
+ *         InfixExpr
+ *           PrefixExpr
+ *             SimpleExpr(3)
+ *               SimpleExpr1
+ *                 SimpleExpr1Head
+ *                   Literal
+ *                     stringLiteral    <-- "value"
+ */
+TEST(ScalaParser, Annotations) {
+  std::string filename = "Example.scala";
+  std::string buffer =
+    "@Api(Array(new ApiParam(k = \"value\")))"
+    "trait X";
+
+  ScalaParser parser(filename, buffer);
+  parser.parse();
+
+  auto topStat = parser.compUnit->topStatSeq->topStat;
+  ASSERT_EQ(TopStat::Opt::TMPL_DEF, topStat->opt);
+
+  ASSERT_EQ(1, topStat->annotations.size());
+  auto annotation = topStat->annotations[0];
+  ASSERT_EQ(STok::AT, annotation->tokAt->tok);
+  ASSERT_EQ("Api", annotation->simpleType->head->stableId->head->id->val);
+
+  ASSERT_EQ(1, annotation->argExprsVec.size());
+  auto argExprs1 = annotation->argExprsVec[0];
+  ASSERT_EQ(ArgumentExprs::Opt::EXPRS, argExprs1->opt);
+  ASSERT_EQ(STok::LPAREN, argExprs1->tokLParen->tok);
+  ASSERT_EQ(STok::RPAREN, argExprs1->tokRParen->tok);
+
+  auto expr1 = argExprs1->exprs->expr->expr1;
+  ASSERT_EQ(Expr1::Opt::POSTFIX_EXPR, expr1->opt);
+
+  auto simpleExpr =  expr1->postfixExpr->infixExpr->prefixExpr->simpleExpr;
+  ASSERT_EQ(SimpleExpr::Opt::SIMPLE_EXPR1, simpleExpr->opt);
+
+  {
+    // (new ApiParam ...
+    auto argExprs = simpleExpr->simpleExpr1->tail->argExprs;
+    auto expr1 = argExprs->exprs->expr->expr1;
+
+    auto simpleExpr = expr1->postfixExpr->infixExpr->prefixExpr->simpleExpr;
+    ASSERT_EQ(SimpleExpr::Opt::NEW, simpleExpr->opt);
+
+    {
+      ASSERT_EQ(1,
+        simpleExpr->classTmpl->classParents->constr->argExprsVec.size());
+      auto argExprs =
+        simpleExpr->classTmpl->classParents->constr->argExprsVec[0];
+
+      auto expr1 = argExprs->exprs->expr->expr1;
+      ASSERT_EQ(Expr1::Opt::ID_EQUALS_EXPR, expr1->opt);
+
+      ASSERT_EQ("k", expr1->id->val);
+      ASSERT_EQ(STok::EQUALS, expr1->tokEquals->tok);
+      ASSERT_EQ("\"value\"",
+       expr1->expr->expr1->postfixExpr->infixExpr->prefixExpr
+       ->simpleExpr->simpleExpr1->head->literal->strLit->val);
+    }
+  }
+}
+
+/**
+ * -----------------------------------------------------------------------------
+ * // This is a comment
+ * trait A
+ * -----------------------------------------------------------------------------
+ * CompilationUnit
+ *   TopStatSeq
+ *     TopStat(1)
+ *       TmplDef(3)
+ *         'trait'
+ *         TraitDef
+ *           id
+ */
+TEST(ScalaParser, Comments) {
+  std::string filename = "Example.scala";
+  std::string buffer =
+    "// This is a comment\n"
+    "trait A";
+
+  ScalaParser parser(filename, buffer);
+  parser.parse();
+
+  ASSERT_EQ(1, parser.comments.size());
+
+  auto topStat = parser.compUnit->topStatSeq->topStat;
+  ASSERT_EQ(TopStat::Opt::TMPL_DEF, topStat->opt);
+
+  auto tmplDef = topStat->tmplDef;
+  ASSERT_EQ(TmplDef::Opt::TRAIT, tmplDef->opt);
+  ASSERT_EQ(STok::TRAIT, tmplDef->tokTrait->tok);
+  ASSERT_EQ("A", tmplDef->traitDef->id->val);
+}
+
+/**
+ * -----------------------------------------------------------------------------
  * object HelloWorld extends App { println("Hello world"); }
  * -----------------------------------------------------------------------------
  * TopStatSeq
@@ -165,10 +330,11 @@ TEST(ScalaParser, HelloWorld) {
 }
 
 /**
+ * -----------------------------------------------------------------------------
  * import com.A.utils._
  * import com.B.C
  * import com.D.{E,F}
- *
+ * -----------------------------------------------------------------------------
  * CompilationUnit
  *   TopStatSeq
  *     TopStat(2)
@@ -257,11 +423,81 @@ TEST(ScalaParser, Imports) {
 }
 
 /**
+ * class A { def x = 10 }
+ *
+ * CompilationUnit
+ *   TopStatSeq
+ *     TopStat
+ *       TmplDef(1)
+ *         'class'
+ *         ClassDef
+ *           id
+ *           ClassTemplateOpt
+ *             TemplateBody
+ *               '{'
+ *               TemplateStat(2)
+ *                 Def*
+ *               '}'
+ *
+ * Def(2)*
+ *   'def'
+ *   FunDef(1)
+ *     FunSig
+ *       id                                  <-- x
+ *     '='
+ *     Expr
+ *       Expr1(10)
+ *         PostfixExpr
+ *           InfixExpr
+ *             PrefixExpr
+ *               SimpleExpr(3)
+ *                 SimpleExpr1
+ *                   SimpleExpr1Head
+ *                     Literal(1)
+ *                       integerLiteral      <-- 10
+ */
+TEST(ScalaParser, Methods) {
+  std::string filename = "Example.scala";
+  std::string buffer = "class A { def x = 10 }";
+
+  ScalaParser parser(filename, buffer);
+  parser.parse();
+
+  auto tmplDef = parser.compUnit->topStatSeq->topStat->tmplDef;
+  ASSERT_EQ(TmplDef::Opt::CASE_CLASS, tmplDef->opt);
+  ASSERT_EQ(STok::CLASS, tmplDef->tokClass->tok);
+  ASSERT_EQ("A", tmplDef->classDef->id->val);
+
+  auto classTmplOpt = tmplDef->classDef->classTmplOpt;
+  ASSERT_EQ(ClassTemplateOpt::Opt::TEMPLATE_BODY, classTmplOpt->opt);
+
+  auto tmplStat = classTmplOpt->tmplBody->tmplStat;
+  ASSERT_EQ(TemplateStat::Opt::DEF, tmplStat->opt);
+
+  auto def = tmplStat->def;
+  ASSERT_EQ(Def::Opt::DEF, def->opt);
+  ASSERT_EQ(STok::DEF, def->tokDef->tok);
+
+  auto funDef = def->funDef;
+  ASSERT_EQ(FunDef::Opt::FUN_SIG_EQUALS_EXPR, funDef->opt);
+  ASSERT_EQ("x", funDef->funSig->id->val);
+  ASSERT_EQ(STok::EQUALS, funDef->tokEquals->tok);
+
+  auto simpleExpr = funDef->expr->expr1->postfixExpr
+    ->infixExpr->prefixExpr->simpleExpr;
+  ASSERT_EQ(SimpleExpr::Opt::SIMPLE_EXPR1, simpleExpr->opt);
+
+  auto literal = simpleExpr->simpleExpr1->head->literal;
+  ASSERT_EQ(Literal::Opt::INTEGER, literal->opt);
+  ASSERT_EQ("10", literal->intLit->val);
+}
+
+/**
  * -----------------------------------------------------------------------------
  * package test
  * import com.company.utils._
  * trait X extends Y with Z
- *
+ * -----------------------------------------------------------------------------
  * CompilationUnit
  *   Packaging
  *     'package'
@@ -386,205 +622,4 @@ TEST(ScalaParser, Trait) {
         annotType->simpleType->head->stableId->head->id->val);
     }
   }
-}
-
-/**
- * @Api(Array(new ApiParam(k = \"value\")))
- * trait X
- *
- * CompilationUnit
- *   TopStatSeq
- *     TopStat
- *       Annotation
- *         @                    <--- @
- *         SimpleType
- *           SimpleTypeHead
- *             StableId
- *               StableIdHead
- *                 id           <--- Api
- *         ArgumentExprs[0]
- *           '('                <--- (
- *           Exprs
- *             Expr
- *               Expr1*
- *           ')'
- *       TmplDef
- *
- * ---> Array(new ApiParam(k = \"value\"))
- * Expr1*
- *   PostfixExpr
- *     InfixExpr
- *       PrefixExpr
- *         SimpleExpr(3)
- *           SimpleExpr1
- *             SimpleExpr1Head
- *               Path
- *                 StableId     <-- Array
- *             SimpleExpr1Tail
- *               ArgumentExprs(1)
- *                 '('
- *                 Exprs
- *                   Expr
- *                     Expr1**
- *                 ')'
- *
- * ---> new ApiParam(k = \"value\")
- * Expr1**(10)
- *   PostfixExpr
- *     InfixExpr
- *       PrefixExpr
- *         SimpleExpr(1)
- *           'new'
- *           ClassTemplate
- *             ClassParents
- *               Constr
- *                 AnnotType
- *                   SimpleType
- *                     SimpleTypeHead
- *                       StableId
- *                         id          <--- ApiParam
- *                 ArgumentExprs[0]
- *                   '('
- *                   Exprs
- *                     Expr
- *                       Expr1***
- *                   ')'
- *
- * Expr1***(8)
- *   id                                 <-- k
- *   '='
- *   Expr
- *     Expr1
- *       PostfixExpr
- *         InfixExpr
- *           PrefixExpr
- *             SimpleExpr(3)
- *               SimpleExpr1
- *                 SimpleExpr1Head
- *                   Literal
- *                     stringLiteral    <-- "value"
- */
-TEST(ScalaParser, Annotations) {
-  std::string filename = "Example.scala";
-  std::string buffer =
-    "@Api(Array(new ApiParam(k = \"value\")))"
-    "trait X";
-
-  ScalaParser parser(filename, buffer);
-  parser.parse();
-
-  auto topStat = parser.compUnit->topStatSeq->topStat;
-  ASSERT_EQ(TopStat::Opt::TMPL_DEF, topStat->opt);
-
-  ASSERT_EQ(1, topStat->annotations.size());
-  auto annotation = topStat->annotations[0];
-  ASSERT_EQ(STok::AT, annotation->tokAt->tok);
-  ASSERT_EQ("Api", annotation->simpleType->head->stableId->head->id->val);
-
-  ASSERT_EQ(1, annotation->argExprsVec.size());
-  auto argExprs1 = annotation->argExprsVec[0];
-  ASSERT_EQ(ArgumentExprs::Opt::EXPRS, argExprs1->opt);
-  ASSERT_EQ(STok::LPAREN, argExprs1->tokLParen->tok);
-  ASSERT_EQ(STok::RPAREN, argExprs1->tokRParen->tok);
-
-  auto expr1 = argExprs1->exprs->expr->expr1;
-  ASSERT_EQ(Expr1::Opt::POSTFIX_EXPR, expr1->opt);
-
-  auto simpleExpr =  expr1->postfixExpr->infixExpr->prefixExpr->simpleExpr;
-  ASSERT_EQ(SimpleExpr::Opt::SIMPLE_EXPR1, simpleExpr->opt);
-
-  {
-    // (new ApiParam ...
-    auto argExprs = simpleExpr->simpleExpr1->tail->argExprs;
-    auto expr1 = argExprs->exprs->expr->expr1;
-
-    auto simpleExpr = expr1->postfixExpr->infixExpr->prefixExpr->simpleExpr;
-    ASSERT_EQ(SimpleExpr::Opt::NEW, simpleExpr->opt);
-
-    {
-      ASSERT_EQ(1,
-        simpleExpr->classTmpl->classParents->constr->argExprsVec.size());
-      auto argExprs =
-        simpleExpr->classTmpl->classParents->constr->argExprsVec[0];
-
-      auto expr1 = argExprs->exprs->expr->expr1;
-      ASSERT_EQ(Expr1::Opt::ID_EQUALS_EXPR, expr1->opt);
-
-      ASSERT_EQ("k", expr1->id->val);
-      ASSERT_EQ(STok::EQUALS, expr1->tokEquals->tok);
-      ASSERT_EQ("\"value\"",
-       expr1->expr->expr1->postfixExpr->infixExpr->prefixExpr
-       ->simpleExpr->simpleExpr1->head->literal->strLit->val);
-    }
-  }
-}
-
-/**
- * class A { def x = 10 }
- *
- * CompilationUnit
- *   TopStatSeq
- *     TopStat
- *       TmplDef(1)
- *         'class'
- *         ClassDef
- *           id
- *           ClassTemplateOpt
- *             TemplateBody
- *               '{'
- *               TemplateStat(2)
- *                 Def*
- *               '}'
- *
- * Def(2)*
- *   'def'
- *   FunDef(1)
- *     FunSig
- *       id                                  <-- x
- *     '='
- *     Expr
- *       Expr1(10)
- *         PostfixExpr
- *           InfixExpr
- *             PrefixExpr
- *               SimpleExpr(3)
- *                 SimpleExpr1
- *                   SimpleExpr1Head
- *                     Literal(1)
- *                       integerLiteral      <-- 10
- */
-TEST(ScalaParser, Methods) {
-  std::string filename = "Example.scala";
-  std::string buffer = "class A { def x = 10 }";
-
-  ScalaParser parser(filename, buffer);
-  parser.parse();
-
-  auto tmplDef = parser.compUnit->topStatSeq->topStat->tmplDef;
-  ASSERT_EQ(TmplDef::Opt::CASE_CLASS, tmplDef->opt);
-  ASSERT_EQ(STok::CLASS, tmplDef->tokClass->tok);
-  ASSERT_EQ("A", tmplDef->classDef->id->val);
-
-  auto classTmplOpt = tmplDef->classDef->classTmplOpt;
-  ASSERT_EQ(ClassTemplateOpt::Opt::TEMPLATE_BODY, classTmplOpt->opt);
-
-  auto tmplStat = classTmplOpt->tmplBody->tmplStat;
-  ASSERT_EQ(TemplateStat::Opt::DEF, tmplStat->opt);
-
-  auto def = tmplStat->def;
-  ASSERT_EQ(Def::Opt::DEF, def->opt);
-  ASSERT_EQ(STok::DEF, def->tokDef->tok);
-
-  auto funDef = def->funDef;
-  ASSERT_EQ(FunDef::Opt::FUN_SIG_EQUALS_EXPR, funDef->opt);
-  ASSERT_EQ("x", funDef->funSig->id->val);
-  ASSERT_EQ(STok::EQUALS, funDef->tokEquals->tok);
-
-  auto simpleExpr = funDef->expr->expr1->postfixExpr
-    ->infixExpr->prefixExpr->simpleExpr;
-  ASSERT_EQ(SimpleExpr::Opt::SIMPLE_EXPR1, simpleExpr->opt);
-
-  auto literal = simpleExpr->simpleExpr1->head->literal;
-  ASSERT_EQ(Literal::Opt::INTEGER, literal->opt);
-  ASSERT_EQ("10", literal->intLit->val);
 }

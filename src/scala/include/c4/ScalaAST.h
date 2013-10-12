@@ -66,6 +66,10 @@ namespace c4s {
 typedef struct ASTBase LexId;
 typedef std::shared_ptr<LexId> spLexId;
 
+// Comments
+typedef struct ASTBase Comment;
+typedef std::shared_ptr<Comment> spComment;
+
 // Literals
 typedef struct ASTBase StringLiteral;
 typedef std::shared_ptr<StringLiteral> spStringLiteral;

@@ -1580,6 +1580,7 @@ void ScalaParser::parseTraitTemplateOpt(spTraitTemplateOpt &traitTemplateOpt) {
 
 void ScalaParser::parse() {
   buildParseTree();
+  comments = lexer->getComments();
 }
 
 void ScalaParser::buildParseTree() {

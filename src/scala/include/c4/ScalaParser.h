@@ -93,6 +93,7 @@ public:
 
   c4::spDiagnosis diag;
   spCompilationUnit compUnit;
+  std::vector<spComment> comments;
   ScalaLineIndentationMap indentMap;
 
   void parse();
