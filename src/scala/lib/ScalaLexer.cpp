@@ -163,7 +163,12 @@ STok ScalaLexer::getCommentOrDivToken() {
     spComment comment = spComment(new Comment);
     curTokStream << src->getChar(); // consume 2nd '/'
     char c;
-    while ((c = src->getChar()) && c != '\n') { curTokStream << c; }
+    while ((c = src->getChar())) {
+      curTokStream << c;
+      if ( c == '\n') {
+        break;
+      }
+    }
     curTokStr = curTokStream.str();
     comment->val = curTokStream.str();
     comment->ini = getCurTokenIni();

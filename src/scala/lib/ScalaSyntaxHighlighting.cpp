@@ -23,7 +23,7 @@ void ScalaSyntaxHighlighting::build() {
   // Comments
   for (auto comment : comments) {
     sh << "(c4s-sh-comment "
-      << (comment->ini) << " "
+      << (comment->ini + 1) << " "
       << (comment->end + 1) << ")";
   }
 
