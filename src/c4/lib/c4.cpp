@@ -72,7 +72,7 @@ int parseScalaFile(CmdInput &ci) {
   c4s::ScalaParser parser(ci.getFilename(), buffer);
   parser.parse();
 
-  c4s::ScalaEmacsOutput output(parser.compUnit, parser.diag, parser.indentMap);
+  c4s::ScalaEmacsOutput output(parser);
   output.build();
   std::cout << output.sh << std::endl
     << output.errors << std::endl

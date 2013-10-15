@@ -2,12 +2,14 @@
 #ifndef __SCALA_SYNTAX_HIGHLIGHTING_H__
 #define __SCALA_SYNTAX_HIGHLIGHTING_H__
 #include <sstream>
+#include <vector>
 #include "c4/ScalaAST.h"
 
 namespace c4s {
 
 class ScalaSyntaxHighlighting {
   spCompilationUnit &compUnit;
+  std::vector<spComment> &comments;
 
   void setKeyword(spTokenNode &tok);
   void setOp(spTokenNode &tok);
@@ -71,7 +73,9 @@ class ScalaSyntaxHighlighting {
   std::stringstream sh;
 public:
 
-  ScalaSyntaxHighlighting(spCompilationUnit &compUnit) : compUnit(compUnit) {}
+  ScalaSyntaxHighlighting(
+    spCompilationUnit &compUnit, std::vector<spComment> &comments)
+    : compUnit(compUnit), comments(comments) {}
   void build();
   std::string get();
 };

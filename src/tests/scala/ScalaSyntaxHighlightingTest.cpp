@@ -11,7 +11,7 @@ TEST(ScalaSyntaxHighlighting, HelloWorld) {
   ScalaParser parser(filename, buffer);
   parser.parse();
 
-  ScalaEmacsOutput output(parser.compUnit, parser.diag, parser.indentMap);
+  ScalaEmacsOutput output(parser);
   output.build();
 
   std::string expected =
@@ -42,7 +42,7 @@ TEST(ScalaSyntaxHighlighting, Trait) {
   ScalaParser parser(filename, buffer);
   parser.parse();
 
-  ScalaEmacsOutput output(parser.compUnit, parser.diag, parser.indentMap);
+  ScalaEmacsOutput output(parser);
   output.build();
 
   std::string expected =

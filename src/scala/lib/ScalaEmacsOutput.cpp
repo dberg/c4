@@ -6,7 +6,7 @@ namespace c4s {
  * Syntax highlighting, Errors and Indentation.
  */
 void ScalaEmacsOutput::build() {
-  auto shOutput = std::make_shared<ScalaSyntaxHighlighting>(compUnit);
+  auto shOutput = std::make_shared<ScalaSyntaxHighlighting>(compUnit, comments);
   shOutput->build();
   sh = shOutput->get();
 

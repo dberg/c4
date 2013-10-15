@@ -20,6 +20,13 @@ void ScalaSyntaxHighlighting::build() {
     setTopStatSeq(compUnit->topStatSeq);
   }
 
+  // Comments
+  for (auto comment : comments) {
+    sh << "(c4s-sh-comment "
+      << (comment->ini) << " "
+      << (comment->end + 1) << ")";
+  }
+
   sh << "]";
 }
 
