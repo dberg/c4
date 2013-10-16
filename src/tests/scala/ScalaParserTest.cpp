@@ -494,6 +494,111 @@ TEST(ScalaParser, Methods) {
 
 /**
  * -----------------------------------------------------------------------------
+ * import com.service
+ *
+ * object J {
+ *   def p(i: String): Js = Service.pJs(i)
+ * }
+ * -----------------------------------------------------------------------------
+ * CompilationUnit
+ *   TopStatSeq
+ *     TopStat(2)
+ *       Import
+ *         'import'
+ *         ImportExpr
+ *           QualId                                              <-- com.service
+ *     TopStat[0](1)
+ *       TmplDef(2)
+ *         'object'
+ *         ObjectDef
+ *           id                                                  <-- J
+ *           ClassTemplateOpt
+ *             TemplateBody
+ *               '{'
+ *               TemplateStat(2)
+ *                 Def(2)
+ *                   'def'
+ *                   FunDef(1)
+ *                     FunSig
+ *                       id                                      <-- p
+ *                       ParamClauses
+ *                         ParamClause
+ *                           '('
+ *                           Params
+ *                             id                                <-- i
+ *                             ':'
+ *                             ParamType
+ *                               InfixType
+ *                                 CompoundType
+ *                                   AnnotType
+ *                                     SimpleType
+ *                                       SimpleTypeHead
+ *                                         StableId
+ *                                           StableIdHead
+ *                                             id <-- String
+ *                           ')'
+ *                     ':'
+ *                     Type
+ *                     '='
+ *                     Expr(2)
+ *                       Expr1*
+ *               '}'
+ *
+ * Expr1*(10)                                                 <-- Service.pJs(i)
+ *   PostfixExpr
+ *     InfixExpr(1)
+ *       PrefixExpr
+ *         SimpleExpr(3)
+ *           SimpleExpr1
+ *             SimpleExpr1Head(2)
+ *               Path
+ *                 StableId
+ *                   StableIdHead
+ *                     id                                            <-- Service
+ *                   StableIdTail
+ *                     PeriodId                                      <-- .pJs
+ *             SimpleExpr1Tail
+ *               ArgumentExprs
+ *                 '('
+ *                 Exprs
+ *                   Expr(2)
+ *                     Expr1**
+ *                 ')'
+ *
+ * Expr1**(10)
+ *   InfixExpr(1)
+ *     PrefixExpr
+ *       SimpleExpr(3)
+ *         SimpleExpr1
+ *           SimpleExpr1Head(2)
+ *             Path
+ *               StableId
+ *                 StableIdHead(1)
+ *                   id                                              <-- i
+ */
+TEST(ScalaParser, ObjectDefs) {
+  std::string filename = "Example.scala";
+  std::string buffer =
+    "import com.service\n"
+    "\n"
+    "object J {\n"
+    "  def p(i: String): Js = Service.pJs(i)\n"
+    "}\n";
+
+  ScalaParser parser(filename, buffer);
+  parser.parse();
+
+  // import
+  ASSERT_EQ(TopStat::Opt::IMPORT, parser.compUnit->topStatSeq->topStat->opt);
+
+  // object
+  ASSERT_EQ(1, parser.compUnit->topStatSeq->pairs.size());
+  auto topStat = parser.compUnit->topStatSeq->pairs[0].second;
+  ASSERT_EQ(TopStat::Opt::TMPL_DEF, topStat->opt);
+}
+
+/**
+ * -----------------------------------------------------------------------------
  * package test
  * import com.company.utils._
  * trait X extends Y with Z
