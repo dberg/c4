@@ -86,11 +86,6 @@ Path ::= StableId
 IdPeriod ::= id '.'
 PeriodId ::= '.' id
 
-StableId ::= id
-           | StableId PeriodId
-           | [IdPeriod] 'this' PeriodId
-           | [IdPeriod] 'super' [ClassQualifier] PeriodId
-
 StableId ::= StableIdHead StableIdTail | StableIdHead
 
 StableIdHead ::= id
