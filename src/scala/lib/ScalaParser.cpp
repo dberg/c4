@@ -456,6 +456,23 @@ void ScalaParser::parseConstr(spConstr &constr) {
 }
 
 /**
+ * CompoundType ::= AnnotType {'with' AnnotType} [Refinement]
+ *                | Refinement
+ */
+void ScalaParser::parseCompoundType(spCompoundType &compoundType) {
+  compoundType->opt = CompoundType::Opt::ANNOT_TYPE;
+  compoundType->annotType = spAnnotType(new AnnotType);
+  parseAnnotType(compoundType->annotType);
+  if (compoundType->annotType->err) {
+    compoundType->addErr(-1);
+    return;
+  }
+
+  // TODO: {'with' AnnotType} [Refinement]
+  // TODO: Refinement
+}
+
+/**
  * Def ::= PatVarDef
  *       | 'def' FunDef
  *       | 'type' {nl} TypeDef
@@ -504,7 +521,18 @@ void ScalaParser::parseFunDef(spFunDef &funDef) {
       return;
     }
 
-    // TODO: [':' Type]
+    // [':' Type]
+    if (lexer->getCurToken() == STok::COLON) {
+      funDef->tokColon = lexer->getCurTokenNode();
+      lexer->getNextToken(); // consume ':'
+
+      funDef->type = spType(new Type);
+      parseType(funDef->type);
+      if (funDef->type->err) {
+        funDef->addErr(-1);
+        return;
+      }
+    }
 
     if (lexer->getCurToken() != STok::EQUALS) {
       funDef->addErr(c4::ERR_EXP_OP_EQUALS);
@@ -540,7 +568,15 @@ void ScalaParser::parseFunSig(spFunSig &funSig) {
     funSig->addErr(-1);
     return;
   }
-  // TODO: [FunTypeParamClause] ParamClauses
+
+  // TODO: [FunTypeParamClause]
+
+  // ParamClauses
+  funSig->paramClauses = spParamClauses(new ParamClauses);
+  parseParamClauses(funSig->paramClauses);
+  if (funSig->paramClauses->err) {
+    funSig->addErr(-1);
+  }
 }
 
 /**
@@ -804,6 +840,20 @@ void ScalaParser::parseInfixExpr(spInfixExpr &infixExpr) {
 }
 
 /**
+ * InfixType ::= CompoundType {id [nl] CompoundType}
+ */
+void ScalaParser::parseInfixType(spInfixType &infixType) {
+  infixType->compoundType = spCompoundType(new CompoundType);
+  parseCompoundType(infixType->compoundType);
+  if (infixType->compoundType->err) {
+    infixType->addErr(-1);
+    return;
+  }
+
+  // TODO: {id [nl] CompoundType}
+}
+
+/**
  * Literal ::= ['-'] integerLiteral
  *           | ['-'] floatingPointLiteral
  *           | booleanLiteral
@@ -904,6 +954,136 @@ void ScalaParser::parsePackaging(spPackaging &packaging) {
   }
 
   // TODO: [nl] '{' TopStatSeq '}'
+}
+
+/**
+ * Param ::= {Annotation} id [':' ParamType] ['=' Expr]
+ */
+void ScalaParser::parseParam(spParam &param) {
+  // TODO: {Annotation}
+
+  // id
+  param->id = parseLexId();
+  lexer->getNextToken(); // consume id
+  if (param->id->err) {
+    param->addErr(-1);
+    return;
+  }
+
+  // [':' ParamType]
+  if (lexer->getCurToken() == STok::COLON) {
+    param->tokColon = lexer->getCurTokenNode();
+    lexer->getNextToken(); // consume ':'
+
+    param->paramType = spParamType(new ParamType);
+    parseParamType(param->paramType);
+    if (param->paramType->err) {
+      param->addErr(-1);
+      return;
+    }
+  }
+
+  // ['=' Expr]
+}
+
+/**
+ * Params ::= Param {',' Param}
+ */
+void ScalaParser::parseParams(spParams &params) {
+  // Param
+  params->param = spParam(new Param);
+  parseParam(params->param);
+  if (params->param->err) {
+    params->addErr(-1);
+    return;
+  }
+
+  // {',' Param}
+  State state;
+  while (lexer->getCurToken() != STok::COMMA) {
+    saveState(state);
+
+    auto comma = lexer->getCurTokenNode();
+    lexer->getNextToken(); // consume ','
+
+    auto param = spParam(new Param);
+    parseParam(param);
+    if (param->err) {
+      restoreState(state);
+      return;
+    }
+
+    params->pairs.push_back(std::make_pair(comma, param));
+  }
+}
+
+/**
+ * ParamClause ::= [nl] '(' [Params] ')'
+ */
+void ScalaParser::parseParamClause(spParamClause &paramClause) {
+  // [nl] is ignored by the lexer
+  if (lexer->getCurToken() != STok::LPAREN) {
+    paramClause->addErr(c4::ERR_EXP_LPAREN);
+    return;
+  }
+
+  paramClause->tokLParen = lexer->getCurTokenNode();
+  lexer->getNextToken(); // consume '('
+
+  paramClause->params = spParams(new Params);
+  parseParams(paramClause->params);
+  if (paramClause->params->err) {
+    paramClause->addErr(-1);
+    return;
+  }
+
+  if (lexer->getCurToken() != STok::RPAREN) {
+    paramClause->addErr(c4::ERR_EXP_RPAREN);
+    return;
+  }
+
+  paramClause->tokRParen = lexer->getCurTokenNode();
+  lexer->getNextToken(); // consume ')'
+}
+
+/**
+ * ParamClauses ::= {ParamClause} [[nl] '(' 'implicit' Params ')']
+ */
+void ScalaParser::parseParamClauses(spParamClauses &paramClauses) {
+  // {ParamClause}
+  State state;
+  while (true) {
+    saveState(state);
+    auto paramClause = spParamClause(new ParamClause);
+    parseParamClause(paramClause);
+    if (paramClause->err) {
+      restoreState(state);
+      break;
+    }
+
+    paramClauses->paramClauses.push_back(paramClause);
+  }
+
+  // TODO: [[nl] '(' 'implicit' Params ')']
+}
+
+/**
+ * ParamType ::= Type
+ *             | '=>' Type
+ *             | Type '*'
+ */
+void ScalaParser::parseParamType(spParamType &paramType) {
+  // Type
+  paramType->opt = ParamType::Opt::TYPE;
+  paramType->type = spType(new Type);
+  parseType(paramType->type);
+  if (paramType->type->err) {
+    paramType->addErr(-1);
+    return;
+  }
+
+  // TODO: '=>' Type
+  // TODO: Type '*'
 }
 
 /**
@@ -1368,7 +1548,7 @@ void ScalaParser::parseTmplDef(spTmplDef &tmplDef) {
     tmplDef->opt = TmplDef::Opt::CASE_OBJECT;
 
     tmplDef->tokObject = lexer->getCurTokenNode();
-    lexer->getNextToken(); // consume 'case'
+    lexer->getNextToken(); // consume 'object'
 
     tmplDef->objectDef = spObjectDef(new ObjectDef);
     parseObjectDef(tmplDef->objectDef);
@@ -1576,6 +1756,25 @@ void ScalaParser::parseTraitTemplateOpt(spTraitTemplateOpt &traitTemplateOpt) {
   if (traitTemplateOpt->templateBody->err) {
     traitTemplateOpt->addErr(-1);
   }
+}
+
+/**
+ * Type ::= FunctionArgTypes '=>' Type
+ *        | InfixType [ExistentialClause]
+ */
+void ScalaParser::parseType(spType &type) {
+  // TODO: FunctionArgTypes '=>' Type
+
+  // InfixType [ExistentialClause]
+  type->opt = Type::Opt::INFIX_TYPE;
+  type->infixType = spInfixType(new InfixType);
+  parseInfixType(type->infixType);
+  if (type->infixType->err) {
+    type->addErr(-1);
+    return;
+  }
+
+  // TODO: [ExistentialClause]
 }
 
 void ScalaParser::parse() {

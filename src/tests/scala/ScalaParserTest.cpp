@@ -522,23 +522,33 @@ TEST(ScalaParser, Methods) {
  *                     FunSig
  *                       id                                      <-- p
  *                       ParamClauses
- *                         ParamClause
+ *                         ParamClause[0]
  *                           '('
  *                           Params
- *                             id                                <-- i
- *                             ':'
- *                             ParamType
- *                               InfixType
- *                                 CompoundType
- *                                   AnnotType
- *                                     SimpleType
- *                                       SimpleTypeHead
- *                                         StableId
- *                                           StableIdHead
- *                                             id <-- String
+ *                             Param
+ *                               id                              <-- i
+ *                               ':'
+ *                               ParamType
+ *                                 Type(2)
+ *                                   InfixType
+ *                                     CompoundType
+ *                                       AnnotType
+ *                                         SimpleType
+ *                                           SimpleTypeHead
+ *                                             StableId
+ *                                               StableIdHead
+ *                                                 id                <-- String
  *                           ')'
  *                     ':'
- *                     Type
+ *                     Type(2)
+ *                       InfixType
+ *                         CompoundType
+ *                           AnnotType
+ *                             SimpleType
+ *                               SimpleTypeHead
+ *                                 StableId
+ *                                   StableIdHead
+ *                                     id                                <-- Js
  *                     '='
  *                     Expr(2)
  *                       Expr1*

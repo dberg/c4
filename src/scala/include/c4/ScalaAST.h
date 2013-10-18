@@ -89,6 +89,7 @@ typedef std::shared_ptr<struct Block> spBlock;
 typedef std::shared_ptr<struct BlockExpr> spBlockExpr;
 typedef std::shared_ptr<struct BlockStat> spBlockStat;
 typedef std::shared_ptr<struct CompilationUnit> spCompilationUnit;
+typedef std::shared_ptr<struct CompoundType> spCompoundType;
 typedef std::shared_ptr<struct ClassDef> spClassDef;
 typedef std::shared_ptr<struct ClassParents> spClassParents;
 typedef std::shared_ptr<struct ClassTemplate> spClassTemplate;
@@ -105,9 +106,15 @@ typedef std::shared_ptr<struct ImportExpr> spImportExpr;
 typedef std::shared_ptr<struct ImportSelector> spImportSelector;
 typedef std::shared_ptr<struct ImportSelectors> spImportSelectors;
 typedef std::shared_ptr<struct InfixExpr> spInfixExpr;
+typedef std::shared_ptr<struct InfixType> spInfixType;
 typedef std::shared_ptr<struct Literal> spLiteral;
 typedef std::shared_ptr<struct ObjectDef> spObjectDef;
 typedef std::shared_ptr<struct Packaging> spPackaging;
+typedef std::shared_ptr<struct Param> spParam;
+typedef std::shared_ptr<struct Params> spParams;
+typedef std::shared_ptr<struct ParamClause> spParamClause;
+typedef std::shared_ptr<struct ParamClauses> spParamClauses;
+typedef std::shared_ptr<struct ParamType> spParamType;
 typedef std::shared_ptr<struct Path> spPath;
 typedef std::shared_ptr<struct PrefixExpr> spPrefixExpr;
 typedef std::shared_ptr<struct PostfixExpr> spPostfixExpr;
@@ -134,6 +141,8 @@ typedef std::shared_ptr<struct TraitDef> spTraitDef;
 typedef std::shared_ptr<struct TraitParents> spTraitParents;
 typedef std::shared_ptr<struct TraitTemplate> spTraitTemplate;
 typedef std::shared_ptr<struct TraitTemplateOpt> spTraitTemplateOpt;
+typedef std::shared_ptr<struct Type> spType;
+
 
 // ----------------------------------------------------------------------------
 // Helper nodes
@@ -271,6 +280,27 @@ struct ArgumentExprs : ASTBase {
 struct CompilationUnit : ASTBase {
   std::vector<std::tuple<spTokenNode, spQualId, spSemi>> tuples;
   spTopStatSeq topStatSeq;
+};
+
+/**
+ * CompoundType ::= AnnotType {'with' AnnotType} [Refinement]
+ *                | Refinement
+ */
+struct CompoundType : ASTBase {
+  enum class Opt {
+    UNDEFINED,
+    ANNOT_TYPE,
+    REFINEMENT,
+  };
+
+  Opt opt;
+
+  // TODO: AnnotType {'with' AnnotType} [Refinement]
+  spAnnotType annotType;
+
+  // TODO: Refinement
+
+  CompoundType() : opt(Opt::UNDEFINED) {}
 };
 
 /**
@@ -462,7 +492,7 @@ struct FunDef : ASTBase {
   // FunSig [':' Type] '=' Expr
   spFunSig funSig;
   spTokenNode tokColon;
-  // TODO: spType type;
+  spType type;
   spTokenNode tokEquals;
   spExpr expr;
 
@@ -480,7 +510,7 @@ struct FunDef : ASTBase {
 struct FunSig : ASTBase {
   spLexId id;
   // TODO: [FunTypeParamClause]
-  // TODO: spParamClauses paramClauses;
+  spParamClauses paramClauses;
 };
 
 /**
@@ -549,6 +579,14 @@ struct InfixExpr : ASTBase {
 };
 
 /**
+ * InfixType ::= CompoundType {id [nl] CompoundType}
+ */
+struct InfixType : ASTBase {
+  spCompoundType compoundType;
+  // TODO: {id [nl] CompoundType}
+};
+
+/**
  * Literal ::= ['-'] integerLiteral
  *           | ['-'] floatingPointLiteral
  *           | booleanLiteral
@@ -607,6 +645,68 @@ struct ObjectDef : ASTBase {
 struct Packaging : ASTBase {
   spTokenNode tokPackage;
   spQualId qualId;
+};
+
+/**
+ * Param ::= {Annotation} id [':' ParamType] ['=' Expr]
+ */
+struct Param : ASTBase {
+  std::vector<spAnnotation> annotations;
+  spLexId id;
+  spTokenNode tokColon;
+  spParamType paramType;
+  spTokenNode tokEquals;
+  spExpr expr;
+};
+
+/**
+ * Params ::= Param {',' Param}
+ */
+struct Params : ASTBase {
+  spParam param;
+  std::vector<std::pair<spTokenNode, spParam>> pairs;
+};
+
+/**
+ * ParamClause ::= [nl] '(' [Params] ')'
+ */
+struct ParamClause : ASTBase {
+  spTokenNode tokLParen;
+  spParams params;
+  spTokenNode tokRParen;
+};
+
+/**
+ * ParamClauses ::= {ParamClause} [[nl] '(' 'implicit' Params ')']
+ */
+struct ParamClauses : ASTBase {
+  std::vector<spParamClause> paramClauses;
+
+  spTokenNode tokLParen;
+  spTokenNode tokImplicit;
+  spParams params;
+  spTokenNode tokRParen;
+};
+
+/**
+ * ParamType ::= Type
+ *             | '=>' Type
+ *             | Type '*'
+ */
+struct ParamType : ASTBase {
+  enum class Opt {
+    UNDEFINED,
+    TYPE,
+    ARROW_TYPE,
+    TYPE_STAR,
+  };
+
+  Opt opt;
+  spType type;
+  spTokenNode tokArrow;
+  spTokenNode tokStar;
+
+  ParamType() : opt(Opt::UNDEFINED) {}
 };
 
 /**
@@ -998,6 +1098,28 @@ struct TraitTemplateOpt : ASTBase {
 
   TraitTemplateOpt() : opt(Opt::UNDEFINED) {}
 };
+
+/**
+ * Type ::= FunctionArgTypes '=>' Type
+ *        | InfixType [ExistentialClause]
+ */
+struct Type : ASTBase {
+  enum class Opt {
+    UNDEFINED,
+    FUNC_ARG_TYPES,
+    INFIX_TYPE,
+  };
+
+  Opt opt;
+
+  // TODO: FunctionArgTypes '=>' Type
+
+  spInfixType infixType;
+  // TODO: [ExistentialClause]
+
+  Type() : opt(Opt::UNDEFINED) {}
+};
+
 
 } // namespace
 

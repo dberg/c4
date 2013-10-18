@@ -117,7 +117,7 @@ STok ScalaLexer::getToken() {
   //if ('<' == c) return getLessThenToken();
   if (',' == c) { curTokStream << c; return STok::COMMA; }
   if (';' == c) { curTokStream << c; return STok::SEMICOLON; }
-  //if (':' == c) return TOK_OP_COLON;
+  if (':' == c) { curTokStream << c; return STok::COLON; }
   //if ('*' == c) return getMulToken();
   //if ('~' == c) return TOK_OP_TILDE;
   //if ('!' == c) return getExclamationToken();

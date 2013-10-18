@@ -36,6 +36,7 @@ class ScalaParser {
   void parseClassTemplateOpt(spClassTemplateOpt &classTmplOpt);
   void parseCompilationUnit();
   void parseConstr(spConstr &constr);
+  void parseCompoundType(spCompoundType &compoundType);
   void parseDef(spDef &def);
   void parseFunDef(spFunDef &funDef);
   void parseFunSig(spFunSig &funSig);
@@ -47,9 +48,15 @@ class ScalaParser {
   void parseImportSelector(spImportSelector &importSelector);
   void parseImportSelectors(spImportSelectors &importSelectors);
   void parseInfixExpr(spInfixExpr &infixExpr);
+  void parseInfixType(spInfixType &infixType);
   void parseLiteral(spLiteral &literal);
   void parseObjectDef(spObjectDef &objectDef);
   void parsePackaging(spPackaging &packaging);
+  void parseParam(spParam &param);
+  void parseParams(spParams &params);
+  void parseParamClause(spParamClause &paramClause);
+  void parseParamClauses(spParamClauses &paramClauses);
+  void parseParamType(spParamType &paramType);
   void parsePath(spPath &path);
   void parsePeriodId(spPeriodId &periodId);
   void parsePrefixExpr(spPrefixExpr &prefixExpr);
@@ -75,6 +82,7 @@ class ScalaParser {
   void parseTraitParents(spTraitParents &parents);
   void parseTraitTemplate(spTraitTemplate &traitTemplate);
   void parseTraitTemplateOpt(spTraitTemplateOpt &traitTemplateOpt);
+  void parseType(spType &type);
 
   // helper methods
   int addErr(int err);
