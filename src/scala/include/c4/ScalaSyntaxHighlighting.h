@@ -25,6 +25,7 @@ class ScalaSyntaxHighlighting {
   void setClassParents(spClassParents &classParents);
   void setClassTemplate(spClassTemplate &classTmpl);
   void setClassTemplateOpt(spClassTemplateOpt &classTmplOpt);
+  void setCompoundType(spCompoundType &compoundType);
   void setConstr(spConstr &constr);
   void setDef(spDef &def);
   void setExpr(spExpr &expr);
@@ -36,11 +37,17 @@ class ScalaSyntaxHighlighting {
   void setImport(spImport &import);
   void setImportExpr(spImportExpr &importExpr);
   void setInfixExpr(spInfixExpr &infixExpr);
+  void setInfixType(spInfixType &infixType);
   void setIntegerLiteral(spIntegerLiteral &intLit);
   void setLexId(spLexId &id);
   void setLiteral(spLiteral &literal);
   void setObjectDef(spObjectDef &objectDef);
   void setPackaging(spPackaging &packing);
+  void setParam(spParam &param);
+  void setParams(spParams &params);
+  void setParamClause(spParamClause &paramClause);
+  void setParamClauses(spParamClauses &paramClauses);
+  void setParamType(spParamType &paramType);
   void setPath(spPath &path);
   void setPeriodId(spPeriodId &periodId);
   void setPostfixExpr(spPostfixExpr &postfixExpr);
@@ -67,7 +74,7 @@ class ScalaSyntaxHighlighting {
   void setTraitParents(spTraitParents &parents);
   void setTraitTemplate(spTraitTemplate &traitTemplate);
   void setTraitTemplateOpt(spTraitTemplateOpt &traitTemplateOpt);
-
+  void setType(spType &type);
 
   // Emacs output
   std::stringstream sh;

@@ -221,6 +221,19 @@ void ScalaSyntaxHighlighting::setClassTemplateOpt(
   }
 }
 
+void ScalaSyntaxHighlighting::setCompoundType(spCompoundType &compoundType) {
+  if (compoundType->opt == CompoundType::Opt::ANNOT_TYPE) {
+    if (compoundType->annotType) { setAnnotType(compoundType->annotType); }
+    // TODO: {'with' AnnotType} [Refinement]
+    return;
+  }
+
+  if (compoundType->opt == CompoundType::Opt::REFINEMENT) {
+    // TODO:
+    return;
+  }
+}
+
 void ScalaSyntaxHighlighting::setConstr(spConstr &constr) {
   if (constr->annotType) {
     setAnnotType(constr->annotType);
@@ -356,7 +369,7 @@ void ScalaSyntaxHighlighting::setFunDef(spFunDef &funDef) {
     // FunSig [':' Type] '=' Expr
     if (funDef->funSig) { setFunSig(funDef->funSig); }
     if (funDef->tokColon) { setOp(funDef->tokColon); }
-    // TODO: Type
+    if (funDef->type) { setType(funDef->type); }
     if (funDef->tokEquals) { setOp(funDef->tokEquals); }
     if (funDef->expr) { setExpr(funDef->expr); }
   }
@@ -374,7 +387,10 @@ void ScalaSyntaxHighlighting::setFunDef(spFunDef &funDef) {
 void ScalaSyntaxHighlighting::setFunSig(spFunSig &funSig) {
   if (funSig->id) { setLexId(funSig->id); }
   // TODO: [FunTypeParamClause]
-  // TODO: spParamClauses paramClauses;
+
+  if (funSig->paramClauses) {
+    setParamClauses(funSig->paramClauses);
+  }
 }
 
 void ScalaSyntaxHighlighting::setIdPeriod(spIdPeriod &idPeriod) {
@@ -427,6 +443,14 @@ void ScalaSyntaxHighlighting::setInfixExpr(spInfixExpr &infixExpr) {
     // TODO:
     return;
   }
+}
+
+void ScalaSyntaxHighlighting::setInfixType(spInfixType &infixType) {
+  if (infixType->compoundType) {
+    setCompoundType(infixType->compoundType);
+  }
+
+  // TODO: {id [nl] CompoundType}
 }
 
 void ScalaSyntaxHighlighting::setIntegerLiteral(spIntegerLiteral &intLit) {
@@ -495,6 +519,58 @@ void ScalaSyntaxHighlighting::setPackaging(spPackaging &packing) {
 
   if (packing->qualId) {
     setQualId(packing->qualId);
+  }
+}
+
+void ScalaSyntaxHighlighting::setParam(spParam &param) {
+  for (auto annotation : param->annotations) {
+    setAnnotation(annotation);
+  }
+
+  if (param->id) { setLexId(param->id); }
+  if (param->tokColon) { setOp(param->tokColon); }
+  if (param->paramType) { setParamType(param->paramType); }
+  if (param->tokEquals) { setOp(param->tokEquals); }
+  if (param->expr) { setExpr(param->expr); }
+}
+
+void ScalaSyntaxHighlighting::setParams(spParams &params) {
+  if (params->param) { setParam(params->param); }
+
+  for (auto pair : params->pairs) {
+    setOp(pair.first);
+    setParam(pair.second);
+  }
+}
+
+void ScalaSyntaxHighlighting::setParamClause(spParamClause &paramClause) {
+  if (paramClause->tokLParen) { setOp(paramClause->tokLParen); }
+  if (paramClause->params) { setParams(paramClause->params); }
+  if (paramClause->tokRParen) { setOp(paramClause->tokRParen); }
+}
+
+void ScalaSyntaxHighlighting::setParamClauses(spParamClauses &paramClauses) {
+  for (auto paramClause : paramClauses->paramClauses) {
+    setParamClause(paramClause);
+  }
+
+  // TODO: '(' 'implicit' Params ')']
+}
+
+void ScalaSyntaxHighlighting::setParamType(spParamType &paramType) {
+  if (paramType->opt == ParamType::Opt::TYPE) {
+    if (paramType->type) { setType(paramType->type); }
+    return;
+  }
+
+  if (paramType->opt == ParamType::Opt::ARROW_TYPE) {
+    // TODO:
+    return;
+  }
+
+  if (paramType->opt == ParamType::Opt::TYPE_STAR) {
+    // TODO:
+    return;
   }
 }
 
@@ -919,6 +995,19 @@ void ScalaSyntaxHighlighting::setTraitTemplateOpt(
     if (traitTemplateOpt->templateBody) {
       setTemplateBody(traitTemplateOpt->templateBody);
     }
+  }
+}
+
+void ScalaSyntaxHighlighting::setType(spType &type) {
+  if (type->opt == Type::Opt::FUNC_ARG_TYPES) {
+    // TODO:
+    return;
+  }
+
+  if (type->opt == Type::Opt::INFIX_TYPE) {
+    if (type->infixType) { setInfixType(type->infixType); }
+    // TODO: [ExistentialClause]
+    return;
   }
 }
 
