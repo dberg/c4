@@ -83,6 +83,9 @@ class ScalaParser {
   void parseTraitTemplate(spTraitTemplate &traitTemplate);
   void parseTraitTemplateOpt(spTraitTemplateOpt &traitTemplateOpt);
   void parseType(spType &type);
+  void parseTypeParam(spTypeParam &typeParam);
+  void parseTypeParamClause(spTypeParamClause &typeParamClause);
+  void parseVariantTypeParam(spVariantTypeParam &varTypeParam);
 
   // helper methods
   int addErr(int err);

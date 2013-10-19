@@ -142,7 +142,9 @@ typedef std::shared_ptr<struct TraitParents> spTraitParents;
 typedef std::shared_ptr<struct TraitTemplate> spTraitTemplate;
 typedef std::shared_ptr<struct TraitTemplateOpt> spTraitTemplateOpt;
 typedef std::shared_ptr<struct Type> spType;
-
+typedef std::shared_ptr<struct TypeParam> spTypeParam;
+typedef std::shared_ptr<struct TypeParamClause> spTypeParamClause;
+typedef std::shared_ptr<struct VariantTypeParam> spVariantTypeParam;
 
 // ----------------------------------------------------------------------------
 // Helper nodes
@@ -1059,7 +1061,7 @@ struct TopStatSeq : ASTBase {
  */
 struct TraitDef : ASTBase {
   spLexId id;
-  // spTypeParamClause typeParamClause
+  spTypeParamClause typeParamClause;
   spTraitTemplateOpt traitTemplateOpt;
 };
 
@@ -1120,6 +1122,37 @@ struct Type : ASTBase {
   Type() : opt(Opt::UNDEFINED) {}
 };
 
+/**
+ * TypeParam ::= (id | '_') [TypeParamClause] ['>:' Type] ['<:' Type]
+ *               {'<%' Type} {':' Type}
+ */
+struct TypeParam : ASTBase {
+  spLexId id;
+  spTokenNode tokUnderscore;
+  spTypeParamClause typeParamClause;
+  // TODO: ['>:' Type] ['<:' Type]
+  // TODO: {'<%' Type} {':' Type}
+};
+
+/**
+ * TypeParamClause ::= '[' VariantTypeParam {',' VariantTypeParam} ']'
+ */
+struct TypeParamClause : ASTBase {
+  spTokenNode tokLBracket;
+  spTokenNode tokRBracket;
+  spVariantTypeParam varTypeParam;
+  std::vector<std::pair<spTokenNode, spVariantTypeParam>> pairs;
+};
+
+/**
+ * VariantTypeParam ::= {Annotation} ['+' | '-'] TypeParam
+ */
+struct VariantTypeParam : ASTBase {
+  std::vector<spAnnotation> annotations;
+  spTokenNode tokPlus;
+  spTokenNode tokMinus;
+  spTypeParam typeParam;
+};
 
 } // namespace
 

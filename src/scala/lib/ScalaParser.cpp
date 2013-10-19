@@ -1656,7 +1656,15 @@ void ScalaParser::parseTraitDef(spTraitDef &traitDef) {
     return;
   }
 
-  // TODO: [TypeParamClause]
+  // [TypeParamClause]
+  if (lexer->getCurToken() == STok::LBRACKET) {
+    traitDef->typeParamClause = spTypeParamClause(new TypeParamClause);
+    parseTypeParamClause(traitDef->typeParamClause);
+    if (traitDef->typeParamClause->err) {
+      traitDef->addErr(-1);
+      return;
+    }
+  }
 
   // TraitTemplateOpt
   traitDef->traitTemplateOpt = spTraitTemplateOpt(new TraitTemplateOpt);
@@ -1775,6 +1783,111 @@ void ScalaParser::parseType(spType &type) {
   }
 
   // TODO: [ExistentialClause]
+}
+
+/**
+ * TypeParam ::= (id | '_') [TypeParamClause] ['>:' Type] ['<:' Type]
+ *               {'<%' Type} {':' Type}
+ */
+void ScalaParser::parseTypeParam(spTypeParam &typeParam) {
+  // (id | '_')
+  if (lexer->getCurToken() == STok::UNDERSCORE) {
+    typeParam->tokUnderscore = lexer->getCurTokenNode();
+    lexer->getNextToken(); // consume '_'
+  } else {
+    typeParam->id = parseLexId();
+    lexer->getNextToken();
+
+    if (typeParam->id->err) {
+      typeParam->id->addErr(1);
+      return;
+    }
+  }
+
+  // TODO: [TypeParamClause]
+  // TODO: ['>:' Type] ['<:' Type]
+  // TODO: {'<%' Type} {':' Type}
+}
+
+/**
+ * TypeParamClause ::= '[' VariantTypeParam {',' VariantTypeParam} ']'
+ */
+void ScalaParser::parseTypeParamClause(spTypeParamClause &typeParamClause) {
+  // '['
+  if (lexer->getCurToken() != STok::LBRACKET) {
+    typeParamClause->addErr(c4::ERR_EXP_LBRACKET);
+    return;
+  }
+
+  typeParamClause->tokLBracket = lexer->getCurTokenNode();
+  lexer->getNextToken(); // consume '['
+
+  // VariantTypeParam
+  typeParamClause->varTypeParam = spVariantTypeParam(new VariantTypeParam);
+  parseVariantTypeParam(typeParamClause->varTypeParam);
+  if (typeParamClause->varTypeParam->err) {
+    typeParamClause->addErr(-1);
+    return;
+  }
+
+  // {',' VariantTypeParam}
+  State state;
+  while (lexer->getCurToken() == STok::COMMA) {
+    saveState(state);
+
+    auto comma = lexer->getCurTokenNode();
+    lexer->getNextToken(); // consume ','
+
+    auto varTypeParam = spVariantTypeParam(new VariantTypeParam);
+    parseVariantTypeParam(varTypeParam);
+    if (varTypeParam->err) {
+      restoreState(state);
+      break;
+    }
+
+    typeParamClause->pairs.push_back(std::make_pair(comma, varTypeParam));
+  }
+
+  // ']'
+  if (lexer->getCurToken() != STok::RBRACKET) {
+    typeParamClause->addErr(c4::ERR_EXP_RBRACKET);
+    return;
+  }
+
+  typeParamClause->tokRBracket = lexer->getCurTokenNode();
+  lexer->getNextToken(); // consume ']'
+}
+
+/**
+ * VariantTypeParam ::= {Annotation} ['+' | '-'] TypeParam
+ */
+void ScalaParser::parseVariantTypeParam(spVariantTypeParam &varTypeParam) {
+  // {Annotation}
+  while (lexer->getCurToken() == STok::AT) {
+    auto annotation = spAnnotation(new Annotation);
+    parseAnnotation(annotation);
+    if (annotation->err) {
+      break;
+    }
+
+    varTypeParam->annotations.push_back(annotation);
+  }
+
+  // ['+' | '-']
+  if (lexer->getCurToken() == STok::PLUS) {
+    varTypeParam->tokPlus = lexer->getCurTokenNode();
+    lexer->getNextToken(); // consume '+'
+  } else if (lexer->getCurToken() == STok::MINUS) {
+    varTypeParam->tokMinus = lexer->getCurTokenNode();
+    lexer->getNextToken(); // consume '-'
+  }
+
+  // TypeParam
+  varTypeParam->typeParam = spTypeParam(new TypeParam);
+  parseTypeParam(varTypeParam->typeParam);
+  if (varTypeParam->typeParam->err) {
+    varTypeParam->addErr(-1);
+  }
 }
 
 void ScalaParser::parse() {

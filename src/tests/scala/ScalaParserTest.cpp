@@ -738,3 +738,95 @@ TEST(ScalaParser, Trait) {
     }
   }
 }
+
+/**
+ * -----------------------------------------------------------------------------
+ * import scala.annotation.implicitNotFound
+ *
+ * @implicitNotFound("message")
+ * trait F[A] extends W[A] with R[A]
+ * -----------------------------------------------------------------------------
+ * CompilationUnit
+ *   TopStatSeq
+ *     TopStat(2)
+ *       Import
+ *     TopStat[0](1)
+ *       Annotation
+ *       TmplDef(3)
+ *         'trait'
+ *         TraitDef
+ *           id                                                  <-- F
+ *           TypeParamClause                                     <-- [A]
+ *             '['
+ *               VariantTypeParam
+ *                 TypeParam
+ *                   id                                          <-- A
+ *             ']'
+ *           TraitTemplateOpt(1)
+ *             'extends'
+ *             TraitTemplate
+ *               TraitParents
+ *                 AnnotType
+ *                   SimpleType
+ *                     SimpleTypeHead
+ *                       StableId
+ *                         StableIdHead
+ *                           id                                  <-- W
+ *                     SimpleTypeHTails
+ *                       SimpleTypeHTail
+ *                         TypeArgs
+ *                           '['
+ *                           Types
+ *                             Type(2)
+ *                               InfixType
+ *                                 CompoundType
+ *                                   AnnotType
+ *                                     SimpleType
+ *                                       SimpleTypeHead
+ *                                         StableId
+ *                                           StableIdHead
+ *                                             id                <-- A
+ *
+ *                           '['
+ *
+ *                 'with'
+ *                 AnnotType
+ *                   SimpleType
+ *                     SimpleTypeHead
+ *                       StableId
+ *                         StableIdHead
+ *                           id                                  <-- R
+ *                     SimpleTypeTails
+ *                       SimpleTypeTail
+ *                         TypeArgs
+ *                           '['
+ *                           Types
+ *                             Type(2)
+ *                               InfixType
+ *                                 CompoundType
+ *                                   AnnotType
+ *                                     SimpleType
+ *                                       SimpleTypeHead
+ *                                         StableId
+ *                                           StableIdHead
+ *                                             id                <-- A
+ *                           ']'
+ */
+TEST(ScalaParser, VariantTypeParam) {
+  std::string filename = "Example.scala";
+  std::string buffer =
+    "import scala.annotation.implicitNotFound\n\n"
+    "@implicitNotFound(\"message\")\n"
+    "trait F[A] extends W[A] with R[A]\n";
+
+  ScalaParser parser(filename, buffer);
+  parser.parse();
+
+  // import scala.annotation.implicitNotFound
+  ASSERT_EQ(TopStat::Opt::IMPORT, parser.compUnit->topStatSeq->topStat->opt);
+
+  // @implicitNotFound("message")
+  // trait F[A] extends W[A] with R[A]
+  ASSERT_EQ(1, parser.compUnit->topStatSeq->pairs.size());
+  auto topStat = parser.compUnit->topStatSeq->pairs[0].second;
+}
