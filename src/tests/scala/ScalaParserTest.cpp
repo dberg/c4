@@ -745,6 +745,7 @@ TEST(ScalaParser, Trait) {
  *
  * @implicitNotFound("message")
  * trait F[A] extends W[A] with R[A]
+ * trait OF[A] extends OW[A] with R[A] with F[A]
  * -----------------------------------------------------------------------------
  * CompilationUnit
  *   TopStatSeq
@@ -772,8 +773,8 @@ TEST(ScalaParser, Trait) {
  *                       StableId
  *                         StableIdHead
  *                           id                                  <-- W
- *                     SimpleTypeHTails
- *                       SimpleTypeHTail
+ *                     SimpleTypeTails
+ *                       SimpleTypeTail
  *                         TypeArgs
  *                           '['
  *                           Types
@@ -811,13 +812,15 @@ TEST(ScalaParser, Trait) {
  *                                           StableIdHead
  *                                             id                <-- A
  *                           ']'
+ *     TopStat[1](1)
  */
 TEST(ScalaParser, VariantTypeParam) {
   std::string filename = "Example.scala";
   std::string buffer =
     "import scala.annotation.implicitNotFound\n\n"
     "@implicitNotFound(\"message\")\n"
-    "trait F[A] extends W[A] with R[A]\n";
+    "trait F[A] extends W[A] with R[A]\n"
+    "trait OF[A] extends OW[A] with R[A] with F[A]";
 
   ScalaParser parser(filename, buffer);
   parser.parse();
@@ -827,6 +830,7 @@ TEST(ScalaParser, VariantTypeParam) {
 
   // @implicitNotFound("message")
   // trait F[A] extends W[A] with R[A]
-  ASSERT_EQ(1, parser.compUnit->topStatSeq->pairs.size());
+  // trait OF[A] extends OW[A] with R[A] with F[A]"
+  ASSERT_EQ(2, parser.compUnit->topStatSeq->pairs.size());
   auto topStat = parser.compUnit->topStatSeq->pairs[0].second;
 }

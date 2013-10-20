@@ -739,8 +739,21 @@ void ScalaSyntaxHighlighting::setSimpleTypeHead(spSimpleTypeHead &head) {
   //}
 }
 
+void ScalaSyntaxHighlighting::setSimpleTypeTail(spSimpleTypeTail &tail) {
+  if (tail->opt == SimpleTypeTail::Opt::TYPE_ARGS) {
+    if (tail->typeArgs) { setTypeArgs(tail->typeArgs); }
+    return;
+  }
+
+  if (tail->opt == SimpleTypeTail::Opt::HASH_ID) {
+    // TODO:
+    return;
+  }
+}
+
 void ScalaSyntaxHighlighting::setSimpleTypeTails(spSimpleTypeTails &tails) {
-  // TODO:
+  if (tails->tail) { setSimpleTypeTail(tails->tail); }
+  if (tails->tails) { setSimpleTypeTails(tails->tails); }
 }
 
 void ScalaSyntaxHighlighting::setStableId(spStableId &stableId) {
@@ -1011,6 +1024,24 @@ void ScalaSyntaxHighlighting::setType(spType &type) {
     // TODO: [ExistentialClause]
     return;
   }
+}
+
+void ScalaSyntaxHighlighting::setTypes(spTypes &types) {
+  if (types->type) { setType(types->type); }
+
+  for (auto pair : types->pairs) {
+    auto comma = pair.first;
+    setOp(comma);
+
+    auto type = pair.second;
+    setType(type);
+  }
+}
+
+void ScalaSyntaxHighlighting::setTypeArgs(spTypeArgs &typeArgs) {
+  if (typeArgs->tokLBracket) { setOp(typeArgs->tokLBracket); }
+  if (typeArgs->types) { setTypes(typeArgs->types); }
+  if (typeArgs->tokRBracket) { setOp(typeArgs->tokRBracket); }
 }
 
 void ScalaSyntaxHighlighting::setTypeParam(spTypeParam &typeParam) {

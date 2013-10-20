@@ -1335,7 +1335,16 @@ void ScalaParser::parseSimpleType(spSimpleType &simpleType) {
     return;
   }
 
-  // TODO: SimpleTypeTails
+  // SimpleTypeTails
+  State state;
+  saveState(state);
+  auto tails = spSimpleTypeTails(new SimpleTypeTails);
+  parseSimpleTypeTails(tails);
+  if (tails->err) {
+    restoreState(state);
+  }
+
+  simpleType->tails = tails;
 }
 
 /**
@@ -1361,7 +1370,15 @@ void ScalaParser::parseSimpleTypeHead(spSimpleTypeHead &head) {
  * SimpleTypeTail ::= TypeArgs | '#' id
  */
 void ScalaParser::parseSimpleTypeTail(spSimpleTypeTail &tail) {
-  // TODO: TypeArgs
+  // TypeArgs
+  tail->opt = SimpleTypeTail::Opt::TYPE_ARGS;
+  tail->typeArgs = spTypeArgs(new TypeArgs);
+  parseTypeArgs(tail->typeArgs);
+  if (tail->typeArgs->err) {
+    tail->addErr(-1);
+    return;
+  }
+
   // TODO: '#' id
 }
 
@@ -1369,7 +1386,25 @@ void ScalaParser::parseSimpleTypeTail(spSimpleTypeTail &tail) {
  * SimpleTypeTails ::= SimpleTypeTail SimpleTypeTails | SimpleTypeTail
  */
 void ScalaParser::parseSimpleTypeTails(spSimpleTypeTails &tails) {
-  // TODO:
+  // SimpleTypeTail
+  tails->tail = spSimpleTypeTail(new SimpleTypeTail);
+  parseSimpleTypeTail(tails->tail);
+  if (tails->tail->err) {
+    tails->addErr(-1);
+    return;
+  }
+
+  // SimpleTypeTails
+  State state;
+  saveState(state);
+  auto tails2 = spSimpleTypeTails(new SimpleTypeTails);
+  parseSimpleTypeTails(tails2);
+  if (tails2->err) {
+    restoreState(state);
+    return;
+  }
+
+  tails->tails = tails2;
 }
 
 /**
@@ -1783,6 +1818,65 @@ void ScalaParser::parseType(spType &type) {
   }
 
   // TODO: [ExistentialClause]
+}
+
+/**
+ * Types ::= Type {',' Type}
+ */
+void ScalaParser::parseTypes(spTypes &types) {
+  types->type = spType(new Type);
+  parseType(types->type);
+  if (types->type->err) {
+    types->addErr(-1);
+    return;
+  }
+
+  State state;
+  while (lexer->getCurToken() == STok::COMMA) {
+    saveState(state);
+    auto comma = lexer->getCurTokenNode();
+    lexer->getNextToken(); // consume ','
+
+    auto type = spType(new Type);
+    parseType(type);
+    if (type->err) {
+      restoreState(state);
+      return;
+    }
+
+    types->pairs.push_back(std::make_pair(comma, type));
+  }
+}
+
+/**
+ * TypeArgs ::= '[' Types ']'
+ */
+void ScalaParser::parseTypeArgs(spTypeArgs &typeArgs) {
+  // '['
+  if (lexer->getCurToken() != STok::LBRACKET) {
+    typeArgs->addErr(c4::ERR_EXP_LBRACKET);
+    return;
+  }
+
+  typeArgs->tokLBracket = lexer->getCurTokenNode();
+  lexer->getNextToken(); // consume '['
+
+  // Types
+  typeArgs->types = spTypes(new Types);
+  parseTypes(typeArgs->types);
+  if (typeArgs->types->err) {
+    typeArgs->addErr(-1);
+    return;
+  }
+
+  // ']'
+  if (lexer->getCurToken() != STok::RBRACKET) {
+    typeArgs->addErr(c4::ERR_EXP_RBRACKET);
+    return;
+  }
+
+  typeArgs->tokRBracket = lexer->getCurTokenNode();
+  lexer->getNextToken(); // consume ']'
 }
 
 /**

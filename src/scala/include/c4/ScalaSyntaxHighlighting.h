@@ -60,6 +60,7 @@ class ScalaSyntaxHighlighting {
   void setSimpleExpr1Tail(spSimpleExpr1Tail &tail);
   void setSimpleType(spSimpleType &simpleType);
   void setSimpleTypeHead(spSimpleTypeHead &head);
+  void setSimpleTypeTail(spSimpleTypeTail &tail);
   void setSimpleTypeTails(spSimpleTypeTails &tails);
   void setStableId(spStableId &stableId);
   void setStableIdHead(spStableIdHead &head);
@@ -75,6 +76,8 @@ class ScalaSyntaxHighlighting {
   void setTraitTemplate(spTraitTemplate &traitTemplate);
   void setTraitTemplateOpt(spTraitTemplateOpt &traitTemplateOpt);
   void setType(spType &type);
+  void setTypes(spTypes &types);
+  void setTypeArgs(spTypeArgs &typeArgs);
   void setTypeParam(spTypeParam &typeParam);
   void setTypeParamClause(spTypeParamClause &typeParamClause);
   void setVariantTypeParam(spVariantTypeParam &varTypeParam);

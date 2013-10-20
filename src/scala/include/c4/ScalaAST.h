@@ -142,6 +142,8 @@ typedef std::shared_ptr<struct TraitParents> spTraitParents;
 typedef std::shared_ptr<struct TraitTemplate> spTraitTemplate;
 typedef std::shared_ptr<struct TraitTemplateOpt> spTraitTemplateOpt;
 typedef std::shared_ptr<struct Type> spType;
+typedef std::shared_ptr<struct Types> spTypes;
+typedef std::shared_ptr<struct TypeArgs> spTypeArgs;
 typedef std::shared_ptr<struct TypeParam> spTypeParam;
 typedef std::shared_ptr<struct TypeParamClause> spTypeParamClause;
 typedef std::shared_ptr<struct VariantTypeParam> spVariantTypeParam;
@@ -891,7 +893,7 @@ struct SimpleTypeTail : ASTBase {
 
   Opt opt;
 
-  // TODO: spTypeArgs
+  spTypeArgs typeArgs;
   // TODO: '#' id
 
   SimpleTypeTail() : opt(Opt::UNDEFINED) {}
@@ -1120,6 +1122,23 @@ struct Type : ASTBase {
   // TODO: [ExistentialClause]
 
   Type() : opt(Opt::UNDEFINED) {}
+};
+
+/**
+ * Types ::= Type {',' Type}
+ */
+struct Types : ASTBase {
+  spType type;
+  std::vector<std::pair<spTokenNode, spType>> pairs;
+};
+
+/**
+ * TypeArgs ::= '[' Types ']'
+ */
+struct TypeArgs : ASTBase {
+  spTokenNode tokLBracket;
+  spTypes types;
+  spTokenNode tokRBracket;
 };
 
 /**
