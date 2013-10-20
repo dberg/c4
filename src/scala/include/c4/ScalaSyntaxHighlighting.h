@@ -75,6 +75,9 @@ class ScalaSyntaxHighlighting {
   void setTraitTemplate(spTraitTemplate &traitTemplate);
   void setTraitTemplateOpt(spTraitTemplateOpt &traitTemplateOpt);
   void setType(spType &type);
+  void setTypeParam(spTypeParam &typeParam);
+  void setTypeParamClause(spTypeParamClause &typeParamClause);
+  void setVariantTypeParam(spVariantTypeParam &varTypeParam);
 
   // Emacs output
   std::stringstream sh;

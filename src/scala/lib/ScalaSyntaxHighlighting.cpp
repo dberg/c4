@@ -944,7 +944,9 @@ void ScalaSyntaxHighlighting::setTraitDef(spTraitDef &traitDef) {
     setLexId(traitDef->id);
   }
 
-  // TODO: typeParamClause
+  if (traitDef->typeParamClause) {
+    setTypeParamClause(traitDef->typeParamClause);
+  }
 
   if (traitDef->traitTemplateOpt) {
     setTraitTemplateOpt(traitDef->traitTemplateOpt);
@@ -1009,6 +1011,59 @@ void ScalaSyntaxHighlighting::setType(spType &type) {
     // TODO: [ExistentialClause]
     return;
   }
+}
+
+void ScalaSyntaxHighlighting::setTypeParam(spTypeParam &typeParam) {
+  if (typeParam->id) {
+    setLexId(typeParam->id);
+  }
+
+  if (typeParam->tokUnderscore) {
+    setOp(typeParam->tokUnderscore);
+  }
+
+  if (typeParam->typeParamClause) {
+    setTypeParamClause(typeParam->typeParamClause);
+  }
+
+  // TODO: ['>:' Type] ['<:' Type]
+  // TODO: {'<%' Type} {':' Type}
+}
+
+void ScalaSyntaxHighlighting::setTypeParamClause(
+  spTypeParamClause &typeParamClause) {
+
+  if (typeParamClause->tokLBracket) {
+    setOp(typeParamClause->tokLBracket);
+  }
+
+  if (typeParamClause->varTypeParam) {
+    setVariantTypeParam(typeParamClause->varTypeParam);
+  }
+
+  for (auto pair : typeParamClause->pairs) {
+    auto comma = pair.first;
+    setOp(comma);
+
+    auto varTypeParam = pair.second;
+    setVariantTypeParam(varTypeParam);
+  }
+
+  if (typeParamClause->tokLBracket) {
+    setOp(typeParamClause->tokLBracket);
+  }
+}
+
+void ScalaSyntaxHighlighting::setVariantTypeParam(
+  spVariantTypeParam &varTypeParam) {
+
+  for (auto annotation : varTypeParam->annotations) {
+    setAnnotation(annotation);
+  }
+
+  if (varTypeParam->tokPlus) { setOp(varTypeParam->tokPlus); }
+  if (varTypeParam->tokMinus) { setOp(varTypeParam->tokMinus); }
+  if (varTypeParam->typeParam) { setTypeParam(varTypeParam->typeParam); }
 }
 
 } // namespace
