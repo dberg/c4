@@ -834,3 +834,39 @@ TEST(ScalaParser, VariantTypeParam) {
   ASSERT_EQ(2, parser.compUnit->topStatSeq->pairs.size());
   auto topStat = parser.compUnit->topStatSeq->pairs[0].second;
 }
+
+/**
+ * -----------------------------------------------------------------------------
+ * trait OF
+ * object OF
+ * -----------------------------------------------------------------------------
+ * CompilationUnit
+ *   TopStatSeq(1)
+ *     TopStat(1)
+ *       TmplDef(3)
+ *         'trait'
+ *         TraitDef
+ *           id          <-- OF
+ *   TopStatSeq[0](1)
+ *     TopStat(1)
+ *       TmplDef(2)
+ *         'object'
+ *           ObjectDef
+ *             id         <-- OF
+ *             ClassTemplateOpt
+ */
+TEST(ScalaParser, TraitAndObject) {
+  std::string filename = "Example.scala";
+  std::string buffer =
+    "trait OF\n"
+    "object OF\n";
+
+  ScalaParser parser(filename, buffer);
+  parser.parse();
+
+  // trait OFormat
+  ASSERT_EQ(TopStat::Opt::TMPL_DEF, parser.compUnit->topStatSeq->topStat->opt);
+
+  // object OFormat
+  ASSERT_EQ(1, parser.compUnit->topStatSeq->pairs.size());
+}

@@ -389,7 +389,11 @@ void ScalaParser::parseClassTemplateOpt(spClassTemplateOpt &classTmplOpt) {
     restoreState(state);
   }
 
-  // TemplateBody
+  // [TemplateBody]
+  if (lexer->getCurToken() != STok::LCURLYB) {
+    return;
+  }
+
   classTmplOpt->opt = ClassTemplateOpt::Opt::TEMPLATE_BODY;
   classTmplOpt->tmplBody = spTemplateBody(new TemplateBody);
   parseTemplateBody(classTmplOpt->tmplBody);
@@ -1759,8 +1763,12 @@ void ScalaParser::parseTraitTemplate(spTraitTemplate &traitTemplate) {
  * TraitTemplateOpt ::= 'extends' TraitTemplate | [['extends'] TemplateBody]
  */
 void ScalaParser::parseTraitTemplateOpt(spTraitTemplateOpt &traitTemplateOpt) {
-  // TemplateBody
+  // [TemplateBody]
   if (lexer->getCurToken() != STok::EXTENDS) {
+    if (lexer->getCurToken() != STok::LCURLYB) {
+      return;
+    }
+
     traitTemplateOpt->opt = TraitTemplateOpt::Opt::TEMPLATE_BODY;
     traitTemplateOpt->templateBody = spTemplateBody(new TemplateBody);
     parseTemplateBody(traitTemplateOpt->templateBody);
