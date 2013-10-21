@@ -59,6 +59,11 @@
  * 4) Fix ImportExpr
  *
  * ImportExpr ::= QualId [ ('.' '_') | '.' ImportSelectors ]
+ *
+ * 5) Make TemplateStat optional in TemplateBody
+ *
+ * TemplateBody ::= [nl] '{' [SelfType] [TemplateStat {semi TemplateStat}] '}'
+ *
  */
 
 namespace c4s {

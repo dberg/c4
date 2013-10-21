@@ -292,7 +292,7 @@ ConstrAnnotation ::= '@' SimpleType ArgumentExprs
 
 NameValuePair ::= 'val' id '=' PrefixExpr
 
-TemplateBody ::= [nl] '{' [SelfType] TemplateStat {semi TemplateStat} '}'
+TemplateBody ::= [nl] '{' [SelfType] [TemplateStat {semi TemplateStat}] '}'
 
 TemplateStat ::= Import
                | {Annotation [nl]} {Modifier} Def

@@ -1478,7 +1478,7 @@ void ScalaParser::parseStableIdTail(spStableIdTail &tail) {
 }
 
 /**
- * TemplateBody ::= [nl] '{' [SelfType] TemplateStat {semi TemplateStat} '}'
+ * TemplateBody ::= [nl] '{' [SelfType] [TemplateStat {semi TemplateStat}] '}'
  */
 void ScalaParser::parseTemplateBody(spTemplateBody &tmplBody) {
   // '{'
@@ -1489,6 +1489,13 @@ void ScalaParser::parseTemplateBody(spTemplateBody &tmplBody) {
 
   tmplBody->tokLCurlyB = lexer->getCurTokenNode();
   lexer->getNextToken(); // consume '{'
+
+  // [nl] '{}'
+  if (lexer->getCurToken() == STok::RCURLYB) {
+    tmplBody->tokRCurlyB = lexer->getCurTokenNode();
+    lexer->getNextToken(); // consume '}'
+    return;
+  }
 
   // TODO: [SelfType]
 
