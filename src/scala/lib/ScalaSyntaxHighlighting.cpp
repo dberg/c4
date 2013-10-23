@@ -841,7 +841,7 @@ void ScalaSyntaxHighlighting::setTemplateBody(spTemplateBody &tmplBody) {
 
 void ScalaSyntaxHighlighting::setTemplateStat(spTemplateStat &tmplStat) {
   if (tmplStat->opt == TemplateStat::Opt::IMPORT) {
-    // TODO:
+    if (tmplStat->import) { setImport(tmplStat->import); }
     return;
   }
 

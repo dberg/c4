@@ -1526,7 +1526,17 @@ void ScalaParser::parseTemplateBody(spTemplateBody &tmplBody) {
  *                | Expr
  */
 void ScalaParser::parseTemplateStat(spTemplateStat &tmplStat) {
-  // TODO: Import
+  // Import
+  if (lexer->getCurToken() == STok::IMPORT) {
+    tmplStat->opt = TemplateStat::Opt::IMPORT;
+    tmplStat->import = spImport(new Import);
+    parseImport(tmplStat->import);
+    if (tmplStat->import->err) {
+      tmplStat->addErr(-1);
+    }
+    return;
+  }
+
 
   {
     // {Annotation [nl]} {Modifier} Def

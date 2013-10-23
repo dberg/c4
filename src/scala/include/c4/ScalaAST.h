@@ -981,7 +981,7 @@ struct TemplateStat : ASTBase {
   };
 
   Opt opt;
-  // TODO: spImport import;
+  spImport import;
   // TODO: std::vector<spAnnotation> annotations;
   // TODO: std::vector<spModifier> modifiers;
   spDef def;
