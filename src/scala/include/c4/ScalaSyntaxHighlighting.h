@@ -15,6 +15,7 @@ class ScalaSyntaxHighlighting {
   void setOp(spTokenNode &tok);
   void setOp(unsigned int ini, unsigned int end);
 
+  void setAccessModifier(spAccessModifier &accessModifier);
   void setAnnotation(spAnnotation &annotation);
   void setAnnotType(spAnnotType &annotType);
   void setArgumentExprs(spArgumentExprs &argExprs);
@@ -41,6 +42,8 @@ class ScalaSyntaxHighlighting {
   void setIntegerLiteral(spIntegerLiteral &intLit);
   void setLexId(spLexId &id);
   void setLiteral(spLiteral &literal);
+  void setLocalModifier(spLocalModifier &localModifier);
+  void setModifier(spModifier &modifier);
   void setObjectDef(spObjectDef &objectDef);
   void setPackaging(spPackaging &packing);
   void setParam(spParam &param);

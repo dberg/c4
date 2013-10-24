@@ -87,6 +87,7 @@ typedef std::shared_ptr<struct IdPeriod> spIdPeriod;
 typedef struct IdPeriod PeriodId;
 typedef std::shared_ptr<PeriodId> spPeriodId;
 
+typedef std::shared_ptr<struct AccessModifier> spAccessModifier;;
 typedef std::shared_ptr<struct Annotation> spAnnotation;;
 typedef std::shared_ptr<struct AnnotType> spAnnotType;
 typedef std::shared_ptr<struct ArgumentExprs> spArgumentExprs;
@@ -113,6 +114,8 @@ typedef std::shared_ptr<struct ImportSelectors> spImportSelectors;
 typedef std::shared_ptr<struct InfixExpr> spInfixExpr;
 typedef std::shared_ptr<struct InfixType> spInfixType;
 typedef std::shared_ptr<struct Literal> spLiteral;
+typedef std::shared_ptr<struct LocalModifier> spLocalModifier;
+typedef std::shared_ptr<struct Modifier> spModifier;
 typedef std::shared_ptr<struct ObjectDef> spObjectDef;
 typedef std::shared_ptr<struct Packaging> spPackaging;
 typedef std::shared_ptr<struct Param> spParam;
@@ -186,6 +189,14 @@ struct TokenNode : ASTBase {
 // ----------------------------------------------------------------------------
 // AST based in the Scala grammar
 // ----------------------------------------------------------------------------
+
+/**
+ * AccessModifier ::= ('private' | 'protected') [AccessQualifier]
+ */
+struct AccessModifier : ASTBase {
+  spTokenNode tok;
+  // TODO: spAccessQualifier accessQual;
+};
 
 /**
  * Annotation ::= '@' SimpleType {ArgumentExprs}
@@ -641,6 +652,39 @@ struct Literal : ASTBase {
 };
 
 /**
+ * LocalModifier ::= 'abstract'
+ *                 | 'final'
+ *                 | 'sealed'
+ *                 | 'implicit'
+ *                 | 'lazy'
+ */
+struct LocalModifier : ASTBase {
+  spTokenNode tok;
+};
+
+/**
+ * Modifier ::= LocalModifier
+ *            | AccessModifier
+ *            | 'override'
+ */
+struct Modifier : ASTBase {
+  enum class Opt {
+    UNDEFINED,
+    LOCAL,
+    ACCESS,
+    OVERRIDE,
+  };
+
+  Opt opt;
+
+  spLocalModifier localModifier;
+  spAccessModifier accessModifier;
+  spTokenNode tokOverride;
+
+  Modifier() : opt(Opt::UNDEFINED) {}
+};
+
+/**
  * ObjectDef ::= id ClassTemplateOpt
  */
 struct ObjectDef : ASTBase {
@@ -982,8 +1026,8 @@ struct TemplateStat : ASTBase {
 
   Opt opt;
   spImport import;
-  // TODO: std::vector<spAnnotation> annotations;
-  // TODO: std::vector<spModifier> modifiers;
+  std::vector<spAnnotation> annotations;
+  std::vector<spModifier> modifiers;
   spDef def;
   // TODO: spExpr expr;
 

@@ -59,6 +59,21 @@ spStringLiteral ScalaParser::parseStringLiteral() {
 // -----------------------------------------------------------------------------
 
 /**
+ * AccessModifier ::= ('private' | 'protected') [AccessQualifier]
+ */
+void ScalaParser::parseAccessModifier(spAccessModifier &accessModifier) {
+  if (!isAccessModifier(lexer->getCurToken())) {
+    accessModifier->addErr(-1);
+    return;
+  }
+
+  accessModifier->tok = lexer->getCurTokenNode();
+  lexer->getNextToken(); // consume 'private' or 'protected'
+
+  // TODO: [AccessQualifier]
+}
+
+/**
  * Annotation ::= '@' SimpleType {ArgumentExprs}
  */
 void ScalaParser::parseAnnotation(spAnnotation &annotation) {
@@ -926,6 +941,59 @@ void ScalaParser::parseLiteral(spLiteral &literal) {
 }
 
 /**
+ * LocalModifier ::= 'abstract'
+ *                 | 'final'
+ *                 | 'sealed'
+ *                 | 'implicit'
+ *                 | 'lazy'
+ */
+void ScalaParser::parseLocalModifier(spLocalModifier &localModifier) {
+  if (!isLocalModifier(lexer->getCurToken())) {
+    localModifier->addErr(-1);
+    return;
+  }
+
+  localModifier->tok = lexer->getCurTokenNode();
+  lexer->getNextToken(); // consume LocalModifier
+}
+
+/**
+ * Modifier ::= LocalModifier
+ *            | AccessModifier
+ *            | 'override'
+ */
+void ScalaParser::parseModifier(spModifier &modifier) {
+  if (isLocalModifier(lexer->getCurToken())) {
+    modifier->opt = Modifier::Opt::LOCAL;
+    modifier->localModifier = spLocalModifier(new LocalModifier);
+    parseLocalModifier(modifier->localModifier);
+    if (modifier->localModifier->err) {
+      modifier->addErr(-1);
+    }
+    return;
+  }
+
+  if (isAccessModifier(lexer->getCurToken())) {
+    modifier->opt = Modifier::Opt::ACCESS;
+    modifier->accessModifier = spAccessModifier(new AccessModifier);
+    parseAccessModifier(modifier->accessModifier);
+    if (modifier->accessModifier->err) {
+      modifier->addErr(-1);
+    }
+    return;
+  }
+
+  if (lexer->getCurToken() == STok::OVERRIDE) {
+    modifier->opt = Modifier::Opt::OVERRIDE;
+    modifier->tokOverride = lexer->getCurTokenNode();
+    lexer->getNextToken(); // consume 'override'
+    return;
+  }
+
+  modifier->addErr(-1);
+}
+
+/**
  * ObjectDef ::= id ClassTemplateOpt
  */
 void ScalaParser::parseObjectDef(spObjectDef &objectDef) {
@@ -1538,9 +1606,36 @@ void ScalaParser::parseTemplateStat(spTemplateStat &tmplStat) {
   }
 
 
+  bool seenAnnotation = false;
+
+  // {Annotation [nl]}
+  while (lexer->getCurToken() == STok::AT) {
+    seenAnnotation = true;
+    auto annotation = spAnnotation(new Annotation);
+    parseAnnotation(annotation);
+    if (annotation->err) {
+      tmplStat->addErr(-1);
+      break;
+    }
+
+    tmplStat->annotations.push_back(annotation);
+  }
+
+  bool seenModifier = false;
+  while (isModifier(lexer->getCurToken())) {
+    seenModifier = true;
+    auto modifier = spModifier(new Modifier);
+    parseModifier(modifier);
+    if (modifier->err) {
+      tmplStat->addErr(-1);
+      break;
+    }
+
+    tmplStat->modifiers.push_back(modifier);
+  }
+
   {
-    // {Annotation [nl]} {Modifier} Def
-    // TODO: {Annotation [nl]} {Modifier}
+    // Def
     tmplStat->opt = TemplateStat::Opt::DEF;
     tmplStat->def = spDef(new Def);
     parseDef(tmplStat->def);
@@ -1550,9 +1645,11 @@ void ScalaParser::parseTemplateStat(spTemplateStat &tmplStat) {
     }
   }
 
-  // TODO: {Annotation [nl]} {Modifier} Dcl
+  // TODO: Dcl
 
-  // TODO: Expr
+  if (!seenAnnotation && !seenModifier) {
+    // TODO: Expr
+  }
 }
 
 /**
@@ -2054,5 +2151,34 @@ void ScalaParser::restoreState(State &state) {
   }
 
   lexer->restoreState(state);
+}
+
+bool ScalaParser::isAccessModifier(STok tok) {
+  if (tok == STok::PRIVATE || tok == STok::PROTECTED) {
+    return true;
+  }
+
+  return false;
+}
+
+bool ScalaParser::isLocalModifier(STok tok) {
+  if (tok == STok::ABSTRACT
+    || tok == STok::FINAL
+    || tok == STok::SEALED
+    || tok == STok::IMPLICIT
+    || tok == STok::LAZY
+  ) {
+    return true;
+  }
+
+  return false;
+}
+
+bool ScalaParser::isModifier(STok tok) {
+  if (isLocalModifier(tok) || isAccessModifier(tok) || tok == STok::OVERRIDE) {
+    return true;
+  }
+
+  return false;
 }
 } // namespace

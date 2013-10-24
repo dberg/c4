@@ -23,6 +23,7 @@ class ScalaParser {
 
   // grammar
   void buildParseTree();
+  void parseAccessModifier(spAccessModifier &accessModifier);
   void parseAnnotation(spAnnotation &annotation);
   void parseAnnotType(spAnnotType &annotType);
   void parseArgumentExprs(spArgumentExprs &argExprs);
@@ -50,6 +51,8 @@ class ScalaParser {
   void parseInfixExpr(spInfixExpr &infixExpr);
   void parseInfixType(spInfixType &infixType);
   void parseLiteral(spLiteral &literal);
+  void parseLocalModifier(spLocalModifier &localModifier);
+  void parseModifier(spModifier &modifier);
   void parseObjectDef(spObjectDef &objectDef);
   void parsePackaging(spPackaging &packaging);
   void parseParam(spParam &param);
@@ -93,6 +96,9 @@ class ScalaParser {
   int addErr(int err);
   void saveState(State &state);
   void restoreState(State &state);
+  bool isAccessModifier(STok tok);
+  bool isLocalModifier(STok tok);
+  bool isModifier(STok tok);
 
 public:
   ScalaParser(const std::string filename, const std::string &buffer)

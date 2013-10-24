@@ -52,6 +52,16 @@ void ScalaSyntaxHighlighting::setOp(unsigned int ini, unsigned int end) {
 // ----------------------------------------------------------------------------
 // AST
 // ----------------------------------------------------------------------------
+void ScalaSyntaxHighlighting::setAccessModifier(
+  spAccessModifier &accessModifier) {
+
+  if (accessModifier->tok) {
+    setKeyword(accessModifier->tok);
+  }
+
+  // TODO: [AccessQualifier]
+}
+
 void ScalaSyntaxHighlighting::setAnnotation(spAnnotation &annotation) {
   if (annotation->tokAt) {
     setOp(annotation->tokAt);
@@ -502,6 +512,35 @@ void ScalaSyntaxHighlighting::setLiteral(spLiteral &literal) {
   }
 }
 
+void ScalaSyntaxHighlighting::setLocalModifier(spLocalModifier &localModifier) {
+  if (localModifier->tok) {
+    setKeyword(localModifier->tok);
+  }
+}
+
+void ScalaSyntaxHighlighting::setModifier(spModifier &modifier) {
+  if (modifier->opt == Modifier::Opt::LOCAL) {
+    if (modifier->localModifier) {
+      setLocalModifier(modifier->localModifier);
+    }
+    return;
+  }
+
+  if (modifier->opt == Modifier::Opt::ACCESS) {
+    if (modifier->accessModifier) {
+      setAccessModifier(modifier->accessModifier);
+    }
+    return;
+  }
+
+  if (modifier->opt == Modifier::Opt::OVERRIDE) {
+    if (modifier->tokOverride) {
+      setKeyword(modifier->tokOverride);
+    }
+    return;
+  }
+}
+
 void ScalaSyntaxHighlighting::setObjectDef(spObjectDef &objectDef) {
   if (objectDef->id) {
     setLexId(objectDef->id);
@@ -846,12 +885,28 @@ void ScalaSyntaxHighlighting::setTemplateStat(spTemplateStat &tmplStat) {
   }
 
   if (tmplStat->opt == TemplateStat::Opt::DEF) {
+    for (auto annotation : tmplStat->annotations) {
+      setAnnotation(annotation);
+    }
+
+    for (auto modifier : tmplStat->modifiers) {
+      setModifier(modifier);
+    }
+
     if (tmplStat->def) { setDef(tmplStat->def); }
     return;
   }
 
   if (tmplStat->opt == TemplateStat::Opt::DCL) {
-    // TODO:
+    for (auto annotation : tmplStat->annotations) {
+      setAnnotation(annotation);
+    }
+
+    for (auto modifier : tmplStat->modifiers) {
+      setModifier(modifier);
+    }
+
+    // TODO: Dcl
     return;
   }
 
