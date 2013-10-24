@@ -1136,7 +1136,36 @@ void ScalaParser::parseParamClauses(spParamClauses &paramClauses) {
     paramClauses->paramClauses.push_back(paramClause);
   }
 
-  // TODO: [[nl] '(' 'implicit' Params ')']
+  // [[nl] '(' 'implicit' Params ')']
+  if (lexer->getCurToken() != STok::LPAREN) {
+    return;
+  }
+
+  paramClauses->tokLParen = lexer->getCurTokenNode();
+  lexer->getNextToken(); // consume '('
+
+  if (lexer->getCurToken() != STok::IMPLICIT) {
+    paramClauses->addErr(c4::ERR_EXP_IMPLICIT);
+    return;
+  }
+
+  paramClauses->tokImplicit = lexer->getCurTokenNode();
+  lexer->getNextToken(); // consume 'implicit'
+
+  paramClauses->params = spParams(new Params);
+  parseParams(paramClauses->params);
+  if (paramClauses->params->err) {
+    paramClauses->addErr(-1);
+    return;
+  }
+
+  if (lexer->getCurToken() != STok::RPAREN) {
+    paramClauses->addErr(c4::ERR_EXP_RPAREN);
+    return;
+  }
+
+  paramClauses->tokRParen = lexer->getCurTokenNode();
+  lexer->getNextToken(); // consume ')'
 }
 
 /**

@@ -593,7 +593,11 @@ void ScalaSyntaxHighlighting::setParamClauses(spParamClauses &paramClauses) {
     setParamClause(paramClause);
   }
 
-  // TODO: '(' 'implicit' Params ')']
+  // '(' 'implicit' Params ')']
+  if (paramClauses->tokLParen) { setOp(paramClauses->tokLParen); }
+  if (paramClauses->tokImplicit) { setKeyword(paramClauses->tokImplicit); }
+  if (paramClauses->params) { setParams(paramClauses->params); }
+  if (paramClauses->tokRParen) { setOp(paramClauses->tokRParen); }
 }
 
 void ScalaSyntaxHighlighting::setParamType(spParamType &paramType) {
