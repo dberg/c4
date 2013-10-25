@@ -252,6 +252,7 @@ struct BlockExpr : ASTBase {
 struct BlockStat : ASTBase {
   enum class Opt {
     UNDEFINED,
+    IMPORT,
     DEF,
     TMPL_DEF,
     EXPR1,
@@ -259,9 +260,18 @@ struct BlockStat : ASTBase {
 
   Opt opt;
 
-  // TODO: Import
-  // TODO: {Annotation} ['implicit' | 'lazy'] Def
-  // TODO: {Annotation} {LocalModifier} TmplDef
+  spImport import;
+  std::vector<spAnnotation> annotations;
+
+  // ['implicit' | 'lazy'] Def
+  spTokenNode tokImplicit;
+  spTokenNode tokLazy;
+  spDef def;
+
+  // {LocalModifier} TmplDef
+  std::vector<spLocalModifier> localModifiers;
+  spTmplDef tmplDef;
+
   spExpr1 expr1;
 
   BlockStat() : opt(Opt::UNDEFINED) {}

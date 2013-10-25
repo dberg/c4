@@ -312,9 +312,93 @@ void ScalaParser::parseBlockExpr(spBlockExpr &blockExpr) {
  *             | Expr1
  */
 void ScalaParser::parseBlockStat(spBlockStat &blockStat) {
-  // TODO: Import
-  // TODO: {Annotation} ['implicit' | 'lazy'] Def
-  // TODO: {Annotation} {LocalModifier} TmplDef
+  // Import
+  if (lexer->getCurToken() == STok::IMPORT) {
+    blockStat->opt = BlockStat::Opt::IMPORT;
+    blockStat->import = spImport(new Import);
+    parseImport(blockStat->import);
+    if (blockStat->import->err) {
+      blockStat->addErr(-1);
+    }
+
+    return;
+  }
+
+  // Annotation
+  auto seenAnnotation = false;
+  while (lexer->getCurToken() == STok::AT) {
+    seenAnnotation = true;
+    auto annotation = spAnnotation(new Annotation);
+    parseAnnotation(annotation);
+    if (annotation->err) {
+      blockStat->addErr(-1);
+      break;
+    }
+
+    blockStat->annotations.push_back(annotation);
+  }
+
+  // ['implicit' | 'lazy'] Def
+  bool seenDefPrefix = false;
+  if (lexer->getCurToken() == STok::IMPLICIT) {
+    seenDefPrefix = true;
+    blockStat->tokImplicit = lexer->getCurTokenNode();
+    lexer->getNextToken(); // consume 'implicit'
+  } else if (lexer->getCurToken() == STok::LAZY) {
+    seenDefPrefix = true;
+    blockStat->tokLazy = lexer->getCurTokenNode();
+    lexer->getNextToken(); // consume 'lazy'
+  }
+
+  // Try Def
+  State state;
+  saveState(state);
+  auto def = spDef(new Def);
+  parseDef(def);
+  if (def->err == false) {
+    blockStat->opt = BlockStat::Opt::DEF;
+    blockStat->def = def;
+    return;
+  } else {
+    if (seenDefPrefix) {
+      blockStat->opt = BlockStat::Opt::DEF;
+      blockStat->addErr(-1);
+      return;
+    }
+
+    // Restore state and try next production rule
+    restoreState(state);
+  }
+
+  // {LocalModifier} TmplDef
+  auto seenLocalModifier = false;
+  while (isLocalModifier(lexer->getCurToken())) {
+    seenLocalModifier = true;
+    auto localModifier = spLocalModifier(new LocalModifier);
+    parseLocalModifier(localModifier);
+    blockStat->localModifiers.push_back(localModifier);
+  }
+
+  auto tmplDef = spTmplDef(new TmplDef);
+  parseTmplDef(tmplDef);
+  if (tmplDef->err == false) {
+    blockStat->opt = BlockStat::Opt::TMPL_DEF;
+    blockStat->tmplDef = tmplDef;
+    return;
+  } else {
+    if (seenLocalModifier) {
+      blockStat->addErr(-1);
+      return;
+    }
+
+    // Try next production rule if possible
+    restoreState(state);
+  }
+
+  if (seenAnnotation) {
+    blockStat->addErr(-1);
+    return;
+  }
 
   // Expr1
   blockStat->opt = BlockStat::Opt::EXPR1;
@@ -1102,11 +1186,14 @@ void ScalaParser::parseParamClause(spParamClause &paramClause) {
   paramClause->tokLParen = lexer->getCurTokenNode();
   lexer->getNextToken(); // consume '('
 
-  paramClause->params = spParams(new Params);
-  parseParams(paramClause->params);
-  if (paramClause->params->err) {
-    paramClause->addErr(-1);
-    return;
+  // [Params]
+  if (lexer->getCurToken() != STok::RPAREN) {
+    paramClause->params = spParams(new Params);
+    parseParams(paramClause->params);
+    if (paramClause->params->err) {
+      paramClause->addErr(-1);
+      return;
+    }
   }
 
   if (lexer->getCurToken() != STok::RPAREN) {

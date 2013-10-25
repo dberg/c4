@@ -152,13 +152,28 @@ void ScalaSyntaxHighlighting::setBlockExpr(spBlockExpr &blockExpr) {
 }
 
 void ScalaSyntaxHighlighting::setBlockStat(spBlockStat &blockStat) {
+  if (blockStat->opt == BlockStat::Opt::IMPORT) {
+    if (blockStat->import) { setImport(blockStat->import); }
+    return;
+  }
+
+  for (auto annotation : blockStat->annotations) {
+    setAnnotation(annotation);
+  }
+
   if (blockStat->opt == BlockStat::Opt::DEF) {
-    // TODO:
+    if (blockStat->tokImplicit) { setKeyword(blockStat->tokImplicit); }
+    if (blockStat->tokLazy) { setKeyword(blockStat->tokLazy); }
+    if (blockStat->def) { setDef(blockStat->def); }
     return;
   }
 
   if (blockStat->opt == BlockStat::Opt::TMPL_DEF) {
-    // TODO:
+    for (auto localModifier : blockStat->localModifiers) {
+      setLocalModifier(localModifier);
+    }
+
+    if (blockStat->tmplDef) { setTmplDef(blockStat->tmplDef); }
     return;
   }
 

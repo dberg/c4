@@ -870,3 +870,91 @@ TEST(ScalaParser, TraitAndObject) {
   // object OFormat
   ASSERT_EQ(1, parser.compUnit->topStatSeq->pairs.size());
 }
+
+/**
+ * -----------------------------------------------------------------------------
+ * object O {
+ *   def f(): F = new F {
+ *     def apply(): Int = 1
+ *   }
+ * }
+ * -----------------------------------------------------------------------------
+ * CompilationUnit
+ *   TopStatSeq
+ *     TopStat
+ *       TmplDef(2)
+ *         'object'
+ *         ObjectDef
+ *           id                                   <-- O
+ *           ClassTemplateOpt(2)
+ *             TemplateBody
+ *               '{'
+ *               TemplateStat(2)
+ *                 Def(2)
+ *                   'def'
+ *                   FunDef(1)
+ *                     FunSig
+ *                       id                       <-- f
+ *                       ParamClauses
+ *                         ParamClause
+ *                           '('
+ *                           ')'
+ *                     ':'
+ *                     Type                       <-- F
+ *                     '='
+ *                     Expr
+ *                       Expr1(10)
+ *                         PostfixExpr
+ *                           InfixExpr
+ *                             PrefixExpr
+ *                               SimpleExpr(1)
+ *                                 'new'
+ *                                 ClassTemplate*
+ *               '}'
+ *
+ * *ClassTemplate
+ *   ClassParents
+ *     Constr
+ *       AnnotType
+ *         SimpleType
+ *           SimpleTypeHead
+ *             StableId
+ *               StableIdHead
+ *                 id                               <-- F
+ *       {ArgumentExprs}[0](3)
+ *         BlockExpr(2)
+ *           '{'
+ *           Block
+ *             {BlockStat semi}[0](2)
+ *               Def(2)
+ *                 'def'
+ *                 FunDef(1)
+ *                   FunSig
+ *                   ':'
+ *                   Type
+ *                   '='
+ *                   Expr
+ *           '}'
+ */
+TEST(ScalaParser, AnonymousClass) {
+  std::string filename = "Example.scala";
+  std::string buffer =
+    "object O {\n"
+    "  def f(): F = new F {\n"
+    "    def apply(): Int = 1\n"
+    "  }\n"
+    "}\n";
+
+  ScalaParser parser(filename, buffer);
+  parser.parse();
+
+  auto topStat = parser.compUnit->topStatSeq->topStat;
+  ASSERT_EQ(TopStat::Opt::TMPL_DEF, topStat->opt);
+  ASSERT_EQ(TmplDef::Opt::CASE_OBJECT, topStat->tmplDef->opt);
+
+  auto classTmplOpt = topStat->tmplDef->objectDef->classTmplOpt;
+  ASSERT_EQ(ClassTemplateOpt::Opt::TEMPLATE_BODY, classTmplOpt->opt);
+
+  auto tmplStat = classTmplOpt->tmplBody->tmplStat;
+  ASSERT_EQ(TemplateStat::Opt::DEF, tmplStat->opt);
+}
