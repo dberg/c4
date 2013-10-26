@@ -1691,7 +1691,23 @@ void ScalaParser::parseTemplateBody(spTemplateBody &tmplBody) {
     return;
   }
 
-  // TODO: {semi TemplateStat}
+  // {semi TemplateStat}
+  while (lexer->getCurToken() != STok::RCURLYB) {
+    auto semi = spSemi(new Semi);
+    parseSemi(semi);
+    if (semi->err) {
+      return;
+    }
+
+    auto tmplStat = spTemplateStat(new TemplateStat);
+    parseTemplateStat(tmplStat);
+    if (tmplStat->err) {
+      tmplBody->addErr(-1);
+      break;
+    }
+
+    tmplBody->pairs.push_back(std::make_pair(semi, tmplStat));
+  }
 
   // '}'
   if (lexer->getCurToken() != STok::RCURLYB) {

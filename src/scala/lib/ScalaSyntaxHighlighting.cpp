@@ -893,7 +893,13 @@ void ScalaSyntaxHighlighting::setTemplateBody(spTemplateBody &tmplBody) {
   if (tmplBody->tokLCurlyB) { setOp(tmplBody->tokLCurlyB); }
   // TODO: SelfType
   if (tmplBody->tmplStat) { setTemplateStat(tmplBody->tmplStat); }
-  // TODO: {semi TemplateStat}
+
+  // {semi TemplateStat}
+  for (auto pair: tmplBody->pairs) {
+    auto tmplStat = pair.second;
+    setTemplateStat(tmplStat);
+  }
+
   if (tmplBody->tokRCurlyB) { setOp(tmplBody->tokRCurlyB); }
 }
 

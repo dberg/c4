@@ -1011,11 +1011,9 @@ struct StableIdTail : ASTBase {
  */
 struct TemplateBody : ASTBase {
   spTokenNode tokLCurlyB;
-  // TODO:
-  //spSelfType selfType;
+  // TODO: spSelfType selfType;
   spTemplateStat tmplStat;
-  // TODO:
-  //std::vector<pair<spSemi, spTemplateStat>> paSemiTmplStat;
+  std::vector<std::pair<spSemi, spTemplateStat>> pairs;
   spTokenNode tokRCurlyB;
 };
 
