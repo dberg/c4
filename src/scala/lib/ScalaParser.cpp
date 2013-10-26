@@ -1156,7 +1156,7 @@ void ScalaParser::parseParams(spParams &params) {
 
   // {',' Param}
   State state;
-  while (lexer->getCurToken() != STok::COMMA) {
+  while (lexer->getCurToken() == STok::COMMA) {
     saveState(state);
 
     auto comma = lexer->getCurTokenNode();
