@@ -239,7 +239,7 @@ Patterns ::= Pattern [',' Patterns]
 
 TypeParamClause ::= '[' VariantTypeParam {',' VariantTypeParam} ']'
 
-FunTypeParamClause::= '[' TypeParam {',' TypeParam} ']'
+FunTypeParamClause ::= '[' TypeParam {',' TypeParam} ']'
 
 VariantTypeParam ::= {Annotation} ['+' | '-'] TypeParam
 
