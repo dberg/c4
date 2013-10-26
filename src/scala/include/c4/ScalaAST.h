@@ -107,6 +107,7 @@ typedef std::shared_ptr<struct Expr1> spExpr1;
 typedef std::shared_ptr<struct Exprs> spExprs;
 typedef std::shared_ptr<struct FunDef> spFunDef;
 typedef std::shared_ptr<struct FunSig> spFunSig;
+typedef std::shared_ptr<struct FunTypeParamClause> spFunTypeParamClause;
 typedef std::shared_ptr<struct Import> spImport;
 typedef std::shared_ptr<struct ImportExpr> spImportExpr;
 typedef std::shared_ptr<struct ImportSelector> spImportSelector;
@@ -539,7 +540,7 @@ struct FunDef : ASTBase {
  */
 struct FunSig : ASTBase {
   spLexId id;
-  // TODO: [FunTypeParamClause]
+  spFunTypeParamClause funTypeParamClause;
   spParamClauses paramClauses;
 };
 
@@ -549,6 +550,16 @@ struct FunSig : ASTBase {
 struct IdPeriod : ASTBase {
   spTokenNode tok;
   spLexId id;
+};
+
+/**
+ * FunTypeParamClause ::= '[' TypeParam {',' TypeParam} ']'
+ */
+struct FunTypeParamClause : ASTBase {
+  spTokenNode tokLBracket;
+  spTypeParam typeParam;
+  std::vector<std::pair<spTokenNode, spTypeParam>> pairs;
+  spTokenNode tokRBracket;
 };
 
 /**
