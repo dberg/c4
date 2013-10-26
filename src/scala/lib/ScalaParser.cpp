@@ -672,7 +672,16 @@ void ScalaParser::parseFunSig(spFunSig &funSig) {
     return;
   }
 
-  // TODO: [FunTypeParamClause]
+  // [FunTypeParamClause]
+  if (lexer->getCurToken() == STok::LBRACKET) {
+    funSig->funTypeParamClause = spFunTypeParamClause(new FunTypeParamClause);
+    parseFunTypeParamClause(funSig->funTypeParamClause);
+    if (funSig->funTypeParamClause->err) {
+      // We have an error but we don't exit here.
+      // We try to keep parsing the function.
+      funSig->addErr(-1);
+    }
+  }
 
   // ParamClauses
   funSig->paramClauses = spParamClauses(new ParamClauses);
@@ -680,6 +689,52 @@ void ScalaParser::parseFunSig(spFunSig &funSig) {
   if (funSig->paramClauses->err) {
     funSig->addErr(-1);
   }
+}
+
+/**
+ * FunTypeParamClause ::= '[' TypeParam {',' TypeParam} ']'
+ */
+void ScalaParser::parseFunTypeParamClause(
+  spFunTypeParamClause &funTypeParamClause) {
+
+  // '['
+  if (lexer->getCurToken() != STok::LBRACKET) {
+    funTypeParamClause->addErr(c4::ERR_EXP_LBRACKET);
+    return;
+  }
+
+  funTypeParamClause->tokLBracket = lexer->getCurTokenNode();
+  lexer->getNextToken(); // '['
+
+  funTypeParamClause->typeParam = spTypeParam(new TypeParam);
+  parseTypeParam(funTypeParamClause->typeParam);
+  if (funTypeParamClause->typeParam->err) {
+    funTypeParamClause->addErr(-1);
+    return;
+  }
+
+  // {',' TypeParam}
+  while (lexer->getCurToken() == STok::COMMA) {
+    auto comma = lexer->getCurTokenNode();
+    lexer->getNextToken(); // consume ','
+    auto typeParam = spTypeParam(new TypeParam);
+    parseTypeParam(typeParam);
+    if (typeParam->err) {
+      funTypeParamClause->addErr(-1);
+      return;
+    }
+
+    funTypeParamClause->pairs.push_back(std::make_pair(comma, typeParam));
+  }
+
+  // ']'
+  if (lexer->getCurToken() != STok::RBRACKET) {
+    funTypeParamClause->addErr(c4::ERR_EXP_RBRACKET);
+    return;
+  }
+
+  funTypeParamClause->tokRBracket = lexer->getCurTokenNode();
+  lexer->getNextToken(); // ']'
 }
 
 /**

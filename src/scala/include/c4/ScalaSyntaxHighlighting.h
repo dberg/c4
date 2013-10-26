@@ -34,6 +34,7 @@ class ScalaSyntaxHighlighting {
   void setExprs(spExprs &exprs);
   void setFunDef(spFunDef &funDef);
   void setFunSig(spFunSig &funSig);
+  void setFunTypeParamClause(spFunTypeParamClause &funTypeParamClause);
   void setIdPeriod(spIdPeriod &idPeriod);
   void setImport(spImport &import);
   void setImportExpr(spImportExpr &importExpr);

@@ -411,15 +411,48 @@ void ScalaSyntaxHighlighting::setFunDef(spFunDef &funDef) {
 
 void ScalaSyntaxHighlighting::setFunSig(spFunSig &funSig) {
   if (funSig->id) { setLexId(funSig->id); }
-  // TODO: [FunTypeParamClause]
+
+  if (funSig->funTypeParamClause) {
+    setFunTypeParamClause(funSig->funTypeParamClause);
+  }
 
   if (funSig->paramClauses) {
     setParamClauses(funSig->paramClauses);
   }
 }
 
+void ScalaSyntaxHighlighting::setFunTypeParamClause(
+  spFunTypeParamClause &funTypeParamClause) {
+
+  if (funTypeParamClause->tokLBracket) {
+    setOp(funTypeParamClause->tokLBracket);
+  }
+
+  if (funTypeParamClause->typeParam) {
+    setTypeParam(funTypeParamClause->typeParam);
+  }
+
+  for (auto pair : funTypeParamClause->pairs) {
+    auto comma = pair.first;
+    setOp(comma);
+
+    auto typeParam = pair.second;
+    setTypeParam(typeParam);
+  }
+
+  if (funTypeParamClause->tokRBracket) {
+    setOp(funTypeParamClause->tokRBracket);
+  }
+}
+
 void ScalaSyntaxHighlighting::setIdPeriod(spIdPeriod &idPeriod) {
-  // TODO:
+  if (idPeriod->id) {
+    setLexId(idPeriod->id);
+  }
+
+  if (idPeriod->tok) {
+    setOp(idPeriod->tok);
+  }
 }
 
 void ScalaSyntaxHighlighting::setImport(spImport &import) {
