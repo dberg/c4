@@ -24,6 +24,7 @@ class ScalaParser {
   // grammar
   void buildParseTree();
   void parseAccessModifier(spAccessModifier &accessModifier);
+  void parseAccessQualifier(spAccessQualifier &accessQual);
   void parseAnnotation(spAnnotation &annotation);
   void parseAnnotType(spAnnotType &annotType);
   void parseArgumentExprs(spArgumentExprs &argExprs);

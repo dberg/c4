@@ -70,7 +70,53 @@ void ScalaParser::parseAccessModifier(spAccessModifier &accessModifier) {
   accessModifier->tok = lexer->getCurTokenNode();
   lexer->getNextToken(); // consume 'private' or 'protected'
 
-  // TODO: [AccessQualifier]
+  // [AccessQualifier]
+  if (lexer->getCurToken() != STok::LBRACKET) {
+    return;
+  }
+
+  accessModifier->accessQual = spAccessQualifier(new AccessQualifier);
+  parseAccessQualifier(accessModifier->accessQual);
+  if (accessModifier->accessQual->err) {
+    accessModifier->addErr(-1);
+    return;
+  }
+}
+
+/**
+ * AccessQualifier ::= '[' (id | 'this') ']'
+ */
+void ScalaParser::parseAccessQualifier(spAccessQualifier &accessQual) {
+  // '['
+  if (lexer->getCurToken() != STok::LBRACKET) {
+    accessQual->addErr(c4::ERR_EXP_LBRACKET);
+    return;
+  }
+
+  accessQual->tokLBracket = lexer->getCurTokenNode();
+  lexer->getNextToken(); // consume '['
+
+  // (id | 'this')
+  if (lexer->getCurToken() == STok::THIS) {
+    accessQual->tokThis = lexer->getCurTokenNode();
+    lexer->getNextToken(); // consume 'this'
+  } else {
+    accessQual->id = parseLexId();
+    lexer->getNextToken(); // consume 'id'
+    if (accessQual->id->err) {
+      accessQual->addErr(c4::ERR_EXP_IDENTIFIER);
+      return;
+    }
+  }
+
+  // ']'
+  if (lexer->getCurToken() != STok::RBRACKET) {
+    accessQual->addErr(c4::ERR_EXP_RBRACKET);
+    return;
+  }
+
+  accessQual->tokRBracket = lexer->getCurTokenNode();
+  lexer->getNextToken(); // consume ']'
 }
 
 /**

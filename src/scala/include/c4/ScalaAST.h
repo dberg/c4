@@ -87,8 +87,9 @@ typedef std::shared_ptr<struct IdPeriod> spIdPeriod;
 typedef struct IdPeriod PeriodId;
 typedef std::shared_ptr<PeriodId> spPeriodId;
 
-typedef std::shared_ptr<struct AccessModifier> spAccessModifier;;
-typedef std::shared_ptr<struct Annotation> spAnnotation;;
+typedef std::shared_ptr<struct AccessModifier> spAccessModifier;
+typedef std::shared_ptr<struct AccessQualifier> spAccessQualifier;
+typedef std::shared_ptr<struct Annotation> spAnnotation;
 typedef std::shared_ptr<struct AnnotType> spAnnotType;
 typedef std::shared_ptr<struct ArgumentExprs> spArgumentExprs;
 typedef std::shared_ptr<struct Block> spBlock;
@@ -196,7 +197,17 @@ struct TokenNode : ASTBase {
  */
 struct AccessModifier : ASTBase {
   spTokenNode tok;
-  // TODO: spAccessQualifier accessQual;
+  spAccessQualifier accessQual;
+};
+
+/**
+ * AccessQualifier ::= '[' (id | 'this') ']'
+ */
+struct AccessQualifier : ASTBase {
+  spTokenNode tokLBracket;
+  spLexId id;
+  spTokenNode tokThis;
+  spTokenNode tokRBracket;
 };
 
 /**
