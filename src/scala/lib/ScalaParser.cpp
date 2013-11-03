@@ -166,7 +166,17 @@ void ScalaParser::parseAnnotType(spAnnotType &annotType) {
     return;
   }
 
-  // TODO: {Annotation}
+  // {Annotation}
+  while (lexer->getCurToken() == STok::AT) {
+    auto annotation = spAnnotation(new Annotation);
+    parseAnnotation(annotation);
+    if (annotation->err) {
+      annotType->addErr(-1);
+      break;
+    }
+
+    annotType->annotations.push_back(annotation);
+  }
 }
 
 /**
@@ -370,7 +380,7 @@ void ScalaParser::parseBlockStat(spBlockStat &blockStat) {
     return;
   }
 
-  // Annotation
+  // {Annotation}
   auto seenAnnotation = false;
   while (lexer->getCurToken() == STok::AT) {
     seenAnnotation = true;

@@ -224,7 +224,7 @@ struct Annotation : ASTBase {
  */
 struct AnnotType : ASTBase {
   spSimpleType simpleType;
-  // TODO: std::vector<Annotation> annotations;
+  std::vector<spAnnotation> annotations;
 };
 
 /**

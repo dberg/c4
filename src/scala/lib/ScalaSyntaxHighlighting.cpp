@@ -101,7 +101,9 @@ void ScalaSyntaxHighlighting::setAnnotType(spAnnotType &annotType) {
     setSimpleType(annotType->simpleType);
   }
 
-  // TODO: std::vector<Annotation> annotations;
+  for (auto annotation : annotType->annotations) {
+    setAnnotation(annotation);
+  }
 }
 
 void ScalaSyntaxHighlighting::setArgumentExprs(spArgumentExprs &argExprs) {
