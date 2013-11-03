@@ -91,7 +91,7 @@ enum class STok : int {
   MINUS,
   PLUS,
   DIV,
-  MUL,
+  MUL, // *
   SLASH_EQUALS,
 
   COMMENT,

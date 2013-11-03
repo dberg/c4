@@ -309,7 +309,9 @@ struct ArgumentExprs : ASTBase {
   spTokenNode tokComma;
   spExprs exprs;
   spPostfixExpr postfixExpr;
-  // TODO: ':' '_' '*'
+  spTokenNode tokColon;
+  spTokenNode tokUnderscore;
+  spTokenNode tokStar;
   // TODO: [nl]
   spBlockExpr blockExpr;
 

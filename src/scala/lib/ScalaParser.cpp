@@ -288,7 +288,30 @@ void ScalaParser::parseArgumentExprsHelper(spArgumentExprs &argExprs) {
     return;
   }
 
-  // TODO: ':' '_' '*'
+  // ':' '_' '*'
+  if (lexer->getCurToken() != STok::COLON) {
+    argExprs->addErr(c4::ERR_EXP_OP_COLON);
+    return;
+  }
+
+  argExprs->tokColon = lexer->getCurTokenNode();
+  lexer->getNextToken(); // consume ':'
+
+  if (lexer->getCurToken() != STok::UNDERSCORE) {
+    argExprs->addErr(c4::ERR_EXP_UNDERSCORE);
+    return;
+  }
+
+  argExprs->tokUnderscore = lexer->getCurTokenNode();
+  lexer->getNextToken(); // consume '_'
+
+  if (lexer->getCurToken() != STok::MUL) {
+    argExprs->addErr(c4::ERR_EXP_STAR);
+    return;
+  }
+
+  argExprs->tokStar = lexer->getCurTokenNode();
+  lexer->getNextToken(); // consume '*'
 }
 
 /**

@@ -23,8 +23,8 @@ TEST(ScalaSyntaxHighlighting, HelloWorld) {
     "(c4s-sh-op 31 32)"              // {
     "(c4s-sh-identifier 33 40)"      // println
     "(c4s-sh-op 40 41)"              // (
-    "(c4s-sh-string-literal 41 54)"  // "Hello world
-    "(c4s-sh-op 54 55)"              // )"
+    "(c4s-sh-string-literal 41 54)"  // "Hello world"
+    "(c4s-sh-op 54 55)"              // )
     "(c4s-sh-op 55 56)"              // ;
     "(c4s-sh-op 57 58)"              // }
     "]";
