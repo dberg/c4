@@ -59,7 +59,27 @@ void ScalaSyntaxHighlighting::setAccessModifier(
     setKeyword(accessModifier->tok);
   }
 
-  // TODO: [AccessQualifier]
+  if (accessModifier->accessQual) {
+    setAccessQualifier(accessModifier->accessQual);
+  }
+}
+
+void ScalaSyntaxHighlighting::setAccessQualifier(
+  spAccessQualifier &accessQual) {
+
+  if (accessQual->tokLBracket) {
+    setOp(accessQual->tokLBracket);
+  }
+
+  if (accessQual->tokThis) {
+    setKeyword(accessQual->tokThis);
+  } else if (accessQual->id) {
+    setLexId(accessQual->id);
+  }
+
+  if (accessQual->tokRBracket) {
+    setOp(accessQual->tokRBracket);
+  }
 }
 
 void ScalaSyntaxHighlighting::setAnnotation(spAnnotation &annotation) {

@@ -16,6 +16,7 @@ class ScalaSyntaxHighlighting {
   void setOp(unsigned int ini, unsigned int end);
 
   void setAccessModifier(spAccessModifier &accessModifier);
+  void setAccessQualifier(spAccessQualifier &accessQual);
   void setAnnotation(spAnnotation &annotation);
   void setAnnotType(spAnnotType &annotType);
   void setArgumentExprs(spArgumentExprs &argExprs);
