@@ -1,7 +1,9 @@
 //-*- C++ -*-
 #ifndef __DAEMON_H__
 #define __DAEMON_H__
+#include <iostream>
 #include <string>
+#include <sys/socket.h>
 #include "CmdInput.h"
 
 namespace c4 {
