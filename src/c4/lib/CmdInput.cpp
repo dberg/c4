@@ -59,7 +59,12 @@ int CmdInput::processCmdArgs() {
         return 1;
       }
 
-      port = argv[++i];
+      std::string portStr = argv[++i];
+      std::stringstream ss(portStr);
+      if (!(ss >> port)) {
+        error = "Invalid port number.";
+        return 1;
+      }
     }
 
   }
@@ -78,7 +83,7 @@ int CmdInput::validateInput() {
     return 1;
   }
 
-  if (port.empty() && optDaemon) {
+  if (port <= 0 && optDaemon) {
     error = "Missing port number.";
     return 1;
   }

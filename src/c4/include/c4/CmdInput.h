@@ -1,6 +1,7 @@
 //-*- C++ -*-
 #ifndef __CMD_INPUT_H__
 #define __CMD_INPUT_H__
+#include <sstream>
 #include <string>
 
 namespace c4 {
@@ -21,7 +22,7 @@ class CmdInput {
   bool optInBytecode;
   bool optOutEmacs;
   std::string filename;
-  std::string port;
+  unsigned int port;
 
   int validateInput();
 
@@ -30,7 +31,7 @@ public:
   CmdInput(int argc, const char **argv)
     : argc(argc), argv(argv),
       optHelp(false), optDaemon(false), optInJava(false), optInScala(false),
-      optInBytecode(false), optOutEmacs(false), filename("") {}
+      optInBytecode(false), optOutEmacs(false), filename(""), port(0) {}
 
   std::string help =
     "Usage:\n"
@@ -55,7 +56,7 @@ public:
   bool isOptInBytecode() { return optInBytecode; }
 
   std::string getFilename() { return filename; }
-  std::string getPort() { return port; }
+  unsigned int getPort() { return port; }
   std::string getError() { return error; }
 };
 
