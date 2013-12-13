@@ -609,6 +609,41 @@ TEST(ScalaParser, ObjectDefs) {
 
 /**
  * -----------------------------------------------------------------------------
+ * trait X {
+ *   self: Y with Z =>
+ * }
+ * -----------------------------------------------------------------------------
+ * CompilationUnit
+ *   TopStatSeq
+ *     TopStat(1)
+ *       TmplDef(3)
+ *         'trait'
+ *         TraitDef
+ *           id                         <-- X
+ *           TraitTemplateOpt(2)
+ *             TemplateBody
+ *             '{'
+ *             SelfType
+ *               'self'
+ *             ? [TemplateStat {semi TemplateStat}]
+ *             '}'
+ */
+// TODO:
+//TEST(ScalaParser, Self) {
+//  std::string filename = "Example.scala";
+//  std::string buffer =
+//    "trait X {\n"
+//    "  self: Y with Z =>\n"
+//    "}";
+//
+//  ScalaParser parser(filename, buffer);
+//  parser.parse();
+//
+//  //parser.compUnit->topStatSeq->pairs.size());
+//}
+
+/**
+ * -----------------------------------------------------------------------------
  * package test
  * import com.company.utils._
  * trait X extends Y with Z
