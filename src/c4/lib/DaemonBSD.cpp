@@ -1,3 +1,4 @@
+#include "sys/event.h"
 #include "c4/Daemon.h"
 
 namespace c4 {
@@ -27,6 +28,13 @@ int Daemon::start(CmdInput &ci) {
   int resl = listen(listenfd, 1024);
   if (resl < 0) {
     std::cerr << "FAILURE: can't listen on port " << ci.getPort() << std::endl;
+    return 1;
+  }
+
+  // kqueue
+  int kqfd = kqueue();
+  if (kqfd == -1) {
+    std::cerr << "FAILURE: can't initialize kqueue" << std::endl;
     return 1;
   }
 
