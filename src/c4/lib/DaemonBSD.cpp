@@ -7,8 +7,8 @@ int Daemon::start(CmdInput &ci) {
   // create listening socket
   int listenfd = socket(AF_INET, SOCK_STREAM, 0);
   if (listenfd < 0) {
-    std::cerr << "FAILURE: can't create listening socket" << std::endl;
-    return 1;
+    errMsg = "can't create listening socket";
+    return -1;
   }
 
   struct sockaddr_in servaddr;
@@ -20,22 +20,25 @@ int Daemon::start(CmdInput &ci) {
   // bind
   int resb = bind(listenfd, (struct sockaddr *) &servaddr, sizeof(servaddr));
   if (resb < 0) {
-    std::cerr << "FAILURE: can't bind port " << ci.getPort() << std::endl;
-    return 1;
+    errMsg = "can't bind listening socket to port: ";
+    errMsg += itos(ci.getPort());
+    return -1;
   }
 
   // listen
-  int resl = listen(listenfd, 1024);
+  const int LISTEN_BACKLOG = 1024;
+  int resl = listen(listenfd, LISTEN_BACKLOG);
   if (resl < 0) {
-    std::cerr << "FAILURE: can't listen on port " << ci.getPort() << std::endl;
-    return 1;
+    errMsg = "can't listen on port ";
+    errMsg += itos(ci.getPort());
+    return -1;
   }
 
   // kqueue
   int kqfd = kqueue();
   if (kqfd == -1) {
-    std::cerr << "FAILURE: can't initialize kqueue" << std::endl;
-    return 1;
+    errMsg = "can't initialize kqueue";
+    return -1;
   }
 
   const int EVENTS_COUNT = 1;
@@ -50,28 +53,28 @@ int Daemon::start(CmdInput &ci) {
   while (true) {
     nev = kevent(kqfd, chlist, EVENTS_COUNT, evlist, EVENTS_COUNT, NULL);
     if (nev < 0) {
-      std::cerr << "FAILURE: kevent error" << std::endl;
-      return 1;
+      errMsg = "kevent error";
+      return -1;
     }
 
     for (i = 0; i < nev; i++) {
       // error
       if (evlist[i].flags & EV_ERROR) {
-        std::cerr << "FAILURE: " << evlist[i].data << std::endl;
-        return 1;
+        errMsg = evlist[i].data;
+        return -1;
       }
 
       // listening socket
       if (evlist[i].ident == (unsigned) listenfd) {
-        std::cout << "Listening socket being processed." << std::endl;
         socklen_t clilen = sizeof(cliaddr);
         int connfd = accept(listenfd, (struct sockaddr *) &cliaddr, &clilen);
         if (connfd < 0) {
-          std::cerr << "FAILURE: accept connection error" << std::endl;
-          return 1;
+          errMsg = "accept connection error";
+          return -1;
         }
 
-        std::cout << "Connection opened" << std::endl;
+        // TODO:
+        // Handle connection
       }
     }
   }

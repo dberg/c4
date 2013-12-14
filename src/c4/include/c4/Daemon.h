@@ -6,6 +6,7 @@
 #include <sys/socket.h>
 #include <string>
 #include <unistd.h>
+#include "c4/Util.h"
 #include "Config.h"
 #include "CmdInput.h"
 
@@ -13,13 +14,13 @@ namespace c4 {
 
 class Daemon {
 
-  std::string errorMsg;
+  std::string errMsg;
 
 public:
   Daemon() {}
   int start(CmdInput &ci);
   int shutdown();
-  std::string getError() { return errorMsg; }
+  std::string getError() { return errMsg; }
 };
 
 } // namespace

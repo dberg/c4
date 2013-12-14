@@ -97,7 +97,10 @@ int main(int argc, const char **argv) {
     return parseScalaFile(ci);
   } else if (ci.isOptDaemon()) {
     Daemon daemon;
-    daemon.start(ci);
+    if (daemon.start(ci) < 0) {
+      std::cerr << "FAILURE: " << daemon.getError() << std::endl;
+      return 1;
+    }
   }
 
   return 0;
