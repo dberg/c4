@@ -5,6 +5,7 @@
 #include <netinet/in.h>     // sockaddr_in
 #include <sys/socket.h>
 #include <string>
+#include <unistd.h>
 #include "Config.h"
 #include "CmdInput.h"
 
