@@ -14,21 +14,25 @@ int Daemon::start(CmdInput &ci) {
     return -1;
   }
 
-  const int EVENTS_COUNT = 1;
+  int chlistCounter = 1;
+  const int EVENT_LIST_COUNT = 1024;
   struct kevent chlist[EVENTS_COUNT]; // events to monitor
   struct kevent evlist[EVENTS_COUNT]; // events triggered
 
   // populate chlist
   EV_SET(&chlist[0], listenfd, EVFILT_READ, EV_ADD | EV_ENABLE, 0, 0, 0);
 
-  int nev, i;
+  int nev, i, monitorIdx = 0;
   struct sockaddr_in cliaddr;
   while (true) {
-    nev = kevent(kqfd, chlist, EVENTS_COUNT, evlist, EVENTS_COUNT, NULL);
+    nev = kevent(kqfd, chlist, chlistCounter, evlist, EVENTS_COUNT, NULL);
     if (nev < 0) {
       errMsg = "kevent error";
       return -1;
     }
+
+    // reset chlist
+    chlist = 0;
 
     for (i = 0; i < nev; i++) {
       // error
@@ -37,7 +41,7 @@ int Daemon::start(CmdInput &ci) {
         return -1;
       }
 
-      // listening socket
+      // listening socket - accept new connections
       if (evlist[i].ident == (unsigned) listenfd) {
         socklen_t clilen = sizeof(cliaddr);
         int connfd = accept(listenfd, (struct sockaddr *) &cliaddr, &clilen);
@@ -46,14 +50,29 @@ int Daemon::start(CmdInput &ci) {
           return -1;
         }
 
+        // monitor new connection
+        chlistCounter++;
+        EV_SET(&chlist[chlistCounter], connfd, EFILT_READ | EFILT_WRITE,
+          EV_ADD, 0, 0, 0)
+        continue;
+      }
+
+      // handle socket communication
+      int n = read(evlist[i].ident, readBuffer, READ_BUFFER_MAX);
+      if (n < 0) {
         // TODO:
-        // Handle connection
+        // read error
+      } else if (n == 0) {
+        // TODO:
+        // No more data coming in. Do we actually have to handle that?
+      } else {
+        // TODO:
+        // data is available
       }
     }
   }
 
   close(kqfd);
-
   return 0;
 }
 

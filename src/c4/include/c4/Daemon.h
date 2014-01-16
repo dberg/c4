@@ -61,6 +61,7 @@ private:
     }
 
     // listen
+    // TODO: a config file should optionally override this value
     const int LISTEN_BACKLOG = 1024;
     int resl = listen(listenfd, LISTEN_BACKLOG);
     if (resl < 0) {
