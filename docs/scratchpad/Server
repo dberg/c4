@@ -1,0 +1,27 @@
+The Server is responsible to maintain connections with c4 clients. It's main purpose is to manage the data flow between the client and the projects that are active on the server.
+
+When the Server starts it triggers the following actions:
+
+  - Create listening socket
+  - Initialize kqueue
+  - Initialize kevent arrays
+  - Setup kevent structure with listening socket
+  - loop && kevent syscall
+    - case error
+    - case listening socket
+    - case socket has data to be read
+      - read data and send it to Project
+
+--------------------------------------------------------------------------------
+
+Questions:
+
+  1. how multiplexed writes work? If we have more data that the kernel buffer can receive we should keep this message and wait for the kernel buffer to have space.
+
+  2. If the connection is broken, how are we notified so we can remove the mapping between the socket and Project instance?
+
+--------------------------------------------------------------------------------
+
+The Server has a hashmap of incomplete messages arriving or being sent to the clients. The Server has an instance of MessageHandler, that understands c4's protocol. When a complete message is received it sends the message to ProjectHandler instance, which in turn will direct the message to the correct Project instance to process the message.
+
+The ProjectHandler, upon receiving a complete message, takes a thread out of a thread pool, and asks the Project instance to process the message. For example, process this compilation unit.

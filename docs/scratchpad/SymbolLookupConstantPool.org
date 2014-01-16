@@ -1,0 +1,36 @@
+- Source
+    package bucketz;
+    public class X {
+        public static void m() {
+            Y a = new Y();
+            a.h();
+        }
+    }
+- Table
+ - #2  Class name_index:#15 -> bucketz/Y
+ - #4  Methodref class_index #2 name_and_type_index #16 -> h()V
+   This comes from Y.java. Not much we can do here.
+ - #5  Class name_index #17 -> bucketz/X
+ - #11 Utf8 m
+   That's it??
+
+Constant Pool size: 20
+#1 Methodref class_index #6 name_and_type_index #14
+#2 Class name_index #15
+#3 Methodref class_index #2 name_and_type_index #14
+#4 Methodref class_index #2 name_and_type_index #16
+#5 Class name_index #17
+#6 Class name_index #18
+#7 Utf8 <init>
+#8 Utf8 ()V
+#9 Utf8 Code
+#10 Utf8 LineNumberTable
+#11 Utf8 m
+#12 Utf8 SourceFile
+#13 Utf8 X.java
+#14 NameAndType name_index #7 descriptor_index #8
+#15 Utf8 bucketz/Y
+#16 NameAndType name_index #19 descriptor_index #8
+#17 Utf8 bucketz/X
+#18 Utf8 java/lang/Object
+#19 Utf8 h
