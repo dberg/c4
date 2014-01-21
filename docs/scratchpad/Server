@@ -1,9 +1,9 @@
-The Server is responsible to maintain connections with c4 clients. It's main purpose is to manage the data flow between the client and the projects that are active on the server.
+The Server is responsible to maintain connections with c4 clients. Its main purpose is to manage the data flow between the client and the projects that are active on the server.
 
 When the Server starts it triggers the following actions:
 
   - Create listening socket
-  - Initialize kqueue
+  - Initialize kqueue*
   - Initialize kevent arrays
   - Setup kevent structure with listening socket
   - loop && kevent syscall
@@ -11,6 +11,8 @@ When the Server starts it triggers the following actions:
     - case listening socket
     - case socket has data to be read
       - read data and send it to Project
+
+* BSD specific. We'll have something similar for Linux using epoll.
 
 --------------------------------------------------------------------------------
 
@@ -22,6 +24,14 @@ Questions:
 
 --------------------------------------------------------------------------------
 
-The Server has a hashmap of incomplete messages arriving or being sent to the clients. The Server has an instance of MessageHandler, that understands c4's protocol. When a complete message is received it sends the message to ProjectHandler instance, which in turn will direct the message to the correct Project instance to process the message.
+The Server has an instance of MessageHandler.
 
-The ProjectHandler, upon receiving a complete message, takes a thread out of a thread pool, and asks the Project instance to process the message. For example, process this compilation unit.
+When the server reads data, it sends the data to the MessageHandler. The MessageHandler understands the C4Protocol and can buffer incomplete messages.
+
+When a complete message is received the MessageHandler sends the message to the ProjectHandler instance, which in turn will direct the message to the correct Project instance to process the message.
+
+The ProjectHandler, upon receiving a complete message, takes a thread out of a thread pool, and asks the Project instance to process the message. For example, process this compilation unit. When the message is processed, a message for the client is returned and the ProjectHandler asks the MessageHandler to deliver this message to Client. The MessageHandler will buffer the bytes that could not be written at once and send it again when the socket is ready to accept data.
+
+    Client <-> Server <-> MessageHandler <-> ProjectHandler <-> Project
+
+

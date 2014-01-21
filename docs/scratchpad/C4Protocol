@@ -1,0 +1,30 @@
+C4 Protocol
+--------------------------------------------------------------------------------
+
+Communication between clients and c4's server are defined by C4's binary
+protocol, network order, and follows the format:
+
+DATA_SIZE(4) ::= DATA
+
+DATA(DATA_SIZE) ::= HEADER BODY
+
+HEADER ::= VERSION(4)
+           MESSAGE_TYPE(1)
+           ( HEADER_1 | HEADER_2 )
+
+HEADER_1 :: TBD
+
+HEADER_2 :: TBD
+
+BODY ::= TBD
+
+--------------------------------------------------------------------------------
+
+The DATA_SIZE is 4 bytes long and indicates the size of DATA.
+
+DATA includes HEADER and BODY.
+
+The first byte in HEADER is the MESSAGE_TYPE. There are 2 message types:
+
+1. Compilation Unit
+2. Compilation Unit Request
