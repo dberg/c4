@@ -2,7 +2,7 @@
 #include <string>
 #include "c4/SourceCodeStream.h"
 #include "c4/CmdInput.h"
-#include "c4/Daemon.h"
+#include "c4/Server.h"
 #include "c4/File.h"
 #include "c4/Parser.h"
 #include "c4/EmacsOutput.h"
@@ -95,10 +95,10 @@ int main(int argc, const char **argv) {
     return parseJavaFile(ci);
   } else if (ci.isOptInScala()) {
     return parseScalaFile(ci);
-  } else if (ci.isOptDaemon()) {
-    Daemon daemon;
-    if (daemon.start(ci) < 0) {
-      std::cerr << "FAILURE: " << daemon.getError() << std::endl;
+  } else if (ci.isOptServer()) {
+    Server server;
+    if (server.start(ci) < 0) {
+      std::cerr << "FAILURE: " << server.getError() << std::endl;
       return 1;
     }
   }

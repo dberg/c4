@@ -1,8 +1,8 @@
-#include "c4/Daemon.h"
+#include "c4/Server.h"
 
 namespace c4 {
 
-int Daemon::start(CmdInput &ci) {
+int Server::start(CmdInput &ci) {
   if (createListeningSock(ci) < 0) {
     return -1;
   }
@@ -18,7 +18,7 @@ int Daemon::start(CmdInput &ci) {
   return 0;
 }
 
-int Daemon::shutdown() {
+int Server::shutdown() {
   // TODO:
   return 0;
 }

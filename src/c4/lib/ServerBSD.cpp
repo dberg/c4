@@ -1,8 +1,8 @@
-#include "c4/Daemon.h"
+#include "c4/Server.h"
 
 namespace c4 {
 
-int Daemon::start(CmdInput &ci) {
+int Server::start(CmdInput &ci) {
   if (createListeningSock(ci) < 0) {
     return -1;
   }
@@ -14,25 +14,25 @@ int Daemon::start(CmdInput &ci) {
     return -1;
   }
 
-  int chlistCounter = 1;
+  int chListCounter = 1;
   const int EVENT_LIST_COUNT = 1024;
-  struct kevent chlist[EVENTS_COUNT]; // events to monitor
-  struct kevent evlist[EVENTS_COUNT]; // events triggered
+  struct kevent chlist[EVENT_LIST_COUNT]; // events to monitor
+  struct kevent evlist[EVENT_LIST_COUNT]; // events triggered
 
   // populate chlist
   EV_SET(&chlist[0], listenfd, EVFILT_READ, EV_ADD | EV_ENABLE, 0, 0, 0);
 
-  int nev, i, monitorIdx = 0;
+  int nev, i;
   struct sockaddr_in cliaddr;
   while (true) {
-    nev = kevent(kqfd, chlist, chlistCounter, evlist, EVENTS_COUNT, NULL);
+    nev = kevent(kqfd, chlist, chListCounter, evlist, EVENT_LIST_COUNT, NULL);
     if (nev < 0) {
       errMsg = "kevent error";
       return -1;
     }
 
     // reset chlist
-    chlist = 0;
+    chListCounter = 0;
 
     for (i = 0; i < nev; i++) {
       // listening socket - accept new connections
@@ -51,9 +51,9 @@ int Daemon::start(CmdInput &ci) {
         }
 
         // monitor new connection
-        chlistCounter++;
-        EV_SET(&chlist[chlistCounter], connfd, EFILT_READ | EFILT_WRITE,
-          EV_ADD, 0, 0, 0)
+        chListCounter++;
+        EV_SET(&chlist[chListCounter], connfd, EVFILT_READ | EVFILT_WRITE,
+          EV_ADD, 0, 0, 0);
         continue;
       }
 
@@ -61,7 +61,7 @@ int Daemon::start(CmdInput &ci) {
       // evlist[i].data contains the number of bytes available
       // evlist[i].flags & EV_EOF on shutdown
       // evlist[i].fflags contains socket error if any
-      int n = read(evlist[i].ident, readBuffer, READ_BUFFER_MAX);
+      int n; //= read(evlist[i].ident, readBuffer, READ_BUFFER_MAX);
       if (n < 0) {
         // TODO:
         // read error
@@ -79,7 +79,7 @@ int Daemon::start(CmdInput &ci) {
   return 0;
 }
 
-int Daemon::shutdown() {
+int Server::shutdown() {
   // TODO:
   return 0;
 }

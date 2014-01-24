@@ -1,6 +1,6 @@
 //-*- C++ -*-
-#ifndef __DAEMON_H__
-#define __DAEMON_H__
+#ifndef __SERVER_H__
+#define __SERVER_H__
 #include <iostream>
 #include <netinet/in.h>     // sockaddr_in
 #include <sys/socket.h>
@@ -24,12 +24,12 @@
 
 namespace c4 {
 
-class Daemon {
+class Server {
 
   std::string errMsg;
 
 public:
-  Daemon() {}
+  Server() {}
   int start(CmdInput &ci);
   int shutdown();
   std::string getError() { return errMsg; }
