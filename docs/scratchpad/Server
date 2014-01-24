@@ -18,7 +18,7 @@ When the Server starts it triggers the following actions:
 
 Questions:
 
-  1. how multiplexed writes work? If we have more data that the kernel buffer can receive we should keep this message and wait for the kernel buffer to have space.
+  1. how multiplexed writes work? Also, if we have more data than the kernel buffer can receive we should keep the remaining bytes to be sent until kernel buffer has space for it.
 
   2. If the connection is broken, how are we notified so we can remove the mapping between the socket and Project instance?
 
@@ -26,12 +26,15 @@ Questions:
 
 The Server has an instance of MessageHandler.
 
-When the server reads data, it sends the data to the MessageHandler. The MessageHandler understands the C4Protocol and can buffer incomplete messages.
+When the server reads data, it sends the data to the MessageHandler. The first job of the MessageHandler is to buffer data. When receiving data it should buffer data until it has a complete message. When sending data it should buffer data until the entire message is sent or a connection is broken.
 
-When a complete message is received the MessageHandler sends the message to the ProjectHandler instance, which in turn will direct the message to the correct Project instance to process the message.
+When the MessageHandler has a complete message it passes the message to the ProjectHandler instance, which in turn will direct the message to the correct Project instance to process the message.
 
-The ProjectHandler, upon receiving a complete message, takes a thread out of a thread pool, and asks the Project instance to process the message. For example, process this compilation unit. When the message is processed, a message for the client is returned and the ProjectHandler asks the MessageHandler to deliver this message to Client. The MessageHandler will buffer the bytes that could not be written at once and send it again when the socket is ready to accept data.
+  Server -> MessageHandler -> ProjectHandler -> Project
 
-    Client <-> Server <-> MessageHandler <-> ProjectHandler <-> Project
+The ProjectHandler, upon receiving a complete message, takes a thread out of a thread pool, and asks the Project instance to process the message. For example, a message can be a request to process a compilation unit.
 
+When the message is processed by the Project instance, a message for the client is returned to the ProjectHandler, which asks the MessageHandler to deliver this message to the Client.
+
+  Project -> ProjectHandler -> MessageHandler -> Server
 
