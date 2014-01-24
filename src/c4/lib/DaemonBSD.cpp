@@ -35,19 +35,19 @@ int Daemon::start(CmdInput &ci) {
     chlist = 0;
 
     for (i = 0; i < nev; i++) {
-      // error
-      if (evlist[i].flags & EV_ERROR) {
-        errMsg = evlist[i].data;
-        return -1;
-      }
-
       // listening socket - accept new connections
       if (evlist[i].ident == (unsigned) listenfd) {
+        // error
+        if (evlist[i].flags & EV_ERROR) {
+          errMsg = evlist[i].data;
+          return -1;
+        }
+
         socklen_t clilen = sizeof(cliaddr);
         int connfd = accept(listenfd, (struct sockaddr *) &cliaddr, &clilen);
         if (connfd < 0) {
-          errMsg = "accept connection error";
-          return -1;
+          // TODO: log error
+          continue;
         }
 
         // monitor new connection
@@ -58,6 +58,9 @@ int Daemon::start(CmdInput &ci) {
       }
 
       // handle socket communication
+      // evlist[i].data contains the number of bytes available
+      // evlist[i].flags & EV_EOF on shutdown
+      // evlist[i].fflags contains socket error if any
       int n = read(evlist[i].ident, readBuffer, READ_BUFFER_MAX);
       if (n < 0) {
         // TODO:
