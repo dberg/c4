@@ -6,6 +6,7 @@
 #include <sys/socket.h>
 #include <string>
 #include <unistd.h>
+#include <unordered_map>
 
 #include "Config.h"
 
@@ -21,12 +22,16 @@
 
 #include "c4/Util.h"
 #include "CmdInput.h"
+#include "Message.h"
 
 namespace c4 {
 
 class Server {
 
   std::string errMsg;
+
+  std::unordered_map<int, spMessage> rMessages;
+  std::unordered_map<int, spMessage> wMessages;
 
 public:
   Server() {}
