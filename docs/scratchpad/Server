@@ -1,4 +1,4 @@
-The Server is responsible to maintain connections with c4 clients. Its main purpose is to manage the data flow between the client and the projects that are active on the server.
+The Server is responsible to maintain connections with c4 clients and manage the data flow, Message, between the client and the projects that are active on the server at any point in time.
 
 When the Server starts it triggers the following actions:
 
@@ -24,17 +24,14 @@ Questions:
 
 --------------------------------------------------------------------------------
 
-The Server has an instance of MessageHandler.
+When the Server is reading data, it buffers the bytes until it has a complete Message. On the other end, when asked to send a Message, the Server will buffer the Message bytes until the complete Message is sent to the client or a connection problem is found.
 
-When the server reads data, it sends the data to the MessageHandler. The first job of the MessageHandler is to buffer data. When receiving data it should buffer data until it has a complete message. When sending data it should buffer data until the entire message is sent or a connection is broken.
+After the Server has read a complete Message, it sends the Message to the ProjectHandler instance, which in turn, will match the Message to the correct Project instance, and pass the Message to the Project to process it.
 
-When the MessageHandler has a complete message it passes the message to the ProjectHandler instance, which in turn will direct the message to the correct Project instance to process the message.
+  Server -> ProjectHandler -> Project
 
-  Server -> MessageHandler -> ProjectHandler -> Project
+The ProjectHandler, upon receiving a complete Message and matching it to a Project instance, takes a thread out of a thread pool, and asks the Project instance to process the Message. For example, a Message can be a request to process a compilation unit. The result of processing the compilation is a different type of Message which is contains a response to the Client. The flow is then inverted:
 
-The ProjectHandler, upon receiving a complete message, takes a thread out of a thread pool, and asks the Project instance to process the message. For example, a message can be a request to process a compilation unit.
+  Project -> ProjectHandler -> Server
 
-When the message is processed by the Project instance, a message for the client is returned to the ProjectHandler, which asks the MessageHandler to deliver this message to the Client.
-
-  Project -> ProjectHandler -> MessageHandler -> Server
 
