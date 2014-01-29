@@ -83,7 +83,11 @@ private:
    * Create a MessageBuffer when a new connection is created.
    */
   int createMessageBuffer(int connfd) {
+    if (msgBuffers.find(connfd) != msgBuffers.end()) {
+      std::cerr << "INFO: Existing MessageBuffer in fd#" << connfd << std::endl;
+    }
 
+    msgBuffers[connfd] = spMessageBuffer(new MessageBuffer);
     return 0;
   }
 

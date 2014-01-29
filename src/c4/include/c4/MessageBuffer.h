@@ -8,7 +8,11 @@ class MessageBuffer;
 typedef std::shared_ptr<MessageBuffer> spMessageBuffer;
 
 class MessageBuffer {
+
+public:
   MessageBuffer() {}
+
+private:
   int feed(std::vector<char> &bytes);
 };
 

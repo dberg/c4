@@ -46,7 +46,7 @@ int Server::start(CmdInput &ci) {
         socklen_t clilen = sizeof(cliaddr);
         int connfd = accept(listenfd, (struct sockaddr *) &cliaddr, &clilen);
         if (connfd < 0) {
-          // TODO: log error
+          std::cerr << "Failed to accept connection." << std::endl;
           continue;
         }
 
