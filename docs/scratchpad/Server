@@ -1,4 +1,4 @@
-The Server is responsible to maintain connections with c4 clients and manage the data flow, Message, between the client and the projects that are active on the server at any point in time.
+The Server is responsible to maintain connections with c4 clients and to manage the data flow, using a Message instance, between the client and the projects that are active on the server at any point in time.
 
 When the Server starts it triggers the following actions:
 
@@ -24,7 +24,7 @@ Questions:
 
 --------------------------------------------------------------------------------
 
-When the Server is reading data, it buffers the bytes until it has a complete Message. On the other end, when asked to send a Message, the Server will buffer the Message bytes until the complete Message is sent to the client or a connection problem is found.
+When the Server is reading data, it buffers all incoming bytes in a MessageBuffer until it has a complete Message object. On the other end, when asked to send a Message to the client, the Server will transform the Message into a MessageBuffer and hold it until the complete Message is sent to the client or a connection problem is found.
 
 After the Server has read a complete Message, it sends the Message to the ProjectHandler instance, which in turn, will match the Message to the correct Project instance, and pass the Message to the Project to process it.
 

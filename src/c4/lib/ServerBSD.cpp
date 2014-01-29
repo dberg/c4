@@ -50,6 +50,9 @@ int Server::start(CmdInput &ci) {
           continue;
         }
 
+        // create message buffer
+        createMessageBuffer(connfd);
+
         // monitor new connection
         chListCounter++;
         EV_SET(&chlist[chListCounter], connfd, EVFILT_READ | EVFILT_WRITE,

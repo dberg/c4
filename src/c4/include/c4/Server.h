@@ -22,16 +22,11 @@
 
 #include "c4/Util.h"
 #include "CmdInput.h"
-#include "Message.h"
+#include "MessageBuffer.h"
 
 namespace c4 {
 
 class Server {
-
-  std::string errMsg;
-
-  std::unordered_map<int, spMessage> rMessages;
-  std::unordered_map<int, spMessage> wMessages;
 
 public:
   Server() {}
@@ -41,8 +36,14 @@ public:
 
 private:
 
+  std::string errMsg;
+  std::unordered_map<int, spMessageBuffer> msgBuffers;
+
   int listenfd;
 
+  /**
+   * Create the listening socket that will accept incoming connections.
+   */
   int createListeningSock(CmdInput &ci) {
     // create listening socket
     int listenfd = socket(AF_INET, SOCK_STREAM, 0);
@@ -74,6 +75,14 @@ private:
       errMsg += itos(ci.getPort());
       return -1;
     }
+
+    return 0;
+  }
+
+  /**
+   * Create a MessageBuffer when a new connection is created.
+   */
+  int createMessageBuffer(int connfd) {
 
     return 0;
   }
