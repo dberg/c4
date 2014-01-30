@@ -46,7 +46,7 @@ private:
    */
   int createListeningSock(CmdInput &ci) {
     // create listening socket
-    int listenfd = socket(AF_INET, SOCK_STREAM, 0);
+    listenfd = socket(AF_INET, SOCK_STREAM, 0);
     if (listenfd < 0) {
       errMsg = "can't create listening socket";
       return -1;

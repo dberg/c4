@@ -20,12 +20,14 @@ int Server::start(CmdInput &ci) {
   struct kevent evlist[EVENT_LIST_COUNT]; // events triggered
 
   // populate chlist
-  EV_SET(&chlist[0], listenfd, EVFILT_READ, EV_ADD | EV_ENABLE, 0, 0, 0);
+  EV_SET(&chlist[0], listenfd, EVFILT_READ, EV_ADD, 0, 0, 0);
 
-  int nev, i;
   struct sockaddr_in cliaddr;
+  const int READ_BUFFER_MAX = 1024;
+  char readBuffer[READ_BUFFER_MAX];
+
   while (true) {
-    nev = kevent(kqfd, chlist, chListCounter, evlist, EVENT_LIST_COUNT, NULL);
+    int nev = kevent(kqfd, chlist, chListCounter, evlist, EVENT_LIST_COUNT, NULL);
     if (nev < 0) {
       errMsg = "kevent error";
       return -1;
@@ -34,7 +36,7 @@ int Server::start(CmdInput &ci) {
     // reset chlist
     chListCounter = 0;
 
-    for (i = 0; i < nev; i++) {
+    for (int i = 0; i < nev; i++) {
       // listening socket - accept new connections
       if (evlist[i].ident == (unsigned) listenfd) {
         // error
@@ -54,27 +56,36 @@ int Server::start(CmdInput &ci) {
         createMessageBuffer(connfd);
 
         // monitor new connection
-        chListCounter++;
-        EV_SET(&chlist[chListCounter], connfd, EVFILT_READ | EVFILT_WRITE,
+        EV_SET(&chlist[chListCounter++], connfd, EVFILT_READ | EVFILT_WRITE,
           EV_ADD, 0, 0, 0);
         continue;
       }
 
       // handle socket communication
-      // evlist[i].data contains the number of bytes available
-      // evlist[i].flags & EV_EOF on shutdown
-      // evlist[i].fflags contains socket error if any
-      int n; //= read(evlist[i].ident, readBuffer, READ_BUFFER_MAX);
-      if (n < 0) {
-        // TODO:
-        // read error
-      } else if (n == 0) {
-        // TODO:
-        // No more data coming in. Do we actually have to handle that?
-      } else {
-        // TODO:
-        // data is available
+      // read data
+      if (evlist[i].flags & EVFILT_READ) {
+        // evlist[i].data contains the number of bytes available
+        int n = read(evlist[i].ident, readBuffer, READ_BUFFER_MAX);
+        std::cout << "read " << n << " bytes" << std::endl;
+
+        if (n < 0) {
+          // TODO:
+          // read error
+        } else {
+          // TODO:
+          // send data to MessageBuffer
+        }
       }
+
+      // TODO:
+      // write data
+
+      // TODO:
+      // evlist[i].flags & EV_EOF on shutdown
+      // shutdown
+
+      // TODO:
+      // evlist[i].fflags contains socket error if any
     }
   }
 

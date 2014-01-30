@@ -1,28 +1,10 @@
-The Server is responsible to maintain connections with c4 clients and to manage the data flow, using a Message instance, between the client and the projects that are active on the server at any point in time.
-
-When the Server starts it triggers the following actions:
-
-  - Create listening socket
-  - Initialize kqueue*
-  - Initialize kevent arrays
-  - Setup kevent structure with listening socket
-  - loop && kevent syscall
-    - case error
-    - case listening socket
-    - case socket has data to be read
-      - read data and send it to Project
-
-* BSD specific. We'll have something similar for Linux using epoll.
-
+--------------------------------------------------------------------------------
+  Server
 --------------------------------------------------------------------------------
 
-Questions:
+The Server is responsible to maintain connections with c4 clients and to manage the data flow, using a MessageBuffer instance, between the client and the projects that are active on the server at any point in time.
 
-  1. how multiplexed writes work? Also, if we have more data than the kernel buffer can receive we should keep the remaining bytes to be sent until kernel buffer has space for it.
-
-  2. If the connection is broken, how are we notified so we can remove the mapping between the socket and Project instance?
-
---------------------------------------------------------------------------------
+The Server uses kqueue for bsd and osx and epoll for linux. Shared coded is inside Server.h and the platform specific code can be found in the files ServerBSD.cpp and ServerLinux.cpp.
 
 When the Server is reading data, it buffers all incoming bytes in a MessageBuffer until it has a complete Message object. On the other end, when asked to send a Message to the client, the Server will transform the Message into a MessageBuffer and hold it until the complete Message is sent to the client or a connection problem is found.
 
@@ -30,8 +12,25 @@ After the Server has read a complete Message, it sends the Message to the Projec
 
   Server -> ProjectHandler -> Project
 
-The ProjectHandler, upon receiving a complete Message and matching it to a Project instance, takes a thread out of a thread pool, and asks the Project instance to process the Message. For example, a Message can be a request to process a compilation unit. The result of processing the compilation is a different type of Message which is contains a response to the Client. The flow is then inverted:
+The ProjectHandler, upon receiving a complete Message and matching it to a Project instance, takes a thread out of a thread pool, and asks the Project instance to process the Message. For example, a Message can be a request to process a compilation unit. The result of processing the compilation is a different type of Message which contains a response to the Client. The flow is then inverted:
 
   Project -> ProjectHandler -> Server
 
+--------------------------------------------------------------------------------
+  Message data stream
+--------------------------------------------------------------------------------
+
+Messages sent between the client and the c4 server consists of the message size
+followed by the message content in network byte order. The message size is an
+unsigned 32 bit value.
+
+  MESSAGE_SIZE MESSAGE
+
+--------------------------------------------------------------------------------
+  Questions
+--------------------------------------------------------------------------------
+
+  1. Check how multiplexed writes work.
+
+  2. If the connection is broken, how are we notified so we can remove the mapping between the socket and Project instance?
 
