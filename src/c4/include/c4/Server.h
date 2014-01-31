@@ -91,6 +91,25 @@ private:
     return 0;
   }
 
+  /**
+   * Add data to MessageBuffer
+   */
+  int feed(int connfd, char bytes[], int cbytes) {
+    auto it = msgBuffers.find(connfd);
+
+    // Invalid MessageBuffer.
+    // We should abort the connection with this client.
+    if (it == msgBuffers.end()) {
+      std::cerr << "ERROR: broken connection in fd#" << connfd << std::endl;
+      return -1;
+    }
+
+    // pass data to MessageBuffer
+    it->second->feed(bytes, cbytes);
+
+    return 0;
+  }
+
 };
 
 

@@ -65,10 +65,10 @@ int Server::start(CmdInput &ci) {
       // read data
       if (evlist[i].flags & EVFILT_READ) {
         // evlist[i].data contains the number of bytes available
-        int n = read(evlist[i].ident, readBuffer, READ_BUFFER_MAX);
-        std::cout << "read " << n << " bytes" << std::endl;
+        int cbytes = read(evlist[i].ident, readBuffer, READ_BUFFER_MAX);
+        feed(evlist[i].ident, readBuffer, cbytes);
 
-        if (n < 0) {
+        if (cbytes < 0) {
           // TODO:
           // read error
         } else {

@@ -103,10 +103,12 @@ $(bin)/c4: \
   $(obj_java)/libjava.a \
   $(obj_scala)/libscala.a \
   $(obj_c4)/CmdInput.o \
+  $(obj_c4)/MessageBuffer.o \
   $(obj_c4)/Server.o \
   $(obj_c4)/c4.o
 	$(CXX) \
   $(obj_c4)/CmdInput.o \
+  $(obj_c4)/MessageBuffer.o \
   $(obj_c4)/Server.o \
   $(obj_bytecode)/BinOutput.o \
   $(obj_bytecode)/BinOutputCode.o \
