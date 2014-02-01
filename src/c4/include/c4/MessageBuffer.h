@@ -2,6 +2,7 @@
 #ifndef __MESSAGE_BUFFER_H__
 #define __MESSAGE_BUFFER_H__
 
+#include <memory>
 #include <vector>
 
 namespace c4 {
