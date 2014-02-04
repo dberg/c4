@@ -12,9 +12,12 @@ typedef std::shared_ptr<MessageBuffer> spMessageBuffer;
 
 class MessageBuffer {
 
+  unsigned long size;
+  std::vector<char> bytes;
+
 public:
-  MessageBuffer() {}
-  int feed(char bytes[], int cbytes);
+  MessageBuffer(): size(0) {}
+  int feed(char buffer[], int cbytes);
 };
 
 } // namespace

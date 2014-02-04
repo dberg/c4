@@ -64,28 +64,24 @@ int Server::start(CmdInput &ci) {
       // handle socket communication
       // read data
       if (evlist[i].flags & EVFILT_READ) {
-        // evlist[i].data contains the number of bytes available
+        // evlist[i].data also contains the number of bytes available
         int cbytes = read(evlist[i].ident, readBuffer, READ_BUFFER_MAX);
-        feed(evlist[i].ident, readBuffer, cbytes);
+        if (cbytes > 0) {
+          if (feed(evlist[i].ident, readBuffer, cbytes)) {
+            // we have a complete message
+            // TODO: create message and dispatch it
+          }
+        }
 
-        if (cbytes < 0) {
-          // TODO:
-          // read error
-        } else {
-          // TODO:
-          // send data to MessageBuffer
+        // connection closed by the client
+        // stop monitoring this socket
+        if (cbytes < 0 || evlist[i].flags & EV_EOF) {
+          close(evlist[i].ident);
         }
       }
 
       // TODO:
       // write data
-
-      // TODO:
-      // evlist[i].flags & EV_EOF on shutdown
-      // shutdown
-
-      // TODO:
-      // evlist[i].fflags contains socket error if any
     }
   }
 
