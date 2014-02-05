@@ -128,6 +128,15 @@ $(obj_c4)/%.o: \
   $(INC) \
   -c $< -o $@
 
+$(obj_c4)/Server.o: \
+  $(libdir_c4)/Server.cpp \
+  $(incdir_c4)/Server.h \
+  $(libdir_c4)/ServerBSD.cpp \
+  $(libdir_c4)/ServerLinux.cpp
+	$(CXX) $(CFLAGS) \
+  $(INC) \
+  -c $< -o $@
+
 $(obj_c4)/c4.o: $(libdir_c4)/c4.cpp
 	$(CXX) $(CFLAGS) \
     $(INC) \
