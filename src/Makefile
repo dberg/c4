@@ -103,11 +103,13 @@ $(bin)/c4: \
   $(obj_java)/libjava.a \
   $(obj_scala)/libscala.a \
   $(obj_c4)/CmdInput.o \
-  $(obj_c4)/Daemon.o \
+  $(obj_c4)/MessageBuffer.o \
+  $(obj_c4)/Server.o \
   $(obj_c4)/c4.o
 	$(CXX) \
   $(obj_c4)/CmdInput.o \
-  $(obj_c4)/Daemon.o \
+  $(obj_c4)/MessageBuffer.o \
+  $(obj_c4)/Server.o \
   $(obj_bytecode)/BinOutput.o \
   $(obj_bytecode)/BinOutputCode.o \
   $(obj_bytecode)/ParserBin.o \
@@ -122,6 +124,15 @@ $(bin)/c4: \
 $(obj_c4)/%.o: \
   $(libdir_c4)/%.cpp \
   $(incdir_c4)/%.h
+	$(CXX) $(CFLAGS) \
+  $(INC) \
+  -c $< -o $@
+
+$(obj_c4)/Server.o: \
+  $(libdir_c4)/Server.cpp \
+  $(incdir_c4)/Server.h \
+  $(libdir_c4)/ServerBSD.cpp \
+  $(libdir_c4)/ServerLinux.cpp
 	$(CXX) $(CFLAGS) \
   $(INC) \
   -c $< -o $@

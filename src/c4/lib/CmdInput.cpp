@@ -44,9 +44,9 @@ int CmdInput::processCmdArgs() {
       filename = argv[++i];
     }
 
-    // daemon mode
-    if (arg.compare("-d") == 0 || arg.compare("--daemon") == 0) {
-      optDaemon = true;
+    // server
+    if (arg.compare("-s") == 0 || arg.compare("--server") == 0) {
+      optServer = true;
       // Filename should point to the c4 project file. ".c4"
       optOutEmacs = true;
       continue;
@@ -78,20 +78,20 @@ int CmdInput::processCmdArgs() {
  */
 int CmdInput::validateInput() {
   // Filename is mandatory if not in deamon mode
-  if (filename.empty() && !optDaemon) {
+  if (filename.empty() && !optServer) {
     error = "Missing filename.";
     return 1;
   }
 
-  if (port <= 0 && optDaemon) {
+  if (port <= 0 && optServer) {
     error = "Missing port number.";
     return 1;
   }
 
-  // If we don't have the input type, and we don't have the daemon option
+  // If we don't have the input type, and we don't have the server option
   // we try to infer the output type based in the filename extension.
   bool optIn = optInJava || optInScala || optInBytecode;
-  if (!optIn && !optDaemon) {
+  if (!optIn && !optServer) {
     if (endsWith(filename, ".java")) {
       optInJava = optOutEmacs = true;
     } else if (endsWith(filename, ".scala")) {

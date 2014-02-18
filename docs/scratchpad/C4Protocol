@@ -1,0 +1,26 @@
+--------------------------------------------------------------------------------
+  C4 Protocol
+--------------------------------------------------------------------------------
+
+The MESSAGE content is defined by the c4 protocol, which is text based and line
+oriented protocol, similar to http.
+
+REQUEST ::= CODE HEADERS BODY
+
+CODE ::= REQUEST_CODE nl
+
+HEADERS ::= [ { HEADER } nl ]
+
+HEADER ::= (
+           VERSION
+         | PROJECT_NAME
+         | FILENAME
+         ) nl
+
+BODY ::= arbitrary data
+
+--------------------------------------------------------------------------------
+
+Request Code
+
+TBD
