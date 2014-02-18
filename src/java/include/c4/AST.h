@@ -10,45 +10,69 @@
 /**
  * We have to modify a few production rules from the grammar.
  *
- * 1. Expression2Rest is defined in the grammar as follows
+ * -----------------------------------------------------------------------------
+ * 1. Expression2Rest
+ * -----------------------------------------------------------------------------
+ *
  * Expression2Rest:
- *   (1) { InfixOp Expression3 }
- *   (2) instanceof Type
- * but it doesn't take into account cases like
+ *   { InfixOp Expression3 }
+ *   instanceof Type
+ *
+ * This production doesn't take into account cases like:
  *   if (x == 1 && y instanceof String) { ... }
- * Our version
+ *
+ * Modified version:
+ *
  * Expression2Rest:
  *   { InfixOp Expression3 | instanceof Type }
  *
- * 2. Expression3:
- *   (1) PrefixOp Expression3
- *   (2) '(' Type ')' Expression3
- *   (3) '(' Expression ')' Expression3
- *   (4) Primary { Selector } { PostfixOp }
- * The italicized parentheses are probably a typo in the grammar.
- * We treat them as terminals.
+ * -----------------------------------------------------------------------------
+ * 2. Expression3
+ * -----------------------------------------------------------------------------
  *
- * 3. CatchType is defined in the grammar as follows
+ * Expression3:
+ *   PrefixOp Expression3
+ *   '(' Type ')' Expression3
+ *   '(' Expression ')' Expression3
+ *   Primary { Selector } { PostfixOp }
+ *
+ * The italicized parentheses should be ignored. We treat them as terminals.
+ *
+ * -----------------------------------------------------------------------------
+ * 3. CatchType
+ * -----------------------------------------------------------------------------
+ *
  * CatchType:
  *   Identifier { '|' Identifier }
- * Our version
+ *
+ * Modified version:
+ *
  * CatchType:
  *   QualifiedIdentifier { '|' QualifiedIdentifier }
  *
- * 4. Creator is defined in the grammar as follows
+ * -----------------------------------------------------------------------------
+ * 4. Creator
+ * -----------------------------------------------------------------------------
+ *
  * Creator:
  *   NonWildcardTypeArguments CreatedName ClassCreatorRest
  *   CreatedName ( ClassCreatorRest | ArrayCreatorRest )
+ *
  * We have to take into account primitive arrays and we add one more production
- * rule to Creator. For example
+ * rule to Creator. For example:
  *   int[] a = new int[1];
- * Our version
+ *
+ * Modified version:
+ *
  * Creator:
  *   NonWildcardTypeArguments CreatedName ClassCreatorRest
  *   CreatedName ( ClassCreatorRest | ArrayCreatorRest )
  *   BasicType ArrayCreatorRest
  *
- * 5. NonWildcardTypeArguments is defined in the grammar as follows
+ * -----------------------------------------------------------------------------
+ * 5. NonWildcardTypeArguments
+ * -----------------------------------------------------------------------------
+ *
  * NonWildcardTypeArguments:
  *   < TypeList >
  * And TypeList expands to
@@ -56,57 +80,89 @@
  *   ReferenceType { , ReferenceType }
  *
  * The problem is that it won't take into account arrays. Examples:
- *   <String[]>
- *   <int[]>
- * Our version
+ *   < String[] >
+ *   < int[] >
+ *
+ * Modified version:
+ *
  * NonWildcardTypeArguments:
  *   < TypeList2 >
+ *
  * TypeList2:
  *   Type { , Type }
+ *
  * The parser or the output code has to check for the invalid input of
  * primitives that are not arrays. This is INVALID: <int>
  *
- * 6. TypeArgument is defined in the grammar as follows
+ * -----------------------------------------------------------------------------
+ * 6. TypeArgument
+ * -----------------------------------------------------------------------------
+ *
  * TypeArgument:
  *   ReferenceType
  *   ? [ ( extends | super ) ReferenceType ]
+ *
  * Like NonWildcardTypeArguments, this production rule doesn't take into
  * account arrays, including basic type arrays.
- * Our version
+ *
+ * Modified version:
+ *
  * TypeArgument:
  *   Type
  *   ? [ ( extends | super ) Type ]
  *
- * 7. ForControl is defined in the grammar as follows
+ * -----------------------------------------------------------------------------
+ * 7. ForControl
+ * -----------------------------------------------------------------------------
+ *
  * ForControl:
  *   ForVarControl
  *   ForInit ; [Expression] ; [ForUpdate]
+ *
  * We have to make ForInit optional to handle this case
  *   for (;;) { ... }
- * Our version
+ *
+ * Modified version:
+ *
  * ForControl:
  *   ForVarControl
  *   [ForInit] ; [Expression] ; [ForUpdate]
  *
- * 8. Expression is defined in the grammas as follows
+ * -----------------------------------------------------------------------------
+ * 8. Expression
+ * -----------------------------------------------------------------------------
+ *
  * Expression:
  *   Expression1 [ AssignmentOperator Expression1 ]
+ *
  * This prevents multiple assignments like a = b = 1
- * Our version
+ *
+ * Modified version:
+ *
  * Expression:
  *   Expression1 [ AssignmentOperator Expression ]
  *
- * 9. IdentifierSuffix. The first production rule option is defined as follows:
+ * -----------------------------------------------------------------------------
+ * 9. IdentifierSuffix
+ * -----------------------------------------------------------------------------
+ *
  * IdentifierSuffix:
  *   '[' ( {'[]'} . class | Expression ) ']'
- * Our version
+ *
+ * Modified version:
+ *
  * IdentifierSuffix:
  *   '[' ( ']' {'[]'} . class | Expression ']' )
  *
- * 10. AnnotationTypeBody. Our version
+ * -----------------------------------------------------------------------------
+ * 10. AnnotationTypeBody
+ * -----------------------------------------------------------------------------
+ *
+ * Modified version:
+ *
  * AnnotationTypeBody:
  *   [AnnotationTypeElementDeclarations]
- * See note in the top of this file.
+ *
  */
 namespace c4j {
 
