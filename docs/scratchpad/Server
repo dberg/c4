@@ -4,9 +4,9 @@
 
 The Server is responsible to maintain connections with c4 clients and to manage the data flow, using a MessageBuffer instance, between the client and the projects that are active on the server at any point in time.
 
-The Server uses kqueue for bsd and osx and epoll for linux. Shared coded is inside Server.h and the platform specific code can be found in the files ServerBSD.cpp and ServerLinux.cpp.
+The Server uses kqueue for bsd and osx, and epoll for linux. Shared code is inside Server.h and the platform specific code can be found in the files ServerBSD.cpp and ServerLinux.cpp.
 
-When the Server is reading data, it buffers all incoming bytes in a MessageBuffer until it has a complete Message object. On the other end, when asked to send a Message to the client, the Server will transform the Message into a MessageBuffer and hold it until the complete Message is sent to the client or a connection problem is found.
+When the Server is reading data, it buffers all incoming bytes in a MessageBuffer object until it has a complete Message object. On the other end, when asked to send a Message to the client, the Server will transform the Message into a MessageBuffer and hold it until the complete Message is sent to the client or a connection problem is found.
 
 After the Server has read a complete Message, it sends the Message to the ProjectHandler instance, which in turn, will match the Message to the correct Project instance, and pass the Message to the Project to process it.
 
