@@ -24,4 +24,13 @@ int MessageBuffer::feed(char buffer[], int cbytes) {
   return 0;
 }
 
+spMessage MessageBuffer::buildAndRemoveMessage() {
+  if (size == 0 || size < bytes.size()) {
+    return spMessage(new Message(MessageError::INCOMPLETE));
+  }
+
+  std::vector<char> msg(bytes.begin(), bytes.begin() + size);
+  return spMessage(new Message(msg));
+}
+
 } // namespace

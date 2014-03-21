@@ -15,7 +15,7 @@ int Server::start(CmdInput &ci) {
   }
 
   int chListCounter = 1;
-  const int EVENT_LIST_COUNT = 1024;
+  const int EVENT_LIST_COUNT = 256; // TODO: move configuration
   struct kevent chlist[EVENT_LIST_COUNT]; // events to monitor
   struct kevent evlist[EVENT_LIST_COUNT]; // events triggered
 
@@ -69,6 +69,7 @@ int Server::start(CmdInput &ci) {
         if (cbytes > 0) {
           if (feed(evlist[i].ident, readBuffer, cbytes)) {
             // we have a complete message
+            spMessage message = getMessage(evlist[i].ident);
             // TODO: create message and dispatch it
           }
         }

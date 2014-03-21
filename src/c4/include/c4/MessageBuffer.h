@@ -4,6 +4,7 @@
 
 #include <memory>
 #include <vector>
+#include "c4/Message.h"
 
 namespace c4 {
 
@@ -18,6 +19,7 @@ class MessageBuffer {
 public:
   MessageBuffer(): size(0) {}
   int feed(char buffer[], int cbytes);
+  spMessage buildAndRemoveMessage();
 };
 
 } // namespace

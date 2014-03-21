@@ -105,9 +105,19 @@ private:
     }
 
     // pass data to MessageBuffer
-    it->second->feed(bytes, cbytes);
+    return it->second->feed(bytes, cbytes);
+  }
 
-    return 0;
+  /**
+   * Build a Message from a MessageBuffer.
+   */
+  spMessage getMessage(int connfd) {
+    auto it = msgBuffers.find(connfd);
+    if (it != msgBuffers.end()) {
+      return it->second->buildAndRemoveMessage();
+    }
+
+    return spMessage(new Message(MessageError::INVALID_CLIENT));
   }
 
 };
