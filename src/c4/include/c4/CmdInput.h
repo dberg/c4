@@ -56,7 +56,7 @@ public:
   bool isOptInBytecode() { return optInBytecode; }
 
   std::string getFilename() { return filename; }
-  unsigned int getPort() { return port; }
+  unsigned int getServerPort() { return port; }
   std::string getError() { return error; }
 };
 

@@ -2,8 +2,8 @@
 
 namespace c4 {
 
-int Server::start(CmdInput &ci) {
-  if (createListeningSock(ci) < 0) {
+int Server::start(unsigned int port) {
+  if (createListeningSock(port) < 0) {
     return -1;
   }
 

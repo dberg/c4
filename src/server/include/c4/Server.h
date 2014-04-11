@@ -8,7 +8,7 @@
 #include <unistd.h>
 #include <unordered_map>
 
-#include "Config.h"
+#include "c4/Config.h"
 
 // If we have epoll we assume linux and if we kqueue we assume a bsd system.
 #ifdef HAVE_EPOLL
@@ -21,7 +21,7 @@
 #endif
 
 #include "c4/Util.h"
-#include "CmdInput.h"
+#include "c4/CmdInput.h"
 #include "MessageBuffer.h"
 
 namespace c4 {
@@ -30,7 +30,7 @@ class Server {
 
 public:
   Server() {}
-  int start(CmdInput &ci);
+  int start(unsigned int port);
   int shutdown();
   std::string getError() { return errMsg; }
 
@@ -44,7 +44,7 @@ private:
   /**
    * Create the listening socket that will accept incoming connections.
    */
-  int createListeningSock(CmdInput &ci) {
+  int createListeningSock(unsigned int port) {
     // create listening socket
     listenfd = socket(AF_INET, SOCK_STREAM, 0);
     if (listenfd < 0) {
@@ -56,13 +56,13 @@ private:
     bzero(&servaddr, sizeof(servaddr));
     servaddr.sin_family = AF_INET;
     servaddr.sin_addr.s_addr = htonl(INADDR_ANY);
-    servaddr.sin_port = htons(ci.getPort());
+    servaddr.sin_port = htons(port);
 
     // bind
     int resb = bind(listenfd, (struct sockaddr *) &servaddr, sizeof(servaddr));
     if (resb < 0) {
       errMsg = "can't bind listening socket to port: ";
-      errMsg += itos(ci.getPort());
+      errMsg += itos(port);
       return -1;
     }
 
@@ -72,7 +72,7 @@ private:
     int resl = listen(listenfd, LISTEN_BACKLOG);
     if (resl < 0) {
       errMsg = "can't listen on port ";
-      errMsg += itos(ci.getPort());
+      errMsg += itos(port);
       return -1;
     }
 

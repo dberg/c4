@@ -36,16 +36,12 @@ endif
 
 builddir_name = out
 builddir = $(builddir_name)/$(BUILDTYPE)
-builddir_common = $(builddir)/common
-builddir_java = $(builddir)/java
-builddir_scala = $(builddir)/scala
-builddir_bytecode = $(builddir)/bytecode
-builddir_c4 = $(builddir)/c4
 
 obj_common = $(builddir)/common/obj
 obj_java = $(builddir)/java/obj
 obj_scala = $(builddir)/scala/obj
 obj_bytecode = $(builddir)/bytecode/obj
+obj_server = $(builddir)/server/obj
 obj_c4 = $(builddir)/c4/obj
 
 bin = $(builddir)/bin
@@ -54,15 +50,21 @@ incdir_common := common/include/c4
 incdir_java := java/include/c4
 incdir_scala := scala/include/c4
 incdir_bytecode := bytecode/include/c4
+incdir_server := server/include/c4
 incdir_c4 := c4/include/c4
-INC = -I$(dir $(incdir_common)) -I$(dir $(incdir_java)) \
-  -I$(dir $(incdir_scala)) -I$(dir $(incdir_bytecode)) \
+INC = \
+  -I$(dir $(incdir_common)) \
+  -I$(dir $(incdir_java)) \
+  -I$(dir $(incdir_scala)) \
+  -I$(dir $(incdir_bytecode)) \
+  -I$(dir $(incdir_server)) \
   -I$(dir $(incdir_c4))
 
 libdir_common := common/lib
 libdir_java := java/lib
 libdir_scala := scala/lib
 libdir_bytecode := bytecode/lib
+libdir_server := server/lib
 libdir_c4 := c4/lib
 
 # Tests
@@ -74,6 +76,7 @@ gtest_inc = $(gtest_dir)/include
 tests_bytecode = tests/bytecode
 tests_java = tests/java
 tests_scala = tests/scala
+tests_server = tests/server
 CXXTESTFLAGS = -g3 $(CXX11FLAGS)
 
 .PHONY: all
@@ -82,9 +85,6 @@ all: directories $(bin)/c4 $(bin)/test-all
 .PHONY: c4
 c4: directories $(bin)/c4
 
-.PHONY: c4d
-c4: directories $(bin)/c4d
-
 .PHONY: clean
 clean:
 	$(RM) -r $(builddir_name)
@@ -92,7 +92,8 @@ clean:
 .PHONY: directories
 directories:
 	mkdir -p $(obj_common) $(obj_java) $(obj_scala) \
-          $(obj_bytecode) $(obj_c4) $(bin) $(gtest_obj)
+          $(obj_bytecode) $(obj_server) $(obj_c4) \
+          $(bin) $(gtest_obj)
 
 # main c4
 $(bin)/c4: \
@@ -102,14 +103,11 @@ $(bin)/c4: \
   $(obj_common)/libcommon.a \
   $(obj_java)/libjava.a \
   $(obj_scala)/libscala.a \
+  $(obj_server)/libserver.a \
   $(obj_c4)/CmdInput.o \
-  $(obj_c4)/MessageBuffer.o \
-  $(obj_c4)/Server.o \
   $(obj_c4)/c4.o
 	$(CXX) \
   $(obj_c4)/CmdInput.o \
-  $(obj_c4)/MessageBuffer.o \
-  $(obj_c4)/Server.o \
   $(obj_bytecode)/BinOutput.o \
   $(obj_bytecode)/BinOutputCode.o \
   $(obj_bytecode)/ParserBin.o \
@@ -118,21 +116,13 @@ $(bin)/c4: \
   $(obj_c4)/c4.o -o $@ \
   $(obj_java)/libjava.a \
   $(obj_scala)/libscala.a \
-  $(obj_common)/libcommon.a
+  $(obj_common)/libcommon.a \
+  $(obj_server)/libserver.a
 
 # objects c4
 $(obj_c4)/%.o: \
   $(libdir_c4)/%.cpp \
   $(incdir_c4)/%.h
-	$(CXX) $(CFLAGS) \
-  $(INC) \
-  -c $< -o $@
-
-$(obj_c4)/Server.o: \
-  $(libdir_c4)/Server.cpp \
-  $(incdir_c4)/Server.h \
-  $(libdir_c4)/ServerBSD.cpp \
-  $(libdir_c4)/ServerLinux.cpp
 	$(CXX) $(CFLAGS) \
   $(INC) \
   -c $< -o $@
@@ -197,6 +187,28 @@ $(obj_scala)/%.o: \
   $(INC) \
   -c $< -o $@
 
+# objects server - libserver
+$(obj_server)/libserver.a: \
+  $(obj_server)/MessageBuffer.o \
+  $(obj_server)/Server.o
+	ar -rv $@ $+
+
+$(obj_c4)/Server.o: \
+  $(libdir_c4)/Server.cpp \
+  $(incdir_c4)/Server.h \
+  $(libdir_c4)/ServerBSD.cpp \
+  $(libdir_c4)/ServerLinux.cpp
+	$(CXX) $(CFLAGS) \
+  $(INC) \
+  -c $< -o $@
+
+$(obj_server)/%.o: \
+  $(libdir_server)/%.cpp \
+  $(incdir_server)/%.h
+	$(CXX) $(CFLAGS) \
+  $(INC) \
+  -c $< -o $@
+
 # tests
 .PHONY: bytecode-classes
 bytecode-classes:
@@ -209,7 +221,10 @@ run-all:
 	chmod +x $(bin)/run-all.sh
 
 .PHONY: $(bin)/test-all
-$(bin)/test-all: run-all $(bin)/test-java $(bin)/test-scala $(bin)/test-bytecode
+$(bin)/test-all: run-all $(bin)/test-java \
+                         $(bin)/test-scala \
+                         $(bin)/test-bytecode \
+                         $(bin)/test-server
 
 $(bin)/test-java: \
   $(tests_java)/JavaTests.cpp \
@@ -248,6 +263,22 @@ $(bin)/test-scala: \
   $(obj_scala)/libscala.a \
   $(obj_common)/libcommon.a \
   $(gtest_obj)/libgtest.a \
+  -lpthread
+
+$(bin)/test-server: \
+  $(tests_server)/ServerTest.cpp \
+  $(obj_common)/libcommon.a \
+  $(obj_server)/libserver.a \
+  $(gtest_obj)/libgtest.a
+
+	$(CXX) $(CXXTESTFLAGS) \
+    $(INC) \
+    -I$(gtest_inc) \
+  $(tests_server)/ServerTest.cpp \
+  -o $@ \
+  $(gtest_obj)/libgtest.a \
+  $(obj_common)/libcommon.a \
+  $(obj_server)/libserver.a \
   -lpthread
 
 $(bin)/test-bytecode: \

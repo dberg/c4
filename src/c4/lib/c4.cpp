@@ -97,7 +97,7 @@ int main(int argc, const char **argv) {
     return parseScalaFile(ci);
   } else if (ci.isOptServer()) {
     Server server;
-    if (server.start(ci) < 0) {
+    if (server.start(ci.getServerPort()) < 0) {
       std::cerr << "FAILURE: " << server.getError() << std::endl;
       return 1;
     }
