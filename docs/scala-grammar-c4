@@ -18,17 +18,15 @@ plainid ::= upper idrest
         | op
 
 id ::= plainid
-     | ` stringLit `
+     | ` stringLiteral `
 
 idrest ::= {letter | digit} ['_' op]
 
-integerLiteral ::= (decimalNumeral | hexNumeral | octalNumeral) ['L' | 'l']
+integerLiteral ::= (decimalNumeral | hexNumeral) ['L' | 'l']
 
 decimalNumeral ::= '0' | nonZeroDigit {digit}
 
 hexNumeral ::= '0' 'x' hexDigit {hexDigit}
-
-octalNumeral ::= '0' octalDigit {octalDigit}
 
 digit ::= '0' | nonZeroDigit
 
@@ -58,7 +56,7 @@ stringElement ::= printableCharNoDoubleQuote
 
 multiLineChars ::= {['"'] ['"'] charNoDoubleQuote} {'"'}
 
-symbolLiteral ::= ''' plainid
+symbolLiteral ::= '\'' plainid
 
 comment ::= '/*' "any sequence of characters" '*/'
           | '//' "any sequence of characters up to end of line"
@@ -203,7 +201,7 @@ Enumerators ::= Generator {semi Enumerator}
 
 Enumerator ::= Generator
              | Guard
-             | 'val' Pattern1 '=' Expr
+             | Pattern1 '=' Expr
 
 Generator ::= Pattern1 '<-' Expr [Guard]
 
