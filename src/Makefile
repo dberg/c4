@@ -68,7 +68,7 @@ libdir_server := server/lib
 libdir_c4 := c4/lib
 
 # Tests
-# Google Test r652
+# Google Test r682
 # http://code.google.com/p/googletest/
 gtest_dir = third_party/gtest
 gtest_obj = $(builddir)/third_party/gtest

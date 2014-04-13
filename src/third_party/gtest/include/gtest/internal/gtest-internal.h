@@ -51,6 +51,7 @@
 #endif
 
 #include <ctype.h>
+#include <float.h>
 #include <string.h>
 #include <iomanip>
 #include <limits>
@@ -294,6 +295,9 @@ class FloatingPoint {
     return ReinterpretBits(kExponentBitMask);
   }
 
+  // Returns the maximum representable finite floating-point number.
+  static RawType Max();
+
   // Non-static methods
 
   // Returns the bits that represents this number.
@@ -373,6 +377,13 @@ class FloatingPoint {
 
   FloatingPointUnion u_;
 };
+
+// We cannot use std::numeric_limits<T>::max() as it clashes with the max()
+// macro defined by <windows.h>.
+template <>
+inline float FloatingPoint<float>::Max() { return FLT_MAX; }
+template <>
+inline double FloatingPoint<double>::Max() { return DBL_MAX; }
 
 // Typedefs the instances of the FloatingPoint template class that we
 // care to use.
@@ -773,7 +784,7 @@ class ImplicitlyConvertible {
   // MakeFrom() is an expression whose type is From.  We cannot simply
   // use From(), as the type From may not have a public default
   // constructor.
-  static From MakeFrom();
+  static typename AddReference<From>::type MakeFrom();
 
   // These two functions are overloaded.  Given an expression
   // Helper(x), the compiler will pick the first version if x can be
