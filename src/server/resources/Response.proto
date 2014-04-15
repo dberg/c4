@@ -1,0 +1,12 @@
+package c4;
+
+message Response {
+
+  enum ResponseCode {
+    OK = 0;
+    ERROR = 1;
+  }
+
+  required ResponseCode code = 1;
+  optional string errorMsg = 2;
+}
