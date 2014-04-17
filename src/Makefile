@@ -67,11 +67,16 @@ libdir_bytecode := bytecode/lib
 libdir_server := server/lib
 libdir_c4 := c4/lib
 
+# third party projects
+gtest_dir = third_party/gtest
+gtest_obj = $(builddir)/third_party/gtest
+protobuf_dir = third_party/protobuf
+protobuf_out = $(builddir)/third_party/protobuf
+protobuf_compiler = $(protobuf_out)/bin/protoc
+
 # Tests
 # Google Test r682
 # http://code.google.com/p/googletest/
-gtest_dir = third_party/gtest
-gtest_obj = $(builddir)/third_party/gtest
 gtest_inc = $(gtest_dir)/include
 tests_bytecode = tests/bytecode
 tests_java = tests/java
@@ -85,15 +90,26 @@ all: directories $(bin)/c4 $(bin)/test-all
 .PHONY: c4
 c4: directories $(bin)/c4
 
+# Only delete c4 data and skip removing third party compiled code.
 .PHONY: clean
 clean:
+	$(RM) -r $(c4_directories)
+
+# Nukes everything.
+.PHONY: clean-all
+clean-all:
 	$(RM) -r $(builddir_name)
+
+# List of directories to be created or deleted.
+c4_directories := \
+  $(obj_common) $(obj_java) $(obj_scala) \
+  $(obj_bytecode) $(obj_server) $(obj_c4) $(bin)
+
+third_party_directories := $(gtest_obj) $(protobuf_out)
 
 .PHONY: directories
 directories:
-	mkdir -p $(obj_common) $(obj_java) $(obj_scala) \
-          $(obj_bytecode) $(obj_server) $(obj_c4) \
-          $(bin) $(gtest_obj)
+	mkdir -p  $(c4_directories) $(third_party_directories)
 
 # main c4
 $(bin)/c4: \
@@ -297,6 +313,7 @@ $(bin)/test-bytecode: \
   $(gtest_obj)/libgtest.a \
   -lpthread -ldl
 
+# third party
 $(gtest_obj)/libgtest.a: $(gtest_obj)/gtest-all.o
 	ar -rv $@ $<
 
@@ -305,3 +322,13 @@ $(gtest_obj)/gtest-all.o: $(gtest_dir)/src/gtest-all.cc
     -I$(gtest_dir)/include \
     -I$(gtest_dir) \
   -c $< -o $@
+
+.PHONY: protoc
+protoc: $(protobuf_compiler)
+
+$(protobuf_compiler): directories
+  # run configure, make and make install from protobuf output directory.
+	cd $(protobuf_out); \
+  $(CURDIR)/$(protobuf_dir)/configure --prefix=$(abspath $(protobuf_out)); \
+  make; \
+  make install
