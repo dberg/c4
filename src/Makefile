@@ -116,11 +116,11 @@ $(bin)/c4: \
   $(obj_bytecode)/BinOutput.o \
   $(obj_bytecode)/BinOutputCode.o \
   $(obj_bytecode)/ParserBin.o \
-  $(obj_common)/libcommon.a \
+  $(obj_c4)/CmdInput.o \
   $(obj_java)/libjava.a \
   $(obj_scala)/libscala.a \
   $(obj_server)/libserver.a \
-  $(obj_c4)/CmdInput.o \
+  $(obj_common)/libcommon.a \
   $(obj_c4)/c4.o
 	$(CXX) \
   $(obj_c4)/CmdInput.o \
@@ -132,8 +132,8 @@ $(bin)/c4: \
   $(obj_c4)/c4.o -o $@ \
   $(obj_java)/libjava.a \
   $(obj_scala)/libscala.a \
-  $(obj_common)/libcommon.a \
-  $(obj_server)/libserver.a
+  $(obj_server)/libserver.a \
+  $(obj_common)/libcommon.a
 
 # objects c4
 $(obj_c4)/%.o: \
@@ -293,8 +293,8 @@ $(bin)/test-server: \
   $(tests_server)/ServerTest.cpp \
   -o $@ \
   $(gtest_obj)/libgtest.a \
-  $(obj_common)/libcommon.a \
   $(obj_server)/libserver.a \
+  $(obj_common)/libcommon.a \
   -lpthread
 
 $(bin)/test-bytecode: \
