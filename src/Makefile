@@ -209,11 +209,13 @@ $(obj_server)/libserver.a: \
   $(obj_server)/Server.o
 	ar -rv $@ $+
 
-$(obj_c4)/Server.o: \
-  $(libdir_c4)/Server.cpp \
-  $(incdir_c4)/Server.h \
-  $(libdir_c4)/ServerBSD.cpp \
-  $(libdir_c4)/ServerLinux.cpp
+$(obj_server)/Server.o: \
+  $(libdir_server)/Server.cpp \
+  $(incdir_server)/Server.h \
+  $(libdir_server)/ServerBSD.cpp \
+  $(libdir_server)/ServerLinux.cpp \
+  $(incdir_server)/Request.pb.h \
+  $(incdir_server)/Response.pb.h
 	$(CXX) $(CFLAGS) \
   $(INC) \
   -c $< -o $@
@@ -332,3 +334,13 @@ $(protobuf_compiler): directories
   $(CURDIR)/$(protobuf_dir)/configure --prefix=$(abspath $(protobuf_out)); \
   make; \
   make install
+
+# Auto-generated files for the server
+server_resources := $(abspath server/resources)
+$(incdir_server)/Request.pb.h: $(protobuf_compiler) $(server_resources)/Request.proto
+	$(protobuf_out)/bin/protoc -I$(server_resources) \
+  --cpp_out=$(abspath $(incdir_server)) $(server_resources)/Request.proto
+
+$(incdir_server)/Response.pb.h: $(server_resources)/Response.proto
+	$(protobuf_out)/bin/protoc -I$(server_resources) \
+  --cpp_out=$(abspath $(incdir_server)) $(server_resources)/Response.proto
