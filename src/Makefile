@@ -205,7 +205,7 @@ $(obj_scala)/%.o: \
 
 # objects server - libserver
 $(obj_server)/libserver.a: \
-  $(obj_server)/MessageBuffer.o \
+  $(obj_server)/RequestBuffer.o \
   $(obj_server)/Server.o
 	ar -rv $@ $+
 
@@ -328,7 +328,7 @@ $(gtest_obj)/gtest-all.o: $(gtest_dir)/src/gtest-all.cc
 .PHONY: protoc
 protoc: $(protobuf_compiler)
 
-$(protobuf_compiler): directories
+$(protobuf_compiler):
   # run configure, make and make install from protobuf output directory.
 	cd $(protobuf_out); \
   $(CURDIR)/$(protobuf_dir)/configure --prefix=$(abspath $(protobuf_out)); \

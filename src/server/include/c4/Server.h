@@ -22,7 +22,7 @@
 
 #include "c4/Util.h"
 #include "c4/CmdInput.h"
-#include "MessageBuffer.h"
+#include "RequestBuffer.h"
 
 namespace c4 {
 
@@ -37,7 +37,7 @@ public:
 private:
 
   std::string errMsg;
-  std::unordered_map<int, spMessageBuffer> msgBuffers;
+  std::unordered_map<int, spRequestBuffer> reqBuffers;
 
   int listenfd;
 
@@ -80,40 +80,40 @@ private:
   }
 
   /**
-   * Create a MessageBuffer when a new connection is created.
+   * Create a RequestBuffer when a new connection is created.
    */
-  int createMessageBuffer(int connfd) {
-    if (msgBuffers.find(connfd) != msgBuffers.end()) {
-      std::cerr << "INFO: Existing MessageBuffer in fd#" << connfd << std::endl;
+  int createRequestBuffer(int connfd) {
+    if (reqBuffers.find(connfd) != reqBuffers.end()) {
+      std::cerr << "INFO: Existing RequestBuffer in fd#" << connfd << std::endl;
     }
 
-    msgBuffers[connfd] = spMessageBuffer(new MessageBuffer);
+    reqBuffers[connfd] = spRequestBuffer(new RequestBuffer);
     return 0;
   }
 
   /**
-   * Add data to MessageBuffer
+   * Add data to RequestBuffer
    */
   int feed(int connfd, char bytes[], int cbytes) {
-    auto it = msgBuffers.find(connfd);
+    auto it = reqBuffers.find(connfd);
 
-    // Invalid MessageBuffer.
+    // Invalid RequestBuffer.
     // We should abort the connection with this client.
-    if (it == msgBuffers.end()) {
+    if (it == reqBuffers.end()) {
       std::cerr << "ERROR: broken connection in fd#" << connfd << std::endl;
       return -1;
     }
 
-    // pass data to MessageBuffer
+    // pass data to RequestBuffer
     return it->second->feed(bytes, cbytes);
   }
 
   /**
-   * Build a Message from a MessageBuffer.
+   * Build a Message from a RequestBuffer.
    */
   spMessage getMessage(int connfd) {
-    auto it = msgBuffers.find(connfd);
-    if (it != msgBuffers.end()) {
+    auto it = reqBuffers.find(connfd);
+    if (it != reqBuffers.end()) {
       return it->second->buildAndRemoveMessage();
     }
 
@@ -121,8 +121,6 @@ private:
   }
 
 };
-
-
 
 } // namespace
 

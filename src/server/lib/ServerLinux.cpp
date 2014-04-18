@@ -39,8 +39,7 @@ int Server::start(unsigned int port) {
           continue;
         }
 
-        // create message buffer
-        createMessageBuffer(connfd);
+        createRequestBuffer(connfd);
 
         // monitor new connection
         ev.events = EPOLLIN;
@@ -63,7 +62,7 @@ int Server::start(unsigned int port) {
           // read error
         //} else {
           // TODO:
-          // send data to MessageBuffer
+          // send data to RequestBuffer
         //}
       //}
     }

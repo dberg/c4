@@ -52,8 +52,7 @@ int Server::start(unsigned int port) {
           continue;
         }
 
-        // create message buffer
-        createMessageBuffer(connfd);
+        createRequestBuffer(connfd);
 
         // monitor new connection
         EV_SET(&chlist[chListCounter++], connfd, EVFILT_READ | EVFILT_WRITE,
@@ -68,9 +67,10 @@ int Server::start(unsigned int port) {
         int cbytes = read(evlist[i].ident, readBuffer, READ_BUFFER_MAX);
         if (cbytes > 0) {
           if (feed(evlist[i].ident, readBuffer, cbytes)) {
-            // we have a complete message
+            // we have a complete request
+            // TODO: replace Message with Request
             spMessage message = getMessage(evlist[i].ident);
-            // TODO: create message and dispatch it
+            // TODO: create  a request and dispatch it
           }
         }
 
