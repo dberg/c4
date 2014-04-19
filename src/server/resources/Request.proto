@@ -5,8 +5,6 @@ message Request {
   enum Action {
     PARSE = 0;
     GET = 1;
-    ADD = 2;
-
   }
 
   // Always mandatory.
@@ -14,10 +12,9 @@ message Request {
 
   // If we're running a parse command this is mandatory.
   optional string filename = 2;
-  optional string path = 3;
-  optional string buffer = 4;
+  optional string buffer = 3;
 
   // If the server is issuing a GET on the client to get a list of compilation
   // units the project is missing.
-  repeated string compilationUnitList = 5;
+  repeated string compilationUnitList = 4;
 }
