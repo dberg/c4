@@ -23,9 +23,14 @@ UNAME := $(shell uname)
 ifeq ($(UNAME), Darwin)
   CXX = clang++
   CXX11FLAGS = -std=c++11 -stdlib=libc++
+  # We use the default macports installation path under OSX
+  INC_EXTRA ?= /opt/local/include
+  LIB_EXTRA ?= /opt/local/lib
 endif
 
 CXX11FLAGS ?= -std=c++11
+INC_EXTRA ?= ""
+LIB_EXTRA ?= ""
 
 # Release type
 ifeq ($(BUILDTYPE),Release)
@@ -49,9 +54,7 @@ bin = $(builddir)/bin
 # third party projects
 gtest_dir = third_party/gtest
 gtest_obj = $(builddir)/third_party/gtest
-protobuf_dir = third_party/protobuf
-protobuf_out = $(builddir)/third_party/protobuf
-protobuf_compiler = $(protobuf_out)/src/protoc
+protobuf_compiler = protoc
 
 # includes
 incdir_common := common/include/c4
@@ -60,7 +63,6 @@ incdir_scala := scala/include/c4
 incdir_bytecode := bytecode/include/c4
 incdir_server := server/include/c4
 incdir_c4 := c4/include/c4
-incdir_protobuf := $(protobuf_dir)/src
 
 INC = \
   -I$(dir $(incdir_common)) \
@@ -68,7 +70,7 @@ INC = \
   -I$(dir $(incdir_scala)) \
   -I$(dir $(incdir_bytecode)) \
   -I$(dir $(incdir_server)) \
-  -I$(incdir_protobuf) \
+  -I$(INC_EXTRA) \
   -I$(dir $(incdir_c4))
 
 libdir_common := common/lib
@@ -109,7 +111,7 @@ c4_directories := \
   $(obj_common) $(obj_java) $(obj_scala) \
   $(obj_bytecode) $(obj_server) $(obj_c4) $(bin)
 
-third_party_directories := $(gtest_obj) $(protobuf_out)
+third_party_directories := $(gtest_obj)
 
 .PHONY: directories
 directories:
@@ -137,7 +139,8 @@ $(bin)/c4: \
   $(obj_java)/libjava.a \
   $(obj_scala)/libscala.a \
   $(obj_server)/libserver.a \
-  $(obj_common)/libcommon.a
+  $(obj_common)/libcommon.a \
+  -L$(LIB_EXTRA) -lprotobuf
 
 # objects c4
 $(obj_c4)/%.o: \
@@ -210,6 +213,8 @@ $(obj_scala)/%.o: \
 # objects server - libserver
 $(obj_server)/libserver.a: \
   $(obj_server)/RequestBuffer.o \
+  $(obj_server)/Request.o \
+  $(obj_server)/Response.o \
   $(obj_server)/Server.o
 	ar -rv $@ $+
 
@@ -226,11 +231,25 @@ $(obj_server)/Server.o: \
   $(incdir_server)/Server.h \
   $(libdir_server)/ServerBSD.cpp \
   $(libdir_server)/ServerLinux.cpp \
-  $(incdir_server)/Request.pb.h \
-  $(incdir_server)/Response.pb.h
+  $(obj_server)/Request.o \
+  $(obj_server)/Response.o
 	$(CXX) $(CFLAGS) \
   $(INC) \
   -c $< -o $@
+
+$(obj_server)/Request.o: \
+  $(incdir_server)/Request.pb.h \
+  $(incdir_server)/Request.pb.cc
+	$(CXX) $(CFLAGS) \
+  $(INC) \
+  -c $(incdir_server)/Request.pb.cc -o $@
+
+$(obj_server)/Response.o: \
+  $(incdir_server)/Response.pb.h \
+  $(incdir_server)/Response.pb.cc
+	$(CXX) $(CFLAGS) \
+  $(INC) \
+  -c $(incdir_server)/Response.pb.cc -o $@
 
 $(obj_server)/%.o: \
   $(libdir_server)/%.cpp \
@@ -309,6 +328,7 @@ $(bin)/test-server: \
   $(gtest_obj)/libgtest.a \
   $(obj_server)/libserver.a \
   $(obj_common)/libcommon.a \
+  -L$(LIB_EXTRA) -lprotobuf \
   -lpthread
 
 $(bin)/test-bytecode: \
@@ -337,18 +357,9 @@ $(gtest_obj)/gtest-all.o: $(gtest_dir)/src/gtest-all.cc
     -I$(gtest_dir) \
   -c $< -o $@
 
-.PHONY: protoc
-protoc: $(protobuf_compiler)
-
-# run configure and make from the protobuf output directory.
-$(protobuf_compiler):
-	cd $(protobuf_out); \
-  $(CURDIR)/$(protobuf_dir)/configure --prefix=$(abspath $(protobuf_out)); \
-  $(MAKE)
-
 # Auto-generated files for the server
 server_resources := $(abspath server/resources)
-$(incdir_server)/Request.pb.h: $(protobuf_compiler) $(server_resources)/Request.proto
+$(incdir_server)/Request.pb.h: $(server_resources)/Request.proto
 	$(protobuf_compiler) -I$(server_resources) \
   --cpp_out=$(abspath $(incdir_server)) $(server_resources)/Request.proto
 

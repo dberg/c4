@@ -45,6 +45,15 @@ BIN=/home/ichigo/c4/src/out/Release/bin
 Build
 --------------------------------------------------------------------------------
 
+Prerequisite:
+
+Install Protocol Buffers before compiling c4. See https://developers.google.com/protocol-buffers/ for more information.
+
+```bash
+# For OSX and macports run
+sudo port install protobuf-cpp
+```
+
 To build c4 in Release mode:
 
 ```bash
