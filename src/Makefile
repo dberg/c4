@@ -46,18 +46,29 @@ obj_c4 = $(builddir)/c4/obj
 
 bin = $(builddir)/bin
 
+# third party projects
+gtest_dir = third_party/gtest
+gtest_obj = $(builddir)/third_party/gtest
+protobuf_dir = third_party/protobuf
+protobuf_out = $(builddir)/third_party/protobuf
+protobuf_compiler = $(protobuf_out)/src/protoc
+
+# includes
 incdir_common := common/include/c4
 incdir_java := java/include/c4
 incdir_scala := scala/include/c4
 incdir_bytecode := bytecode/include/c4
 incdir_server := server/include/c4
 incdir_c4 := c4/include/c4
+incdir_protobuf := $(protobuf_dir)/src
+
 INC = \
   -I$(dir $(incdir_common)) \
   -I$(dir $(incdir_java)) \
   -I$(dir $(incdir_scala)) \
   -I$(dir $(incdir_bytecode)) \
   -I$(dir $(incdir_server)) \
+  -I$(incdir_protobuf) \
   -I$(dir $(incdir_c4))
 
 libdir_common := common/lib
@@ -66,13 +77,6 @@ libdir_scala := scala/lib
 libdir_bytecode := bytecode/lib
 libdir_server := server/lib
 libdir_c4 := c4/lib
-
-# third party projects
-gtest_dir = third_party/gtest
-gtest_obj = $(builddir)/third_party/gtest
-protobuf_dir = third_party/protobuf
-protobuf_out = $(builddir)/third_party/protobuf
-protobuf_compiler = $(protobuf_out)/bin/protoc
 
 # Tests
 # Google Test r682
@@ -209,6 +213,14 @@ $(obj_server)/libserver.a: \
   $(obj_server)/Server.o
 	ar -rv $@ $+
 
+$(obj_server)/RequestBuffer.o: \
+  $(libdir_server)/RequestBuffer.cpp \
+  $(incdir_server)/RequestBuffer.h \
+  $(incdir_server)/Request.pb.h
+	$(CXX) $(CFLAGS) \
+  $(INC) \
+  -c $< -o $@
+
 $(obj_server)/Server.o: \
   $(libdir_server)/Server.cpp \
   $(incdir_server)/Server.h \
@@ -328,19 +340,18 @@ $(gtest_obj)/gtest-all.o: $(gtest_dir)/src/gtest-all.cc
 .PHONY: protoc
 protoc: $(protobuf_compiler)
 
+# run configure and make from the protobuf output directory.
 $(protobuf_compiler):
-  # run configure, make and make install from protobuf output directory.
 	cd $(protobuf_out); \
   $(CURDIR)/$(protobuf_dir)/configure --prefix=$(abspath $(protobuf_out)); \
-  make; \
-  make install
+  $(MAKE)
 
 # Auto-generated files for the server
 server_resources := $(abspath server/resources)
 $(incdir_server)/Request.pb.h: $(protobuf_compiler) $(server_resources)/Request.proto
-	$(protobuf_out)/bin/protoc -I$(server_resources) \
+	$(protobuf_compiler) -I$(server_resources) \
   --cpp_out=$(abspath $(incdir_server)) $(server_resources)/Request.proto
 
 $(incdir_server)/Response.pb.h: $(server_resources)/Response.proto
-	$(protobuf_out)/bin/protoc -I$(server_resources) \
+	$(protobuf_compiler) -I$(server_resources) \
   --cpp_out=$(abspath $(incdir_server)) $(server_resources)/Response.proto

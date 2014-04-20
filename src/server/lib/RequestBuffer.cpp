@@ -29,8 +29,14 @@ spMessage RequestBuffer::buildAndRemoveMessage() {
     return spMessage(new Message(MessageError::INCOMPLETE));
   }
 
+  // Copy the complete request from the buffer.
   std::vector<char> msg(bytes.begin(), bytes.begin() + size);
-  return spMessage(new Message(msg));
+  spMessage message = spMessage(new Message(msg));
+
+  // TODO: erase message from buffer.
+  Request request;
+
+  return message;
 }
 
 } // namespace

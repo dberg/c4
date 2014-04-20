@@ -5,6 +5,7 @@
 #include <memory>
 #include <vector>
 #include "c4/Message.h"
+#include "c4/Request.pb.h"
 
 namespace c4 {
 
