@@ -24,13 +24,13 @@ ifeq ($(UNAME), Darwin)
   CXX = clang++
   CXX11FLAGS = -std=c++11 -stdlib=libc++
   # We use the default macports installation path under OSX
-  INC_EXTRA ?= /opt/local/include
+  INC_EXTRA ?= -I/opt/local/include
   LIB_EXTRA ?= /opt/local/lib
 endif
 
 CXX11FLAGS ?= -std=c++11
-INC_EXTRA ?= ""
-LIB_EXTRA ?= ""
+INC_EXTRA ?=
+LIB_EXTRA ?=
 
 # Release type
 ifeq ($(BUILDTYPE),Release)
@@ -65,12 +65,12 @@ incdir_server := server/include/c4
 incdir_c4 := c4/include/c4
 
 INC = \
+  $(INC_EXTRA) \
   -I$(dir $(incdir_common)) \
   -I$(dir $(incdir_java)) \
   -I$(dir $(incdir_scala)) \
   -I$(dir $(incdir_bytecode)) \
   -I$(dir $(incdir_server)) \
-  -I$(INC_EXTRA) \
   -I$(dir $(incdir_c4))
 
 libdir_common := common/lib

@@ -50,7 +50,9 @@ Prerequisite:
 Install Protocol Buffers before compiling c4. See https://developers.google.com/protocol-buffers/ for more information.
 
 ```bash
-# For OSX and macports run
+# Fedora
+sudo yum install protobuf-compiler protobuf-devel
+# OSX running macports
 sudo port install protobuf-cpp
 ```
 
