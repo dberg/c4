@@ -1,7 +1,5 @@
 #include "c4/RequestBuffer.h"
 
-#include <iostream>
-
 namespace c4 {
 
 /**
@@ -12,11 +10,8 @@ int RequestBuffer::feed(char buffer[], int cbytes) {
   bytes.insert(bytes.end(), &buffer[0], &buffer[cbytes]);
 
   // if the message size is unknown set it if we have 4 bytes or more.
-  if (size == 0 && bytes.size() >= 4) {
-    size = (bytes[0] << 24)
-      | (bytes[1] << 16)
-      | (bytes[2] << 8)
-      | bytes[3];
+  if (size == 0) {
+    calculateSize();
   }
 
   // Do we have a complete Request?
@@ -24,19 +19,27 @@ int RequestBuffer::feed(char buffer[], int cbytes) {
   return 0;
 }
 
-spMessage RequestBuffer::buildAndRemoveMessage() {
+void RequestBuffer::calculateSize() {
+  size = 0;
+  if (bytes.size() >= 4) {
+    size = (bytes[0] << 24)
+      | (bytes[1] << 16)
+      | (bytes[2] << 8)
+      | bytes[3];
+  }
+}
+
+Request RequestBuffer::buildAndRemoveRequest() {
+  Request request;
   if (size == 0 || size < bytes.size()) {
-    return spMessage(new Message(MessageError::INCOMPLETE));
+    return request;
   }
 
-  // Copy the complete request from the buffer.
-  std::vector<char> msg(bytes.begin(), bytes.begin() + size);
-  spMessage message = spMessage(new Message(msg));
-
-  // TODO: erase message from buffer.
-  Request request;
-
-  return message;
+  std::string reqStr(bytes.begin(), bytes.begin() + size);
+  bytes.erase(bytes.begin(), bytes.begin() + size);
+  request.ParseFromString(reqStr);
+  calculateSize();
+  return request;
 }
 
 } // namespace

@@ -22,6 +22,7 @@
 
 #include "c4/Util.h"
 #include "c4/CmdInput.h"
+#include "Request.pb.h"
 #include "RequestBuffer.h"
 
 namespace c4 {
@@ -109,15 +110,16 @@ private:
   }
 
   /**
-   * Build a Message from a RequestBuffer.
+   * Build a Request from a RequestBuffer.
    */
-  spMessage getMessage(int connfd) {
+  Request getRequest(int connfd) {
     auto it = reqBuffers.find(connfd);
     if (it != reqBuffers.end()) {
-      return it->second->buildAndRemoveMessage();
+      return it->second->buildAndRemoveRequest();
     }
 
-    return spMessage(new Message(MessageError::INVALID_CLIENT));
+    Request request;
+    return request;
   }
 
 };

@@ -68,9 +68,8 @@ int Server::start(unsigned int port) {
         if (cbytes > 0) {
           if (feed(evlist[i].ident, readBuffer, cbytes)) {
             // we have a complete request
-            // TODO: replace Message with Request
-            spMessage message = getMessage(evlist[i].ident);
-            // TODO: create  a request and dispatch it
+            Request request = getRequest(evlist[i].ident);
+            // TODO: create a request and dispatch it
           }
         }
 
