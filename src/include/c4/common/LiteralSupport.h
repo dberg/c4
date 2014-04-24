@@ -3,8 +3,8 @@
 #define __LITERAL_SUPPORT_H__
 #include <memory>
 #include <sstream>
-#include "c4/SourceCodeStream.h"
-#include "c4/Diagnosis.h"
+#include "c4/common/SourceCodeStream.h"
+#include "c4/common/Diagnosis.h"
 
 namespace c4 {
 

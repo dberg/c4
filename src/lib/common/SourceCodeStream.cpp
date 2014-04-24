@@ -1,4 +1,4 @@
-#include "c4/SourceCodeStream.h"
+#include "c4/common/SourceCodeStream.h"
 
 namespace c4 {
 

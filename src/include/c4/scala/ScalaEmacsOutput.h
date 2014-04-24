@@ -3,11 +3,11 @@
 #define __SCALA_EMACS_OUTPUT_H__
 #include <memory>
 #include <vector>
-#include "c4/Diagnosis.h"
-#include "ScalaIndentation.h"
-#include "ScalaAST.h"
-#include "ScalaParser.h"
-#include "ScalaSyntaxHighlighting.h"
+#include "c4/common/Diagnosis.h"
+#include "c4/scala/ScalaIndentation.h"
+#include "c4/scala/ScalaAST.h"
+#include "c4/scala/ScalaParser.h"
+#include "c4/scala/ScalaSyntaxHighlighting.h"
 
 namespace c4s {
 

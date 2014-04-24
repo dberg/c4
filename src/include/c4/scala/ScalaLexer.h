@@ -4,13 +4,13 @@
 #include <cctype>
 #include <memory>
 #include <sstream>
-#include "c4/Diagnosis.h"
-#include "ScalaIndentation.h"
-#include "c4/LiteralSupport.h"
-#include "c4/SourceCodeStream.h"
-#include "ScalaAST.h"
-#include "ScalaParserState.h"
-#include "ScalaToken.h"
+#include "c4/common/Diagnosis.h"
+#include "c4/common/LiteralSupport.h"
+#include "c4/common/SourceCodeStream.h"
+#include "c4/scala/ScalaIndentation.h"
+#include "c4/scala/ScalaAST.h"
+#include "c4/scala/ScalaParserState.h"
+#include "c4/scala/ScalaToken.h"
 
 namespace c4s {
 

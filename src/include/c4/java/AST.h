@@ -4,8 +4,8 @@
 #include <memory>
 #include <utility>
 #include <vector>
-#include "c4/ErrorCodes.h"
-#include "Token.h"
+#include "c4/common/ErrorCodes.h"
+#include "c4/java/Token.h"
 
 /**
  * We have to modify a few production rules from the grammar.

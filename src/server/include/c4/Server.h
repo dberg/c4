@@ -20,7 +20,7 @@
 #endif
 #endif
 
-#include "c4/Util.h"
+#include "c4/common/Util.h"
 #include "c4/CmdInput.h"
 #include "Request.pb.h"
 #include "RequestBuffer.h"

@@ -2,12 +2,12 @@
 #ifndef __SCALA_PARSER_H__
 #define __SCALA_PARSER_H__
 #include <string>
-#include "c4/SourceCodeStream.h"
-#include "c4/Diagnosis.h"
-#include "ScalaAST.h"
-#include "ScalaLexer.h"
-#include "ScalaParserState.h"
-#include "ScalaToken.h"
+#include "c4/common/SourceCodeStream.h"
+#include "c4/common/Diagnosis.h"
+#include "c4/scala/ScalaAST.h"
+#include "c4/scala/ScalaLexer.h"
+#include "c4/scala/ScalaParserState.h"
+#include "c4/scala/ScalaToken.h"
 
 namespace c4s {
 

@@ -1,6 +1,6 @@
 #include <iostream>
 #include <string>
-#include "c4/SourceCodeStream.h"
+#include "c4/common/SourceCodeStream.h"
 #include "c4/CmdInput.h"
 #include "c4/Server.h"
 #include "c4/File.h"

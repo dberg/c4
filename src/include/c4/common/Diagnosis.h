@@ -3,7 +3,7 @@
 #define __DIAGNOSIS_H__
 #include <memory>
 #include <vector>
-#include "ErrorCodes.h"
+#include "c4/common/ErrorCodes.h"
 
 namespace c4 {
 

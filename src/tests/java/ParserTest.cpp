@@ -1,5 +1,5 @@
 #include <iostream>
-#include "c4/Diagnosis.h"
+#include "c4/common/Diagnosis.h"
 #include "c4/java/EmacsOutput.h"
 #include "c4/java/Parser.h"
 #include "c4/java/SymbolTable.h"

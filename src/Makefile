@@ -57,7 +57,7 @@ gtest_obj = $(builddir)/third_party/gtest
 protobuf_compiler = protoc
 
 # includes
-incdir_common := common/include/c4
+incdir_common := include/c4/common
 incdir_java := include/c4/java
 incdir_scala := include/c4/scala
 incdir_bytecode := bytecode/include/c4
@@ -73,7 +73,7 @@ INC = \
   -I$(dir $(incdir_server)) \
   -I$(dir $(incdir_c4))
 
-libdir_common := common/lib
+libdir_common := lib/common
 libdir_java := lib/java
 libdir_scala := lib/scala
 libdir_bytecode := bytecode/lib
