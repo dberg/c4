@@ -47,7 +47,7 @@ obj_java = $(builddir)/obj/java
 obj_scala = $(builddir)/obj/scala
 obj_bytecode = $(builddir)/bytecode/obj
 obj_server = $(builddir)/server/obj
-obj_c4 = $(builddir)/c4/obj
+obj_main = $(builddir)/obj/main
 
 bin = $(builddir)/bin
 
@@ -62,7 +62,7 @@ incdir_java := include/c4/java
 incdir_scala := include/c4/scala
 incdir_bytecode := include/c4/bytecode
 incdir_server := server/include/c4
-incdir_c4 := c4/include/c4
+incdir_main := include/c4/main
 
 INC = \
   $(INC_EXTRA) \
@@ -71,14 +71,14 @@ INC = \
   -I$(dir $(incdir_java)) \
   -I$(dir $(incdir_bytecode)) \
   -I$(dir $(incdir_server)) \
-  -I$(dir $(incdir_c4))
+  -I$(dir $(incdir_main))
 
 libdir_common := lib/common
 libdir_java := lib/java
 libdir_scala := lib/scala
 libdir_bytecode := lib/bytecode
 libdir_server := server/lib
-libdir_c4 := c4/lib
+libdir_main := lib/main
 
 # Tests
 # Google Test r682
@@ -109,7 +109,7 @@ clean-all:
 # List of directories to be created or deleted.
 c4_directories := \
   $(obj_common) $(obj_java) $(obj_scala) \
-  $(obj_bytecode) $(obj_server) $(obj_c4) $(bin)
+  $(obj_bytecode) $(obj_server) $(obj_main) $(bin)
 
 third_party_directories := $(gtest_obj)
 
@@ -122,37 +122,37 @@ $(bin)/c4: \
   $(obj_bytecode)/BinOutput.o \
   $(obj_bytecode)/BinOutputCode.o \
   $(obj_bytecode)/ParserBin.o \
-  $(obj_c4)/CmdInput.o \
+  $(obj_main)/CmdInput.o \
   $(obj_java)/libjava.a \
   $(obj_scala)/libscala.a \
   $(obj_server)/libserver.a \
   $(obj_common)/libcommon.a \
-  $(obj_c4)/c4.o
+  $(obj_main)/c4.o
 	$(CXX) \
-  $(obj_c4)/CmdInput.o \
+  $(obj_main)/CmdInput.o \
   $(obj_bytecode)/BinOutput.o \
   $(obj_bytecode)/BinOutputCode.o \
   $(obj_bytecode)/ParserBin.o \
   $(CFLAGS) \
   $(INC) \
-  $(obj_c4)/c4.o -o $@ \
+  $(obj_main)/c4.o -o $@ \
   $(obj_java)/libjava.a \
   $(obj_scala)/libscala.a \
   $(obj_server)/libserver.a \
   $(obj_common)/libcommon.a \
   -L$(LIB_EXTRA) -lprotobuf
 
-# objects c4
-$(obj_c4)/%.o: \
-  $(libdir_c4)/%.cpp \
-  $(incdir_c4)/%.h
+# objects main
+$(obj_main)/%.o: \
+  $(libdir_main)/%.cpp \
+  $(incdir_main)/%.h
 	$(CXX) $(CFLAGS) \
   $(INC) \
   -c $< -o $@
 
-$(obj_c4)/c4.o: $(libdir_c4)/c4.cpp
+$(obj_main)/c4.o: $(libdir_main)/c4.cpp
 	$(CXX) $(CFLAGS) \
-    $(INC) \
+  $(INC) \
   -c $< -o $@
 
 # objects common - libcommon

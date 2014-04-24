@@ -1,15 +1,15 @@
 #include <iostream>
 #include <string>
+#include "c4/bytecode/ParserBin.h"
+#include "c4/bytecode/BinOutput.h"
 #include "c4/common/SourceCodeStream.h"
-#include "c4/CmdInput.h"
-#include "c4/Server.h"
-#include "c4/File.h"
 #include "c4/java/Parser.h"
 #include "c4/java/EmacsOutput.h"
 #include "c4/scala/ScalaParser.h"
 #include "c4/scala/ScalaEmacsOutput.h"
-#include "c4/bytecode/ParserBin.h"
-#include "c4/bytecode/BinOutput.h"
+#include "c4/main/CmdInput.h"
+#include "c4/main/File.h"
+#include "c4/Server.h"
 
 using namespace c4;
 

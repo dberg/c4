@@ -1,7 +1,7 @@
 #include <string>
 #include <vector>
-#include "c4/File.h"
 #include "c4/bytecode/ParserBin.h"
+#include "c4/main/File.h"
 #include "Util.h"
 #include "gtest/gtest.h"
 using namespace c4;

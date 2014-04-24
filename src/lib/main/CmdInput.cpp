@@ -1,4 +1,4 @@
-#include "c4/CmdInput.h"
+#include "c4/main/CmdInput.h"
 
 namespace c4 {
 

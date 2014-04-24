@@ -8,7 +8,7 @@
 #include <unistd.h>
 #include <unordered_map>
 
-#include "c4/Config.h"
+#include "c4/main/Config.h"
 
 // If we have epoll we assume linux and if we kqueue we assume a bsd system.
 #ifdef HAVE_EPOLL
@@ -21,7 +21,7 @@
 #endif
 
 #include "c4/common/Util.h"
-#include "c4/CmdInput.h"
+#include "c4/main/CmdInput.h"
 #include "Request.pb.h"
 #include "RequestBuffer.h"
 
