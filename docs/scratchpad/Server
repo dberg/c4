@@ -2,27 +2,21 @@
   Server
 --------------------------------------------------------------------------------
 
-The Server is responsible to maintain connections with c4 clients and to manage the data flow, using a MessageBuffer instance, between the client and the projects that are active on the server at any point in time.
+The server is responsible for the data flow between clients and projects residing on the server. The server maintains a RequestBuffer object per connection until it has the complete data to form a Request from the client. After a Request is formed in a RequestBuffer the server delivers the Request to the targeted Project. The project will build a Response, which the server will deliver to client. The communication is also valid from the Project to the client. The Project might create a Request asking the client for more information about the Project.
 
-The Server uses kqueue for bsd and osx, and epoll for linux. Shared code is inside Server.h and the platform specific code can be found in the files ServerBSD.cpp and ServerLinux.cpp.
+The server uses kqueue in bsd platforms like osx, and epoll if running on linux. Shared code is inside Server.h and the platform specific code can be found in the files ServerBSD.cpp and ServerLinux.cpp. The data is serialized and deserialized using Protocol Buffers in the classes Request and Response.
 
-When the Server is reading data, it buffers all incoming bytes in a MessageBuffer object until it has a complete Message object. On the other end, when asked to send a Message to the client, the Server will transform the Message into a MessageBuffer and hold it until the complete Message is sent to the client or a connection problem is found.
+The server sends a request to the ProjectHandler instance, which in turn, will match the Request to the targeted Project instance, and pass the Request to the Project to process it.
 
-After the Server has read a complete Message, it sends the Message to the ProjectHandler instance, which in turn, will match the Message to the correct Project instance, and pass the Message to the Project to process it.
+  RequestBuffer -> Request -> Server -> ProjectHandler -> Project
 
-  Server -> ProjectHandler -> Project
-
-The ProjectHandler, upon receiving a complete Message and matching it to a Project instance, takes a thread out of a thread pool, and asks the Project instance to process the Message. For example, a Message can be a request to process a compilation unit. The result of processing the compilation is a different type of Message which contains a response to the Client. The flow is then inverted:
-
-  Project -> ProjectHandler -> Server
+The ProjectHandler, upon receiving a Request and matching it to a Project instance, takes a thread out of a thread pool, and asks the Project instance to process the Message. For example, a Request can ask to process a compilation unit. The result of processing a Request is a Response that the server will deliver to the client.
 
 --------------------------------------------------------------------------------
-  Message data stream
+  Data stream
 --------------------------------------------------------------------------------
 
-Messages sent between the client and the c4 server consists of the message size
-followed by the message content in network byte order. The message size is an
-unsigned 32 bit value.
+Requests and Responses sent between the client and the c4 server consists of the serialized message length followed by the message in network byte order. The message size is an unsigned 32 bit value.
 
   MESSAGE_SIZE MESSAGE
 
