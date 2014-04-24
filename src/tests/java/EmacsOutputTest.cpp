@@ -1,7 +1,7 @@
 #include <iostream>
 #include <string>
-#include "c4/EmacsOutput.h"
-#include "c4/Parser.h"
+#include "c4/java/EmacsOutput.h"
+#include "c4/java/Parser.h"
 #include "gtest/gtest.h"
 using namespace c4j;
 

@@ -6,7 +6,7 @@
 #include <vector>
 #include "c4/SourceCodeStream.h"
 #include "c4/Diagnosis.h"
-#include "c4/Indentation.h"
+#include "Indentation.h"
 #include "AST.h"
 #include "Lexer.h"
 #include "ParserState.h"

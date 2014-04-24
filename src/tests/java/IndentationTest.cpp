@@ -1,6 +1,6 @@
 #include <iostream>
-#include "c4/Indentation.h"
-#include "c4/Parser.h"
+#include "c4/java/Indentation.h"
+#include "c4/java/Parser.h"
 #include "gtest/gtest.h"
 using namespace c4j;
 

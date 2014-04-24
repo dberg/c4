@@ -1,6 +1,6 @@
 #include <iostream>
-#include "c4/Parser.h"
-#include "c4/SymbolTable.h"
+#include "c4/java/Parser.h"
+#include "c4/java/SymbolTable.h"
 #include "gtest/gtest.h"
 using namespace c4j;
 

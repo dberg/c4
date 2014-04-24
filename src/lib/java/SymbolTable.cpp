@@ -1,5 +1,5 @@
-#include "c4/Token.h"
-#include "c4/SymbolTable.h"
+#include "c4/java/Token.h"
+#include "c4/java/SymbolTable.h"
 
 namespace c4j {
 

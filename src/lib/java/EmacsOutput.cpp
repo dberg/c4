@@ -1,4 +1,4 @@
-#include "c4/EmacsOutput.h"
+#include "c4/java/EmacsOutput.h"
 
 namespace c4j {
 void EmacsOutput::build() {

@@ -6,7 +6,7 @@
 #include <sstream>
 #include <memory>
 #include "c4/Diagnosis.h"
-#include "c4/Indentation.h"
+#include "c4/java/Indentation.h"
 #include "c4/LiteralSupport.h"
 #include "c4/SourceCodeStream.h"
 #include "AST.h"

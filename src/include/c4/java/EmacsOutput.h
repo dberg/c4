@@ -5,7 +5,7 @@
 #include <map>
 #include <sstream>
 #include "c4/Diagnosis.h"
-#include "c4/Indentation.h"
+#include "Indentation.h"
 #include "AST.h"
 #include "Parser.h"
 #include "SymbolTable.h"
