@@ -5,7 +5,7 @@
 #include <memory>
 #include <sstream>
 #include "c4/Diagnosis.h"
-#include "c4/ScalaIndentation.h"
+#include "ScalaIndentation.h"
 #include "c4/LiteralSupport.h"
 #include "c4/SourceCodeStream.h"
 #include "ScalaAST.h"

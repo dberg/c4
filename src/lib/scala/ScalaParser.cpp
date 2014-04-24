@@ -1,4 +1,4 @@
-#include "c4/ScalaParser.h"
+#include "scala/ScalaParser.h"
 #include <iostream>
 
 namespace c4s {

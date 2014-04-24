@@ -4,10 +4,10 @@
 #include <memory>
 #include <vector>
 #include "c4/Diagnosis.h"
-#include "c4/ScalaIndentation.h"
-#include "c4/ScalaAST.h"
-#include "c4/ScalaParser.h"
-#include "c4/ScalaSyntaxHighlighting.h"
+#include "ScalaIndentation.h"
+#include "ScalaAST.h"
+#include "ScalaParser.h"
+#include "ScalaSyntaxHighlighting.h"
 
 namespace c4s {
 

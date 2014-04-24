@@ -3,7 +3,7 @@
 #define __SCALA_SYNTAX_HIGHLIGHTING_H__
 #include <sstream>
 #include <vector>
-#include "c4/ScalaAST.h"
+#include "ScalaAST.h"
 
 namespace c4s {
 

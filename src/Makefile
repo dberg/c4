@@ -42,9 +42,9 @@ endif
 builddir_name = out
 builddir = $(builddir_name)/$(BUILDTYPE)
 
-obj_common = $(builddir)/common/obj
+obj_common = $(builddir)/common
 obj_java = $(builddir)/java/obj
-obj_scala = $(builddir)/scala/obj
+obj_scala = $(builddir)/obj/scala
 obj_bytecode = $(builddir)/bytecode/obj
 obj_server = $(builddir)/server/obj
 obj_c4 = $(builddir)/c4/obj
@@ -59,7 +59,7 @@ protobuf_compiler = protoc
 # includes
 incdir_common := common/include/c4
 incdir_java := java/include/c4
-incdir_scala := scala/include/c4
+incdir_scala := include/scala
 incdir_bytecode := bytecode/include/c4
 incdir_server := server/include/c4
 incdir_c4 := c4/include/c4
@@ -75,7 +75,7 @@ INC = \
 
 libdir_common := common/lib
 libdir_java := java/lib
-libdir_scala := scala/lib
+libdir_scala := lib/scala
 libdir_bytecode := bytecode/lib
 libdir_server := server/lib
 libdir_c4 := c4/lib

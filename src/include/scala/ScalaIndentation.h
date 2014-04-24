@@ -1,7 +1,7 @@
 //-*- C++ -*-
 #ifndef __SCALA_INDENTATION_H__
 #define __SCALA_INDENTATION_H__
-#include "c4/ScalaToken.h"
+#include "ScalaToken.h"
 #include <memory>
 #include <map>
 

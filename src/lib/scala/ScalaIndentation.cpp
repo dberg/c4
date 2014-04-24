@@ -1,4 +1,4 @@
-#include "c4/ScalaIndentation.h"
+#include "scala/ScalaIndentation.h"
 
 namespace c4s {
 

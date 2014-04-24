@@ -1,4 +1,4 @@
-#include "c4/ScalaEmacsOutput.h"
+#include "scala/ScalaEmacsOutput.h"
 
 namespace c4s {
 
