@@ -3,8 +3,8 @@
 #define __ASTBIN_H__
 #include <stdint.h> // cstdint
 #include <memory>
-#include "c4/TypeDefs.h"
-#include "c4/ASTBinStackFrame.h"
+#include "c4/bytecode/TypeDefs.h"
+#include "c4/bytecode/ASTBinStackFrame.h"
 
 namespace c4 {
 

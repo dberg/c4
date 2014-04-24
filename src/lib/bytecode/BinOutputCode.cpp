@@ -1,4 +1,4 @@
-#include "c4/BinOutput.h"
+#include "c4/bytecode/BinOutput.h"
 
 namespace c4 {
 

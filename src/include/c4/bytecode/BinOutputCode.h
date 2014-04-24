@@ -4,8 +4,8 @@
 #include <iomanip>
 #include <iostream>
 #include <sstream>
-#include "c4/ASTBin.h"
-#include "c4/Opcodes.h"
+#include "c4/bytecode/ASTBin.h"
+#include "c4/bytecode/Opcodes.h"
 
 namespace c4 {
 

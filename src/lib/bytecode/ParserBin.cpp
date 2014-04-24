@@ -1,4 +1,4 @@
-#include "c4/ParserBin.h"
+#include "c4/bytecode/ParserBin.h"
 
 namespace c4 {
 

@@ -5,10 +5,10 @@
 #include <sstream>
 #include <unordered_map>
 #include <vector>
-#include "c4/ASTBin.h"
-#include "c4/BinOutputCode.h"
-#include "c4/Opcodes.h"
-#include "c4/ParserBin.h"
+#include "c4/bytecode/ASTBin.h"
+#include "c4/bytecode/BinOutputCode.h"
+#include "c4/bytecode/Opcodes.h"
+#include "c4/bytecode/ParserBin.h"
 
 namespace c4 {
 

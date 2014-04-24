@@ -4,7 +4,7 @@
 #include <stdint.h> // cstdint
 #include <string>
 #include <vector>
-#include "c4/ASTBin.h"
+#include "c4/bytecode/ASTBin.h"
 
 namespace c4 {
 

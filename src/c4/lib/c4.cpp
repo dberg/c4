@@ -8,8 +8,8 @@
 #include "c4/java/EmacsOutput.h"
 #include "c4/scala/ScalaParser.h"
 #include "c4/scala/ScalaEmacsOutput.h"
-#include "c4/ParserBin.h"
-#include "c4/BinOutput.h"
+#include "c4/bytecode/ParserBin.h"
+#include "c4/bytecode/BinOutput.h"
 
 using namespace c4;
 

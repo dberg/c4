@@ -60,7 +60,7 @@ protobuf_compiler = protoc
 incdir_common := include/c4/common
 incdir_java := include/c4/java
 incdir_scala := include/c4/scala
-incdir_bytecode := bytecode/include/c4
+incdir_bytecode := include/c4/bytecode
 incdir_server := server/include/c4
 incdir_c4 := c4/include/c4
 
@@ -76,7 +76,7 @@ INC = \
 libdir_common := lib/common
 libdir_java := lib/java
 libdir_scala := lib/scala
-libdir_bytecode := bytecode/lib
+libdir_bytecode := lib/bytecode
 libdir_server := server/lib
 libdir_c4 := c4/lib
 
