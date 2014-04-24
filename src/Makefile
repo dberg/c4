@@ -59,16 +59,16 @@ protobuf_compiler = protoc
 # includes
 incdir_common := common/include/c4
 incdir_java := java/include/c4
-incdir_scala := include/scala
+incdir_scala := include/c4/scala
 incdir_bytecode := bytecode/include/c4
 incdir_server := server/include/c4
 incdir_c4 := c4/include/c4
 
 INC = \
   $(INC_EXTRA) \
+  -Iinclude \
   -I$(dir $(incdir_common)) \
   -I$(dir $(incdir_java)) \
-  -I$(dir $(incdir_scala)) \
   -I$(dir $(incdir_bytecode)) \
   -I$(dir $(incdir_server)) \
   -I$(dir $(incdir_c4))

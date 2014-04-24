@@ -6,8 +6,8 @@
 #include "c4/File.h"
 #include "c4/Parser.h"
 #include "c4/EmacsOutput.h"
-#include "scala/ScalaParser.h"
-#include "scala/ScalaEmacsOutput.h"
+#include "c4/scala/ScalaParser.h"
+#include "c4/scala/ScalaEmacsOutput.h"
 #include "c4/ParserBin.h"
 #include "c4/BinOutput.h"
 

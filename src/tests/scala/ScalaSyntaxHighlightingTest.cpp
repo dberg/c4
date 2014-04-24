@@ -1,6 +1,6 @@
 #include <iostream>
-#include "c4/ScalaEmacsOutput.h"
-#include "c4/ScalaParser.h"
+#include "c4/scala/ScalaEmacsOutput.h"
+#include "c4/scala/ScalaParser.h"
 #include "gtest/gtest.h"
 using namespace c4s;
 

@@ -1,4 +1,4 @@
-#include "scala/ScalaSyntaxHighlighting.h"
+#include "c4/scala/ScalaSyntaxHighlighting.h"
 
 namespace c4s {
 

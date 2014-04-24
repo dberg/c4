@@ -1,4 +1,4 @@
-#include "scala/ScalaLexer.h"
+#include "c4/scala/ScalaLexer.h"
 
 namespace c4s {
 
