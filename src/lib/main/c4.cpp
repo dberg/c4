@@ -5,11 +5,11 @@
 #include "c4/common/SourceCodeStream.h"
 #include "c4/java/Parser.h"
 #include "c4/java/EmacsOutput.h"
-#include "c4/scala/ScalaParser.h"
-#include "c4/scala/ScalaEmacsOutput.h"
 #include "c4/main/CmdInput.h"
 #include "c4/main/File.h"
-#include "c4/Server.h"
+#include "c4/scala/ScalaParser.h"
+#include "c4/scala/ScalaEmacsOutput.h"
+#include "c4/server/Server.h"
 
 using namespace c4;
 

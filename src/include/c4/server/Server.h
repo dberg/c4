@@ -22,8 +22,8 @@
 
 #include "c4/common/Util.h"
 #include "c4/main/CmdInput.h"
-#include "Request.pb.h"
-#include "RequestBuffer.h"
+#include "c4/server/Request.pb.h"
+#include "c4/server/RequestBuffer.h"
 
 namespace c4 {
 

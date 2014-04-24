@@ -43,10 +43,10 @@ builddir_name = out
 builddir = $(builddir_name)/$(BUILDTYPE)
 
 obj_common = $(builddir)/common
+obj_bytecode = $(builddir)/bytecode/obj
 obj_java = $(builddir)/obj/java
 obj_scala = $(builddir)/obj/scala
-obj_bytecode = $(builddir)/bytecode/obj
-obj_server = $(builddir)/server/obj
+obj_server = $(builddir)/obj/server
 obj_main = $(builddir)/obj/main
 
 bin = $(builddir)/bin
@@ -58,26 +58,19 @@ protobuf_compiler = protoc
 
 # includes
 incdir_common := include/c4/common
+incdir_bytecode := include/c4/bytecode
 incdir_java := include/c4/java
 incdir_scala := include/c4/scala
-incdir_bytecode := include/c4/bytecode
-incdir_server := server/include/c4
+incdir_server := include/c4/server
 incdir_main := include/c4/main
 
-INC = \
-  $(INC_EXTRA) \
-  -Iinclude \
-  -I$(dir $(incdir_common)) \
-  -I$(dir $(incdir_java)) \
-  -I$(dir $(incdir_bytecode)) \
-  -I$(dir $(incdir_server)) \
-  -I$(dir $(incdir_main))
+INC = $(INC_EXTRA) -Iinclude
 
 libdir_common := lib/common
 libdir_java := lib/java
 libdir_scala := lib/scala
 libdir_bytecode := lib/bytecode
-libdir_server := server/lib
+libdir_server := lib/server
 libdir_main := lib/main
 
 # Tests
@@ -146,13 +139,11 @@ $(bin)/c4: \
 $(obj_main)/%.o: \
   $(libdir_main)/%.cpp \
   $(incdir_main)/%.h
-	$(CXX) $(CFLAGS) \
-  $(INC) \
+	$(CXX) $(CFLAGS) $(INC) \
   -c $< -o $@
 
 $(obj_main)/c4.o: $(libdir_main)/c4.cpp
-	$(CXX) $(CFLAGS) \
-  $(INC) \
+	$(CXX) $(CFLAGS) $(INC) \
   -c $< -o $@
 
 # objects common - libcommon
@@ -166,16 +157,14 @@ $(obj_common)/libcommon.a: \
 $(obj_common)/%.o: \
   $(libdir_common)/%.cpp \
   $(incdir_common)/%.h
-	$(CXX) $(CFLAGS) \
-  $(INC) \
+	$(CXX) $(CFLAGS) $(INC) \
   -c $< -o $@
 
 # objects bytecode
 $(obj_bytecode)/%.o: \
   $(libdir_bytecode)/%.cpp \
   $(incdir_bytecode)/%.h
-	$(CXX) $(CFLAGS) \
-  $(INC) \
+	$(CXX) $(CFLAGS) $(INC) \
   -c $< -o $@
 
 # objects java - libjava
@@ -190,8 +179,7 @@ $(obj_java)/libjava.a: \
 $(obj_java)/%.o: \
   $(libdir_java)/%.cpp \
   $(incdir_java)/%.h
-	$(CXX) $(CFLAGS) \
-  $(INC) \
+	$(CXX) $(CFLAGS) $(INC) \
   -c $< -o $@
 
 # objects scala - libscala
@@ -206,8 +194,7 @@ $(obj_scala)/libscala.a: \
 $(obj_scala)/%.o: \
   $(libdir_scala)/%.cpp \
   $(incdir_scala)/%.h
-	$(CXX) $(CFLAGS) \
-  $(INC) \
+	$(CXX) $(CFLAGS) $(INC) \
   -c $< -o $@
 
 # objects server - libserver
@@ -222,8 +209,7 @@ $(obj_server)/RequestBuffer.o: \
   $(libdir_server)/RequestBuffer.cpp \
   $(incdir_server)/RequestBuffer.h \
   $(incdir_server)/Request.pb.h
-	$(CXX) $(CFLAGS) \
-  $(INC) \
+	$(CXX) $(CFLAGS) $(INC) \
   -c $< -o $@
 
 $(obj_server)/Server.o: \
@@ -233,29 +219,25 @@ $(obj_server)/Server.o: \
   $(libdir_server)/ServerLinux.cpp \
   $(obj_server)/Request.o \
   $(obj_server)/Response.o
-	$(CXX) $(CFLAGS) \
-  $(INC) \
+	$(CXX) $(CFLAGS) $(INC) \
   -c $< -o $@
 
 $(obj_server)/Request.o: \
   $(incdir_server)/Request.pb.h \
   $(incdir_server)/Request.pb.cc
-	$(CXX) $(CFLAGS) \
-  $(INC) \
+	$(CXX) $(CFLAGS) $(INC) \
   -c $(incdir_server)/Request.pb.cc -o $@
 
 $(obj_server)/Response.o: \
   $(incdir_server)/Response.pb.h \
   $(incdir_server)/Response.pb.cc
-	$(CXX) $(CFLAGS) \
-  $(INC) \
+	$(CXX) $(CFLAGS) $(INC) \
   -c $(incdir_server)/Response.pb.cc -o $@
 
 $(obj_server)/%.o: \
   $(libdir_server)/%.cpp \
   $(incdir_server)/%.h
-	$(CXX) $(CFLAGS) \
-  $(INC) \
+	$(CXX) $(CFLAGS) $(INC) \
   -c $< -o $@
 
 # tests
@@ -285,8 +267,7 @@ $(bin)/test-java: \
   $(obj_java)/libjava.a \
   $(gtest_obj)/libgtest.a
 
-	$(CXX) $(CXXTESTFLAGS) \
-    $(INC) \
+	$(CXX) $(CXXTESTFLAGS) $(INC) \
     -I$(gtest_inc) \
   $(tests_java)/JavaTests.cpp \
   -o $@ \
@@ -304,8 +285,7 @@ $(bin)/test-scala: \
   $(obj_scala)/libscala.a \
   $(gtest_obj)/libgtest.a
 
-	$(CXX) $(CXXTESTFLAGS) \
-    $(INC) \
+	$(CXX) $(CXXTESTFLAGS) $(INC) \
     -I$(gtest_inc) \
   $(tests_scala)/ScalaTests.cpp \
   -o $@ \
@@ -320,8 +300,7 @@ $(bin)/test-server: \
   $(obj_server)/libserver.a \
   $(gtest_obj)/libgtest.a
 
-	$(CXX) $(CXXTESTFLAGS) \
-    $(INC) \
+	$(CXX) $(CXXTESTFLAGS) $(INC) \
     -I$(gtest_inc) \
   $(tests_server)/ServerTest.cpp \
   -o $@ \
@@ -338,8 +317,7 @@ $(bin)/test-bytecode: \
   $(tests_bytecode)/SHelloWorldTest.cpp \
   $(gtest_obj)/libgtest.a
 
-	$(CXX) $(CXXTESTFLAGS) \
-    $(INC) \
+	$(CXX) $(CXXTESTFLAGS) $(INC) \
     -I$(gtest_inc) \
   $(tests_bytecode)/BytecodeTests.cpp \
   $(obj_bytecode)/ParserBin.o \
@@ -358,7 +336,7 @@ $(gtest_obj)/gtest-all.o: $(gtest_dir)/src/gtest-all.cc
   -c $< -o $@
 
 # Auto-generated files for the server
-server_resources := $(abspath server/resources)
+server_resources := $(abspath lib/resources)
 $(incdir_server)/Request.pb.h: $(server_resources)/Request.proto
 	$(protobuf_compiler) -I$(server_resources) \
   --cpp_out=$(abspath $(incdir_server)) $(server_resources)/Request.proto

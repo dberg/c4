@@ -4,7 +4,7 @@
 #include <strings.h>    // bzero on linux
 #include <netinet/in.h> // sockaddr_in
 #include "gtest/gtest.h"
-#include "c4/Server.h"
+#include "c4/server/Server.h"
 
 // TODO: read consts from configuration file
 const char* TEST_SERVER_HOST = "127.0.0.1";
