@@ -2,23 +2,69 @@
   Server
 --------------------------------------------------------------------------------
 
-The server is responsible for the data flow between clients and projects residing on the server. The server maintains a RequestBuffer object per connection until it has the complete data to form a Request from the client. After a Request is formed in a RequestBuffer the server delivers the Request to the targeted Project. The project will build a Response, which the server will deliver to client. The communication is also valid from the Project to the client. The Project might create a Request asking the client for more information about the Project.
+The server is responsible for the data flow between clients and projects residing on the server. The server implementation uses kqueue in bsd platforms like osx, and epoll when running on linux. The data passed between clients and the server is serialized and deserialized using Protocol Buffers in the classes Request and Response.
 
-The server uses kqueue in bsd platforms like osx, and epoll if running on linux. Shared code is inside Server.h and the platform specific code can be found in the files ServerBSD.cpp and ServerLinux.cpp. The data is serialized and deserialized using Protocol Buffers in the classes Request and Response.
+The server maintains a RequestBuffer object per connection until it has the data to form a Requests object. After a request object is built the server delivers the request to the ProjectHnadler object. The ProjectHandler object is responsible to deliver the request to its project.
 
-The server sends a request to the ProjectHandler instance, which in turn, will match the Request to the targeted Project instance, and pass the Request to the Project to process it.
-
-  RequestBuffer -> Request -> Server -> ProjectHandler -> Project
-
-The ProjectHandler, upon receiving a Request and matching it to a Project instance, takes a thread out of a thread pool, and asks the Project instance to process the Message. For example, a Request can ask to process a compilation unit. The result of processing a Request is a Response that the server will deliver to the client.
+The project process the request and returns a Response object which the server delivers to the client. Requests can also be issued from a project to the client. The project might ask the client for more information about the project. For example, the server might need the client to send more compilation units to resolve a global symbol table dependencies.
 
 --------------------------------------------------------------------------------
   Data stream
 --------------------------------------------------------------------------------
 
-Requests and Responses sent between the client and the c4 server consists of the serialized message length followed by the message in network byte order. The message size is an unsigned 32 bit value.
+The bytestream sent between the client and the server are serialized Request or Response objects. The first 4 bytes in the bytestream represents the length of the serialized Request or Response data in network byte order.
 
-  MESSAGE_SIZE MESSAGE
+--------------------------------------------------------------------------------
+  Request
+--------------------------------------------------------------------------------
+
+REQUEST ::= ACTION METADATA BODY
+
+ACTION ::= ACTION_PARSE | ACTION_GET
+
+ACTION_PARSE ::= 0
+
+ACTION_GET ::= 1
+
+METADATA ::= PROJECT_ID PROJECT_NAME PROJECT_ROOT
+
+PROJECT_ID ::= string
+
+PROJECT_NAME ::= string
+
+PROJECT_ROOT ::= string
+
+BODY ::= BODY_PARSE | BODY_GET
+
+BODY_PARSE ::= FILENAME | BUFFER
+
+FILE_NAME :: string
+
+BUFFER :: string
+
+BODY_GET ::= COMPILATION_UNIT_LIST
+
+COMPILATION_UNIT_LIST ::= string+
+
+--------------------------------------------------------------------------------
+  Response
+--------------------------------------------------------------------------------
+
+RESPONSE ::= RESPONSE_CODE [ ERROR_MESSAGE ]
+
+RESPONSE_CODE ::= RESPONSE_OK | RESPONSE_ERROR
+
+RESPONSE_OK ::= 0
+
+RESPONSE_ERROR ::= 1
+
+ERROR_MESSAGE = string
+
+--------------------------------------------------------------------------------
+  Project
+--------------------------------------------------------------------------------
+
+A Project instance contains metadata about the project, a map of compilation units and a global symbol table.
 
 --------------------------------------------------------------------------------
   Questions
