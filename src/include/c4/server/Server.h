@@ -20,6 +20,7 @@
 #endif
 #endif
 
+#include "c4/common/ProjectHandler.h"
 #include "c4/common/Util.h"
 #include "c4/main/CmdInput.h"
 #include "c4/server/Request.pb.h"
@@ -30,7 +31,9 @@ namespace c4 {
 class Server {
 
 public:
-  Server() {}
+
+  Server() : projHandler(std::unique_ptr<ProjectHandler>(new ProjectHandler)) {}
+
   int start(unsigned int port);
   int shutdown();
   std::string getError() { return errMsg; }
@@ -41,6 +44,8 @@ private:
   std::unordered_map<int, spRequestBuffer> reqBuffers;
 
   int listenfd;
+
+  spProjectHandler projHandler;
 
   /**
    * Create the listening socket that will accept incoming connections.
