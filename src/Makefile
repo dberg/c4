@@ -56,6 +56,7 @@ gtest_dir = third_party/gtest
 gtest_obj = $(builddir)/third_party/gtest
 protobuf_compiler = protoc
 
+
 # includes
 incdir_common := include/c4/common
 incdir_bytecode := include/c4/bytecode
@@ -108,7 +109,7 @@ third_party_directories := $(gtest_obj)
 
 .PHONY: directories
 directories:
-	mkdir -p  $(c4_directories) $(third_party_directories)
+	mkdir -p $(c4_directories) $(third_party_directories)
 
 # main c4
 $(bin)/c4: \
