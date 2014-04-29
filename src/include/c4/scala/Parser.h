@@ -5,16 +5,16 @@
 #include "c4/common/SourceCodeStream.h"
 #include "c4/common/Diagnosis.h"
 #include "c4/scala/AST.h"
-#include "c4/scala/ScalaLexer.h"
-#include "c4/scala/ScalaParserState.h"
-#include "c4/scala/ScalaToken.h"
+#include "c4/scala/Lexer.h"
+#include "c4/scala/ParserState.h"
+#include "c4/scala/Token.h"
 
 namespace c4s {
 
-class ScalaParser {
+class Parser {
   const std::string filename;
   c4::spSourceCodeStream src;
-  spScalaLexer lexer;
+  spLexer lexer;
 
   // lexical grammar
   spLexId parseLexId();
@@ -103,19 +103,19 @@ class ScalaParser {
   bool isModifier(STok tok);
 
 public:
-  ScalaParser(const std::string filename, const std::string &buffer)
+  Parser(const std::string filename, const std::string &buffer)
     : filename(filename),
       src(c4::spSourceCodeStream(new c4::SourceCodeStream(buffer))),
       compUnit(spCompilationUnit(new CompilationUnit))
   {
     diag = c4::spDiagnosis(new c4::Diagnosis);
-    lexer = spScalaLexer(new ScalaLexer(src, diag, indentMap));
+    lexer = spLexer(new Lexer(src, diag, indentMap));
   }
 
   c4::spDiagnosis diag;
   spCompilationUnit compUnit;
   std::vector<spComment> comments;
-  ScalaLineIndentationMap indentMap;
+  LineIndentationMap indentMap;
 
   void parse();
 };

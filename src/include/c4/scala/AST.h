@@ -4,7 +4,7 @@
 #include <memory>
 #include <vector>
 #include <utility>
-#include "ScalaToken.h"
+#include "c4/scala/Token.h"
 
 /**
  * We have applied a few modifications in the grammar.

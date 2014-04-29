@@ -97,7 +97,7 @@ enum class STok : int {
   COMMENT,
 };
 
-class ScalaTokenUtil {
+class TokenUtil {
 
   std::unordered_map<std::string, STok> ReservedWords = {
     { "abstract", STok::ABSTRACT },

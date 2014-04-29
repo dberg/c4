@@ -1,4 +1,4 @@
-#include "c4/scala/ScalaLexer.h"
+#include "c4/scala/Lexer.h"
 
 namespace c4s {
 
@@ -73,17 +73,17 @@ bool is_upper(char c) {
 }
 
 // -----------------------------------------------------------------------------
-// ScalaLexer methods
+// Lexer methods
 // -----------------------------------------------------------------------------
-int ScalaLexer::getCurTokenIni() {
+int Lexer::getCurTokenIni() {
   return src->getCursor() - getCurTokenStr().size();
 }
 
-int ScalaLexer::getCurTokenEnd() {
+int Lexer::getCurTokenEnd() {
   return src->getCursor();
 }
 
-spTokenNode ScalaLexer::getCurTokenNode() {
+spTokenNode Lexer::getCurTokenNode() {
   spTokenNode tok = spTokenNode(new TokenNode);
   tok->tok = getCurToken();
   tok->ini = getCurTokenIni();
@@ -93,7 +93,7 @@ spTokenNode ScalaLexer::getCurTokenNode() {
   return tok;
 }
 
-STok ScalaLexer::getToken() {
+STok Lexer::getToken() {
   char c = src->getChar();
   if (!c) return STok::END_OF_FILE;
 
@@ -152,7 +152,7 @@ STok ScalaLexer::getToken() {
  * pass we store the comments data in the lexer and call getToken() again.
  * We also update the indentation table here.
  */
-STok ScalaLexer::getCommentOrDivToken() {
+STok Lexer::getCommentOrDivToken() {
   curTokStream << '/';
 
   // We peek 1 char ahead to confirm it's a comment,
@@ -244,7 +244,7 @@ STok ScalaLexer::getCommentOrDivToken() {
  * Returns STok::ESCAPE_SEQUENCE | STok::ERROR
  */
 // TODO: Remove duplicate code. See Lexer::getEscapeSequence()
-STok ScalaLexer::getEscapeSequence() {
+STok Lexer::getEscapeSequence() {
   curTokStream << src->getChar(); // consume '\'
   switch (src->peekChar()) {
     case 'b': // backspace BS
@@ -314,7 +314,7 @@ STok ScalaLexer::getEscapeSequence() {
 /**
  * STok::EQUALS | STok::EQUALS_GT
  */
-STok ScalaLexer::getEqualsToken(char c) {
+STok Lexer::getEqualsToken(char c) {
   curTokStream << c;
 
   if (src->peekChar() == '>') {
@@ -328,7 +328,7 @@ STok ScalaLexer::getEqualsToken(char c) {
 /**
  * STok::* Reserved Words
  */
-STok ScalaLexer::getLowerToken(char c) {
+STok Lexer::getLowerToken(char c) {
   curTokStream << c;
 
   while ((c = src->getChar())) {
@@ -350,7 +350,7 @@ STok ScalaLexer::getLowerToken(char c) {
   return STok::ID;
 }
 
-STok ScalaLexer::getNumberToken(char c) {
+STok Lexer::getNumberToken(char c) {
   STok tok = toScalaTok(litSupport->getLiteralNumber(c, curTokStream));
   return tok;
 }
@@ -359,7 +359,7 @@ STok ScalaLexer::getNumberToken(char c) {
  * STok::ID starting with the production rule 'upper'
  * @returns STok::ID || STok::UNDERSCORE
  */
-STok ScalaLexer::getUpperToken(char c) {
+STok Lexer::getUpperToken(char c) {
   curTokStream << c;
   while ((c = src->getChar())) {
     if (is_idrest(c)) {
@@ -387,7 +387,7 @@ STok ScalaLexer::getUpperToken(char c) {
  *
  * @return STok::STRING_LITERAL | STok::ERROR
  */
-STok ScalaLexer::getStringLiteral() {
+STok Lexer::getStringLiteral() {
   curTokStream << '"'; // opening double quotes
 
   // Check if we have """
@@ -429,19 +429,19 @@ STok ScalaLexer::getStringLiteral() {
  * @see ScalaLexer::getStringLiteral()
  * @return STok::STRING_LITERAL | STok::ERROR
  */
-STok ScalaLexer::getStringLiteralMultiLine() {
+STok Lexer::getStringLiteralMultiLine() {
   // TODO:
   return STok::ERROR;
 }
 
-void ScalaLexer::clearCurTokenStr() {
+void Lexer::clearCurTokenStr() {
   // clear string stream
   curTokStr = "";
   curTokStream.str("");
   curTokStream.clear();
 }
 
-void ScalaLexer::getNextToken() {
+void Lexer::getNextToken() {
   clearCurTokenStr();
 
   // Save current data for indentation processing
@@ -459,7 +459,7 @@ void ScalaLexer::getNextToken() {
   processIndentation(line, src->getLine(), token, curTok);
 }
 
-void ScalaLexer::processIndentation(unsigned prevLine, unsigned curLine,
+void Lexer::processIndentation(unsigned prevLine, unsigned curLine,
   STok prevToken, STok curToken) {
 
   // We should increment or decrement the indentation level when see an opening
@@ -498,7 +498,7 @@ void ScalaLexer::processIndentation(unsigned prevLine, unsigned curLine,
   addIndentation(indentMap, curLine, curIndentationLevel, lineWrap, curToken);
 }
 
-bool ScalaLexer::isLineWrap(STok prevToken) {
+bool Lexer::isLineWrap(STok prevToken) {
   if (prevToken == STok::SEMICOLON) { return false; }
   if (prevToken == STok::LCURLYB) { return false; }
   if (prevToken == STok::RCURLYB) { return false; }
@@ -506,7 +506,7 @@ bool ScalaLexer::isLineWrap(STok prevToken) {
   return true;
 }
 
-void ScalaLexer::saveState(State &state) {
+void Lexer::saveState(State &state) {
   state.cursor = src->getCursor();
   state.line = src->getLine();
   state.token = getCurToken();
@@ -516,7 +516,7 @@ void ScalaLexer::saveState(State &state) {
   state.indentationMapSize = indentMap.size();
 }
 
-void ScalaLexer::restoreState(State &state) {
+void Lexer::restoreState(State &state) {
   src->setCursor(state.cursor);
   src->setLine(state.line);
   curTok = state.token;

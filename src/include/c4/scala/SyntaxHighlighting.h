@@ -7,7 +7,7 @@
 
 namespace c4s {
 
-class ScalaSyntaxHighlighting {
+class SyntaxHighlighting {
   spCompilationUnit &compUnit;
   std::vector<spComment> &comments;
 
@@ -91,7 +91,7 @@ class ScalaSyntaxHighlighting {
   std::stringstream sh;
 public:
 
-  ScalaSyntaxHighlighting(
+  SyntaxHighlighting(
     spCompilationUnit &compUnit, std::vector<spComment> &comments)
     : compUnit(compUnit), comments(comments) {}
   void build();

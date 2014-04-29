@@ -7,8 +7,8 @@
 #include "c4/java/EmacsOutput.h"
 #include "c4/main/CmdInput.h"
 #include "c4/main/File.h"
-#include "c4/scala/ScalaParser.h"
-#include "c4/scala/ScalaEmacsOutput.h"
+#include "c4/scala/EmacsOutput.h"
+#include "c4/scala/Parser.h"
 #include "c4/server/Server.h"
 
 using namespace c4;
@@ -69,10 +69,10 @@ int parseScalaFile(CmdInput &ci) {
     return 1;
   }
 
-  c4s::ScalaParser parser(ci.getFilename(), buffer);
+  c4s::Parser parser(ci.getFilename(), buffer);
   parser.parse();
 
-  c4s::ScalaEmacsOutput output(parser);
+  c4s::EmacsOutput output(parser);
   output.build();
   std::cout << output.sh << std::endl
     << output.errors << std::endl

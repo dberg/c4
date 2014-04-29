@@ -2,7 +2,7 @@
 #ifndef __SCALA_PARSER_STATE_H__
 #define __SCALA_PARSER_STATE_H__
 #include <string>
-#include "ScalaToken.h"
+#include "c4/scala/Token.h"
 
 namespace c4s {
 

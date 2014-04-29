@@ -4,17 +4,17 @@
 #include <memory>
 #include <vector>
 #include "c4/common/Diagnosis.h"
-#include "c4/scala/ScalaIndentation.h"
 #include "c4/scala/AST.h"
-#include "c4/scala/ScalaParser.h"
-#include "c4/scala/ScalaSyntaxHighlighting.h"
+#include "c4/scala/Indentation.h"
+#include "c4/scala/Parser.h"
+#include "c4/scala/SyntaxHighlighting.h"
 
 namespace c4s {
 
-class ScalaEmacsOutput {
+class EmacsOutput {
   spCompilationUnit &compUnit;
   c4::spDiagnosis &diag;
-  ScalaLineIndentationMap &indentMap;
+  LineIndentationMap &indentMap;
   std::vector<spComment> &comments;
 
   c4::ErrorUtil errUtil;
@@ -29,7 +29,7 @@ public:
 
   // parser.compUnit, parser.comments, parser.diag, parser.indentMap;
 
-  ScalaEmacsOutput(ScalaParser &parser)
+  EmacsOutput(Parser &parser)
     : compUnit(parser.compUnit), diag(parser.diag), indentMap(parser.indentMap),
       comments(parser.comments) {}
 

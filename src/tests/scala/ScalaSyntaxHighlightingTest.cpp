@@ -1,6 +1,6 @@
 #include <iostream>
-#include "c4/scala/ScalaEmacsOutput.h"
-#include "c4/scala/ScalaParser.h"
+#include "c4/scala/EmacsOutput.h"
+#include "c4/scala/Parser.h"
 #include "gtest/gtest.h"
 using namespace c4s;
 
@@ -8,10 +8,10 @@ TEST(ScalaSyntaxHighlighting, HelloWorld) {
   std::string filename = "HelloWorld.scala";
   std::string buffer =
     "object HelloWorld extends App { println(\"Hello world\"); }";
-  ScalaParser parser(filename, buffer);
+  Parser parser(filename, buffer);
   parser.parse();
 
-  ScalaEmacsOutput output(parser);
+  EmacsOutput output(parser);
   output.build();
 
   std::string expected =
@@ -39,10 +39,10 @@ TEST(ScalaSyntaxHighlighting, Trait) {
     "import com.company.utils._\n"
     "trait X extends Y with Z";
 
-  ScalaParser parser(filename, buffer);
+  Parser parser(filename, buffer);
   parser.parse();
 
-  ScalaEmacsOutput output(parser);
+  EmacsOutput output(parser);
   output.build();
 
   std::string expected =
@@ -76,10 +76,10 @@ TEST(ScalaSyntaxHighlighting, VariantTypeParam) {
     "trait F[A] extends W[A] with R[A]\n"
     "trait OF[A] extends OW[A] with R[A] with F[A]";
 
-  ScalaParser parser(filename, buffer);
+  Parser parser(filename, buffer);
   parser.parse();
 
-  ScalaEmacsOutput output(parser);
+  EmacsOutput output(parser);
   output.build();
 
   std::string expected =

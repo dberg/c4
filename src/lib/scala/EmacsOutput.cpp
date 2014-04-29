@@ -1,12 +1,12 @@
-#include "c4/scala/ScalaEmacsOutput.h"
+#include "c4/scala/EmacsOutput.h"
 
 namespace c4s {
 
 /**
  * Syntax highlighting, Errors and Indentation.
  */
-void ScalaEmacsOutput::build() {
-  auto shOutput = std::make_shared<ScalaSyntaxHighlighting>(compUnit, comments);
+void EmacsOutput::build() {
+  auto shOutput = std::make_shared<SyntaxHighlighting>(compUnit, comments);
   shOutput->build();
   sh = shOutput->get();
 
@@ -14,7 +14,7 @@ void ScalaEmacsOutput::build() {
   setIndentation();
 }
 
-void ScalaEmacsOutput::setErrors(const std::vector<c4::spError> &diagErrors) {
+void EmacsOutput::setErrors(const std::vector<c4::spError> &diagErrors) {
   std::stringstream ss;
 
   ss << "[";
@@ -29,7 +29,7 @@ void ScalaEmacsOutput::setErrors(const std::vector<c4::spError> &diagErrors) {
   errors = ss.str();
 }
 
-void ScalaEmacsOutput::setIndentation() {
+void EmacsOutput::setIndentation() {
   std::stringstream ss;
 
   // Identation table
@@ -37,7 +37,7 @@ void ScalaEmacsOutput::setIndentation() {
   //   (LineNumber_N0 (IndentLevel_N0 LineWrap_N0 Offset_N0) ... N)
   ss << "#s(hash-table size " << indentMap.size() << " data (";
 
-  ScalaLineIndentationMap::iterator it;
+  LineIndentationMap::iterator it;
   for (it = indentMap.begin(); it != indentMap.end(); ++it) {
     ss << it->first << " (" << it->second->level << " "
       << ((it->second->lineWrap) ? "1" : "0") << " "

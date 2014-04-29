@@ -1,6 +1,7 @@
 #include <iostream>
-#include "c4/scala/ScalaParser.h"
 #include "gtest/gtest.h"
+#include "c4/scala/Parser.h"
+
 using namespace c4s;
 
 /**
@@ -86,7 +87,7 @@ TEST(ScalaParser, Annotations) {
     "@Api(Array(new ApiParam(k = \"value\")))"
     "trait X";
 
-  ScalaParser parser(filename, buffer);
+  Parser parser(filename, buffer);
   parser.parse();
 
   auto topStat = parser.compUnit->topStatSeq->topStat;
@@ -154,7 +155,7 @@ TEST(ScalaParser, Comments) {
     "// This is a comment\n"
     "trait A";
 
-  ScalaParser parser(filename, buffer);
+  Parser parser(filename, buffer);
   parser.parse();
 
   ASSERT_EQ(1, parser.comments.size());
@@ -233,7 +234,7 @@ TEST(ScalaParser, HelloWorld) {
   std::string filename = "HelloWorld.scala";
   std::string buffer =
     "object HelloWorld extends App { println(\"Hello world\"); }";
-  ScalaParser parser(filename, buffer);
+  Parser parser(filename, buffer);
   parser.parse();
 
   spTopStat topStat = parser.compUnit->topStatSeq->topStat;
@@ -361,7 +362,7 @@ TEST(ScalaParser, Imports) {
     "import com.B.C\n"
     "import com.D.{E,F}\n";
 
-  ScalaParser parser(filename, buffer);
+  Parser parser(filename, buffer);
   parser.parse();
 
   // import com.A.utils._
@@ -460,7 +461,7 @@ TEST(ScalaParser, Methods) {
   std::string filename = "Example.scala";
   std::string buffer = "class A { def x = 10 }";
 
-  ScalaParser parser(filename, buffer);
+  Parser parser(filename, buffer);
   parser.parse();
 
   auto tmplDef = parser.compUnit->topStatSeq->topStat->tmplDef;
@@ -595,7 +596,7 @@ TEST(ScalaParser, ObjectDefs) {
     "  def p(i: String): Js = Service.pJs(i)\n"
     "}\n";
 
-  ScalaParser parser(filename, buffer);
+  Parser parser(filename, buffer);
   parser.parse();
 
   // import
@@ -636,7 +637,7 @@ TEST(ScalaParser, ObjectDefs) {
 //    "  self: Y with Z =>\n"
 //    "}";
 //
-//  ScalaParser parser(filename, buffer);
+//  Parser parser(filename, buffer);
 //  parser.parse();
 //
 //  //parser.compUnit->topStatSeq->pairs.size());
@@ -698,7 +699,7 @@ TEST(ScalaParser, Trait) {
     "import com.company.utils._\n"
     "trait X extends Y with Z";
 
-  ScalaParser parser(filename, buffer);
+  Parser parser(filename, buffer);
   parser.parse();
 
   {
@@ -857,7 +858,7 @@ TEST(ScalaParser, VariantTypeParam) {
     "trait F[A] extends W[A] with R[A]\n"
     "trait OF[A] extends OW[A] with R[A] with F[A]";
 
-  ScalaParser parser(filename, buffer);
+  Parser parser(filename, buffer);
   parser.parse();
 
   // import scala.annotation.implicitNotFound
@@ -896,7 +897,7 @@ TEST(ScalaParser, TraitAndObject) {
     "trait OF\n"
     "object OF\n";
 
-  ScalaParser parser(filename, buffer);
+  Parser parser(filename, buffer);
   parser.parse();
 
   // trait OFormat
@@ -980,7 +981,7 @@ TEST(ScalaParser, AnonymousClass) {
     "  }\n"
     "}\n";
 
-  ScalaParser parser(filename, buffer);
+  Parser parser(filename, buffer);
   parser.parse();
 
   auto topStat = parser.compUnit->topStatSeq->topStat;

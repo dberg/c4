@@ -185,11 +185,11 @@ $(obj_java)/%.o: \
 
 # objects scala - libscala
 $(obj_scala)/libscala.a: \
-  $(obj_scala)/ScalaIndentation.o \
-  $(obj_scala)/ScalaParser.o \
-  $(obj_scala)/ScalaLexer.o \
-  $(obj_scala)/ScalaEmacsOutput.o \
-  $(obj_scala)/ScalaSyntaxHighlighting.o
+  $(obj_scala)/Indentation.o \
+  $(obj_scala)/Parser.o \
+  $(obj_scala)/Lexer.o \
+  $(obj_scala)/EmacsOutput.o \
+  $(obj_scala)/SyntaxHighlighting.o
 	ar -rv $@ $+
 
 $(obj_scala)/%.o: \

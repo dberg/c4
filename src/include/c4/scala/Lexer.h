@@ -7,22 +7,22 @@
 #include "c4/common/Diagnosis.h"
 #include "c4/common/LiteralSupport.h"
 #include "c4/common/SourceCodeStream.h"
-#include "c4/scala/ScalaIndentation.h"
 #include "c4/scala/AST.h"
-#include "c4/scala/ScalaParserState.h"
-#include "c4/scala/ScalaToken.h"
+#include "c4/scala/Indentation.h"
+#include "c4/scala/ParserState.h"
+#include "c4/scala/Token.h"
 
 namespace c4s {
 
-class ScalaLexer;
-typedef std::shared_ptr<ScalaLexer> spScalaLexer;
+class Lexer;
+typedef std::shared_ptr<Lexer> spLexer;
 
 STok toScalaTok(c4::LiteralToken litTok);
 
 // Helper functions
 bool is_idrest(char c);
 
-class ScalaLexer {
+class Lexer {
 
   c4::spSourceCodeStream src;
   c4::spDiagnosis diag;
@@ -34,9 +34,9 @@ class ScalaLexer {
   int curIndentationLevel;
   bool seenLinebreak;
 
-  ScalaTokenUtil tokUtil;
+  TokenUtil tokUtil;
   std::vector<spComment> comments;
-  ScalaLineIndentationMap &indentMap;
+  LineIndentationMap &indentMap;
   c4::spLiteralSupport litSupport;
 
   void clearCurTokenStr();
@@ -61,8 +61,8 @@ class ScalaLexer {
 
 public:
 
-  ScalaLexer(c4::spSourceCodeStream &src, c4::spDiagnosis &diag,
-    ScalaLineIndentationMap &indentMap)
+  Lexer(c4::spSourceCodeStream &src, c4::spDiagnosis &diag,
+    LineIndentationMap &indentMap)
     : src(src), diag(diag), curIndentationLevel(0), indentMap(indentMap),
       litSupport(c4::spLiteralSupport(new c4::LiteralSupport(src, diag))) {}
 

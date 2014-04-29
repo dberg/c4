@@ -1,6 +1,6 @@
 #include <iostream>
-#include "c4/scala/ScalaParser.h"
 #include "gtest/gtest.h"
+#include "c4/scala/Parser.h"
 using namespace c4s;
 
 TEST(ScalaIndentation, Class) {
@@ -10,28 +10,28 @@ TEST(ScalaIndentation, Class) {
     "  println(\"Hello world\");\n"
     "}\n";
 
-  ScalaParser parser(filename, buffer);
+  Parser parser(filename, buffer);
   parser.parse();
 
   ASSERT_EQ(3, parser.indentMap.size());
 
   {
     // object HelloWorld extends App {\n
-    spScalaIndentation indent = parser.indentMap[0];
+    spIndentation indent = parser.indentMap[0];
     ASSERT_EQ(0, indent->level);
     ASSERT_FALSE(indent->lineWrap);
   }
 
   {
     // println(\"Hello world\");\n
-    spScalaIndentation indent = parser.indentMap[1];
+    spIndentation indent = parser.indentMap[1];
     ASSERT_EQ(1, indent->level);
     ASSERT_FALSE(indent->lineWrap);
   }
 
   {
     // }\n
-    spScalaIndentation indent = parser.indentMap[2];
+    spIndentation indent = parser.indentMap[2];
     ASSERT_EQ(0, indent->level);
     ASSERT_FALSE(indent->lineWrap);
   }

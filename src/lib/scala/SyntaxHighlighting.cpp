@@ -1,4 +1,4 @@
-#include "c4/scala/ScalaSyntaxHighlighting.h"
+#include "c4/scala/SyntaxHighlighting.h"
 
 namespace c4s {
 
@@ -6,7 +6,7 @@ namespace c4s {
 // Public interface
 // ----------------------------------------------------------------------------
 
-void ScalaSyntaxHighlighting::build() {
+void SyntaxHighlighting::build() {
   // Compilation Unit
   sh << "[";
 
@@ -30,29 +30,29 @@ void ScalaSyntaxHighlighting::build() {
   sh << "]";
 }
 
-std::string ScalaSyntaxHighlighting::get() {
+std::string SyntaxHighlighting::get() {
   return sh.str();
 }
 
 // ----------------------------------------------------------------------------
 // Helpers
 // ----------------------------------------------------------------------------
-void ScalaSyntaxHighlighting::setKeyword(spTokenNode &tok) {
+void SyntaxHighlighting::setKeyword(spTokenNode &tok) {
   sh << "(c4s-sh-keyword " << (tok->ini + 1) << " " << (tok->end + 1) << ")";
 }
 
-void ScalaSyntaxHighlighting::setOp(spTokenNode &tok) {
+void SyntaxHighlighting::setOp(spTokenNode &tok) {
   setOp(tok->ini + 1, tok->end + 1);
 }
 
-void ScalaSyntaxHighlighting::setOp(unsigned int ini, unsigned int end) {
+void SyntaxHighlighting::setOp(unsigned int ini, unsigned int end) {
   sh << "(c4s-sh-op " << ini << " " << end << ")";
 }
 
 // ----------------------------------------------------------------------------
 // AST
 // ----------------------------------------------------------------------------
-void ScalaSyntaxHighlighting::setAccessModifier(
+void SyntaxHighlighting::setAccessModifier(
   spAccessModifier &accessModifier) {
 
   if (accessModifier->tok) {
@@ -64,7 +64,7 @@ void ScalaSyntaxHighlighting::setAccessModifier(
   }
 }
 
-void ScalaSyntaxHighlighting::setAccessQualifier(
+void SyntaxHighlighting::setAccessQualifier(
   spAccessQualifier &accessQual) {
 
   if (accessQual->tokLBracket) {
@@ -82,7 +82,7 @@ void ScalaSyntaxHighlighting::setAccessQualifier(
   }
 }
 
-void ScalaSyntaxHighlighting::setAnnotation(spAnnotation &annotation) {
+void SyntaxHighlighting::setAnnotation(spAnnotation &annotation) {
   if (annotation->tokAt) {
     setOp(annotation->tokAt);
   }
@@ -96,7 +96,7 @@ void ScalaSyntaxHighlighting::setAnnotation(spAnnotation &annotation) {
   }
 }
 
-void ScalaSyntaxHighlighting::setAnnotType(spAnnotType &annotType) {
+void SyntaxHighlighting::setAnnotType(spAnnotType &annotType) {
   if (annotType->simpleType) {
     setSimpleType(annotType->simpleType);
   }
@@ -106,7 +106,7 @@ void ScalaSyntaxHighlighting::setAnnotType(spAnnotType &annotType) {
   }
 }
 
-void ScalaSyntaxHighlighting::setArgumentExprs(spArgumentExprs &argExprs) {
+void SyntaxHighlighting::setArgumentExprs(spArgumentExprs &argExprs) {
   if (argExprs->opt == ArgumentExprs::Opt::EXPRS) {
     if (argExprs->tokLParen) {
       setOp(argExprs->tokLParen);
@@ -136,7 +136,7 @@ void ScalaSyntaxHighlighting::setArgumentExprs(spArgumentExprs &argExprs) {
   }
 }
 
-void ScalaSyntaxHighlighting::setBlock(spBlock &block) {
+void SyntaxHighlighting::setBlock(spBlock &block) {
   for (auto pair : block->paBlockStatSemi) {
     auto blockStat = pair.first;
 
@@ -151,7 +151,7 @@ void ScalaSyntaxHighlighting::setBlock(spBlock &block) {
   }
 }
 
-void ScalaSyntaxHighlighting::setBlockExpr(spBlockExpr &blockExpr) {
+void SyntaxHighlighting::setBlockExpr(spBlockExpr &blockExpr) {
   if (blockExpr->opt == BlockExpr::Opt::CASE) {
     // TODO:
     return;
@@ -173,7 +173,7 @@ void ScalaSyntaxHighlighting::setBlockExpr(spBlockExpr &blockExpr) {
   }
 }
 
-void ScalaSyntaxHighlighting::setBlockStat(spBlockStat &blockStat) {
+void SyntaxHighlighting::setBlockStat(spBlockStat &blockStat) {
   if (blockStat->opt == BlockStat::Opt::IMPORT) {
     if (blockStat->import) { setImport(blockStat->import); }
     return;
@@ -207,7 +207,7 @@ void ScalaSyntaxHighlighting::setBlockStat(spBlockStat &blockStat) {
   }
 }
 
-void ScalaSyntaxHighlighting::setClassDef(spClassDef &classDef) {
+void SyntaxHighlighting::setClassDef(spClassDef &classDef) {
   if (classDef->id) {
     setLexId(classDef->id);
   }
@@ -222,7 +222,7 @@ void ScalaSyntaxHighlighting::setClassDef(spClassDef &classDef) {
   }
 }
 
-void ScalaSyntaxHighlighting::setClassParents(spClassParents &classParents) {
+void SyntaxHighlighting::setClassParents(spClassParents &classParents) {
   if (classParents->constr) {
     setConstr(classParents->constr);
   }
@@ -230,7 +230,7 @@ void ScalaSyntaxHighlighting::setClassParents(spClassParents &classParents) {
   // TODO: std::vector<spTokenNode, spAnnotType> paTokNodeAnnotType;
 }
 
-void ScalaSyntaxHighlighting::setClassTemplate(spClassTemplate &classTmpl) {
+void SyntaxHighlighting::setClassTemplate(spClassTemplate &classTmpl) {
   // TODO: spEarlyDefs earlyDefs;
 
   if (classTmpl->classParents) {
@@ -240,7 +240,7 @@ void ScalaSyntaxHighlighting::setClassTemplate(spClassTemplate &classTmpl) {
   // TODO: spTemplateBody tmplBody;
 }
 
-void ScalaSyntaxHighlighting::setClassTemplateOpt(
+void SyntaxHighlighting::setClassTemplateOpt(
   spClassTemplateOpt &classTmplOpt) {
 
   if (classTmplOpt->opt == ClassTemplateOpt::Opt::CLASS_TEMPLATE) {
@@ -268,7 +268,7 @@ void ScalaSyntaxHighlighting::setClassTemplateOpt(
   }
 }
 
-void ScalaSyntaxHighlighting::setCompoundType(spCompoundType &compoundType) {
+void SyntaxHighlighting::setCompoundType(spCompoundType &compoundType) {
   if (compoundType->opt == CompoundType::Opt::ANNOT_TYPE) {
     if (compoundType->annotType) { setAnnotType(compoundType->annotType); }
     // TODO: {'with' AnnotType} [Refinement]
@@ -281,7 +281,7 @@ void ScalaSyntaxHighlighting::setCompoundType(spCompoundType &compoundType) {
   }
 }
 
-void ScalaSyntaxHighlighting::setConstr(spConstr &constr) {
+void SyntaxHighlighting::setConstr(spConstr &constr) {
   if (constr->annotType) {
     setAnnotType(constr->annotType);
   }
@@ -291,7 +291,7 @@ void ScalaSyntaxHighlighting::setConstr(spConstr &constr) {
   }
 }
 
-void ScalaSyntaxHighlighting::setDef(spDef &def) {
+void SyntaxHighlighting::setDef(spDef &def) {
   if (def->opt == Def::Opt::PAT_VAR_DEF) {
     // TODO:
     return;
@@ -314,7 +314,7 @@ void ScalaSyntaxHighlighting::setDef(spDef &def) {
   }
 }
 
-void ScalaSyntaxHighlighting::setExpr(spExpr &expr) {
+void SyntaxHighlighting::setExpr(spExpr &expr) {
   if (expr->opt == Expr::Opt::EXPR) {
     // TODO:
     return;
@@ -328,7 +328,7 @@ void ScalaSyntaxHighlighting::setExpr(spExpr &expr) {
   }
 }
 
-void ScalaSyntaxHighlighting::setExpr1(spExpr1 &expr1) {
+void SyntaxHighlighting::setExpr1(spExpr1 &expr1) {
   if (expr1->opt == Expr1::Opt::IF) {
     // TODO:
     return;
@@ -400,7 +400,7 @@ void ScalaSyntaxHighlighting::setExpr1(spExpr1 &expr1) {
   }
 }
 
-void ScalaSyntaxHighlighting::setExprs(spExprs &exprs) {
+void SyntaxHighlighting::setExprs(spExprs &exprs) {
   if (exprs->expr) {
     setExpr(exprs->expr);
   }
@@ -411,7 +411,7 @@ void ScalaSyntaxHighlighting::setExprs(spExprs &exprs) {
   }
 }
 
-void ScalaSyntaxHighlighting::setFunDef(spFunDef &funDef) {
+void SyntaxHighlighting::setFunDef(spFunDef &funDef) {
   if (funDef->opt == FunDef::Opt::FUN_SIG_EQUALS_EXPR) {
     // FunSig [':' Type] '=' Expr
     if (funDef->funSig) { setFunSig(funDef->funSig); }
@@ -431,7 +431,7 @@ void ScalaSyntaxHighlighting::setFunDef(spFunDef &funDef) {
   }
 }
 
-void ScalaSyntaxHighlighting::setFunSig(spFunSig &funSig) {
+void SyntaxHighlighting::setFunSig(spFunSig &funSig) {
   if (funSig->id) { setLexId(funSig->id); }
 
   if (funSig->funTypeParamClause) {
@@ -443,7 +443,7 @@ void ScalaSyntaxHighlighting::setFunSig(spFunSig &funSig) {
   }
 }
 
-void ScalaSyntaxHighlighting::setFunTypeParamClause(
+void SyntaxHighlighting::setFunTypeParamClause(
   spFunTypeParamClause &funTypeParamClause) {
 
   if (funTypeParamClause->tokLBracket) {
@@ -467,7 +467,7 @@ void ScalaSyntaxHighlighting::setFunTypeParamClause(
   }
 }
 
-void ScalaSyntaxHighlighting::setIdPeriod(spIdPeriod &idPeriod) {
+void SyntaxHighlighting::setIdPeriod(spIdPeriod &idPeriod) {
   if (idPeriod->id) {
     setLexId(idPeriod->id);
   }
@@ -477,7 +477,7 @@ void ScalaSyntaxHighlighting::setIdPeriod(spIdPeriod &idPeriod) {
   }
 }
 
-void ScalaSyntaxHighlighting::setImport(spImport &import) {
+void SyntaxHighlighting::setImport(spImport &import) {
   if (import->tokImport) {
     setKeyword(import->tokImport);
   }
@@ -492,7 +492,7 @@ void ScalaSyntaxHighlighting::setImport(spImport &import) {
   }
 }
 
-void ScalaSyntaxHighlighting::setImportExpr(spImportExpr &importExpr) {
+void SyntaxHighlighting::setImportExpr(spImportExpr &importExpr) {
   if (importExpr->qualId) {
     setQualId(importExpr->qualId);
   }
@@ -511,7 +511,7 @@ void ScalaSyntaxHighlighting::setImportExpr(spImportExpr &importExpr) {
   //}
 }
 
-void ScalaSyntaxHighlighting::setInfixExpr(spInfixExpr &infixExpr) {
+void SyntaxHighlighting::setInfixExpr(spInfixExpr &infixExpr) {
   if (infixExpr->opt == InfixExpr::Opt::PREFIX) {
     if (infixExpr->prefixExpr) {
       setPrefixExpr(infixExpr->prefixExpr);
@@ -525,7 +525,7 @@ void ScalaSyntaxHighlighting::setInfixExpr(spInfixExpr &infixExpr) {
   }
 }
 
-void ScalaSyntaxHighlighting::setInfixType(spInfixType &infixType) {
+void SyntaxHighlighting::setInfixType(spInfixType &infixType) {
   if (infixType->compoundType) {
     setCompoundType(infixType->compoundType);
   }
@@ -533,7 +533,7 @@ void ScalaSyntaxHighlighting::setInfixType(spInfixType &infixType) {
   // TODO: {id [nl] CompoundType}
 }
 
-void ScalaSyntaxHighlighting::setIntegerLiteral(spIntegerLiteral &intLit) {
+void SyntaxHighlighting::setIntegerLiteral(spIntegerLiteral &intLit) {
   sh << "(c4s-sh-literal-number "
      << (intLit->ini + 1)
      << " "
@@ -541,11 +541,11 @@ void ScalaSyntaxHighlighting::setIntegerLiteral(spIntegerLiteral &intLit) {
      << ")";
 }
 
-void ScalaSyntaxHighlighting::setLexId(spLexId &id) {
+void SyntaxHighlighting::setLexId(spLexId &id) {
   sh << "(c4s-sh-identifier " << (id->ini + 1) << " " << (id->end + 1) << ")";
 }
 
-void ScalaSyntaxHighlighting::setLiteral(spLiteral &literal) {
+void SyntaxHighlighting::setLiteral(spLiteral &literal) {
   if (literal->opt == Literal::Opt::INTEGER) {
     if (literal->intLit) { setIntegerLiteral(literal->intLit); }
     return;
@@ -582,13 +582,13 @@ void ScalaSyntaxHighlighting::setLiteral(spLiteral &literal) {
   }
 }
 
-void ScalaSyntaxHighlighting::setLocalModifier(spLocalModifier &localModifier) {
+void SyntaxHighlighting::setLocalModifier(spLocalModifier &localModifier) {
   if (localModifier->tok) {
     setKeyword(localModifier->tok);
   }
 }
 
-void ScalaSyntaxHighlighting::setModifier(spModifier &modifier) {
+void SyntaxHighlighting::setModifier(spModifier &modifier) {
   if (modifier->opt == Modifier::Opt::LOCAL) {
     if (modifier->localModifier) {
       setLocalModifier(modifier->localModifier);
@@ -611,7 +611,7 @@ void ScalaSyntaxHighlighting::setModifier(spModifier &modifier) {
   }
 }
 
-void ScalaSyntaxHighlighting::setObjectDef(spObjectDef &objectDef) {
+void SyntaxHighlighting::setObjectDef(spObjectDef &objectDef) {
   if (objectDef->id) {
     setLexId(objectDef->id);
   }
@@ -621,7 +621,7 @@ void ScalaSyntaxHighlighting::setObjectDef(spObjectDef &objectDef) {
   }
 }
 
-void ScalaSyntaxHighlighting::setPackaging(spPackaging &packing) {
+void SyntaxHighlighting::setPackaging(spPackaging &packing) {
   if (packing->tokPackage) {
     setKeyword(packing->tokPackage);
   }
@@ -631,7 +631,7 @@ void ScalaSyntaxHighlighting::setPackaging(spPackaging &packing) {
   }
 }
 
-void ScalaSyntaxHighlighting::setParam(spParam &param) {
+void SyntaxHighlighting::setParam(spParam &param) {
   for (auto annotation : param->annotations) {
     setAnnotation(annotation);
   }
@@ -643,7 +643,7 @@ void ScalaSyntaxHighlighting::setParam(spParam &param) {
   if (param->expr) { setExpr(param->expr); }
 }
 
-void ScalaSyntaxHighlighting::setParams(spParams &params) {
+void SyntaxHighlighting::setParams(spParams &params) {
   if (params->param) { setParam(params->param); }
 
   for (auto pair : params->pairs) {
@@ -652,13 +652,13 @@ void ScalaSyntaxHighlighting::setParams(spParams &params) {
   }
 }
 
-void ScalaSyntaxHighlighting::setParamClause(spParamClause &paramClause) {
+void SyntaxHighlighting::setParamClause(spParamClause &paramClause) {
   if (paramClause->tokLParen) { setOp(paramClause->tokLParen); }
   if (paramClause->params) { setParams(paramClause->params); }
   if (paramClause->tokRParen) { setOp(paramClause->tokRParen); }
 }
 
-void ScalaSyntaxHighlighting::setParamClauses(spParamClauses &paramClauses) {
+void SyntaxHighlighting::setParamClauses(spParamClauses &paramClauses) {
   for (auto paramClause : paramClauses->paramClauses) {
     setParamClause(paramClause);
   }
@@ -670,7 +670,7 @@ void ScalaSyntaxHighlighting::setParamClauses(spParamClauses &paramClauses) {
   if (paramClauses->tokRParen) { setOp(paramClauses->tokRParen); }
 }
 
-void ScalaSyntaxHighlighting::setParamType(spParamType &paramType) {
+void SyntaxHighlighting::setParamType(spParamType &paramType) {
   if (paramType->opt == ParamType::Opt::TYPE) {
     if (paramType->type) { setType(paramType->type); }
     return;
@@ -687,7 +687,7 @@ void ScalaSyntaxHighlighting::setParamType(spParamType &paramType) {
   }
 }
 
-void ScalaSyntaxHighlighting::setPath(spPath &path) {
+void SyntaxHighlighting::setPath(spPath &path) {
   if (path->opt == Path::Opt::STABLE_ID) {
     if (path->stableId) {
       setStableId(path->stableId);
@@ -701,7 +701,7 @@ void ScalaSyntaxHighlighting::setPath(spPath &path) {
   }
 }
 
-void ScalaSyntaxHighlighting::setPeriodId(spPeriodId &periodId) {
+void SyntaxHighlighting::setPeriodId(spPeriodId &periodId) {
   if (periodId->tok) {
     setOp(periodId->tok);
   }
@@ -711,7 +711,7 @@ void ScalaSyntaxHighlighting::setPeriodId(spPeriodId &periodId) {
   }
 }
 
-void ScalaSyntaxHighlighting::setPostfixExpr(spPostfixExpr &postfixExpr) {
+void SyntaxHighlighting::setPostfixExpr(spPostfixExpr &postfixExpr) {
   if (postfixExpr->infixExpr) {
     setInfixExpr(postfixExpr->infixExpr);
   }
@@ -719,12 +719,12 @@ void ScalaSyntaxHighlighting::setPostfixExpr(spPostfixExpr &postfixExpr) {
   // TODO: if (postfixExpr->id) { setLexId(postfixExpr->id); }
 }
 
-void ScalaSyntaxHighlighting::setPrefixExpr(spPrefixExpr &prefixExpr) {
+void SyntaxHighlighting::setPrefixExpr(spPrefixExpr &prefixExpr) {
   if (prefixExpr->tok) { setOp(prefixExpr->tok); }
   if (prefixExpr->simpleExpr) { setSimpleExpr(prefixExpr->simpleExpr); }
 }
 
-void ScalaSyntaxHighlighting::setQualId(spQualId &qualId) {
+void SyntaxHighlighting::setQualId(spQualId &qualId) {
   if (qualId->id) {
     setLexId(qualId->id);
   }
@@ -734,13 +734,13 @@ void ScalaSyntaxHighlighting::setQualId(spQualId &qualId) {
   }
 }
 
-void ScalaSyntaxHighlighting::setSemi(spSemi &semi) {
+void SyntaxHighlighting::setSemi(spSemi &semi) {
   if (semi->tokSemiColon) {
     setOp(semi->tokSemiColon);
   }
 }
 
-void ScalaSyntaxHighlighting::setSimpleExpr(spSimpleExpr &simpleExpr) {
+void SyntaxHighlighting::setSimpleExpr(spSimpleExpr &simpleExpr) {
   if (simpleExpr->opt == SimpleExpr::Opt::NEW) {
     if (simpleExpr->tokNew) { setKeyword(simpleExpr->tokNew); }
     if (simpleExpr->classTmpl) { setClassTemplate(simpleExpr->classTmpl); }
@@ -761,7 +761,7 @@ void ScalaSyntaxHighlighting::setSimpleExpr(spSimpleExpr &simpleExpr) {
   }
 }
 
-void ScalaSyntaxHighlighting::setSimpleExpr1(spSimpleExpr1 &simpleExpr1) {
+void SyntaxHighlighting::setSimpleExpr1(spSimpleExpr1 &simpleExpr1) {
   if (simpleExpr1->head) {
     setSimpleExpr1Head(simpleExpr1->head);
   }
@@ -771,7 +771,7 @@ void ScalaSyntaxHighlighting::setSimpleExpr1(spSimpleExpr1 &simpleExpr1) {
   }
 }
 
-void ScalaSyntaxHighlighting::setSimpleExpr1Head(spSimpleExpr1Head &head) {
+void SyntaxHighlighting::setSimpleExpr1Head(spSimpleExpr1Head &head) {
   if (head->opt == SimpleExpr1Head::Opt::LITERAL) {
     if (head->literal) {
       setLiteral(head->literal);
@@ -813,7 +813,7 @@ void ScalaSyntaxHighlighting::setSimpleExpr1Head(spSimpleExpr1Head &head) {
   }
 }
 
-void ScalaSyntaxHighlighting::setSimpleExpr1Tail(spSimpleExpr1Tail &tail) {
+void SyntaxHighlighting::setSimpleExpr1Tail(spSimpleExpr1Tail &tail) {
   if (tail->argExprs) {
     setArgumentExprs(tail->argExprs);
   }
@@ -823,7 +823,7 @@ void ScalaSyntaxHighlighting::setSimpleExpr1Tail(spSimpleExpr1Tail &tail) {
   }
 }
 
-void ScalaSyntaxHighlighting::setSimpleType(spSimpleType &simpleType) {
+void SyntaxHighlighting::setSimpleType(spSimpleType &simpleType) {
   if (simpleType->head) {
     setSimpleTypeHead(simpleType->head);
   }
@@ -833,7 +833,7 @@ void ScalaSyntaxHighlighting::setSimpleType(spSimpleType &simpleType) {
   }
 }
 
-void ScalaSyntaxHighlighting::setSimpleTypeHead(spSimpleTypeHead &head) {
+void SyntaxHighlighting::setSimpleTypeHead(spSimpleTypeHead &head) {
   if (head->opt == SimpleTypeHead::Opt::STABLE_ID) {
     if (head->stableId) {
       setStableId(head->stableId);
@@ -852,7 +852,7 @@ void ScalaSyntaxHighlighting::setSimpleTypeHead(spSimpleTypeHead &head) {
   //}
 }
 
-void ScalaSyntaxHighlighting::setSimpleTypeTail(spSimpleTypeTail &tail) {
+void SyntaxHighlighting::setSimpleTypeTail(spSimpleTypeTail &tail) {
   if (tail->opt == SimpleTypeTail::Opt::TYPE_ARGS) {
     if (tail->typeArgs) { setTypeArgs(tail->typeArgs); }
     return;
@@ -864,12 +864,12 @@ void ScalaSyntaxHighlighting::setSimpleTypeTail(spSimpleTypeTail &tail) {
   }
 }
 
-void ScalaSyntaxHighlighting::setSimpleTypeTails(spSimpleTypeTails &tails) {
+void SyntaxHighlighting::setSimpleTypeTails(spSimpleTypeTails &tails) {
   if (tails->tail) { setSimpleTypeTail(tails->tail); }
   if (tails->tails) { setSimpleTypeTails(tails->tails); }
 }
 
-void ScalaSyntaxHighlighting::setStableId(spStableId &stableId) {
+void SyntaxHighlighting::setStableId(spStableId &stableId) {
   if (stableId->head) {
     setStableIdHead(stableId->head);
   }
@@ -879,7 +879,7 @@ void ScalaSyntaxHighlighting::setStableId(spStableId &stableId) {
   }
 }
 
-void ScalaSyntaxHighlighting::setStableIdHead(spStableIdHead &head) {
+void SyntaxHighlighting::setStableIdHead(spStableIdHead &head) {
   if (head->opt == StableIdHead::Opt::ID) {
     if (head->id) {
       setLexId(head->id);
@@ -926,7 +926,7 @@ void ScalaSyntaxHighlighting::setStableIdHead(spStableIdHead &head) {
   }
 }
 
-void ScalaSyntaxHighlighting::setStableIdTail(spStableIdTail &tail) {
+void SyntaxHighlighting::setStableIdTail(spStableIdTail &tail) {
   if (tail->periodId) {
     setPeriodId(tail->periodId);
   }
@@ -936,7 +936,7 @@ void ScalaSyntaxHighlighting::setStableIdTail(spStableIdTail &tail) {
   }
 }
 
-void ScalaSyntaxHighlighting::setStringLiteral(spStringLiteral &strLit) {
+void SyntaxHighlighting::setStringLiteral(spStringLiteral &strLit) {
   sh << "(c4s-sh-string-literal "
      << (strLit->ini + 1)
      << " "
@@ -944,7 +944,7 @@ void ScalaSyntaxHighlighting::setStringLiteral(spStringLiteral &strLit) {
      << ")";
 }
 
-void ScalaSyntaxHighlighting::setTemplateBody(spTemplateBody &tmplBody) {
+void SyntaxHighlighting::setTemplateBody(spTemplateBody &tmplBody) {
   if (tmplBody->tokLCurlyB) { setOp(tmplBody->tokLCurlyB); }
   // TODO: SelfType
   if (tmplBody->tmplStat) { setTemplateStat(tmplBody->tmplStat); }
@@ -958,7 +958,7 @@ void ScalaSyntaxHighlighting::setTemplateBody(spTemplateBody &tmplBody) {
   if (tmplBody->tokRCurlyB) { setOp(tmplBody->tokRCurlyB); }
 }
 
-void ScalaSyntaxHighlighting::setTemplateStat(spTemplateStat &tmplStat) {
+void SyntaxHighlighting::setTemplateStat(spTemplateStat &tmplStat) {
   if (tmplStat->opt == TemplateStat::Opt::IMPORT) {
     if (tmplStat->import) { setImport(tmplStat->import); }
     return;
@@ -996,7 +996,7 @@ void ScalaSyntaxHighlighting::setTemplateStat(spTemplateStat &tmplStat) {
   }
 }
 
-void ScalaSyntaxHighlighting::setTmplDef(spTmplDef &tmplDef) {
+void SyntaxHighlighting::setTmplDef(spTmplDef &tmplDef) {
   if (tmplDef->opt == TmplDef::Opt::CASE_CLASS) {
     // 'case'
     if (tmplDef->tokCase) {
@@ -1043,7 +1043,7 @@ void ScalaSyntaxHighlighting::setTmplDef(spTmplDef &tmplDef) {
   }
 }
 
-void ScalaSyntaxHighlighting::setTopStat(spTopStat &topStat) {
+void SyntaxHighlighting::setTopStat(spTopStat &topStat) {
   if (topStat->opt == TopStat::Opt::TMPL_DEF) {
     // {Annotation [nl]}
     for (auto annotation : topStat->annotations) {
@@ -1076,7 +1076,7 @@ void ScalaSyntaxHighlighting::setTopStat(spTopStat &topStat) {
   }
 }
 
-void ScalaSyntaxHighlighting::setTopStatSeq(spTopStatSeq &topStatSeq) {
+void SyntaxHighlighting::setTopStatSeq(spTopStatSeq &topStatSeq) {
   if (topStatSeq->topStat) {
     setTopStat(topStatSeq->topStat);
   }
@@ -1087,7 +1087,7 @@ void ScalaSyntaxHighlighting::setTopStatSeq(spTopStatSeq &topStatSeq) {
   }
 }
 
-void ScalaSyntaxHighlighting::setTraitDef(spTraitDef &traitDef) {
+void SyntaxHighlighting::setTraitDef(spTraitDef &traitDef) {
   if (traitDef->id) {
     setLexId(traitDef->id);
   }
@@ -1101,7 +1101,7 @@ void ScalaSyntaxHighlighting::setTraitDef(spTraitDef &traitDef) {
   }
 }
 
-void ScalaSyntaxHighlighting::setTraitParents(spTraitParents &parents) {
+void SyntaxHighlighting::setTraitParents(spTraitParents &parents) {
   if (parents->annotType) {
     setAnnotType(parents->annotType);
   }
@@ -1112,7 +1112,7 @@ void ScalaSyntaxHighlighting::setTraitParents(spTraitParents &parents) {
   }
 }
 
-void ScalaSyntaxHighlighting::setTraitTemplate(spTraitTemplate &traitTemplate) {
+void SyntaxHighlighting::setTraitTemplate(spTraitTemplate &traitTemplate) {
   // TODO: [EarlyDefs]
 
   if (traitTemplate->traitParents) {
@@ -1122,7 +1122,7 @@ void ScalaSyntaxHighlighting::setTraitTemplate(spTraitTemplate &traitTemplate) {
   // TODO: [TemplateBody]
 }
 
-void ScalaSyntaxHighlighting::setTraitTemplateOpt(
+void SyntaxHighlighting::setTraitTemplateOpt(
   spTraitTemplateOpt &traitTemplateOpt) {
 
   if (traitTemplateOpt->opt == TraitTemplateOpt::Opt::TRAIT_TEMPLATE) {
@@ -1148,7 +1148,7 @@ void ScalaSyntaxHighlighting::setTraitTemplateOpt(
   }
 }
 
-void ScalaSyntaxHighlighting::setType(spType &type) {
+void SyntaxHighlighting::setType(spType &type) {
   if (type->opt == Type::Opt::FUNC_ARG_TYPES) {
     // TODO:
     return;
@@ -1161,7 +1161,7 @@ void ScalaSyntaxHighlighting::setType(spType &type) {
   }
 }
 
-void ScalaSyntaxHighlighting::setTypes(spTypes &types) {
+void SyntaxHighlighting::setTypes(spTypes &types) {
   if (types->type) { setType(types->type); }
 
   for (auto pair : types->pairs) {
@@ -1173,13 +1173,13 @@ void ScalaSyntaxHighlighting::setTypes(spTypes &types) {
   }
 }
 
-void ScalaSyntaxHighlighting::setTypeArgs(spTypeArgs &typeArgs) {
+void SyntaxHighlighting::setTypeArgs(spTypeArgs &typeArgs) {
   if (typeArgs->tokLBracket) { setOp(typeArgs->tokLBracket); }
   if (typeArgs->types) { setTypes(typeArgs->types); }
   if (typeArgs->tokRBracket) { setOp(typeArgs->tokRBracket); }
 }
 
-void ScalaSyntaxHighlighting::setTypeParam(spTypeParam &typeParam) {
+void SyntaxHighlighting::setTypeParam(spTypeParam &typeParam) {
   if (typeParam->id) {
     setLexId(typeParam->id);
   }
@@ -1196,7 +1196,7 @@ void ScalaSyntaxHighlighting::setTypeParam(spTypeParam &typeParam) {
   // TODO: {'<%' Type} {':' Type}
 }
 
-void ScalaSyntaxHighlighting::setTypeParamClause(
+void SyntaxHighlighting::setTypeParamClause(
   spTypeParamClause &typeParamClause) {
 
   if (typeParamClause->tokLBracket) {
@@ -1220,7 +1220,7 @@ void ScalaSyntaxHighlighting::setTypeParamClause(
   }
 }
 
-void ScalaSyntaxHighlighting::setVariantTypeParam(
+void SyntaxHighlighting::setVariantTypeParam(
   spVariantTypeParam &varTypeParam) {
 
   for (auto annotation : varTypeParam->annotations) {

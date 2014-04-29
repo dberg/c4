@@ -1,4 +1,4 @@
-#include "c4/scala/ScalaParser.h"
+#include "c4/scala/Parser.h"
 #include <iostream>
 
 namespace c4s {
@@ -6,7 +6,7 @@ namespace c4s {
 // -----------------------------------------------------------------------------
 // Lexical grammar
 // -----------------------------------------------------------------------------
-spLexId ScalaParser::parseLexId() {
+spLexId Parser::parseLexId() {
   spLexId lId = spLexId(new LexId);
   if (lexer->getCurToken() != STok::ID) {
     lId->addErr(c4::ERR_EXP_IDENTIFIER);
@@ -22,7 +22,7 @@ spLexId ScalaParser::parseLexId() {
 /**
  * semi ::= ';' | nl {nl}
  */
-void ScalaParser::parseSemi(spSemi &semi) {
+void Parser::parseSemi(spSemi &semi) {
   if (lexer->getCurToken() == STok::SEMICOLON) {
     semi->opt = Semi::Opt::SEMICOLON;
     semi->tokSemiColon = lexer->getCurTokenNode();
@@ -41,7 +41,7 @@ void ScalaParser::parseSemi(spSemi &semi) {
   semi->addErr(c4::ERR_EXP_NL);
 }
 
-spStringLiteral ScalaParser::parseStringLiteral() {
+spStringLiteral Parser::parseStringLiteral() {
   spStringLiteral strLit = spStringLiteral(new StringLiteral);
   if (lexer->getCurToken() != STok::STRING_LITERAL) {
     strLit->addErr(c4::ERR_EXP_STRING_LITERAL);
@@ -61,7 +61,7 @@ spStringLiteral ScalaParser::parseStringLiteral() {
 /**
  * AccessModifier ::= ('private' | 'protected') [AccessQualifier]
  */
-void ScalaParser::parseAccessModifier(spAccessModifier &accessModifier) {
+void Parser::parseAccessModifier(spAccessModifier &accessModifier) {
   if (!isAccessModifier(lexer->getCurToken())) {
     accessModifier->addErr(-1);
     return;
@@ -86,7 +86,7 @@ void ScalaParser::parseAccessModifier(spAccessModifier &accessModifier) {
 /**
  * AccessQualifier ::= '[' (id | 'this') ']'
  */
-void ScalaParser::parseAccessQualifier(spAccessQualifier &accessQual) {
+void Parser::parseAccessQualifier(spAccessQualifier &accessQual) {
   // '['
   if (lexer->getCurToken() != STok::LBRACKET) {
     accessQual->addErr(c4::ERR_EXP_LBRACKET);
@@ -122,7 +122,7 @@ void ScalaParser::parseAccessQualifier(spAccessQualifier &accessQual) {
 /**
  * Annotation ::= '@' SimpleType {ArgumentExprs}
  */
-void ScalaParser::parseAnnotation(spAnnotation &annotation) {
+void Parser::parseAnnotation(spAnnotation &annotation) {
   // '@'
   if (lexer->getCurToken() != STok::AT) {
     annotation->addErr(-1);
@@ -158,7 +158,7 @@ void ScalaParser::parseAnnotation(spAnnotation &annotation) {
 /**
  * AnnotType ::= SimpleType {Annotation}
  */
-void ScalaParser::parseAnnotType(spAnnotType &annotType) {
+void Parser::parseAnnotType(spAnnotType &annotType) {
   annotType->simpleType = spSimpleType(new SimpleType);
   parseSimpleType(annotType->simpleType);
   if (annotType->simpleType->err) {
@@ -184,7 +184,7 @@ void ScalaParser::parseAnnotType(spAnnotType &annotType) {
  *                 | '(' [Exprs ','] PostfixExpr ':' '_' '*' ')'
  *                 | [nl] BlockExpr
  */
-void ScalaParser::parseArgumentExprs(spArgumentExprs &argExprs) {
+void Parser::parseArgumentExprs(spArgumentExprs &argExprs) {
   // TODO: [nl]
   // BlockExpr
   if (lexer->getCurToken() == STok::LCURLYB) {
@@ -280,7 +280,7 @@ void ScalaParser::parseArgumentExprs(spArgumentExprs &argExprs) {
 /**
  * PostfixExpr ':' '_' '*'
  */
-void ScalaParser::parseArgumentExprsHelper(spArgumentExprs &argExprs) {
+void Parser::parseArgumentExprsHelper(spArgumentExprs &argExprs) {
   argExprs->postfixExpr = spPostfixExpr(new PostfixExpr);
   parsePostfixExpr(argExprs->postfixExpr);
   if (argExprs->postfixExpr->err) {
@@ -317,7 +317,7 @@ void ScalaParser::parseArgumentExprsHelper(spArgumentExprs &argExprs) {
 /**
  * Block ::= {BlockStat semi} [ResultExpr]
  */
-void ScalaParser::parseBlock(spBlock &block) {
+void Parser::parseBlock(spBlock &block) {
   State state;
   STok tok = lexer->getCurToken();
   while (tok != STok::ERROR
@@ -351,7 +351,7 @@ void ScalaParser::parseBlock(spBlock &block) {
  * BlockExpr ::= '{' CaseClauses '}'
  *             | '{' Block '}'
  */
-void ScalaParser::parseBlockExpr(spBlockExpr &blockExpr) {
+void Parser::parseBlockExpr(spBlockExpr &blockExpr) {
   // TODO: CaseClauses
 
   // '{'
@@ -390,7 +390,7 @@ void ScalaParser::parseBlockExpr(spBlockExpr &blockExpr) {
  *             | {Annotation} {LocalModifier} TmplDef
  *             | Expr1
  */
-void ScalaParser::parseBlockStat(spBlockStat &blockStat) {
+void Parser::parseBlockStat(spBlockStat &blockStat) {
   // Import
   if (lexer->getCurToken() == STok::IMPORT) {
     blockStat->opt = BlockStat::Opt::IMPORT;
@@ -492,7 +492,7 @@ void ScalaParser::parseBlockStat(spBlockStat &blockStat) {
  * ClassDef ::= id [TypeParamClause] {ConstrAnnotation} [AccessModifier]
  *              ClassParamClauses ClassTemplateOpt
  */
-void ScalaParser::parseClassDef(spClassDef &classDef) {
+void Parser::parseClassDef(spClassDef &classDef) {
   classDef->id = parseLexId();
   lexer->getNextToken(); // consume id
   if (classDef->id->err) {
@@ -516,7 +516,7 @@ void ScalaParser::parseClassDef(spClassDef &classDef) {
 /**
  * ClassParents ::= Constr {'with' AnnotType}
  */
-void ScalaParser::parseClassParents(spClassParents &classParents) {
+void Parser::parseClassParents(spClassParents &classParents) {
   classParents->constr = spConstr(new Constr);
   parseConstr(classParents->constr);
   if (classParents->constr->err) {
@@ -530,7 +530,7 @@ void ScalaParser::parseClassParents(spClassParents &classParents) {
 /**
  * ClassTemplate ::= [EarlyDefs] ClassParents [TemplateBody]
  */
-void ScalaParser::parseClassTemplate(spClassTemplate &classTmpl) {
+void Parser::parseClassTemplate(spClassTemplate &classTmpl) {
   // TODO: [EarlyDefs]
 
   classTmpl->classParents = spClassParents(new ClassParents);
@@ -547,7 +547,7 @@ void ScalaParser::parseClassTemplate(spClassTemplate &classTmpl) {
  * ClassTemplateOpt ::= 'extends' ClassTemplate
  *                    | [['extends'] TemplateBody]
  */
-void ScalaParser::parseClassTemplateOpt(spClassTemplateOpt &classTmplOpt) {
+void Parser::parseClassTemplateOpt(spClassTemplateOpt &classTmplOpt) {
   if (lexer->getCurToken() == STok::EXTENDS) {
     classTmplOpt->tokExtends = lexer->getCurTokenNode();
     lexer->getNextToken(); // consume 'extends'
@@ -583,7 +583,7 @@ void ScalaParser::parseClassTemplateOpt(spClassTemplateOpt &classTmplOpt) {
 /**
  * CompilationUnit ::= {'package' QualId semi} TopStatSeq
  */
-void ScalaParser::parseCompilationUnit() {
+void Parser::parseCompilationUnit() {
   while (lexer->getCurToken() == STok::PACKAGE) {
     auto tok = lexer->getCurTokenNode();
     lexer->getNextToken(); // consume token
@@ -614,7 +614,7 @@ void ScalaParser::parseCompilationUnit() {
 /**
  * Constr ::= AnnotType {ArgumentExprs}
  */
-void ScalaParser::parseConstr(spConstr &constr) {
+void Parser::parseConstr(spConstr &constr) {
   constr->annotType = spAnnotType(new AnnotType);
   parseAnnotType(constr->annotType);
   if (constr->annotType->err) {
@@ -641,7 +641,7 @@ void ScalaParser::parseConstr(spConstr &constr) {
  * CompoundType ::= AnnotType {'with' AnnotType} [Refinement]
  *                | Refinement
  */
-void ScalaParser::parseCompoundType(spCompoundType &compoundType) {
+void Parser::parseCompoundType(spCompoundType &compoundType) {
   compoundType->opt = CompoundType::Opt::ANNOT_TYPE;
   compoundType->annotType = spAnnotType(new AnnotType);
   parseAnnotType(compoundType->annotType);
@@ -660,7 +660,7 @@ void ScalaParser::parseCompoundType(spCompoundType &compoundType) {
  *       | 'type' {nl} TypeDef
  *       | TmplDef
  */
-void ScalaParser::parseDef(spDef &def) {
+void Parser::parseDef(spDef &def) {
 
   // TODO: PatVarDef
 
@@ -692,7 +692,7 @@ void ScalaParser::parseDef(spDef &def) {
  *          | 'this' ParamClause ParamClauses
  *            ('=' ConstrExpr | [nl] ConstrBlock)
  */
-void ScalaParser::parseFunDef(spFunDef &funDef) {
+void Parser::parseFunDef(spFunDef &funDef) {
   {
     // FunSig [':' Type] '=' Expr
     funDef->opt = FunDef::Opt::FUN_SIG_EQUALS_EXPR;
@@ -743,7 +743,7 @@ void ScalaParser::parseFunDef(spFunDef &funDef) {
 /**
  * FunSig ::= id [FunTypeParamClause] ParamClauses
  */
-void ScalaParser::parseFunSig(spFunSig &funSig) {
+void Parser::parseFunSig(spFunSig &funSig) {
   funSig->id = parseLexId();
   lexer->getNextToken(); // consume 'id'
   if (funSig->id->err) {
@@ -773,7 +773,7 @@ void ScalaParser::parseFunSig(spFunSig &funSig) {
 /**
  * FunTypeParamClause ::= '[' TypeParam {',' TypeParam} ']'
  */
-void ScalaParser::parseFunTypeParamClause(
+void Parser::parseFunTypeParamClause(
   spFunTypeParamClause &funTypeParamClause) {
 
   // '['
@@ -820,7 +820,7 @@ void ScalaParser::parseFunTypeParamClause(
  * Expr ::= (Bindings | ['implicit'] id | '_') '=>' Expr
  *        | Expr1
  */
-void ScalaParser::parseExpr(spExpr &expr) {
+void Parser::parseExpr(spExpr &expr) {
   // TODO: (Bindings | ['implicit'] id | '_') '=>' Expr
 
   expr->opt = Expr::Opt::EXPR1;
@@ -847,7 +847,7 @@ void ScalaParser::parseExpr(spExpr &expr) {
  *         | PostfixExpr Ascription
  *         | PostfixExpr 'match' '{' CaseClauses '}'
  */
-void ScalaParser::parseExpr1(spExpr1 &expr1) {
+void Parser::parseExpr1(spExpr1 &expr1) {
 
   // TODO: 'if' '(' Expr ')' {nl} Expr [[semi] else Expr]
   // TODO: 'while' '(' Expr ')' {nl} Expr
@@ -901,7 +901,7 @@ void ScalaParser::parseExpr1(spExpr1 &expr1) {
 /**
  * Exprs ::= Expr {',' Expr}
  */
-void ScalaParser::parseExprs(spExprs &exprs) {
+void Parser::parseExprs(spExprs &exprs) {
   // Expr
   exprs->expr = spExpr(new Expr);
   parseExpr(exprs->expr);
@@ -932,7 +932,7 @@ void ScalaParser::parseExprs(spExprs &exprs) {
 /**
  * Import ::= 'import' ImportExpr {',' ImportExpr}
  */
-void ScalaParser::parseImport(spImport &import) {
+void Parser::parseImport(spImport &import) {
   // import
   import->tokImport = lexer->getCurTokenNode();
   lexer->getNextToken(); // consume 'import'
@@ -966,7 +966,7 @@ void ScalaParser::parseImport(spImport &import) {
 /**
  * ImportExpr ::= QualId [ ('.' '_') | '.' ImportSelectors ]
  */
-void ScalaParser::parseImportExpr(spImportExpr &importExpr) {
+void Parser::parseImportExpr(spImportExpr &importExpr) {
   // QualId
   importExpr->qualId = spQualId(new QualId);
   parseQualId(importExpr->qualId);
@@ -1000,7 +1000,7 @@ void ScalaParser::parseImportExpr(spImportExpr &importExpr) {
 /**
  * ImportSelector ::= id ['=>' id | '=>' '_']
  */
-void ScalaParser::parseImportSelector(spImportSelector &importSelector) {
+void Parser::parseImportSelector(spImportSelector &importSelector) {
   importSelector->id = parseLexId();
   lexer->getNextToken(); // consume id
   if (importSelector->id->err) {
@@ -1015,7 +1015,7 @@ void ScalaParser::parseImportSelector(spImportSelector &importSelector) {
 /**
  * ImportSelectors ::= '{' {ImportSelector ','} (ImportSelector | '_') '}'
  */
-void ScalaParser::parseImportSelectors(spImportSelectors &importSelectors) {
+void Parser::parseImportSelectors(spImportSelectors &importSelectors) {
   if (lexer->getCurToken() != STok::LCURLYB) {
     importSelectors->addErr(c4::ERR_EXP_LCURLY_BRACKET);
     return;
@@ -1064,7 +1064,7 @@ void ScalaParser::parseImportSelectors(spImportSelectors &importSelectors) {
  * InfixExpr ::= PrefixExpr
  *             | InfixExpr id [nl] InfixExpr
  */
-void ScalaParser::parseInfixExpr(spInfixExpr &infixExpr) {
+void Parser::parseInfixExpr(spInfixExpr &infixExpr) {
   infixExpr->opt = InfixExpr::Opt::PREFIX;
   infixExpr->prefixExpr = spPrefixExpr(new PrefixExpr);
   parsePrefixExpr(infixExpr->prefixExpr);
@@ -1079,7 +1079,7 @@ void ScalaParser::parseInfixExpr(spInfixExpr &infixExpr) {
 /**
  * InfixType ::= CompoundType {id [nl] CompoundType}
  */
-void ScalaParser::parseInfixType(spInfixType &infixType) {
+void Parser::parseInfixType(spInfixType &infixType) {
   infixType->compoundType = spCompoundType(new CompoundType);
   parseCompoundType(infixType->compoundType);
   if (infixType->compoundType->err) {
@@ -1099,7 +1099,7 @@ void ScalaParser::parseInfixType(spInfixType &infixType) {
  *           | symbolLiteral
  *           | 'null'
  */
-void ScalaParser::parseLiteral(spLiteral &literal) {
+void Parser::parseLiteral(spLiteral &literal) {
   // ['-'] integerLiteral
   // ['-'] floatingPointLiteral
   bool seenMinus = false;
@@ -1165,7 +1165,7 @@ void ScalaParser::parseLiteral(spLiteral &literal) {
  *                 | 'implicit'
  *                 | 'lazy'
  */
-void ScalaParser::parseLocalModifier(spLocalModifier &localModifier) {
+void Parser::parseLocalModifier(spLocalModifier &localModifier) {
   if (!isLocalModifier(lexer->getCurToken())) {
     localModifier->addErr(-1);
     return;
@@ -1180,7 +1180,7 @@ void ScalaParser::parseLocalModifier(spLocalModifier &localModifier) {
  *            | AccessModifier
  *            | 'override'
  */
-void ScalaParser::parseModifier(spModifier &modifier) {
+void Parser::parseModifier(spModifier &modifier) {
   if (isLocalModifier(lexer->getCurToken())) {
     modifier->opt = Modifier::Opt::LOCAL;
     modifier->localModifier = spLocalModifier(new LocalModifier);
@@ -1214,7 +1214,7 @@ void ScalaParser::parseModifier(spModifier &modifier) {
 /**
  * ObjectDef ::= id ClassTemplateOpt
  */
-void ScalaParser::parseObjectDef(spObjectDef &objectDef) {
+void Parser::parseObjectDef(spObjectDef &objectDef) {
   objectDef->id = parseLexId();
   lexer->getNextToken(); // consume id
   if (objectDef->id->err) {
@@ -1232,7 +1232,7 @@ void ScalaParser::parseObjectDef(spObjectDef &objectDef) {
 /**
  * Packaging ::= 'package' QualId [nl] '{' TopStatSeq '}'
  */
-void ScalaParser::parsePackaging(spPackaging &packaging) {
+void Parser::parsePackaging(spPackaging &packaging) {
   packaging->tokPackage = lexer->getCurTokenNode();
   lexer->getNextToken(); // consume package
 
@@ -1249,7 +1249,7 @@ void ScalaParser::parsePackaging(spPackaging &packaging) {
 /**
  * Param ::= {Annotation} id [':' ParamType] ['=' Expr]
  */
-void ScalaParser::parseParam(spParam &param) {
+void Parser::parseParam(spParam &param) {
   // TODO: {Annotation}
 
   // id
@@ -1279,7 +1279,7 @@ void ScalaParser::parseParam(spParam &param) {
 /**
  * Params ::= Param {',' Param}
  */
-void ScalaParser::parseParams(spParams &params) {
+void Parser::parseParams(spParams &params) {
   // Param
   params->param = spParam(new Param);
   parseParam(params->param);
@@ -1310,7 +1310,7 @@ void ScalaParser::parseParams(spParams &params) {
 /**
  * ParamClause ::= [nl] '(' [Params] ')'
  */
-void ScalaParser::parseParamClause(spParamClause &paramClause) {
+void Parser::parseParamClause(spParamClause &paramClause) {
   // [nl] is ignored by the lexer
   if (lexer->getCurToken() != STok::LPAREN) {
     paramClause->addErr(c4::ERR_EXP_LPAREN);
@@ -1342,7 +1342,7 @@ void ScalaParser::parseParamClause(spParamClause &paramClause) {
 /**
  * ParamClauses ::= {ParamClause} [[nl] '(' 'implicit' Params ')']
  */
-void ScalaParser::parseParamClauses(spParamClauses &paramClauses) {
+void Parser::parseParamClauses(spParamClauses &paramClauses) {
   // {ParamClause}
   State state;
   while (true) {
@@ -1394,7 +1394,7 @@ void ScalaParser::parseParamClauses(spParamClauses &paramClauses) {
  *             | '=>' Type
  *             | Type '*'
  */
-void ScalaParser::parseParamType(spParamType &paramType) {
+void Parser::parseParamType(spParamType &paramType) {
   // Type
   paramType->opt = ParamType::Opt::TYPE;
   paramType->type = spType(new Type);
@@ -1412,7 +1412,7 @@ void ScalaParser::parseParamType(spParamType &paramType) {
  * Path ::= StableId
  *        | [id '.'] 'this'
  */
-void ScalaParser::parsePath(spPath &path) {
+void Parser::parsePath(spPath &path) {
   path->opt = Path::Opt::STABLE_ID;
   path->stableId = spStableId(new StableId);
   parseStableId(path->stableId);
@@ -1427,7 +1427,7 @@ void ScalaParser::parsePath(spPath &path) {
 /**
  * PeriodId ::= '.' id
  */
-void ScalaParser::parsePeriodId(spPeriodId &periodId) {
+void Parser::parsePeriodId(spPeriodId &periodId) {
   // '.'
   if (lexer->getCurToken() != STok::PERIOD) {
     periodId->addErr(c4::ERR_EXP_PERIOD);
@@ -1448,7 +1448,7 @@ void ScalaParser::parsePeriodId(spPeriodId &periodId) {
 /**
  * PrefixExpr ::= ['-' | '+' | '~' | '!'] SimpleExpr
  */
-void ScalaParser::parsePrefixExpr(spPrefixExpr &prefixExpr) {
+void Parser::parsePrefixExpr(spPrefixExpr &prefixExpr) {
   // TODO: ['-' | '+' | '~' | '!']
   prefixExpr->simpleExpr = spSimpleExpr(new SimpleExpr);
   parseSimpleExpr(prefixExpr->simpleExpr);
@@ -1460,7 +1460,7 @@ void ScalaParser::parsePrefixExpr(spPrefixExpr &prefixExpr) {
 /**
  * PostfixExpr ::= InfixExpr [id [nl]]
  */
-void ScalaParser::parsePostfixExpr(spPostfixExpr &postfixExpr) {
+void Parser::parsePostfixExpr(spPostfixExpr &postfixExpr) {
   postfixExpr->infixExpr = spInfixExpr(new InfixExpr);
   parseInfixExpr(postfixExpr->infixExpr);
   if (postfixExpr->infixExpr->err) {
@@ -1474,7 +1474,7 @@ void ScalaParser::parsePostfixExpr(spPostfixExpr &postfixExpr) {
 /**
  * QualId ::= id {'.' id}
  */
-void ScalaParser::parseQualId(spQualId &qualId) {
+void Parser::parseQualId(spQualId &qualId) {
   qualId->id = parseLexId();
   lexer->getNextToken(); // consume id
 
@@ -1502,7 +1502,7 @@ void ScalaParser::parseQualId(spQualId &qualId) {
  *              | BlockExpr
  *              | SimpleExpr1 ['_']
  */
-void ScalaParser::parseSimpleExpr(spSimpleExpr &simpleExpr) {
+void Parser::parseSimpleExpr(spSimpleExpr &simpleExpr) {
   // 'new' (ClassTemplate | TemplateBody)
   if (lexer->getCurToken() == STok::NEW) {
     // 'new'
@@ -1548,7 +1548,7 @@ void ScalaParser::parseSimpleExpr(spSimpleExpr &simpleExpr) {
 /**
  * SimpleExpr1 ::= SimpleExpr1Head SimpleExpr1Tail | SimpleExpr1Head
  */
-void ScalaParser::parseSimpleExpr1(spSimpleExpr1 &simpleExpr1) {
+void Parser::parseSimpleExpr1(spSimpleExpr1 &simpleExpr1) {
   simpleExpr1->head = spSimpleExpr1Head(new SimpleExpr1Head);
   parseSimpleExpr1Head(simpleExpr1->head);
   if (simpleExpr1->head->err) {
@@ -1583,7 +1583,7 @@ void ScalaParser::parseSimpleExpr1(spSimpleExpr1 &simpleExpr1) {
  *                   | SimpleExpr TypeArgs
  *                   | XmlExpr
  */
-void ScalaParser::parseSimpleExpr1Head(spSimpleExpr1Head &head) {
+void Parser::parseSimpleExpr1Head(spSimpleExpr1Head &head) {
   State state;
   saveState(state);
 
@@ -1622,7 +1622,7 @@ void ScalaParser::parseSimpleExpr1Head(spSimpleExpr1Head &head) {
 /**
  * SimpleExpr1Tail ::=  ArgumentExprs SimpleExpr1Tail | ArgumentExprs
  */
-void ScalaParser::parseSimpleExpr1Tail(spSimpleExpr1Tail &tail) {
+void Parser::parseSimpleExpr1Tail(spSimpleExpr1Tail &tail) {
   tail->argExprs = spArgumentExprs(new ArgumentExprs);
   parseArgumentExprs(tail->argExprs);
   if (tail->argExprs->err) {
@@ -1649,7 +1649,7 @@ void ScalaParser::parseSimpleExpr1Tail(spSimpleExpr1Tail &tail) {
 /**
  * SimpleType ::= SimpleTypeHead SimpleTypeTails | SimpleTypeHead
  */
-void ScalaParser::parseSimpleType(spSimpleType &simpleType) {
+void Parser::parseSimpleType(spSimpleType &simpleType) {
   simpleType->head = spSimpleTypeHead(new SimpleTypeHead);
   parseSimpleTypeHead(simpleType->head);
   if (simpleType->head->err) {
@@ -1674,7 +1674,7 @@ void ScalaParser::parseSimpleType(spSimpleType &simpleType) {
  *                  | Path '.' 'type'
  *                  | '(' Types ')'
  */
-void ScalaParser::parseSimpleTypeHead(spSimpleTypeHead &head) {
+void Parser::parseSimpleTypeHead(spSimpleTypeHead &head) {
   // StableId
   head->opt = SimpleTypeHead::Opt::STABLE_ID;
   head->stableId = spStableId(new StableId);
@@ -1691,7 +1691,7 @@ void ScalaParser::parseSimpleTypeHead(spSimpleTypeHead &head) {
 /**
  * SimpleTypeTail ::= TypeArgs | '#' id
  */
-void ScalaParser::parseSimpleTypeTail(spSimpleTypeTail &tail) {
+void Parser::parseSimpleTypeTail(spSimpleTypeTail &tail) {
   // TypeArgs
   tail->opt = SimpleTypeTail::Opt::TYPE_ARGS;
   tail->typeArgs = spTypeArgs(new TypeArgs);
@@ -1707,7 +1707,7 @@ void ScalaParser::parseSimpleTypeTail(spSimpleTypeTail &tail) {
 /**
  * SimpleTypeTails ::= SimpleTypeTail SimpleTypeTails | SimpleTypeTail
  */
-void ScalaParser::parseSimpleTypeTails(spSimpleTypeTails &tails) {
+void Parser::parseSimpleTypeTails(spSimpleTypeTails &tails) {
   // SimpleTypeTail
   tails->tail = spSimpleTypeTail(new SimpleTypeTail);
   parseSimpleTypeTail(tails->tail);
@@ -1732,7 +1732,7 @@ void ScalaParser::parseSimpleTypeTails(spSimpleTypeTails &tails) {
 /**
  * StableId ::= StableIdHead StableIdTail | StableIdHead
  */
-void ScalaParser::parseStableId(spStableId &stableId) {
+void Parser::parseStableId(spStableId &stableId) {
   stableId->head = spStableIdHead(new StableIdHead);
   parseStableIdHead(stableId->head);
   if (stableId->head->err) {
@@ -1758,7 +1758,7 @@ void ScalaParser::parseStableId(spStableId &stableId) {
  *                | [IdPeriod] 'this' PeriodId
  *                | [IdPeriod] 'super' [ClassQualifier] PeriodId
  */
-void ScalaParser::parseStableIdHead(spStableIdHead &head) {
+void Parser::parseStableIdHead(spStableIdHead &head) {
   spLexId id = parseLexId();
   lexer->getNextToken(); // consume 'id'
   if (id->err == false) {
@@ -1774,7 +1774,7 @@ void ScalaParser::parseStableIdHead(spStableIdHead &head) {
 /**
  * StableIdTail ::= PeriodId StableIdTail | PeriodId
  */
-void ScalaParser::parseStableIdTail(spStableIdTail &tail) {
+void Parser::parseStableIdTail(spStableIdTail &tail) {
   tail->periodId = spPeriodId(new PeriodId);
   parsePeriodId(tail->periodId);
   if (tail->periodId->err) {
@@ -1798,7 +1798,7 @@ void ScalaParser::parseStableIdTail(spStableIdTail &tail) {
 /**
  * TemplateBody ::= [nl] '{' [SelfType] [TemplateStat {semi TemplateStat}] '}'
  */
-void ScalaParser::parseTemplateBody(spTemplateBody &tmplBody) {
+void Parser::parseTemplateBody(spTemplateBody &tmplBody) {
   // '{'
   if (lexer->getCurToken() != STok::LCURLYB) {
     tmplBody->addErr(c4::ERR_EXP_LCURLY_BRACKET);
@@ -1859,7 +1859,7 @@ void ScalaParser::parseTemplateBody(spTemplateBody &tmplBody) {
  *                | {Annotation [nl]} {Modifier} Dcl
  *                | Expr
  */
-void ScalaParser::parseTemplateStat(spTemplateStat &tmplStat) {
+void Parser::parseTemplateStat(spTemplateStat &tmplStat) {
   // Import
   if (lexer->getCurToken() == STok::IMPORT) {
     tmplStat->opt = TemplateStat::Opt::IMPORT;
@@ -1923,7 +1923,7 @@ void ScalaParser::parseTemplateStat(spTemplateStat &tmplStat) {
  *           | ['case'] 'object' ObjectDef
  *           | 'trait' TraitDef
  */
-void ScalaParser::parseTmplDef(spTmplDef &tmplDef) {
+void Parser::parseTmplDef(spTmplDef &tmplDef) {
   // 'trait' TraitDef
   if (lexer->getCurToken() == STok::TRAIT) {
     tmplDef->opt = TmplDef::Opt::TRAIT;
@@ -1986,7 +1986,7 @@ void ScalaParser::parseTmplDef(spTmplDef &tmplDef) {
  *           | Packaging
  *           | PackageObject
  */
-void ScalaParser::parseTopStat(spTopStat &topStat) {
+void Parser::parseTopStat(spTopStat &topStat) {
   // Packaging
   if (lexer->getCurToken() == STok::PACKAGE) {
     topStat->opt = TopStat::Opt::PACKAGING;
@@ -2038,7 +2038,7 @@ void ScalaParser::parseTopStat(spTopStat &topStat) {
 /**
  * TopStatSeq ::= TopStat {semi TopStat}
  */
-void ScalaParser::parseTopStatSeq(spTopStatSeq &topStatSeq) {
+void Parser::parseTopStatSeq(spTopStatSeq &topStatSeq) {
   topStatSeq->topStat = spTopStat(new TopStat);
   parseTopStat(topStatSeq->topStat);
   if (topStatSeq->topStat->err) {
@@ -2066,7 +2066,7 @@ void ScalaParser::parseTopStatSeq(spTopStatSeq &topStatSeq) {
 /**
  * TraitDef ::= id [TypeParamClause] TraitTemplateOpt
  */
-void ScalaParser::parseTraitDef(spTraitDef &traitDef) {
+void Parser::parseTraitDef(spTraitDef &traitDef) {
   // id
   traitDef->id = parseLexId();
   lexer->getNextToken(); // consume id
@@ -2096,7 +2096,7 @@ void ScalaParser::parseTraitDef(spTraitDef &traitDef) {
 /**
  * TraitParents ::= AnnotType {'with' AnnotType}
  */
-void ScalaParser::parseTraitParents(spTraitParents &parents) {
+void Parser::parseTraitParents(spTraitParents &parents) {
   // AnnotType
   parents->annotType = spAnnotType(new AnnotType);
   parseAnnotType(parents->annotType);
@@ -2126,7 +2126,7 @@ void ScalaParser::parseTraitParents(spTraitParents &parents) {
 /**
  * TraitTemplate ::= [EarlyDefs] TraitParents [TemplateBody]
  */
-void ScalaParser::parseTraitTemplate(spTraitTemplate &traitTemplate) {
+void Parser::parseTraitTemplate(spTraitTemplate &traitTemplate) {
   // TODO: [EarlyDefs]
 
   traitTemplate->traitParents = spTraitParents(new TraitParents);
@@ -2142,7 +2142,7 @@ void ScalaParser::parseTraitTemplate(spTraitTemplate &traitTemplate) {
 /**
  * TraitTemplateOpt ::= 'extends' TraitTemplate | [['extends'] TemplateBody]
  */
-void ScalaParser::parseTraitTemplateOpt(spTraitTemplateOpt &traitTemplateOpt) {
+void Parser::parseTraitTemplateOpt(spTraitTemplateOpt &traitTemplateOpt) {
   // [TemplateBody]
   if (lexer->getCurToken() != STok::EXTENDS) {
     if (lexer->getCurToken() != STok::LCURLYB) {
@@ -2193,7 +2193,7 @@ void ScalaParser::parseTraitTemplateOpt(spTraitTemplateOpt &traitTemplateOpt) {
  * Type ::= FunctionArgTypes '=>' Type
  *        | InfixType [ExistentialClause]
  */
-void ScalaParser::parseType(spType &type) {
+void Parser::parseType(spType &type) {
   // TODO: FunctionArgTypes '=>' Type
 
   // InfixType [ExistentialClause]
@@ -2211,7 +2211,7 @@ void ScalaParser::parseType(spType &type) {
 /**
  * Types ::= Type {',' Type}
  */
-void ScalaParser::parseTypes(spTypes &types) {
+void Parser::parseTypes(spTypes &types) {
   types->type = spType(new Type);
   parseType(types->type);
   if (types->type->err) {
@@ -2239,7 +2239,7 @@ void ScalaParser::parseTypes(spTypes &types) {
 /**
  * TypeArgs ::= '[' Types ']'
  */
-void ScalaParser::parseTypeArgs(spTypeArgs &typeArgs) {
+void Parser::parseTypeArgs(spTypeArgs &typeArgs) {
   // '['
   if (lexer->getCurToken() != STok::LBRACKET) {
     typeArgs->addErr(c4::ERR_EXP_LBRACKET);
@@ -2271,7 +2271,7 @@ void ScalaParser::parseTypeArgs(spTypeArgs &typeArgs) {
  * TypeParam ::= (id | '_') [TypeParamClause] ['>:' Type] ['<:' Type]
  *               {'<%' Type} {':' Type}
  */
-void ScalaParser::parseTypeParam(spTypeParam &typeParam) {
+void Parser::parseTypeParam(spTypeParam &typeParam) {
   // (id | '_')
   if (lexer->getCurToken() == STok::UNDERSCORE) {
     typeParam->tokUnderscore = lexer->getCurTokenNode();
@@ -2294,7 +2294,7 @@ void ScalaParser::parseTypeParam(spTypeParam &typeParam) {
 /**
  * TypeParamClause ::= '[' VariantTypeParam {',' VariantTypeParam} ']'
  */
-void ScalaParser::parseTypeParamClause(spTypeParamClause &typeParamClause) {
+void Parser::parseTypeParamClause(spTypeParamClause &typeParamClause) {
   // '['
   if (lexer->getCurToken() != STok::LBRACKET) {
     typeParamClause->addErr(c4::ERR_EXP_LBRACKET);
@@ -2343,7 +2343,7 @@ void ScalaParser::parseTypeParamClause(spTypeParamClause &typeParamClause) {
 /**
  * VariantTypeParam ::= {Annotation} ['+' | '-'] TypeParam
  */
-void ScalaParser::parseVariantTypeParam(spVariantTypeParam &varTypeParam) {
+void Parser::parseVariantTypeParam(spVariantTypeParam &varTypeParam) {
   // {Annotation}
   while (lexer->getCurToken() == STok::AT) {
     auto annotation = spAnnotation(new Annotation);
@@ -2372,12 +2372,12 @@ void ScalaParser::parseVariantTypeParam(spVariantTypeParam &varTypeParam) {
   }
 }
 
-void ScalaParser::parse() {
+void Parser::parse() {
   buildParseTree();
   comments = lexer->getComments();
 }
 
-void ScalaParser::buildParseTree() {
+void Parser::buildParseTree() {
   lexer->getNextToken();
   while (true) {
     switch (lexer->getCurToken()) {
@@ -2399,19 +2399,19 @@ void ScalaParser::buildParseTree() {
 /**
  * Add Diagnosis error including buffer ini and end positions.
  */
-int ScalaParser::addErr(int err) {
+int Parser::addErr(int err) {
   unsigned int cursor = src->getCursor();
   unsigned int ini = cursor - lexer->getCurTokenStr().size();
   unsigned int end = cursor - 1;
   return diag->addErr(err, ini, end);
 }
 
-void ScalaParser::saveState(State &state) {
+void Parser::saveState(State &state) {
   state.diagErrorsSize = diag->errors.size();
   lexer->saveState(state);
 }
 
-void ScalaParser::restoreState(State &state) {
+void Parser::restoreState(State &state) {
   while (diag->errors.size() > state.diagErrorsSize) {
     diag->errors.pop_back();
   }
@@ -2419,7 +2419,7 @@ void ScalaParser::restoreState(State &state) {
   lexer->restoreState(state);
 }
 
-bool ScalaParser::isAccessModifier(STok tok) {
+bool Parser::isAccessModifier(STok tok) {
   if (tok == STok::PRIVATE || tok == STok::PROTECTED) {
     return true;
   }
@@ -2427,7 +2427,7 @@ bool ScalaParser::isAccessModifier(STok tok) {
   return false;
 }
 
-bool ScalaParser::isLocalModifier(STok tok) {
+bool Parser::isLocalModifier(STok tok) {
   if (tok == STok::ABSTRACT
     || tok == STok::FINAL
     || tok == STok::SEALED
@@ -2440,7 +2440,7 @@ bool ScalaParser::isLocalModifier(STok tok) {
   return false;
 }
 
-bool ScalaParser::isModifier(STok tok) {
+bool Parser::isModifier(STok tok) {
   if (isLocalModifier(tok) || isAccessModifier(tok) || tok == STok::OVERRIDE) {
     return true;
   }
