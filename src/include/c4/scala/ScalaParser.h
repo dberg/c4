@@ -4,7 +4,7 @@
 #include <string>
 #include "c4/common/SourceCodeStream.h"
 #include "c4/common/Diagnosis.h"
-#include "c4/scala/ScalaAST.h"
+#include "c4/scala/AST.h"
 #include "c4/scala/ScalaLexer.h"
 #include "c4/scala/ScalaParserState.h"
 #include "c4/scala/ScalaToken.h"

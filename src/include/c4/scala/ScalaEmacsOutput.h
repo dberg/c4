@@ -5,7 +5,7 @@
 #include <vector>
 #include "c4/common/Diagnosis.h"
 #include "c4/scala/ScalaIndentation.h"
-#include "c4/scala/ScalaAST.h"
+#include "c4/scala/AST.h"
 #include "c4/scala/ScalaParser.h"
 #include "c4/scala/ScalaSyntaxHighlighting.h"
 

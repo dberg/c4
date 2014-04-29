@@ -8,7 +8,7 @@
 #include "c4/common/LiteralSupport.h"
 #include "c4/common/SourceCodeStream.h"
 #include "c4/scala/ScalaIndentation.h"
-#include "c4/scala/ScalaAST.h"
+#include "c4/scala/AST.h"
 #include "c4/scala/ScalaParserState.h"
 #include "c4/scala/ScalaToken.h"
 
