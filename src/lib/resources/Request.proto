@@ -3,18 +3,16 @@ package c4;
 message Request {
 
   enum Action {
-    PARSE = 0;
-    GET = 1;
+    PROJECT = 0;
+    COMPILE = 1;
   }
 
-  // Always mandatory.
   required Action action = 1;
 
-  // If we're running a parse command this is mandatory.
-  optional string filename = 2;
-  optional string buffer = 3;
+  message CompilationUnit {
+    required string filename = 1;
+    required string buffer = 2;
+  }
 
-  // If the server is issuing a GET on the client to get a list of compilation
-  // units the project is missing.
-  repeated string compilationUnitList = 4;
+  repeated CompilationUnit compilationUnits = 2;
 }

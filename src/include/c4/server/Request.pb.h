@@ -35,14 +35,15 @@ void protobuf_AssignDesc_Request_2eproto();
 void protobuf_ShutdownFile_Request_2eproto();
 
 class Request;
+class Request_CompilationUnit;
 
 enum Request_Action {
-  Request_Action_PARSE = 0,
-  Request_Action_GET = 1
+  Request_Action_PROJECT = 0,
+  Request_Action_COMPILE = 1
 };
 bool Request_Action_IsValid(int value);
-const Request_Action Request_Action_Action_MIN = Request_Action_PARSE;
-const Request_Action Request_Action_Action_MAX = Request_Action_GET;
+const Request_Action Request_Action_Action_MIN = Request_Action_PROJECT;
+const Request_Action Request_Action_Action_MAX = Request_Action_COMPILE;
 const int Request_Action_Action_ARRAYSIZE = Request_Action_Action_MAX + 1;
 
 const ::google::protobuf::EnumDescriptor* Request_Action_descriptor();
@@ -56,6 +57,108 @@ inline bool Request_Action_Parse(
     Request_Action_descriptor(), name, value);
 }
 // ===================================================================
+
+class Request_CompilationUnit : public ::google::protobuf::Message {
+ public:
+  Request_CompilationUnit();
+  virtual ~Request_CompilationUnit();
+
+  Request_CompilationUnit(const Request_CompilationUnit& from);
+
+  inline Request_CompilationUnit& operator=(const Request_CompilationUnit& from) {
+    CopyFrom(from);
+    return *this;
+  }
+
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _unknown_fields_;
+  }
+
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return &_unknown_fields_;
+  }
+
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const Request_CompilationUnit& default_instance();
+
+  void Swap(Request_CompilationUnit* other);
+
+  // implements Message ----------------------------------------------
+
+  Request_CompilationUnit* New() const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const Request_CompilationUnit& from);
+  void MergeFrom(const Request_CompilationUnit& from);
+  void Clear();
+  bool IsInitialized() const;
+
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  public:
+
+  ::google::protobuf::Metadata GetMetadata() const;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // required string filename = 1;
+  inline bool has_filename() const;
+  inline void clear_filename();
+  static const int kFilenameFieldNumber = 1;
+  inline const ::std::string& filename() const;
+  inline void set_filename(const ::std::string& value);
+  inline void set_filename(const char* value);
+  inline void set_filename(const char* value, size_t size);
+  inline ::std::string* mutable_filename();
+  inline ::std::string* release_filename();
+  inline void set_allocated_filename(::std::string* filename);
+
+  // required string buffer = 2;
+  inline bool has_buffer() const;
+  inline void clear_buffer();
+  static const int kBufferFieldNumber = 2;
+  inline const ::std::string& buffer() const;
+  inline void set_buffer(const ::std::string& value);
+  inline void set_buffer(const char* value);
+  inline void set_buffer(const char* value, size_t size);
+  inline ::std::string* mutable_buffer();
+  inline ::std::string* release_buffer();
+  inline void set_allocated_buffer(::std::string* buffer);
+
+  // @@protoc_insertion_point(class_scope:c4.Request.CompilationUnit)
+ private:
+  inline void set_has_filename();
+  inline void clear_has_filename();
+  inline void set_has_buffer();
+  inline void clear_has_buffer();
+
+  ::google::protobuf::UnknownFieldSet _unknown_fields_;
+
+  ::std::string* filename_;
+  ::std::string* buffer_;
+
+  mutable int _cached_size_;
+  ::google::protobuf::uint32 _has_bits_[(2 + 31) / 32];
+
+  friend void  protobuf_AddDesc_Request_2eproto();
+  friend void protobuf_AssignDesc_Request_2eproto();
+  friend void protobuf_ShutdownFile_Request_2eproto();
+
+  void InitAsDefaultInstance();
+  static Request_CompilationUnit* default_instance_;
+};
+// -------------------------------------------------------------------
 
 class Request : public ::google::protobuf::Message {
  public:
@@ -109,9 +212,11 @@ class Request : public ::google::protobuf::Message {
 
   // nested types ----------------------------------------------------
 
+  typedef Request_CompilationUnit CompilationUnit;
+
   typedef Request_Action Action;
-  static const Action PARSE = Request_Action_PARSE;
-  static const Action GET = Request_Action_GET;
+  static const Action PROJECT = Request_Action_PROJECT;
+  static const Action COMPILE = Request_Action_COMPILE;
   static inline bool Action_IsValid(int value) {
     return Request_Action_IsValid(value);
   }
@@ -142,64 +247,30 @@ class Request : public ::google::protobuf::Message {
   inline ::c4::Request_Action action() const;
   inline void set_action(::c4::Request_Action value);
 
-  // optional string filename = 2;
-  inline bool has_filename() const;
-  inline void clear_filename();
-  static const int kFilenameFieldNumber = 2;
-  inline const ::std::string& filename() const;
-  inline void set_filename(const ::std::string& value);
-  inline void set_filename(const char* value);
-  inline void set_filename(const char* value, size_t size);
-  inline ::std::string* mutable_filename();
-  inline ::std::string* release_filename();
-  inline void set_allocated_filename(::std::string* filename);
-
-  // optional string buffer = 3;
-  inline bool has_buffer() const;
-  inline void clear_buffer();
-  static const int kBufferFieldNumber = 3;
-  inline const ::std::string& buffer() const;
-  inline void set_buffer(const ::std::string& value);
-  inline void set_buffer(const char* value);
-  inline void set_buffer(const char* value, size_t size);
-  inline ::std::string* mutable_buffer();
-  inline ::std::string* release_buffer();
-  inline void set_allocated_buffer(::std::string* buffer);
-
-  // repeated string compilationUnitList = 4;
-  inline int compilationunitlist_size() const;
-  inline void clear_compilationunitlist();
-  static const int kCompilationUnitListFieldNumber = 4;
-  inline const ::std::string& compilationunitlist(int index) const;
-  inline ::std::string* mutable_compilationunitlist(int index);
-  inline void set_compilationunitlist(int index, const ::std::string& value);
-  inline void set_compilationunitlist(int index, const char* value);
-  inline void set_compilationunitlist(int index, const char* value, size_t size);
-  inline ::std::string* add_compilationunitlist();
-  inline void add_compilationunitlist(const ::std::string& value);
-  inline void add_compilationunitlist(const char* value);
-  inline void add_compilationunitlist(const char* value, size_t size);
-  inline const ::google::protobuf::RepeatedPtrField< ::std::string>& compilationunitlist() const;
-  inline ::google::protobuf::RepeatedPtrField< ::std::string>* mutable_compilationunitlist();
+  // repeated .c4.Request.CompilationUnit compilationUnits = 2;
+  inline int compilationunits_size() const;
+  inline void clear_compilationunits();
+  static const int kCompilationUnitsFieldNumber = 2;
+  inline const ::c4::Request_CompilationUnit& compilationunits(int index) const;
+  inline ::c4::Request_CompilationUnit* mutable_compilationunits(int index);
+  inline ::c4::Request_CompilationUnit* add_compilationunits();
+  inline const ::google::protobuf::RepeatedPtrField< ::c4::Request_CompilationUnit >&
+      compilationunits() const;
+  inline ::google::protobuf::RepeatedPtrField< ::c4::Request_CompilationUnit >*
+      mutable_compilationunits();
 
   // @@protoc_insertion_point(class_scope:c4.Request)
  private:
   inline void set_has_action();
   inline void clear_has_action();
-  inline void set_has_filename();
-  inline void clear_has_filename();
-  inline void set_has_buffer();
-  inline void clear_has_buffer();
 
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
 
-  ::std::string* filename_;
-  ::std::string* buffer_;
-  ::google::protobuf::RepeatedPtrField< ::std::string> compilationunitlist_;
+  ::google::protobuf::RepeatedPtrField< ::c4::Request_CompilationUnit > compilationunits_;
   int action_;
 
   mutable int _cached_size_;
-  ::google::protobuf::uint32 _has_bits_[(4 + 31) / 32];
+  ::google::protobuf::uint32 _has_bits_[(2 + 31) / 32];
 
   friend void  protobuf_AddDesc_Request_2eproto();
   friend void protobuf_AssignDesc_Request_2eproto();
@@ -212,6 +283,150 @@ class Request : public ::google::protobuf::Message {
 
 
 // ===================================================================
+
+// Request_CompilationUnit
+
+// required string filename = 1;
+inline bool Request_CompilationUnit::has_filename() const {
+  return (_has_bits_[0] & 0x00000001u) != 0;
+}
+inline void Request_CompilationUnit::set_has_filename() {
+  _has_bits_[0] |= 0x00000001u;
+}
+inline void Request_CompilationUnit::clear_has_filename() {
+  _has_bits_[0] &= ~0x00000001u;
+}
+inline void Request_CompilationUnit::clear_filename() {
+  if (filename_ != &::google::protobuf::internal::kEmptyString) {
+    filename_->clear();
+  }
+  clear_has_filename();
+}
+inline const ::std::string& Request_CompilationUnit::filename() const {
+  return *filename_;
+}
+inline void Request_CompilationUnit::set_filename(const ::std::string& value) {
+  set_has_filename();
+  if (filename_ == &::google::protobuf::internal::kEmptyString) {
+    filename_ = new ::std::string;
+  }
+  filename_->assign(value);
+}
+inline void Request_CompilationUnit::set_filename(const char* value) {
+  set_has_filename();
+  if (filename_ == &::google::protobuf::internal::kEmptyString) {
+    filename_ = new ::std::string;
+  }
+  filename_->assign(value);
+}
+inline void Request_CompilationUnit::set_filename(const char* value, size_t size) {
+  set_has_filename();
+  if (filename_ == &::google::protobuf::internal::kEmptyString) {
+    filename_ = new ::std::string;
+  }
+  filename_->assign(reinterpret_cast<const char*>(value), size);
+}
+inline ::std::string* Request_CompilationUnit::mutable_filename() {
+  set_has_filename();
+  if (filename_ == &::google::protobuf::internal::kEmptyString) {
+    filename_ = new ::std::string;
+  }
+  return filename_;
+}
+inline ::std::string* Request_CompilationUnit::release_filename() {
+  clear_has_filename();
+  if (filename_ == &::google::protobuf::internal::kEmptyString) {
+    return NULL;
+  } else {
+    ::std::string* temp = filename_;
+    filename_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+    return temp;
+  }
+}
+inline void Request_CompilationUnit::set_allocated_filename(::std::string* filename) {
+  if (filename_ != &::google::protobuf::internal::kEmptyString) {
+    delete filename_;
+  }
+  if (filename) {
+    set_has_filename();
+    filename_ = filename;
+  } else {
+    clear_has_filename();
+    filename_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+  }
+}
+
+// required string buffer = 2;
+inline bool Request_CompilationUnit::has_buffer() const {
+  return (_has_bits_[0] & 0x00000002u) != 0;
+}
+inline void Request_CompilationUnit::set_has_buffer() {
+  _has_bits_[0] |= 0x00000002u;
+}
+inline void Request_CompilationUnit::clear_has_buffer() {
+  _has_bits_[0] &= ~0x00000002u;
+}
+inline void Request_CompilationUnit::clear_buffer() {
+  if (buffer_ != &::google::protobuf::internal::kEmptyString) {
+    buffer_->clear();
+  }
+  clear_has_buffer();
+}
+inline const ::std::string& Request_CompilationUnit::buffer() const {
+  return *buffer_;
+}
+inline void Request_CompilationUnit::set_buffer(const ::std::string& value) {
+  set_has_buffer();
+  if (buffer_ == &::google::protobuf::internal::kEmptyString) {
+    buffer_ = new ::std::string;
+  }
+  buffer_->assign(value);
+}
+inline void Request_CompilationUnit::set_buffer(const char* value) {
+  set_has_buffer();
+  if (buffer_ == &::google::protobuf::internal::kEmptyString) {
+    buffer_ = new ::std::string;
+  }
+  buffer_->assign(value);
+}
+inline void Request_CompilationUnit::set_buffer(const char* value, size_t size) {
+  set_has_buffer();
+  if (buffer_ == &::google::protobuf::internal::kEmptyString) {
+    buffer_ = new ::std::string;
+  }
+  buffer_->assign(reinterpret_cast<const char*>(value), size);
+}
+inline ::std::string* Request_CompilationUnit::mutable_buffer() {
+  set_has_buffer();
+  if (buffer_ == &::google::protobuf::internal::kEmptyString) {
+    buffer_ = new ::std::string;
+  }
+  return buffer_;
+}
+inline ::std::string* Request_CompilationUnit::release_buffer() {
+  clear_has_buffer();
+  if (buffer_ == &::google::protobuf::internal::kEmptyString) {
+    return NULL;
+  } else {
+    ::std::string* temp = buffer_;
+    buffer_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+    return temp;
+  }
+}
+inline void Request_CompilationUnit::set_allocated_buffer(::std::string* buffer) {
+  if (buffer_ != &::google::protobuf::internal::kEmptyString) {
+    delete buffer_;
+  }
+  if (buffer) {
+    set_has_buffer();
+    buffer_ = buffer;
+  } else {
+    clear_has_buffer();
+    buffer_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+  }
+}
+
+// -------------------------------------------------------------------
 
 // Request
 
@@ -238,188 +453,29 @@ inline void Request::set_action(::c4::Request_Action value) {
   action_ = value;
 }
 
-// optional string filename = 2;
-inline bool Request::has_filename() const {
-  return (_has_bits_[0] & 0x00000002u) != 0;
+// repeated .c4.Request.CompilationUnit compilationUnits = 2;
+inline int Request::compilationunits_size() const {
+  return compilationunits_.size();
 }
-inline void Request::set_has_filename() {
-  _has_bits_[0] |= 0x00000002u;
+inline void Request::clear_compilationunits() {
+  compilationunits_.Clear();
 }
-inline void Request::clear_has_filename() {
-  _has_bits_[0] &= ~0x00000002u;
+inline const ::c4::Request_CompilationUnit& Request::compilationunits(int index) const {
+  return compilationunits_.Get(index);
 }
-inline void Request::clear_filename() {
-  if (filename_ != &::google::protobuf::internal::kEmptyString) {
-    filename_->clear();
-  }
-  clear_has_filename();
+inline ::c4::Request_CompilationUnit* Request::mutable_compilationunits(int index) {
+  return compilationunits_.Mutable(index);
 }
-inline const ::std::string& Request::filename() const {
-  return *filename_;
+inline ::c4::Request_CompilationUnit* Request::add_compilationunits() {
+  return compilationunits_.Add();
 }
-inline void Request::set_filename(const ::std::string& value) {
-  set_has_filename();
-  if (filename_ == &::google::protobuf::internal::kEmptyString) {
-    filename_ = new ::std::string;
-  }
-  filename_->assign(value);
+inline const ::google::protobuf::RepeatedPtrField< ::c4::Request_CompilationUnit >&
+Request::compilationunits() const {
+  return compilationunits_;
 }
-inline void Request::set_filename(const char* value) {
-  set_has_filename();
-  if (filename_ == &::google::protobuf::internal::kEmptyString) {
-    filename_ = new ::std::string;
-  }
-  filename_->assign(value);
-}
-inline void Request::set_filename(const char* value, size_t size) {
-  set_has_filename();
-  if (filename_ == &::google::protobuf::internal::kEmptyString) {
-    filename_ = new ::std::string;
-  }
-  filename_->assign(reinterpret_cast<const char*>(value), size);
-}
-inline ::std::string* Request::mutable_filename() {
-  set_has_filename();
-  if (filename_ == &::google::protobuf::internal::kEmptyString) {
-    filename_ = new ::std::string;
-  }
-  return filename_;
-}
-inline ::std::string* Request::release_filename() {
-  clear_has_filename();
-  if (filename_ == &::google::protobuf::internal::kEmptyString) {
-    return NULL;
-  } else {
-    ::std::string* temp = filename_;
-    filename_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
-    return temp;
-  }
-}
-inline void Request::set_allocated_filename(::std::string* filename) {
-  if (filename_ != &::google::protobuf::internal::kEmptyString) {
-    delete filename_;
-  }
-  if (filename) {
-    set_has_filename();
-    filename_ = filename;
-  } else {
-    clear_has_filename();
-    filename_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
-  }
-}
-
-// optional string buffer = 3;
-inline bool Request::has_buffer() const {
-  return (_has_bits_[0] & 0x00000004u) != 0;
-}
-inline void Request::set_has_buffer() {
-  _has_bits_[0] |= 0x00000004u;
-}
-inline void Request::clear_has_buffer() {
-  _has_bits_[0] &= ~0x00000004u;
-}
-inline void Request::clear_buffer() {
-  if (buffer_ != &::google::protobuf::internal::kEmptyString) {
-    buffer_->clear();
-  }
-  clear_has_buffer();
-}
-inline const ::std::string& Request::buffer() const {
-  return *buffer_;
-}
-inline void Request::set_buffer(const ::std::string& value) {
-  set_has_buffer();
-  if (buffer_ == &::google::protobuf::internal::kEmptyString) {
-    buffer_ = new ::std::string;
-  }
-  buffer_->assign(value);
-}
-inline void Request::set_buffer(const char* value) {
-  set_has_buffer();
-  if (buffer_ == &::google::protobuf::internal::kEmptyString) {
-    buffer_ = new ::std::string;
-  }
-  buffer_->assign(value);
-}
-inline void Request::set_buffer(const char* value, size_t size) {
-  set_has_buffer();
-  if (buffer_ == &::google::protobuf::internal::kEmptyString) {
-    buffer_ = new ::std::string;
-  }
-  buffer_->assign(reinterpret_cast<const char*>(value), size);
-}
-inline ::std::string* Request::mutable_buffer() {
-  set_has_buffer();
-  if (buffer_ == &::google::protobuf::internal::kEmptyString) {
-    buffer_ = new ::std::string;
-  }
-  return buffer_;
-}
-inline ::std::string* Request::release_buffer() {
-  clear_has_buffer();
-  if (buffer_ == &::google::protobuf::internal::kEmptyString) {
-    return NULL;
-  } else {
-    ::std::string* temp = buffer_;
-    buffer_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
-    return temp;
-  }
-}
-inline void Request::set_allocated_buffer(::std::string* buffer) {
-  if (buffer_ != &::google::protobuf::internal::kEmptyString) {
-    delete buffer_;
-  }
-  if (buffer) {
-    set_has_buffer();
-    buffer_ = buffer;
-  } else {
-    clear_has_buffer();
-    buffer_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
-  }
-}
-
-// repeated string compilationUnitList = 4;
-inline int Request::compilationunitlist_size() const {
-  return compilationunitlist_.size();
-}
-inline void Request::clear_compilationunitlist() {
-  compilationunitlist_.Clear();
-}
-inline const ::std::string& Request::compilationunitlist(int index) const {
-  return compilationunitlist_.Get(index);
-}
-inline ::std::string* Request::mutable_compilationunitlist(int index) {
-  return compilationunitlist_.Mutable(index);
-}
-inline void Request::set_compilationunitlist(int index, const ::std::string& value) {
-  compilationunitlist_.Mutable(index)->assign(value);
-}
-inline void Request::set_compilationunitlist(int index, const char* value) {
-  compilationunitlist_.Mutable(index)->assign(value);
-}
-inline void Request::set_compilationunitlist(int index, const char* value, size_t size) {
-  compilationunitlist_.Mutable(index)->assign(
-    reinterpret_cast<const char*>(value), size);
-}
-inline ::std::string* Request::add_compilationunitlist() {
-  return compilationunitlist_.Add();
-}
-inline void Request::add_compilationunitlist(const ::std::string& value) {
-  compilationunitlist_.Add()->assign(value);
-}
-inline void Request::add_compilationunitlist(const char* value) {
-  compilationunitlist_.Add()->assign(value);
-}
-inline void Request::add_compilationunitlist(const char* value, size_t size) {
-  compilationunitlist_.Add()->assign(reinterpret_cast<const char*>(value), size);
-}
-inline const ::google::protobuf::RepeatedPtrField< ::std::string>&
-Request::compilationunitlist() const {
-  return compilationunitlist_;
-}
-inline ::google::protobuf::RepeatedPtrField< ::std::string>*
-Request::mutable_compilationunitlist() {
-  return &compilationunitlist_;
+inline ::google::protobuf::RepeatedPtrField< ::c4::Request_CompilationUnit >*
+Request::mutable_compilationunits() {
+  return &compilationunits_;
 }
 
 

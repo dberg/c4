@@ -142,28 +142,28 @@ class Response : public ::google::protobuf::Message {
   inline ::c4::Response_ResponseCode code() const;
   inline void set_code(::c4::Response_ResponseCode value);
 
-  // optional string errorMsg = 2;
-  inline bool has_errormsg() const;
-  inline void clear_errormsg();
-  static const int kErrorMsgFieldNumber = 2;
-  inline const ::std::string& errormsg() const;
-  inline void set_errormsg(const ::std::string& value);
-  inline void set_errormsg(const char* value);
-  inline void set_errormsg(const char* value, size_t size);
-  inline ::std::string* mutable_errormsg();
-  inline ::std::string* release_errormsg();
-  inline void set_allocated_errormsg(::std::string* errormsg);
+  // optional string body = 2;
+  inline bool has_body() const;
+  inline void clear_body();
+  static const int kBodyFieldNumber = 2;
+  inline const ::std::string& body() const;
+  inline void set_body(const ::std::string& value);
+  inline void set_body(const char* value);
+  inline void set_body(const char* value, size_t size);
+  inline ::std::string* mutable_body();
+  inline ::std::string* release_body();
+  inline void set_allocated_body(::std::string* body);
 
   // @@protoc_insertion_point(class_scope:c4.Response)
  private:
   inline void set_has_code();
   inline void clear_has_code();
-  inline void set_has_errormsg();
-  inline void clear_has_errormsg();
+  inline void set_has_body();
+  inline void clear_has_body();
 
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
 
-  ::std::string* errormsg_;
+  ::std::string* body_;
   int code_;
 
   mutable int _cached_size_;
@@ -206,73 +206,73 @@ inline void Response::set_code(::c4::Response_ResponseCode value) {
   code_ = value;
 }
 
-// optional string errorMsg = 2;
-inline bool Response::has_errormsg() const {
+// optional string body = 2;
+inline bool Response::has_body() const {
   return (_has_bits_[0] & 0x00000002u) != 0;
 }
-inline void Response::set_has_errormsg() {
+inline void Response::set_has_body() {
   _has_bits_[0] |= 0x00000002u;
 }
-inline void Response::clear_has_errormsg() {
+inline void Response::clear_has_body() {
   _has_bits_[0] &= ~0x00000002u;
 }
-inline void Response::clear_errormsg() {
-  if (errormsg_ != &::google::protobuf::internal::kEmptyString) {
-    errormsg_->clear();
+inline void Response::clear_body() {
+  if (body_ != &::google::protobuf::internal::kEmptyString) {
+    body_->clear();
   }
-  clear_has_errormsg();
+  clear_has_body();
 }
-inline const ::std::string& Response::errormsg() const {
-  return *errormsg_;
+inline const ::std::string& Response::body() const {
+  return *body_;
 }
-inline void Response::set_errormsg(const ::std::string& value) {
-  set_has_errormsg();
-  if (errormsg_ == &::google::protobuf::internal::kEmptyString) {
-    errormsg_ = new ::std::string;
+inline void Response::set_body(const ::std::string& value) {
+  set_has_body();
+  if (body_ == &::google::protobuf::internal::kEmptyString) {
+    body_ = new ::std::string;
   }
-  errormsg_->assign(value);
+  body_->assign(value);
 }
-inline void Response::set_errormsg(const char* value) {
-  set_has_errormsg();
-  if (errormsg_ == &::google::protobuf::internal::kEmptyString) {
-    errormsg_ = new ::std::string;
+inline void Response::set_body(const char* value) {
+  set_has_body();
+  if (body_ == &::google::protobuf::internal::kEmptyString) {
+    body_ = new ::std::string;
   }
-  errormsg_->assign(value);
+  body_->assign(value);
 }
-inline void Response::set_errormsg(const char* value, size_t size) {
-  set_has_errormsg();
-  if (errormsg_ == &::google::protobuf::internal::kEmptyString) {
-    errormsg_ = new ::std::string;
+inline void Response::set_body(const char* value, size_t size) {
+  set_has_body();
+  if (body_ == &::google::protobuf::internal::kEmptyString) {
+    body_ = new ::std::string;
   }
-  errormsg_->assign(reinterpret_cast<const char*>(value), size);
+  body_->assign(reinterpret_cast<const char*>(value), size);
 }
-inline ::std::string* Response::mutable_errormsg() {
-  set_has_errormsg();
-  if (errormsg_ == &::google::protobuf::internal::kEmptyString) {
-    errormsg_ = new ::std::string;
+inline ::std::string* Response::mutable_body() {
+  set_has_body();
+  if (body_ == &::google::protobuf::internal::kEmptyString) {
+    body_ = new ::std::string;
   }
-  return errormsg_;
+  return body_;
 }
-inline ::std::string* Response::release_errormsg() {
-  clear_has_errormsg();
-  if (errormsg_ == &::google::protobuf::internal::kEmptyString) {
+inline ::std::string* Response::release_body() {
+  clear_has_body();
+  if (body_ == &::google::protobuf::internal::kEmptyString) {
     return NULL;
   } else {
-    ::std::string* temp = errormsg_;
-    errormsg_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+    ::std::string* temp = body_;
+    body_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
     return temp;
   }
 }
-inline void Response::set_allocated_errormsg(::std::string* errormsg) {
-  if (errormsg_ != &::google::protobuf::internal::kEmptyString) {
-    delete errormsg_;
+inline void Response::set_allocated_body(::std::string* body) {
+  if (body_ != &::google::protobuf::internal::kEmptyString) {
+    delete body_;
   }
-  if (errormsg) {
-    set_has_errormsg();
-    errormsg_ = errormsg;
+  if (body) {
+    set_has_body();
+    body_ = body;
   } else {
-    clear_has_errormsg();
-    errormsg_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+    clear_has_body();
+    body_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
   }
 }
 

@@ -8,5 +8,5 @@ message Response {
   }
 
   required ResponseCode code = 1;
-  optional string errorMsg = 2;
+  optional string body = 2;
 }

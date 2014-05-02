@@ -37,7 +37,7 @@ void protobuf_AssignDesc_Response_2eproto() {
   Response_descriptor_ = file->message_type(0);
   static const int Response_offsets_[2] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Response, code_),
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Response, errormsg_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Response, body_),
   };
   Response_reflection_ =
     new ::google::protobuf::internal::GeneratedMessageReflection(
@@ -81,10 +81,10 @@ void protobuf_AddDesc_Response_2eproto() {
   GOOGLE_PROTOBUF_VERIFY_VERSION;
 
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
-    "\n\016Response.proto\022\002c4\"h\n\010Response\022\'\n\004code"
-    "\030\001 \002(\0162\031.c4.Response.ResponseCode\022\020\n\010err"
-    "orMsg\030\002 \001(\t\"!\n\014ResponseCode\022\006\n\002OK\020\000\022\t\n\005E"
-    "RROR\020\001", 126);
+    "\n\016Response.proto\022\002c4\"d\n\010Response\022\'\n\004code"
+    "\030\001 \002(\0162\031.c4.Response.ResponseCode\022\014\n\004bod"
+    "y\030\002 \001(\t\"!\n\014ResponseCode\022\006\n\002OK\020\000\022\t\n\005ERROR"
+    "\020\001", 122);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "Response.proto", &protobuf_RegisterTypes);
   Response::default_instance_ = new Response();
@@ -124,7 +124,7 @@ const int Response::ResponseCode_ARRAYSIZE;
 #endif  // _MSC_VER
 #ifndef _MSC_VER
 const int Response::kCodeFieldNumber;
-const int Response::kErrorMsgFieldNumber;
+const int Response::kBodyFieldNumber;
 #endif  // !_MSC_VER
 
 Response::Response()
@@ -144,7 +144,7 @@ Response::Response(const Response& from)
 void Response::SharedCtor() {
   _cached_size_ = 0;
   code_ = 0;
-  errormsg_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+  body_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
 
@@ -153,8 +153,8 @@ Response::~Response() {
 }
 
 void Response::SharedDtor() {
-  if (errormsg_ != &::google::protobuf::internal::kEmptyString) {
-    delete errormsg_;
+  if (body_ != &::google::protobuf::internal::kEmptyString) {
+    delete body_;
   }
   if (this != default_instance_) {
   }
@@ -184,9 +184,9 @@ Response* Response::New() const {
 void Response::Clear() {
   if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
     code_ = 0;
-    if (has_errormsg()) {
-      if (errormsg_ != &::google::protobuf::internal::kEmptyString) {
-        errormsg_->clear();
+    if (has_body()) {
+      if (body_ != &::google::protobuf::internal::kEmptyString) {
+        body_->clear();
       }
     }
   }
@@ -216,19 +216,19 @@ bool Response::MergePartialFromCodedStream(
         } else {
           goto handle_uninterpreted;
         }
-        if (input->ExpectTag(18)) goto parse_errorMsg;
+        if (input->ExpectTag(18)) goto parse_body;
         break;
       }
 
-      // optional string errorMsg = 2;
+      // optional string body = 2;
       case 2: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
-         parse_errorMsg:
+         parse_body:
           DO_(::google::protobuf::internal::WireFormatLite::ReadString(
-                input, this->mutable_errormsg()));
+                input, this->mutable_body()));
           ::google::protobuf::internal::WireFormat::VerifyUTF8String(
-            this->errormsg().data(), this->errormsg().length(),
+            this->body().data(), this->body().length(),
             ::google::protobuf::internal::WireFormat::PARSE);
         } else {
           goto handle_uninterpreted;
@@ -261,13 +261,13 @@ void Response::SerializeWithCachedSizes(
       1, this->code(), output);
   }
 
-  // optional string errorMsg = 2;
-  if (has_errormsg()) {
+  // optional string body = 2;
+  if (has_body()) {
     ::google::protobuf::internal::WireFormat::VerifyUTF8String(
-      this->errormsg().data(), this->errormsg().length(),
+      this->body().data(), this->body().length(),
       ::google::protobuf::internal::WireFormat::SERIALIZE);
     ::google::protobuf::internal::WireFormatLite::WriteString(
-      2, this->errormsg(), output);
+      2, this->body(), output);
   }
 
   if (!unknown_fields().empty()) {
@@ -284,14 +284,14 @@ void Response::SerializeWithCachedSizes(
       1, this->code(), target);
   }
 
-  // optional string errorMsg = 2;
-  if (has_errormsg()) {
+  // optional string body = 2;
+  if (has_body()) {
     ::google::protobuf::internal::WireFormat::VerifyUTF8String(
-      this->errormsg().data(), this->errormsg().length(),
+      this->body().data(), this->body().length(),
       ::google::protobuf::internal::WireFormat::SERIALIZE);
     target =
       ::google::protobuf::internal::WireFormatLite::WriteStringToArray(
-        2, this->errormsg(), target);
+        2, this->body(), target);
   }
 
   if (!unknown_fields().empty()) {
@@ -311,11 +311,11 @@ int Response::ByteSize() const {
         ::google::protobuf::internal::WireFormatLite::EnumSize(this->code());
     }
 
-    // optional string errorMsg = 2;
-    if (has_errormsg()) {
+    // optional string body = 2;
+    if (has_body()) {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::StringSize(
-          this->errormsg());
+          this->body());
     }
 
   }
@@ -348,8 +348,8 @@ void Response::MergeFrom(const Response& from) {
     if (from.has_code()) {
       set_code(from.code());
     }
-    if (from.has_errormsg()) {
-      set_errormsg(from.errormsg());
+    if (from.has_body()) {
+      set_body(from.body());
     }
   }
   mutable_unknown_fields()->MergeFrom(from.unknown_fields());
@@ -376,7 +376,7 @@ bool Response::IsInitialized() const {
 void Response::Swap(Response* other) {
   if (other != this) {
     std::swap(code_, other->code_);
-    std::swap(errormsg_, other->errormsg_);
+    std::swap(body_, other->body_);
     std::swap(_has_bits_[0], other->_has_bits_[0]);
     _unknown_fields_.Swap(&other->_unknown_fields_);
     std::swap(_cached_size_, other->_cached_size_);
