@@ -200,6 +200,7 @@ $(obj_scala)/%.o: \
 
 # objects server - libserver
 $(obj_server)/libserver.a: \
+  $(obj_server)/ProjectHandler.o \
   $(obj_server)/RequestBuffer.o \
   $(obj_server)/Request.o \
   $(obj_server)/Response.o \
@@ -208,8 +209,7 @@ $(obj_server)/libserver.a: \
 
 $(obj_server)/RequestBuffer.o: \
   $(libdir_server)/RequestBuffer.cpp \
-  $(incdir_server)/RequestBuffer.h \
-  $(incdir_server)/Request.pb.h
+  $(incdir_server)/RequestBuffer.h
 	$(CXX) $(CFLAGS) $(INC) \
   -c $< -o $@
 

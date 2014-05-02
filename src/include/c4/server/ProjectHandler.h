@@ -6,6 +6,8 @@
 #include <string>
 #include <unordered_map>
 #include "c4/common/Project.h"
+#include "c4/server/Response.pb.h"
+#include "c4/server/Request.pb.h"
 
 namespace c4 {
 
@@ -19,6 +21,7 @@ private:
 
 public:
   ProjectHandler(): projects() {}
+  Response process(Request request);
 };
 
 } // namespace

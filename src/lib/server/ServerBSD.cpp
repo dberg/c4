@@ -69,7 +69,7 @@ int Server::start(unsigned int port) {
           if (feed(evlist[i].ident, readBuffer, cbytes)) {
             // we have a complete request
             Request request = getRequest(evlist[i].ident);
-            // TODO: create a request and dispatch it
+            projHandler->process(request);
           }
         }
 

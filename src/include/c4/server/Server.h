@@ -20,9 +20,9 @@
 #endif
 #endif
 
-#include "c4/common/ProjectHandler.h"
 #include "c4/common/Util.h"
 #include "c4/main/CmdInput.h"
+#include "c4/server/ProjectHandler.h"
 #include "c4/server/Request.pb.h"
 #include "c4/server/RequestBuffer.h"
 
