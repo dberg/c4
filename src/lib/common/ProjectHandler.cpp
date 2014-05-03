@@ -22,7 +22,7 @@ Response ProjectHandler::process(Request request) {
     return response;
   }
 
-  // compile list of compilation units
+  // compile each unit
   if (request.action() == Request::COMPILE) {
     for (int i = 0; i < request.compilationunits_size(); i++) {
       Request::CompilationUnit reqUnit = request.compilationunits(i);
