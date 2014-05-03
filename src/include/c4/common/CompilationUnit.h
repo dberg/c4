@@ -3,6 +3,7 @@
 #define __COMPILATION_UNIT__
 
 #include <memory>
+#include <string>
 
 namespace c4 {
 

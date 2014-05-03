@@ -151,6 +151,8 @@ $(obj_main)/c4.o: $(libdir_main)/c4.cpp
 $(obj_common)/libcommon.a: \
   $(obj_common)/Diagnosis.o \
   $(obj_common)/LiteralSupport.o \
+  $(obj_common)/Project.o \
+  $(obj_common)/ProjectHandler.o \
   $(obj_common)/SourceCodeStream.o \
   $(obj_common)/Util.o
 	ar -rv $@ $+
@@ -200,7 +202,6 @@ $(obj_scala)/%.o: \
 
 # objects server - libserver
 $(obj_server)/libserver.a: \
-  $(obj_server)/ProjectHandler.o \
   $(obj_server)/RequestBuffer.o \
   $(obj_server)/Request.o \
   $(obj_server)/Response.o \
