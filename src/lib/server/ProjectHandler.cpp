@@ -24,7 +24,14 @@ Response ProjectHandler::process(Request request) {
 
   // compile list of compilation units
   if (request.action() == Request::COMPILE) {
-    // TODO:
+    for (int i = 0; i < request.compilationunits_size(); i++) {
+      Request::CompilationUnit reqUnit = request.compilationunits(i);
+      spCompilationUnit unit = std::shared_ptr<CompilationUnit>(
+        new CompilationUnit(reqUnit.filename(), reqUnit.buffer()));
+      project->compile(unit);
+    }
+
+    // TODO: get response from project
     return response;
   }
 
@@ -39,7 +46,7 @@ Response ProjectHandler::process(Request request) {
 spProject ProjectHandler::getProject(std::string projectId) {
   auto it = projects.find(projectId);
   if (it == projects.end()) {
-    spProject project = std::shared_ptr<Project>(new Project);
+    spProject project = std::shared_ptr<Project>(new Project(projectId));
     projects[projectId] = project;
     return project;
   }
