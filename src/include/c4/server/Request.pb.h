@@ -247,10 +247,22 @@ class Request : public ::google::protobuf::Message {
   inline ::c4::Request_Action action() const;
   inline void set_action(::c4::Request_Action value);
 
-  // repeated .c4.Request.CompilationUnit compilationUnits = 2;
+  // required string projectId = 2;
+  inline bool has_projectid() const;
+  inline void clear_projectid();
+  static const int kProjectIdFieldNumber = 2;
+  inline const ::std::string& projectid() const;
+  inline void set_projectid(const ::std::string& value);
+  inline void set_projectid(const char* value);
+  inline void set_projectid(const char* value, size_t size);
+  inline ::std::string* mutable_projectid();
+  inline ::std::string* release_projectid();
+  inline void set_allocated_projectid(::std::string* projectid);
+
+  // repeated .c4.Request.CompilationUnit compilationUnits = 3;
   inline int compilationunits_size() const;
   inline void clear_compilationunits();
-  static const int kCompilationUnitsFieldNumber = 2;
+  static const int kCompilationUnitsFieldNumber = 3;
   inline const ::c4::Request_CompilationUnit& compilationunits(int index) const;
   inline ::c4::Request_CompilationUnit* mutable_compilationunits(int index);
   inline ::c4::Request_CompilationUnit* add_compilationunits();
@@ -263,14 +275,17 @@ class Request : public ::google::protobuf::Message {
  private:
   inline void set_has_action();
   inline void clear_has_action();
+  inline void set_has_projectid();
+  inline void clear_has_projectid();
 
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
 
+  ::std::string* projectid_;
   ::google::protobuf::RepeatedPtrField< ::c4::Request_CompilationUnit > compilationunits_;
   int action_;
 
   mutable int _cached_size_;
-  ::google::protobuf::uint32 _has_bits_[(2 + 31) / 32];
+  ::google::protobuf::uint32 _has_bits_[(3 + 31) / 32];
 
   friend void  protobuf_AddDesc_Request_2eproto();
   friend void protobuf_AssignDesc_Request_2eproto();
@@ -453,7 +468,77 @@ inline void Request::set_action(::c4::Request_Action value) {
   action_ = value;
 }
 
-// repeated .c4.Request.CompilationUnit compilationUnits = 2;
+// required string projectId = 2;
+inline bool Request::has_projectid() const {
+  return (_has_bits_[0] & 0x00000002u) != 0;
+}
+inline void Request::set_has_projectid() {
+  _has_bits_[0] |= 0x00000002u;
+}
+inline void Request::clear_has_projectid() {
+  _has_bits_[0] &= ~0x00000002u;
+}
+inline void Request::clear_projectid() {
+  if (projectid_ != &::google::protobuf::internal::kEmptyString) {
+    projectid_->clear();
+  }
+  clear_has_projectid();
+}
+inline const ::std::string& Request::projectid() const {
+  return *projectid_;
+}
+inline void Request::set_projectid(const ::std::string& value) {
+  set_has_projectid();
+  if (projectid_ == &::google::protobuf::internal::kEmptyString) {
+    projectid_ = new ::std::string;
+  }
+  projectid_->assign(value);
+}
+inline void Request::set_projectid(const char* value) {
+  set_has_projectid();
+  if (projectid_ == &::google::protobuf::internal::kEmptyString) {
+    projectid_ = new ::std::string;
+  }
+  projectid_->assign(value);
+}
+inline void Request::set_projectid(const char* value, size_t size) {
+  set_has_projectid();
+  if (projectid_ == &::google::protobuf::internal::kEmptyString) {
+    projectid_ = new ::std::string;
+  }
+  projectid_->assign(reinterpret_cast<const char*>(value), size);
+}
+inline ::std::string* Request::mutable_projectid() {
+  set_has_projectid();
+  if (projectid_ == &::google::protobuf::internal::kEmptyString) {
+    projectid_ = new ::std::string;
+  }
+  return projectid_;
+}
+inline ::std::string* Request::release_projectid() {
+  clear_has_projectid();
+  if (projectid_ == &::google::protobuf::internal::kEmptyString) {
+    return NULL;
+  } else {
+    ::std::string* temp = projectid_;
+    projectid_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+    return temp;
+  }
+}
+inline void Request::set_allocated_projectid(::std::string* projectid) {
+  if (projectid_ != &::google::protobuf::internal::kEmptyString) {
+    delete projectid_;
+  }
+  if (projectid) {
+    set_has_projectid();
+    projectid_ = projectid;
+  } else {
+    clear_has_projectid();
+    projectid_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+  }
+}
+
+// repeated .c4.Request.CompilationUnit compilationUnits = 3;
 inline int Request::compilationunits_size() const {
   return compilationunits_.size();
 }

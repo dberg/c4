@@ -9,10 +9,12 @@ message Request {
 
   required Action action = 1;
 
+  required string projectId = 2;
+
   message CompilationUnit {
     required string filename = 1;
     required string buffer = 2;
   }
 
-  repeated CompilationUnit compilationUnits = 2;
+  repeated CompilationUnit compilationUnits = 3;
 }

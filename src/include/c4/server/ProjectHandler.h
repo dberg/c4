@@ -18,6 +18,7 @@ class ProjectHandler {
 
 private:
   std::unordered_map<std::string, spProject> projects;
+  spProject getProject(std::string projectId);
 
 public:
   ProjectHandler(): projects() {}
