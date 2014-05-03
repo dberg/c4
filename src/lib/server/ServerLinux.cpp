@@ -25,7 +25,10 @@ int Server::start(unsigned int port) {
 
   const int MAX_EVENTS = 1024;
   struct epoll_event events[MAX_EVENTS];
+
   struct sockaddr_in cliaddr;
+  const int READ_BUFFER_MAX = 1024;
+  char readBuffer[READ_BUFFER_MAX];
 
   while (true) {
     int nevs = epoll_wait(epollfd, events, MAX_EVENTS, -1);
@@ -53,18 +56,23 @@ int Server::start(unsigned int port) {
 
       // handle socket communication
       // read data
-      //if (evlist[i].flags & EVFILT_READ) {
-        //int cbytes = read(evlist[i].ident, readBuffer, READ_BUFFER_MAX);
-        //feed(evlist[i].ident, readBuffer, cbytes);
+      if (events[i].events & EPOLLIN) {
+        int cbytes = read(events[i].data.fd, readBuffer, READ_BUFFER_MAX);
+        if (cbytes > 0) {
+          if (feed(events[i].data.fd, readBuffer, cbytes)) {
+              // we have a complete request
+              Request request = getRequest(events[i].data.fd);
+              projHandler->process(request);
+          }
+        }
 
-        //if (cbytes < 0) {
-          // TODO:
-          // read error
-        //} else {
-          // TODO:
-          // send data to RequestBuffer
-        //}
-      //}
+        // TODO:
+        // connection closed by the client
+        // stop monitoring this socket
+        if (cbytes < 0 || events[i].events & EPOLLERR) {
+          close(events[i].data.fd);
+        }
+      }
     }
   }
 

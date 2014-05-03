@@ -2,8 +2,8 @@
 #ifndef __REQUEST_BUFFER_H__
 #define __REQUEST_BUFFER_H__
 
-#include <iostream>
 #include <memory>
+#include <string>
 #include <vector>
 #include "c4/server/Request.pb.h"
 
