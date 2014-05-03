@@ -1,5 +1,4 @@
-C4
-================================================================================
+## C4
 
 C4 is a collection of emacs modes and parsers for Java 7, Scala 2.10 and the JVM bytecode.
 
@@ -11,8 +10,7 @@ The java emacs mode provides:
 Scala support is under development.
 
 
-A few notes on variables used in this README
---------------------------------------------------------------------------------
+### A few notes on variables used in this README
 
 In the examples below I'll mention two variables: $SRC and $BIN.
 
@@ -42,8 +40,7 @@ BIN=/home/ichigo/c4/src/out/Release/bin
 ```
 
 
-Build
---------------------------------------------------------------------------------
+### Build
 
 Prerequisite:
 
@@ -77,8 +74,7 @@ make CXX=g++
 ```
 
 
-Java emacs mode (c4j-mode) installation
--------------------------------------------------------------------------------
+### Java emacs mode (c4j-mode) installation
 
 1. Open the file $SRC/emacs-modes/c4j-mode/c4j-mode.el and set the variable
 
@@ -95,8 +91,7 @@ Java emacs mode (c4j-mode) installation
 ```
 
 
-Running c4 from the command line
--------------------------------------------------------------------------------
+### Running c4 from the command line
 
 ```bash
 # Print usage information
@@ -107,8 +102,7 @@ $BIN/c4 -i java -f MyClass.java
 ```
 
 
-Unit Tests
--------------------------------------------------------------------------------
+### Unit Tests
 
 To run all tests execute
 
