@@ -25,7 +25,7 @@ ifeq ($(UNAME), Darwin)
   CXX11FLAGS = -std=c++11 -stdlib=libc++
   # We use the default macports installation path under OSX
   INC_EXTRA ?= -I/opt/local/include
-  LIB_EXTRA ?= /opt/local/lib
+  LIB_EXTRA ?= -L/opt/local/lib
 endif
 
 CXX11FLAGS ?= -std=c++11
@@ -134,7 +134,7 @@ $(bin)/c4: \
   $(obj_scala)/libscala.a \
   $(obj_server)/libserver.a \
   $(obj_common)/libcommon.a \
-  -L$(LIB_EXTRA) -lprotobuf
+  $(LIB_EXTRA) -lprotobuf
 
 # objects main
 $(obj_main)/%.o: \
@@ -210,7 +210,8 @@ $(obj_server)/libserver.a: \
 
 $(obj_server)/RequestBuffer.o: \
   $(libdir_server)/RequestBuffer.cpp \
-  $(incdir_server)/RequestBuffer.h
+  $(incdir_server)/RequestBuffer.h \
+  $(obj_server)/Request.o
 	$(CXX) $(CFLAGS) $(INC) \
   -c $< -o $@
 
@@ -309,7 +310,7 @@ $(bin)/test-server: \
   $(gtest_obj)/libgtest.a \
   $(obj_server)/libserver.a \
   $(obj_common)/libcommon.a \
-  -L$(LIB_EXTRA) -lprotobuf \
+  $(LIB_EXTRA) -lprotobuf \
   -lpthread
 
 $(bin)/test-bytecode: \
