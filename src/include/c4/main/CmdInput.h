@@ -3,10 +3,9 @@
 #define __CMD_INPUT_H__
 #include <sstream>
 #include <string>
+#include "c4/common/Util.h"
 
 namespace c4 {
-
-bool endsWith(std::string const &str, std::string const &end);
 
 class CmdInput {
 

@@ -3,7 +3,14 @@
 namespace c4 {
 
 void Project::compile(spCompilationUnit unit) {
-  // TODO:
+  // Target specific project
+  if (endsWith(unit->filename, ".java")) {
+    projJava->compile(unit);
+  } else if (endsWith(unit->filename, ".scala")) {
+    projScala->compile(unit);
+  } else if (endsWith(unit->filename, ".class")) {
+    // TODO:
+  }
 }
 
 } // namespace

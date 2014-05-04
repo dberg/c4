@@ -153,6 +153,8 @@ $(obj_common)/libcommon.a: \
   $(obj_common)/LiteralSupport.o \
   $(obj_common)/Project.o \
   $(obj_common)/ProjectHandler.o \
+  $(obj_common)/ProjectJava.o \
+  $(obj_common)/ProjectScala.o \
   $(obj_common)/SourceCodeStream.o \
   $(obj_common)/Util.o
 	ar -rv $@ $+

@@ -107,14 +107,4 @@ int CmdInput::validateInput() {
   return 0;
 }
 
-/**
- * Check if the string str ends with the string end.
- */
-bool endsWith(std::string const &str, std::string const &end) {
-  if (str.length() >= end.length()) {
-    return (0 == str.compare(str.length() - end.length(), end.length(), end));
-  }
-  return false;
-}
-
 } // namespace
