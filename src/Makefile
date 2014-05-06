@@ -311,6 +311,7 @@ $(bin)/test-server: \
   -o $@ \
   $(gtest_obj)/libgtest.a \
   $(obj_server)/libserver.a \
+  $(obj_java)/libjava.a \
   $(obj_common)/libcommon.a \
   $(LIB_EXTRA) -lprotobuf \
   -lpthread

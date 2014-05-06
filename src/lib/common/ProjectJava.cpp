@@ -3,7 +3,8 @@
 namespace c4 {
 
 void ProjectJava::compile(spCompilationUnit unit) {
-  // TODO:
+  c4j::Parser parser(unit->filename, unit->buffer);
+  parser.parse();
 }
 
 }
