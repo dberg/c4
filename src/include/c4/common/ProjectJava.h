@@ -4,6 +4,7 @@
 
 #include <memory>
 #include "c4/common/CompilationUnit.h"
+#include "c4/java/EmacsOutput.h"
 #include "c4/java/Parser.h"
 
 namespace c4 {

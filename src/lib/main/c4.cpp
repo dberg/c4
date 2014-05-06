@@ -51,11 +51,7 @@ int parseJavaFile(CmdInput &ci) {
 
   c4j::EmacsOutput output(parser);
   output.build();
-  std::cout
-    << output.outSH.str() << std::endl
-    << output.outErr.str() << std::endl
-    << output.outST.str() << std::endl
-    << output.outIT.str();
+  std::cout << output.body();
 
   return 0;
 }
@@ -74,9 +70,8 @@ int parseScalaFile(CmdInput &ci) {
 
   c4s::EmacsOutput output(parser);
   output.build();
-  std::cout << output.sh << std::endl
-    << output.errors << std::endl
-    << output.indentation;
+  std::cout << output.body();
+
   return 0;
 }
 

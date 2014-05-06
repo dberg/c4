@@ -1,11 +1,23 @@
 #include "c4/java/EmacsOutput.h"
 
 namespace c4j {
+
 void EmacsOutput::build() {
   buildSyntaxHighlighting();
   buildErrors();
   buildSymbolTable();
   buildIndentationTable();
+}
+
+const std::string EmacsOutput::body() {
+  std::stringstream body;
+  body
+    << outSH.str() << std::endl
+    << outErr.str() << std::endl
+    << outST.str() << std::endl
+    << outIT.str();
+
+  return body.str();
 }
 
 void EmacsOutput::buildErrors() {

@@ -34,6 +34,7 @@ public:
       comments(parser.comments) {}
 
   void build();
+  const std::string body();
 };
 
 } // namespace

@@ -230,6 +230,7 @@ public:
   }
 
   void build();
+  const std::string body();
 };
 
 }

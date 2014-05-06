@@ -14,6 +14,16 @@ void EmacsOutput::build() {
   setIndentation();
 }
 
+const std::string EmacsOutput::body() {
+  std::stringstream body;
+  body
+    << sh << std::endl
+    << errors << std::endl
+    << indentation;
+
+  return body.str();
+}
+
 void EmacsOutput::setErrors(const std::vector<c4::spError> &diagErrors) {
   std::stringstream ss;
 
