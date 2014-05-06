@@ -81,10 +81,10 @@ void protobuf_AddDesc_Response_2eproto() {
   GOOGLE_PROTOBUF_VERIFY_VERSION;
 
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
-    "\n\016Response.proto\022\002c4\"d\n\010Response\022\'\n\004code"
+    "\n\016Response.proto\022\002c4\"|\n\010Response\022\'\n\004code"
     "\030\001 \002(\0162\031.c4.Response.ResponseCode\022\014\n\004bod"
-    "y\030\002 \001(\t\"!\n\014ResponseCode\022\006\n\002OK\020\000\022\t\n\005ERROR"
-    "\020\001", 122);
+    "y\030\002 \002(\t\"9\n\014ResponseCode\022\t\n\005ERROR\020\000\022\016\n\nOK"
+    "_PROJECT\020\001\022\016\n\nOK_COMPILE\020\002", 146);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "Response.proto", &protobuf_RegisterTypes);
   Response::default_instance_ = new Response();
@@ -109,6 +109,7 @@ bool Response_ResponseCode_IsValid(int value) {
   switch(value) {
     case 0:
     case 1:
+    case 2:
       return true;
     default:
       return false;
@@ -116,8 +117,9 @@ bool Response_ResponseCode_IsValid(int value) {
 }
 
 #ifndef _MSC_VER
-const Response_ResponseCode Response::OK;
 const Response_ResponseCode Response::ERROR;
+const Response_ResponseCode Response::OK_PROJECT;
+const Response_ResponseCode Response::OK_COMPILE;
 const Response_ResponseCode Response::ResponseCode_MIN;
 const Response_ResponseCode Response::ResponseCode_MAX;
 const int Response::ResponseCode_ARRAYSIZE;
@@ -220,7 +222,7 @@ bool Response::MergePartialFromCodedStream(
         break;
       }
 
-      // optional string body = 2;
+      // required string body = 2;
       case 2: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
@@ -261,7 +263,7 @@ void Response::SerializeWithCachedSizes(
       1, this->code(), output);
   }
 
-  // optional string body = 2;
+  // required string body = 2;
   if (has_body()) {
     ::google::protobuf::internal::WireFormat::VerifyUTF8String(
       this->body().data(), this->body().length(),
@@ -284,7 +286,7 @@ void Response::SerializeWithCachedSizes(
       1, this->code(), target);
   }
 
-  // optional string body = 2;
+  // required string body = 2;
   if (has_body()) {
     ::google::protobuf::internal::WireFormat::VerifyUTF8String(
       this->body().data(), this->body().length(),
@@ -311,7 +313,7 @@ int Response::ByteSize() const {
         ::google::protobuf::internal::WireFormatLite::EnumSize(this->code());
     }
 
-    // optional string body = 2;
+    // required string body = 2;
     if (has_body()) {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::StringSize(
@@ -368,7 +370,7 @@ void Response::CopyFrom(const Response& from) {
 }
 
 bool Response::IsInitialized() const {
-  if ((_has_bits_[0] & 0x00000001) != 0x00000001) return false;
+  if ((_has_bits_[0] & 0x00000003) != 0x00000003) return false;
 
   return true;
 }

@@ -37,12 +37,13 @@ void protobuf_ShutdownFile_Response_2eproto();
 class Response;
 
 enum Response_ResponseCode {
-  Response_ResponseCode_OK = 0,
-  Response_ResponseCode_ERROR = 1
+  Response_ResponseCode_ERROR = 0,
+  Response_ResponseCode_OK_PROJECT = 1,
+  Response_ResponseCode_OK_COMPILE = 2
 };
 bool Response_ResponseCode_IsValid(int value);
-const Response_ResponseCode Response_ResponseCode_ResponseCode_MIN = Response_ResponseCode_OK;
-const Response_ResponseCode Response_ResponseCode_ResponseCode_MAX = Response_ResponseCode_ERROR;
+const Response_ResponseCode Response_ResponseCode_ResponseCode_MIN = Response_ResponseCode_ERROR;
+const Response_ResponseCode Response_ResponseCode_ResponseCode_MAX = Response_ResponseCode_OK_COMPILE;
 const int Response_ResponseCode_ResponseCode_ARRAYSIZE = Response_ResponseCode_ResponseCode_MAX + 1;
 
 const ::google::protobuf::EnumDescriptor* Response_ResponseCode_descriptor();
@@ -110,8 +111,9 @@ class Response : public ::google::protobuf::Message {
   // nested types ----------------------------------------------------
 
   typedef Response_ResponseCode ResponseCode;
-  static const ResponseCode OK = Response_ResponseCode_OK;
   static const ResponseCode ERROR = Response_ResponseCode_ERROR;
+  static const ResponseCode OK_PROJECT = Response_ResponseCode_OK_PROJECT;
+  static const ResponseCode OK_COMPILE = Response_ResponseCode_OK_COMPILE;
   static inline bool ResponseCode_IsValid(int value) {
     return Response_ResponseCode_IsValid(value);
   }
@@ -142,7 +144,7 @@ class Response : public ::google::protobuf::Message {
   inline ::c4::Response_ResponseCode code() const;
   inline void set_code(::c4::Response_ResponseCode value);
 
-  // optional string body = 2;
+  // required string body = 2;
   inline bool has_body() const;
   inline void clear_body();
   static const int kBodyFieldNumber = 2;
@@ -206,7 +208,7 @@ inline void Response::set_code(::c4::Response_ResponseCode value) {
   code_ = value;
 }
 
-// optional string body = 2;
+// required string body = 2;
 inline bool Response::has_body() const {
   return (_has_bits_[0] & 0x00000002u) != 0;
 }

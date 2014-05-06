@@ -3,10 +3,11 @@ package c4;
 message Response {
 
   enum ResponseCode {
-    OK = 0;
-    ERROR = 1;
+    ERROR = 0;
+    OK_PROJECT = 1;
+    OK_COMPILE = 2;
   }
 
   required ResponseCode code = 1;
-  optional string body = 2;
+  required string body = 2;
 }

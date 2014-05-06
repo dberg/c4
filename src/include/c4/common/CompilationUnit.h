@@ -12,8 +12,12 @@ typedef std::shared_ptr<CompilationUnit> spCompilationUnit;
 
 class CompilationUnit {
 public:
-  std::string filename;
-  std::string buffer;
+
+  const std::string filename;
+  const std::string buffer;
+
+  // The emacs output of this compilation.
+  std::string output;
 
   CompilationUnit(std::string f, std::string b): filename(f), buffer(b) {}
 };
