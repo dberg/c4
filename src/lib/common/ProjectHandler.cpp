@@ -29,9 +29,17 @@ Response ProjectHandler::process(Request request) {
       spCompilationUnit unit = std::shared_ptr<CompilationUnit>(
         new CompilationUnit(reqUnit.filename(), reqUnit.buffer()));
       project->compile(unit);
+
+      // We assume that the first compilation unit is the active buffer on emacs
+      // and the only one interested in receiving buffer information for syntax
+      // highlighting and alike.
+      if (i == 0) {
+        response.set_code(Response::OK_COMPILE);
+        response.set_body(unit->output);
+      }
     }
 
-    // TODO: get response from project
+    // TODO: set default response to error
     return response;
   }
 
