@@ -8,21 +8,24 @@ namespace c4 {
 Response ProjectHandler::process(Request request) {
   Response response;
 
+  // Message error
   if (!request.IsInitialized()) {
-    // TODO: error invalid request
+    response.set_code(Response::ERROR);
+    response.set_body("Invalid message");
     return response;
   }
 
   std::string projectId = request.projectid();
   spProject project = getProject(projectId);
 
-  // get project information
+  // Project information request
   if (request.action() == Request::PROJECT) {
-    // TODO:
+    response.set_code(Response::OK_PROJECT);
+    // TODO: set body
     return response;
   }
 
-  // compile each unit
+  // Compile units request
   if (request.action() == Request::COMPILE) {
     for (int i = 0; i < request.compilationunits_size(); i++) {
       Request::CompilationUnit reqUnit = request.compilationunits(i);
@@ -39,11 +42,15 @@ Response ProjectHandler::process(Request request) {
       }
     }
 
-    // TODO: set default response to error
+    // Empty compilation unit
+    response.set_code(Response::ERROR);
+    response.set_body("Invalid compilation unit list");
     return response;
   }
 
-  // TODO: invalid action
+  // invalid action
+  response.set_code(Response::ERROR);
+  response.set_body("Invalid action");
   return response;
 }
 
