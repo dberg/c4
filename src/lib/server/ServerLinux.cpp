@@ -4,6 +4,7 @@ namespace c4 {
 
 int Server::start(unsigned int port) {
   if (createListeningSock(port) < 0) {
+    log(LOG_ERROR, std::string("Failed to start server: ") + errMsg);
     return -1;
   }
 

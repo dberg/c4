@@ -4,6 +4,9 @@ namespace c4 {
 
 int Server::start(unsigned int port) {
   if (createListeningSock(port) < 0) {
+    std::string msg = "Failed to create listening socket";
+    msg += errMsg;
+    log(LOG_ERROR, errMsg);
     return -1;
   }
 
@@ -64,12 +67,14 @@ int Server::start(unsigned int port) {
       // read data
       if (evlist[i].flags & EVFILT_READ) {
         // evlist[i].data also contains the number of bytes available
-        int cbytes = read(evlist[i].ident, readBuffer, READ_BUFFER_MAX);
+        int socket = evlist[i].ident;
+        int cbytes = read(socket, readBuffer, READ_BUFFER_MAX);
         if (cbytes > 0) {
-          if (feed(evlist[i].ident, readBuffer, cbytes)) {
+          if (feed(socket, readBuffer, cbytes)) {
             // we have a complete request
-            Request request = getRequest(evlist[i].ident);
-            projHandler->process(request);
+            Request request = getRequest(socket);
+            Response response = projHandler->process(request);
+            responses[socket].push_back(response);
           }
         }
 
@@ -80,8 +85,11 @@ int Server::start(unsigned int port) {
         }
       }
 
-      // TODO:
       // write data
+      if (evlist[i].flags & EVFILT_WRITE) {
+        int socket = evlist[i].ident;
+        writeResponses(socket);
+      }
     }
   }
 

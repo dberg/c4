@@ -21,6 +21,7 @@
 #endif
 
 #include "c4/common/ProjectHandler.h"
+#include "c4/common/Log.h"
 #include "c4/common/Util.h"
 #include "c4/main/CmdInput.h"
 #include "c4/server/Request.pb.h"
@@ -42,6 +43,7 @@ private:
 
   std::string errMsg;
   std::unordered_map<int, spRequestBuffer> reqBuffers;
+  std::unordered_map<int, std::vector<Response>> responses;
 
   int listenfd;
 
@@ -125,6 +127,23 @@ private:
 
     Request request;
     return request;
+  }
+
+  /**
+   * Write Responses to a socket.
+   */
+  void writeResponses(int socket) {
+    // TODO: get the bytes of the message and keep track of what has been
+    // written. See SerializeToOstream(ostream* output).
+
+    auto it = responses.find(socket);
+    if (it != responses.end()) {
+      std::vector<Response> socketResponses = it->second;
+      for (unsigned long i = 0; i < socketResponses.size(); i++) {
+        Response response = socketResponses[i];
+        response.SerializeToFileDescriptor(socket);
+      }
+    }
   }
 
 };
