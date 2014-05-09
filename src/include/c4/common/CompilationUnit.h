@@ -1,6 +1,6 @@
 //-*- C++ -*-
-#ifndef __COMPILATION_UNIT__
-#define __COMPILATION_UNIT__
+#ifndef __COMPILATION_UNIT_H__
+#define __COMPILATION_UNIT_H__
 
 #include <memory>
 #include <string>

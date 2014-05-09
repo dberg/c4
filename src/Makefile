@@ -151,6 +151,7 @@ $(obj_main)/c4.o: $(libdir_main)/c4.cpp
 $(obj_common)/libcommon.a: \
   $(obj_common)/Diagnosis.o \
   $(obj_common)/LiteralSupport.o \
+  $(obj_common)/Log.o \
   $(obj_common)/Project.o \
   $(obj_common)/ProjectHandler.o \
   $(obj_common)/ProjectJava.o \
