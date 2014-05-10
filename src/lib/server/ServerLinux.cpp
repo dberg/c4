@@ -49,7 +49,7 @@ int Server::start(unsigned int port) {
         ev.events = EPOLLIN;
         ev.data.fd = connfd;
         if (epoll_ctl(epollfd, EPOLL_CTL_ADD, connfd, &ev) < 0) {
-          log(LOG_ERROR, "Failed to monitor new connection fd#" + itos(connfd);
+          log(LOG_ERROR, "Failed to monitor new connection fd#" + itos(connfd));
         }
         continue;
       }
