@@ -7,6 +7,7 @@ namespace c4 {
  * Return 1 if the Request is complete, 0 otherwise.
  */
 int RequestBuffer::feed(char buffer[], int cbytes) {
+  log(LOG_INFO, "IN: " + std::string(buffer, cbytes));
   bytes.insert(bytes.end(), &buffer[0], &buffer[cbytes]);
 
   // if the message size is unknown set it if we have 4 bytes or more.
@@ -15,7 +16,11 @@ int RequestBuffer::feed(char buffer[], int cbytes) {
   }
 
   // Do we have a complete Request?
-  if (bytes.size() >= size) { return 1; }
+  if (bytes.size() >= size) {
+    log(LOG_INFO, "Request size: " + itos(size));
+    return 1;
+  }
+
   return 0;
 }
 

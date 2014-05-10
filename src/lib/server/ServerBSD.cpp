@@ -53,6 +53,8 @@ int Server::start(unsigned int port) {
           continue;
         }
 
+        log(LOG_INFO, "New connection fd#" + itos(connfd));
+
         createRequestBuffer(connfd);
 
         // monitor new connection

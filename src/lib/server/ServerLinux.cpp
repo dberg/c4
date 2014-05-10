@@ -43,6 +43,8 @@ int Server::start(unsigned int port) {
           continue;
         }
 
+        log(LOG_INFO, "New connection fd#" + itos(connfd));
+
         createRequestBuffer(connfd);
 
         // monitor new connection
@@ -72,6 +74,9 @@ int Server::start(unsigned int port) {
         if (cbytes < 0 || events[i].events & EPOLLERR) {
           close(events[i].data.fd);
         }
+
+        // TODO:
+        // write data
       }
     }
   }

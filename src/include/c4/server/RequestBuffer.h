@@ -5,6 +5,8 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include "c4/common/Log.h"
+#include "c4/common/Util.h"
 #include "c4/server/Request.pb.h"
 
 namespace c4 {
