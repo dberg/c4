@@ -49,8 +49,20 @@ TEST(Server, Connections) {
     return;
   }
 
-  const char buff[] = "DUMMY VALUE";
-  int written = write(sockfd, buff, strlen(buff));
+  // create compilation unit request
+  c4::Request request;
+  request.set_action(c4::Request::COMPILE);
+  request.set_projectid("project-001");
+  auto unit = request.add_compilationunits();
+  unit->set_filename("A.java");
+  std::string buffer =
+    "public class A {\n"
+    "  public static void main(String[] args) {\n"
+    "  }\n"
+    "}\n";
+  unit->set_buffer(buffer);
+
+  int written = request.SerializeToFileDescriptor(sockfd);
   if (written <= 0) {
     FAIL() << "Fail to write bytes to test server";
   }
