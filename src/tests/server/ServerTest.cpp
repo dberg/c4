@@ -10,15 +10,17 @@
 const char* TEST_SERVER_HOST = "127.0.0.1";
 const int TEST_SERVER_PORT = 8000;
 
-void startServer() {
+void serverStart() {
   c4::Server server;
   server.start(TEST_SERVER_PORT);
 }
 
-TEST(Server, Connections) {
+int serverConnect(std::string &errMsg) {
+  // create socket
   int sockfd = socket(AF_INET, SOCK_STREAM, 0);
   if (sockfd < 0) {
-    FAIL() << "Could not create client socket";
+    errMsg = "Could not create client socket";
+    return -1;
   }
 
   struct sockaddr_in servaddr;
@@ -26,11 +28,25 @@ TEST(Server, Connections) {
   servaddr.sin_family = AF_INET;
   servaddr.sin_port = htons(TEST_SERVER_PORT);
   if (inet_pton(AF_INET, TEST_SERVER_HOST, &servaddr.sin_addr) <= 0) {
-    FAIL() << "Invalid test server hostname";
+    errMsg = "Invalid test server hostname";
+    return -1;
   }
 
+  // connect to server
   if (connect(sockfd, (struct sockaddr *) &servaddr, sizeof(servaddr)) < 0) {
-    FAIL() << "Fail to connect to test server";
+    errMsg = "Fail to connect to test server";
+    return -1;
+  }
+
+  return sockfd;
+}
+
+TEST(Server, Connections) {
+  std::string errMsg = "";
+  int sockfd = serverConnect(errMsg);
+  if (sockfd <= 0) {
+    FAIL() << errMsg;
+    return;
   }
 
   const char buff[] = "DUMMY VALUE";
@@ -43,7 +59,7 @@ TEST(Server, Connections) {
 // TODO: stop server before exiting
 int main(int argc, char **argv) {
   ::testing::InitGoogleTest(&argc, argv);
-  std::thread serverThread(startServer);
+  std::thread serverThread(serverStart);
   serverThread.detach();
   return RUN_ALL_TESTS();
 }
