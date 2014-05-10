@@ -139,8 +139,7 @@ private:
     auto it = responses.find(socket);
     if (it != responses.end()) {
       std::vector<Response> socketResponses = it->second;
-      for (unsigned long i = 0; i < socketResponses.size(); i++) {
-        Response response = socketResponses[i];
+      for (auto response : socketResponses) {
         response.SerializeToFileDescriptor(socket);
       }
     }
