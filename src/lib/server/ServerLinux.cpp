@@ -4,14 +4,14 @@ namespace c4 {
 
 int Server::start(unsigned int port) {
   if (createListeningSock(port) < 0) {
-    log(LOG_ERROR, std::string("Failed to start server: ") + errMsg);
+    log(LOG_ERROR, "Failed to create listening socket");
     return -1;
   }
 
   // epoll
   int epollfd = epoll_create1(0);
   if (epollfd == -1) {
-    errMsg = "can't initialize epoll";
+    log(LOG_ERROR, "Failed to initialize epoll.");
     return -1;
   }
 
@@ -20,7 +20,7 @@ int Server::start(unsigned int port) {
   ev.events = EPOLLIN;
   ev.data.fd = listenfd;
   if (epoll_ctl(epollfd, EPOLL_CTL_ADD, listenfd, &ev) < 0) {
-    errMsg = "failed to monitor listening socket.";
+    log(LOG_ERROR, "Failed to monitor listening socket");
     return -1;
   }
 
@@ -39,7 +39,7 @@ int Server::start(unsigned int port) {
         socklen_t clilen = sizeof(cliaddr);
         int connfd = accept(listenfd, (struct sockaddr *) &cliaddr, &clilen);
         if (connfd < 0) {
-          std::cerr << "Failed to accept connection." << std::endl;
+          log(LOG_ERROR, "Failed to accept connection");
           continue;
         }
 
@@ -49,8 +49,7 @@ int Server::start(unsigned int port) {
         ev.events = EPOLLIN;
         ev.data.fd = connfd;
         if (epoll_ctl(epollfd, EPOLL_CTL_ADD, connfd, &ev) < 0) {
-          std::cerr << "Failed to monitor new connection fd#"
-            << connfd << std::endl;
+          log(LOG_ERROR, "Failed to monitor new connection fd#" + itos(connfd);
         }
         continue;
       }

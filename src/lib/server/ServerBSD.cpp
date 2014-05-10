@@ -4,16 +4,14 @@ namespace c4 {
 
 int Server::start(unsigned int port) {
   if (createListeningSock(port) < 0) {
-    std::string msg = "Failed to create listening socket";
-    msg += errMsg;
-    log(LOG_ERROR, errMsg);
+    log(LOG_ERROR, "Failed to create listening socket");
     return -1;
   }
 
   // kqueue
   int kqfd = kqueue();
   if (kqfd == -1) {
-    errMsg = "can't initialize kqueue";
+    log(LOG_ERROR, "Failed to initialize kqueue");
     return -1;
   }
 
@@ -32,7 +30,7 @@ int Server::start(unsigned int port) {
   while (true) {
     int nev = kevent(kqfd, chlist, chListCounter, evlist, EVENT_LIST_COUNT, NULL);
     if (nev < 0) {
-      errMsg = "kevent error";
+      log(LOG_ERROR, "kevent error");
       return -1;
     }
 
@@ -44,14 +42,14 @@ int Server::start(unsigned int port) {
       if (evlist[i].ident == (unsigned) listenfd) {
         // error
         if (evlist[i].flags & EV_ERROR) {
-          errMsg = evlist[i].data;
+          log(LOG_ERROR, "Error on listening socket. " + itos(evlist[i].data));
           return -1;
         }
 
         socklen_t clilen = sizeof(cliaddr);
         int connfd = accept(listenfd, (struct sockaddr *) &cliaddr, &clilen);
         if (connfd < 0) {
-          std::cerr << "Failed to accept connection." << std::endl;
+          log(LOG_ERROR, "Failed to accept new connection");
           continue;
         }
 

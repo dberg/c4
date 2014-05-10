@@ -93,7 +93,6 @@ int main(int argc, const char **argv) {
   } else if (ci.isOptServer()) {
     Server server;
     if (server.start(ci.getServerPort()) < 0) {
-      std::cerr << "FAILURE: " << server.getError() << std::endl;
       return 1;
     }
   }
