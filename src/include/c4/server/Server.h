@@ -1,7 +1,7 @@
 //-*- C++ -*-
 #ifndef __SERVER_H__
 #define __SERVER_H__
-#include <iostream>
+
 #include <netinet/in.h>     // sockaddr_in
 #include <sys/socket.h>
 #include <string>
@@ -37,11 +37,9 @@ public:
 
   int start(unsigned int port);
   int shutdown();
-  std::string getError() { return errMsg; }
 
 private:
 
-  std::string errMsg;
   std::unordered_map<int, spRequestBuffer> reqBuffers;
   std::unordered_map<int, std::vector<Response>> responses;
 
@@ -56,7 +54,7 @@ private:
     // create listening socket
     listenfd = socket(AF_INET, SOCK_STREAM, 0);
     if (listenfd < 0) {
-      errMsg = "can't create listening socket";
+      log(LOG_ERROR, "Failed to create listening socket");
       return -1;
     }
 
@@ -69,8 +67,7 @@ private:
     // bind
     int resb = bind(listenfd, (struct sockaddr *) &servaddr, sizeof(servaddr));
     if (resb < 0) {
-      errMsg = "can't bind listening socket to port: ";
-      errMsg += itos(port);
+      log(LOG_ERROR, "Failed to bind listening socket to port: " + itos(port));
       return -1;
     }
 
@@ -79,8 +76,7 @@ private:
     const int LISTEN_BACKLOG = 1024;
     int resl = listen(listenfd, LISTEN_BACKLOG);
     if (resl < 0) {
-      errMsg = "can't listen on port ";
-      errMsg += itos(port);
+      log(LOG_ERROR, "Failed to listen on port " + itos(port));
       return -1;
     }
 
@@ -92,7 +88,7 @@ private:
    */
   int createRequestBuffer(int connfd) {
     if (reqBuffers.find(connfd) != reqBuffers.end()) {
-      std::cerr << "INFO: Existing RequestBuffer in fd#" << connfd << std::endl;
+      log(LOG_ERROR, "Existing RequestBuffer in fd#" + itos(connfd));
     }
 
     reqBuffers[connfd] = spRequestBuffer(new RequestBuffer);
@@ -108,7 +104,7 @@ private:
     // Invalid RequestBuffer.
     // We should abort the connection with this client.
     if (it == reqBuffers.end()) {
-      std::cerr << "ERROR: broken connection in fd#" << connfd << std::endl;
+      log(LOG_ERROR, "Broken connection in fd#" + itos(connfd));
       return -1;
     }
 
