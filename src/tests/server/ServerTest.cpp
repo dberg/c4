@@ -68,7 +68,8 @@ TEST(Server, Connections) {
   }
 }
 
-// TODO: stop server before exiting
+// TODO: Stop server before exiting.
+//       Signal test that server is ready or an error occurred.
 int main(int argc, char **argv) {
   ::testing::InitGoogleTest(&argc, argv);
   std::thread serverThread(serverStart);
