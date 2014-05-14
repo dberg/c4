@@ -259,17 +259,14 @@ class Request : public ::google::protobuf::Message {
   inline ::std::string* release_projectid();
   inline void set_allocated_projectid(::std::string* projectid);
 
-  // repeated .c4.Request.CompilationUnit compilationUnits = 3;
-  inline int compilationunits_size() const;
-  inline void clear_compilationunits();
-  static const int kCompilationUnitsFieldNumber = 3;
-  inline const ::c4::Request_CompilationUnit& compilationunits(int index) const;
-  inline ::c4::Request_CompilationUnit* mutable_compilationunits(int index);
-  inline ::c4::Request_CompilationUnit* add_compilationunits();
-  inline const ::google::protobuf::RepeatedPtrField< ::c4::Request_CompilationUnit >&
-      compilationunits() const;
-  inline ::google::protobuf::RepeatedPtrField< ::c4::Request_CompilationUnit >*
-      mutable_compilationunits();
+  // optional .c4.Request.CompilationUnit unit = 3;
+  inline bool has_unit() const;
+  inline void clear_unit();
+  static const int kUnitFieldNumber = 3;
+  inline const ::c4::Request_CompilationUnit& unit() const;
+  inline ::c4::Request_CompilationUnit* mutable_unit();
+  inline ::c4::Request_CompilationUnit* release_unit();
+  inline void set_allocated_unit(::c4::Request_CompilationUnit* unit);
 
   // @@protoc_insertion_point(class_scope:c4.Request)
  private:
@@ -277,11 +274,13 @@ class Request : public ::google::protobuf::Message {
   inline void clear_has_action();
   inline void set_has_projectid();
   inline void clear_has_projectid();
+  inline void set_has_unit();
+  inline void clear_has_unit();
 
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
 
   ::std::string* projectid_;
-  ::google::protobuf::RepeatedPtrField< ::c4::Request_CompilationUnit > compilationunits_;
+  ::c4::Request_CompilationUnit* unit_;
   int action_;
 
   mutable int _cached_size_;
@@ -538,29 +537,42 @@ inline void Request::set_allocated_projectid(::std::string* projectid) {
   }
 }
 
-// repeated .c4.Request.CompilationUnit compilationUnits = 3;
-inline int Request::compilationunits_size() const {
-  return compilationunits_.size();
+// optional .c4.Request.CompilationUnit unit = 3;
+inline bool Request::has_unit() const {
+  return (_has_bits_[0] & 0x00000004u) != 0;
 }
-inline void Request::clear_compilationunits() {
-  compilationunits_.Clear();
+inline void Request::set_has_unit() {
+  _has_bits_[0] |= 0x00000004u;
 }
-inline const ::c4::Request_CompilationUnit& Request::compilationunits(int index) const {
-  return compilationunits_.Get(index);
+inline void Request::clear_has_unit() {
+  _has_bits_[0] &= ~0x00000004u;
 }
-inline ::c4::Request_CompilationUnit* Request::mutable_compilationunits(int index) {
-  return compilationunits_.Mutable(index);
+inline void Request::clear_unit() {
+  if (unit_ != NULL) unit_->::c4::Request_CompilationUnit::Clear();
+  clear_has_unit();
 }
-inline ::c4::Request_CompilationUnit* Request::add_compilationunits() {
-  return compilationunits_.Add();
+inline const ::c4::Request_CompilationUnit& Request::unit() const {
+  return unit_ != NULL ? *unit_ : *default_instance_->unit_;
 }
-inline const ::google::protobuf::RepeatedPtrField< ::c4::Request_CompilationUnit >&
-Request::compilationunits() const {
-  return compilationunits_;
+inline ::c4::Request_CompilationUnit* Request::mutable_unit() {
+  set_has_unit();
+  if (unit_ == NULL) unit_ = new ::c4::Request_CompilationUnit;
+  return unit_;
 }
-inline ::google::protobuf::RepeatedPtrField< ::c4::Request_CompilationUnit >*
-Request::mutable_compilationunits() {
-  return &compilationunits_;
+inline ::c4::Request_CompilationUnit* Request::release_unit() {
+  clear_has_unit();
+  ::c4::Request_CompilationUnit* temp = unit_;
+  unit_ = NULL;
+  return temp;
+}
+inline void Request::set_allocated_unit(::c4::Request_CompilationUnit* unit) {
+  delete unit_;
+  unit_ = unit;
+  if (unit) {
+    set_has_unit();
+  } else {
+    clear_has_unit();
+  }
 }
 
 

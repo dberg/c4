@@ -53,7 +53,7 @@ TEST(Server, Connections) {
   c4::Request request;
   request.set_action(c4::Request::COMPILE);
   request.set_projectid("project-001");
-  auto unit = request.add_compilationunits();
+  auto unit = request.mutable_unit();
   unit->set_filename("A.java");
   std::string buffer =
     "public class A {\n"

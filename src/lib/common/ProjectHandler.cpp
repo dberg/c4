@@ -6,6 +6,7 @@ namespace c4 {
  * Process a request coming from the client.
  */
 Response ProjectHandler::process(Request request) {
+
   Response response;
 
   // Message error
@@ -27,24 +28,15 @@ Response ProjectHandler::process(Request request) {
 
   // Compile units request
   if (request.action() == Request::COMPILE) {
-    for (int i = 0; i < request.compilationunits_size(); i++) {
-      Request::CompilationUnit reqUnit = request.compilationunits(i);
-      spCompilationUnit unit = std::shared_ptr<CompilationUnit>(
-        new CompilationUnit(reqUnit.filename(), reqUnit.buffer()));
-      project->compile(unit);
+    Request::CompilationUnit reqUnit = request.unit();
 
-      // We assume that the first compilation unit is the active buffer on emacs
-      // and the only one interested in receiving buffer information for syntax
-      // highlighting and alike.
-      if (i == 0) {
-        response.set_code(Response::OK_COMPILE);
-        response.set_body(unit->output);
-      }
-    }
+    spCompilationUnit unit = std::shared_ptr<CompilationUnit>(
+      new CompilationUnit(reqUnit.filename(), reqUnit.buffer()));
 
-    // Empty compilation unit
-    response.set_code(Response::ERROR);
-    response.set_body("Invalid compilation unit list");
+    project->compile(unit);
+
+    response.set_code(Response::OK_COMPILE);
+    response.set_body(unit->output);
     return response;
   }
 
@@ -69,4 +61,4 @@ spProject ProjectHandler::getProject(std::string projectId) {
   return it->second;
 }
 
-}
+} // namespace

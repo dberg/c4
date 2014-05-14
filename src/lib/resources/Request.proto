@@ -16,5 +16,5 @@ message Request {
     required string buffer = 2;
   }
 
-  repeated CompilationUnit compilationUnits = 3;
+  optional CompilationUnit unit = 3;
 }

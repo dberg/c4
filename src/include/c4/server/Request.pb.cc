@@ -41,7 +41,7 @@ void protobuf_AssignDesc_Request_2eproto() {
   static const int Request_offsets_[3] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Request, action_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Request, projectid_),
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Request, compilationunits_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(Request, unit_),
   };
   Request_reflection_ =
     new ::google::protobuf::internal::GeneratedMessageReflection(
@@ -105,12 +105,12 @@ void protobuf_AddDesc_Request_2eproto() {
   GOOGLE_PROTOBUF_VERIFY_VERSION;
 
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
-    "\n\rRequest.proto\022\002c4\"\320\001\n\007Request\022\"\n\006actio"
+    "\n\rRequest.proto\022\002c4\"\304\001\n\007Request\022\"\n\006actio"
     "n\030\001 \002(\0162\022.c4.Request.Action\022\021\n\tprojectId"
-    "\030\002 \002(\t\0225\n\020compilationUnits\030\003 \003(\0132\033.c4.Re"
-    "quest.CompilationUnit\0323\n\017CompilationUnit"
-    "\022\020\n\010filename\030\001 \002(\t\022\016\n\006buffer\030\002 \002(\t\"\"\n\006Ac"
-    "tion\022\013\n\007PROJECT\020\000\022\013\n\007COMPILE\020\001", 230);
+    "\030\002 \002(\t\022)\n\004unit\030\003 \001(\0132\033.c4.Request.Compil"
+    "ationUnit\0323\n\017CompilationUnit\022\020\n\010filename"
+    "\030\001 \002(\t\022\016\n\006buffer\030\002 \002(\t\"\"\n\006Action\022\013\n\007PROJ"
+    "ECT\020\000\022\013\n\007COMPILE\020\001", 218);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "Request.proto", &protobuf_RegisterTypes);
   Request::default_instance_ = new Request();
@@ -436,7 +436,7 @@ void Request_CompilationUnit::Swap(Request_CompilationUnit* other) {
 #ifndef _MSC_VER
 const int Request::kActionFieldNumber;
 const int Request::kProjectIdFieldNumber;
-const int Request::kCompilationUnitsFieldNumber;
+const int Request::kUnitFieldNumber;
 #endif  // !_MSC_VER
 
 Request::Request()
@@ -445,6 +445,7 @@ Request::Request()
 }
 
 void Request::InitAsDefaultInstance() {
+  unit_ = const_cast< ::c4::Request_CompilationUnit*>(&::c4::Request_CompilationUnit::default_instance());
 }
 
 Request::Request(const Request& from)
@@ -457,6 +458,7 @@ void Request::SharedCtor() {
   _cached_size_ = 0;
   action_ = 0;
   projectid_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+  unit_ = NULL;
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
 
@@ -469,6 +471,7 @@ void Request::SharedDtor() {
     delete projectid_;
   }
   if (this != default_instance_) {
+    delete unit_;
   }
 }
 
@@ -501,8 +504,10 @@ void Request::Clear() {
         projectid_->clear();
       }
     }
+    if (has_unit()) {
+      if (unit_ != NULL) unit_->::c4::Request_CompilationUnit::Clear();
+    }
   }
-  compilationunits_.Clear();
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
   mutable_unknown_fields()->Clear();
 }
@@ -546,21 +551,20 @@ bool Request::MergePartialFromCodedStream(
         } else {
           goto handle_uninterpreted;
         }
-        if (input->ExpectTag(26)) goto parse_compilationUnits;
+        if (input->ExpectTag(26)) goto parse_unit;
         break;
       }
 
-      // repeated .c4.Request.CompilationUnit compilationUnits = 3;
+      // optional .c4.Request.CompilationUnit unit = 3;
       case 3: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
-         parse_compilationUnits:
+         parse_unit:
           DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
-                input, add_compilationunits()));
+               input, mutable_unit()));
         } else {
           goto handle_uninterpreted;
         }
-        if (input->ExpectTag(26)) goto parse_compilationUnits;
         if (input->ExpectAtEnd()) return true;
         break;
       }
@@ -598,10 +602,10 @@ void Request::SerializeWithCachedSizes(
       2, this->projectid(), output);
   }
 
-  // repeated .c4.Request.CompilationUnit compilationUnits = 3;
-  for (int i = 0; i < this->compilationunits_size(); i++) {
+  // optional .c4.Request.CompilationUnit unit = 3;
+  if (has_unit()) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
-      3, this->compilationunits(i), output);
+      3, this->unit(), output);
   }
 
   if (!unknown_fields().empty()) {
@@ -628,11 +632,11 @@ void Request::SerializeWithCachedSizes(
         2, this->projectid(), target);
   }
 
-  // repeated .c4.Request.CompilationUnit compilationUnits = 3;
-  for (int i = 0; i < this->compilationunits_size(); i++) {
+  // optional .c4.Request.CompilationUnit unit = 3;
+  if (has_unit()) {
     target = ::google::protobuf::internal::WireFormatLite::
       WriteMessageNoVirtualToArray(
-        3, this->compilationunits(i), target);
+        3, this->unit(), target);
   }
 
   if (!unknown_fields().empty()) {
@@ -659,15 +663,14 @@ int Request::ByteSize() const {
           this->projectid());
     }
 
-  }
-  // repeated .c4.Request.CompilationUnit compilationUnits = 3;
-  total_size += 1 * this->compilationunits_size();
-  for (int i = 0; i < this->compilationunits_size(); i++) {
-    total_size +=
-      ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
-        this->compilationunits(i));
-  }
+    // optional .c4.Request.CompilationUnit unit = 3;
+    if (has_unit()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
+          this->unit());
+    }
 
+  }
   if (!unknown_fields().empty()) {
     total_size +=
       ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
@@ -693,13 +696,15 @@ void Request::MergeFrom(const ::google::protobuf::Message& from) {
 
 void Request::MergeFrom(const Request& from) {
   GOOGLE_CHECK_NE(&from, this);
-  compilationunits_.MergeFrom(from.compilationunits_);
   if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
     if (from.has_action()) {
       set_action(from.action());
     }
     if (from.has_projectid()) {
       set_projectid(from.projectid());
+    }
+    if (from.has_unit()) {
+      mutable_unit()->::c4::Request_CompilationUnit::MergeFrom(from.unit());
     }
   }
   mutable_unknown_fields()->MergeFrom(from.unknown_fields());
@@ -720,8 +725,8 @@ void Request::CopyFrom(const Request& from) {
 bool Request::IsInitialized() const {
   if ((_has_bits_[0] & 0x00000003) != 0x00000003) return false;
 
-  for (int i = 0; i < compilationunits_size(); i++) {
-    if (!this->compilationunits(i).IsInitialized()) return false;
+  if (has_unit()) {
+    if (!this->unit().IsInitialized()) return false;
   }
   return true;
 }
@@ -730,7 +735,7 @@ void Request::Swap(Request* other) {
   if (other != this) {
     std::swap(action_, other->action_);
     std::swap(projectid_, other->projectid_);
-    compilationunits_.Swap(&other->compilationunits_);
+    std::swap(unit_, other->unit_);
     std::swap(_has_bits_[0], other->_has_bits_[0]);
     _unknown_fields_.Swap(&other->_unknown_fields_);
     std::swap(_cached_size_, other->_cached_size_);
