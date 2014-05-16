@@ -10,6 +10,7 @@
   "Default name of a c4 server connection")
 
 ;; request types
+(defconst c4-request-action-index 1)
 (defconst c4-request-action-project 0)
 (defconst c4-request-action-compile 1)
 
@@ -71,7 +72,6 @@
                               :buffer buffer))))
     (c4-serialize-request request)))
 
-
 (defconst c4-protobuf-varint 0)
 (defconst c4-protobuf-64bit 1)
 (defconst c4-protobuf-length-delimited 2)
@@ -80,9 +80,15 @@
 (defun c4-serialize-request (request)
   "Serialize a request using protocol buffers"
   ;; TODO:
-  (let (action project-id unit)
-    (setq action (logior (lsh c4-request-action-compile 3)
+  (let (action-key action-value project-id unit)
+    (setq action (logior (lsh c4-request-action-index 3)
                          c4-protobuf-length-delimited))
+    (setq action-value (c4-protobuf-varint c4-request-action-compile))
     "TODO"))
+
+(defun c4-protobuf-varint (i)
+  "Encode a var int"
+  ;; TODO
+  )
 
 (provide 'c4)
