@@ -106,4 +106,30 @@
         (setq result (lsh result 1)))
       result)))
 
+;; TODO: emacs uses 30 bits on 32bit machines and 60 bits on 64bit machines.
+(defun c4-leading-zeros (i)
+  "Get the number of leading zeros of an integer."
+  (if (eq i 0)
+      32
+    (let ((n 0))
+      (if (<= i #x0000FFFF)
+          (progn
+            (setq n (+ n 16))
+            (setq i (lsh i 16))))
+      (if (<= i #x00FFFFFF)
+          (progn
+            (setq n (+ n 8))
+            (setq i (lsh i 8))))
+      (if (<= i #x0FFFFFFF)
+          (progn
+            (setq n (+ n 4))
+            (setq i (lsh i 4))))
+      (if (<= i #x3FFFFFFF)
+          (progn
+            (setq n (+ n 2))
+            (setq i (lsh i 2))))
+      (if (<= i #x7FFFFFFF)
+          (setq n (+ n 1)))
+      i)))
+
 (provide 'c4)
