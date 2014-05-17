@@ -86,9 +86,24 @@
     (setq action-value (c4-protobuf-varint c4-request-action-compile))
     "TODO"))
 
+;; most-positive-fixnum
+;; 64 bit machine: 2305843009213693951 (60 bits)
+(defconst c4-varint-mask (lsh 1 7))
+
 (defun c4-protobuf-varint (i)
   "Encode a var int"
-  ;; TODO
-  )
+  (let ((hob (c4-hob(i))))
+    ;; TODO
+  ))
+
+(defun c4-hob (i)
+  "Get the highest order bit"
+  (let ((result 1))
+    (if (= i 0)
+        0
+      (while (> i 0)
+        (setq i (lsh i -1))
+        (setq result (lsh result 1)))
+      result)))
 
 (provide 'c4)
