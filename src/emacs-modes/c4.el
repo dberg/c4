@@ -72,11 +72,6 @@
                               :buffer buffer))))
     (c4-serialize-request request)))
 
-(defconst c4-protobuf-varint 0)
-(defconst c4-protobuf-64bit 1)
-(defconst c4-protobuf-length-delimited 2)
-(defconst c4-protobuf-32bit 5)
-
 (defun c4-serialize-request (request)
   "Serialize a request using protocol buffers"
   ;; TODO:
@@ -86,9 +81,24 @@
     (setq action-value (c4-protobuf-varint c4-request-action-compile))
     "TODO"))
 
+;; protobuf
+(defconst c4-protobuf-varint 0)
+(defconst c4-protobuf-64bit 1)
+(defconst c4-protobuf-length-delimited 2)
+(defconst c4-protobuf-32bit 5)
+
+;; emacs word size
 ;; most-positive-fixnum
-;; 64 bit machine: 2305843009213693951 (60 bits)
-(defconst c4-varint-mask (lsh 1 7))
+;;   32bit 536870911
+;;   64bit 2305843009213693951
+(defconst c4-word-size (c4-calculate-word-size))
+
+(defun c4-calculate-word-size ()
+  "Returns 32 or 64 word size. On a 32bit machine the max
+positive number is (2^29 - 1)."
+  (if (< (1+ 536870911) 0) 32 64))
+
+(defconst c4-msb-mask (lsh 1 7))
 
 (defun c4-protobuf-varint (i)
   "Encode a var int"
@@ -106,30 +116,18 @@
         (setq result (lsh result 1)))
       result)))
 
-;; TODO: emacs uses 30 bits on 32bit machines and 60 bits on 64bit machines.
-(defun c4-leading-zeros (i)
-  "Get the number of leading zeros of an integer."
-  (if (eq i 0)
-      32
-    (let ((n 0))
-      (if (<= i #x0000FFFF)
-          (progn
-            (setq n (+ n 16))
-            (setq i (lsh i 16))))
-      (if (<= i #x00FFFFFF)
-          (progn
-            (setq n (+ n 8))
-            (setq i (lsh i 8))))
-      (if (<= i #x0FFFFFFF)
-          (progn
-            (setq n (+ n 4))
-            (setq i (lsh i 4))))
-      (if (<= i #x3FFFFFFF)
-          (progn
-            (setq n (+ n 2))
-            (setq i (lsh i 2))))
-      (if (<= i #x7FFFFFFF)
-          (setq n (+ n 1)))
-      i)))
+(defun c4-byte-count (int)
+  "Count how many bytes are needed to represent the integer int."
+  (let ((byte-count (if (= c4-word-size 32) 4 8))
+        (mask 0)
+        (result 0)
+        (i 1))
+    (while (<= i byte-count)
+      (setq mask (if (= i byte-count) #x1F #xFF))
+      (if (> (logand int mask) 0)
+          (setq result i))
+      (setq int (lsh int -8))
+      (setq i (1+ i)))
+    result))
 
 (provide 'c4)
