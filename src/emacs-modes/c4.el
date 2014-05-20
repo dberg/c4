@@ -91,30 +91,31 @@
 ;; most-positive-fixnum
 ;;   32bit 536870911
 ;;   64bit 2305843009213693951
-(defconst c4-word-size (c4-calculate-word-size))
-
 (defun c4-calculate-word-size ()
   "Returns 32 or 64 word size. On a 32bit machine the max
 positive number is (2^29 - 1)."
   (if (< (1+ 536870911) 0) 32 64))
 
+(defconst c4-word-size (c4-calculate-word-size))
+
 (defconst c4-msb-mask (lsh 1 7))
 
-(defun c4-protobuf-varint (i)
+(defun c4-protobuf-varint (int)
   "Encode a var int"
-  (let ((hob (c4-hob(i))))
+  (let ((bit-count (c4-bit-count(int)))
+        (i 0))
     ;; TODO
   ))
 
-(defun c4-hob (i)
-  "Get the highest order bit"
-  (let ((result 1))
-    (if (= i 0)
-        0
-      (while (> i 0)
-        (setq i (lsh i -1))
-        (setq result (lsh result 1)))
-      result)))
+(defun c4-bit-count (int)
+  "Count how many bits are needed to represent the integer int."
+  (if (= int 0) 0
+    (let* ((bit-count (- c4-word-size 3))
+           (mask (lsh 1 (1- bit-count))))
+      (while (= (logand int mask) 0)
+        (setq mask (lsh mask -1))
+        (setq bit-count (1- bit-count)))
+      bit-count)))
 
 (defun c4-byte-count (int)
   "Count how many bytes are needed to represent the integer int."
