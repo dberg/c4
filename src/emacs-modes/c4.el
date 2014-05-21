@@ -100,12 +100,21 @@ positive number is (2^29 - 1)."
 
 (defconst c4-msb-mask (lsh 1 7))
 
-(defun c4-protobuf-varint (int)
+(defun c4-protobuf-varint (int buffer)
   "Encode a var int"
-  (let ((bit-count (c4-bit-count(int)))
-        (i 0))
-    ;; TODO
-  ))
+  (let* ((bit-count (c4-bit-count int))
+         (varint-count (ceiling (/ bit-count 7.0)))
+         (tmp 0)
+         (i 1))
+    (with-current-buffer buffer
+      (while (<= i varint-count)
+        (setq tmp (logand int #x7F))
+        (if (< i varint-count)
+            (setq tmp (logior tmp #x8)))
+        (insert (byte-to-string tmp))
+        (setq tmp 0)
+        (setq i (1+ i))
+        (setq int (lsh int -7))))))
 
 (defun c4-bit-count (int)
   "Count how many bits are needed to represent the integer int."
