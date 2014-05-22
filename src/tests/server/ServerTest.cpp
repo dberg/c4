@@ -62,6 +62,24 @@ TEST(Server, Connections) {
     "}\n";
   unit->set_buffer(buffer);
 
+  // 08 01
+  // (field #1, wire type 0) COMPILE
+  //
+  // 12 0b 70726f6a6563742d303031
+  // (field #2, wire type 2) (len) project-001
+  //
+  // 1a 4c
+  // (field #3, wire type 2) (len)
+  //
+  // 0a 06 412e6a617661
+  // (field #1, wire type 2) (len) A.java
+  //
+  // 12 42 707562
+  // 6c69 6320 636c 6173 7320 4120 7b0a 2020
+  // 7075 626c 6963 2073 7461 7469 6320 766f
+  // 6964 206d 6169 6e28 5374 7269 6e67 5b5d
+  // 2061 7267 7329 207b 0a20 207d 0a7d 0a
+  // (field #2, wire type 2) (len) public ...
   int written = request.SerializeToFileDescriptor(sockfd);
   if (written <= 0) {
     FAIL() << "Fail to write bytes to test server";
