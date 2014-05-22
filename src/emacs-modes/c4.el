@@ -43,20 +43,28 @@
   (interactive)
   (let ((project-id (c4-get-project-id))
         (filename (buffer-file-name))
-        (unit (buffer-substring-no-properties 1 (point-max))))
+        (unit (buffer-substring-no-properties 1 (point-max)))
+        (compilation-unit ""))
     (with-temp-buffer
       ;; action
       (insert (byte-to-string c4-field-action))
       (insert (byte-to-string c4-request-action-compile))
       ;; project-id
       (insert (byte-to-string c4-field-project-id))
-      (insert (c4-protobuf-encode-varint (string-bytes project-id)))
+      (insert (c4-protobuf-encode-varint (string-bytes project-id)
+                                         (current-buffer)))
       (insert project-id)
-      ;; TODO: unit
+      ;; unit
+      (setq compilation-unit (c4-encode-compilation-unit filename unit))
+      (insert (byte-to-string c4-field-unit))
+      (insert (c4-protobuf-encode-varint (string-bytes compilation-unit)
+                                         (current-buffer)))
+      (insert compilation-unit)
       (c4-write-request (buffer-substring-no-properties 1 (point-max))))))
 
 (defun c4-get-project-id ()
   "Get the project id of the current buffer"
+  (interactive)
   ;; TODO
   "project-001")
 
@@ -74,6 +82,9 @@
 (defconst c4-request-action-project 0)
 (defconst c4-request-action-compile 1)
 (defconst c4-request-project-index 2)
+(defconst c4-request-unit-index 3)
+(defconst c4-request-unit-filename-index 1)
+(defconst c4-request-unit-buffer-index 1)
 
 (defconst c4-field-action
   (logior (lsh c4-request-action-index 3)
@@ -81,6 +92,10 @@
 
 (defconst c4-field-project-id
   (logior (lsh c4-request-project-index 3)
+          c4-protobuf-length-delimited))
+
+(defconst c4-field-unit
+  (logior (lsh c4-request-unit-index 3)
           c4-protobuf-length-delimited))
 
 ;; emacs word size
@@ -121,5 +136,21 @@ positive number is (2^29 - 1)."
         (setq mask (lsh mask -1))
         (setq bit-count (1- bit-count)))
       bit-count)))
+
+;; ----------------------------------------------------------------------------
+;; Helper functions
+;; ----------------------------------------------------------------------------
+(defun c4-encode-compilation-unit (filename unit)
+  "Encode the filename and unit and returns it a string"
+  (with-temp-buffer
+    ;; filename
+    (insert (byte-tostring c4-request-unit-filename-index))
+    (insert (c4-protobuf-encode-varint (string-to-bytes filename)))
+    (insert filename)
+    ;; unit
+    (insert (byte-tostring c4-request-unit-buffer-index))
+    (insert (c4-protobuf-encode-varint (string-to-bytes unit)))
+    (insert unit)
+    (buffer-substring-no-properties 1 (point-max))))
 
 (provide 'c4)
