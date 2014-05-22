@@ -48,7 +48,10 @@
       ;; action
       (insert (byte-to-string c4-field-action))
       (insert (byte-to-string c4-request-action-compile))
-      ;; TODO: project-id
+      ;; project-id
+      (insert (byte-to-string c4-field-project-id))
+      (insert (c4-protobuf-encode-varint (string-bytes project-id)))
+      (insert project-id)
       ;; TODO: unit
       (c4-write-request (buffer-substring-no-properties 1 (point-max))))))
 
@@ -70,10 +73,15 @@
 (defconst c4-request-action-index 1)
 (defconst c4-request-action-project 0)
 (defconst c4-request-action-compile 1)
+(defconst c4-request-project-index 2)
 
 (defconst c4-field-action
   (logior (lsh c4-request-action-index 3)
           c4-protobuf-varint))
+
+(defconst c4-field-project-id
+  (logior (lsh c4-request-project-index 3)
+          c4-protobuf-length-delimited))
 
 ;; emacs word size
 ;; most-positive-fixnum
@@ -88,7 +96,7 @@ positive number is (2^29 - 1)."
 
 (defconst c4-msb-mask (lsh 1 7))
 
-(defun c4-protobuf-varint (int buffer)
+(defun c4-protobuf-encode-varint (int buffer)
   "Encode a var int"
   (let* ((bit-count (c4-bit-count int))
          (varint-count (ceiling (/ bit-count 7.0)))
