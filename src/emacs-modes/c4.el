@@ -1,4 +1,6 @@
-;; server settings
+;; ----------------------------------------------------------------------------
+;; Server
+;; ----------------------------------------------------------------------------
 (defvar c4-server-host "localhost"
   "Default hostname of the c4 server")
 
@@ -8,11 +10,6 @@
 ;; server communication
 (defvar c4-process-object-name "c4-process-object"
   "Default name of a c4 server connection")
-
-;; request types
-(defconst c4-request-action-index 1)
-(defconst c4-request-action-project 0)
-(defconst c4-request-action-compile 1)
 
 (defvar c4-process-object nil
   "Connection to the c4 server")
@@ -30,62 +27,53 @@
       (setq c4-process-object
             (open-network-stream name buffer host service)))))
 
+(defun c4-connection-alivep (process-object)
+  (and (processp process-object)
+       (not (process-command process-object))))
+
+(defun c4-write-request (request-str)
+  "Send a request object to a c4 server"
+  (process-send-string c4-process-object request-str))
+
+;; ----------------------------------------------------------------------------
+;; Public API
+;; ----------------------------------------------------------------------------
 (defun c4-compile-current-buffer ()
   "Send the current buffer to a c4 server."
   (interactive)
-  (let* ((project-id (c4-get-project-id))
-         (filename (buffer-file-name))
-         (buffer (buffer-substring-no-properties 1 (point-max)))
-         (request (c4-create-request-compile
-                   project-id
-                   filename
-                   buffer)))
-    ;; TODO:
-    ;;(c4-write-request request)
-    (c4-write-request buffer)))
+  (let ((project-id (c4-get-project-id))
+        (filename (buffer-file-name))
+        (unit (buffer-substring-no-properties 1 (point-max))))
+    (with-temp-buffer
+      ;; action
+      (insert (byte-to-string c4-field-action))
+      (insert (byte-to-string c4-request-action-compile))
+      ;; TODO: project-id
+      ;; TODO: unit
+      (c4-write-request (buffer-substring-no-properties 1 (point-max))))))
 
 (defun c4-get-project-id ()
   "Get the project id of the current buffer"
   ;; TODO
   "project-001")
 
-(defun c4-connection-alivep (process-object)
-  (and (processp process-object)
-       (not (process-command process-object))))
-
-(defun c4-write-request (request)
-  "Send a request object to a c4 server"
-  ;; TODO
-  (process-send-string c4-process-object request))
-
-(defun c4-create-request-project (project-id)
-  "Create a request to get information about the project."
-  ;; TODO
-  )
-
-(defun c4-create-request-compile (project-id filename buffer)
-  "Create a request to compile a list of compilation units."
-  (let ((request
-         '(:action request-action-compile
-           :project-id project-id
-           :compilation-unit (:filename filename
-                              :buffer buffer))))
-    (c4-serialize-request request)))
-
-(defun c4-serialize-request (request)
-  "Serialize a request using protocol buffers"
-  ;; TODO:
-  (let (action-key action-value project-id unit)
-    (setq action (logior (lsh c4-request-action-index 3)
-                         c4-protobuf-length-delimited))
-    (setq action-value (c4-protobuf-varint c4-request-action-compile))
-    "TODO"))
-
+;; ----------------------------------------------------------------------------
+;; Message encoding
+;; ----------------------------------------------------------------------------
 ;; protobuf
 (defconst c4-protobuf-varint 0)
 (defconst c4-protobuf-64bit 1)
 (defconst c4-protobuf-length-delimited 2)
 (defconst c4-protobuf-32bit 5)
+
+;; request types
+(defconst c4-request-action-index 1)
+(defconst c4-request-action-project 0)
+(defconst c4-request-action-compile 1)
+
+(defconst c4-field-action
+  (logior (lsh c4-request-action-index 3)
+          c4-protobuf-varint))
 
 ;; emacs word size
 ;; most-positive-fixnum
@@ -125,19 +113,5 @@ positive number is (2^29 - 1)."
         (setq mask (lsh mask -1))
         (setq bit-count (1- bit-count)))
       bit-count)))
-
-(defun c4-byte-count (int)
-  "Count how many bytes are needed to represent the integer int."
-  (let ((byte-count (if (= c4-word-size 32) 4 8))
-        (mask 0)
-        (result 0)
-        (i 1))
-    (while (<= i byte-count)
-      (setq mask (if (= i byte-count) #x1F #xFF))
-      (if (> (logand int mask) 0)
-          (setq result i))
-      (setq int (lsh int -8))
-      (setq i (1+ i)))
-    result))
 
 (provide 'c4)
