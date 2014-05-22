@@ -110,7 +110,7 @@ positive number is (2^29 - 1)."
       (while (<= i varint-count)
         (setq tmp (logand int #x7F))
         (if (< i varint-count)
-            (setq tmp (logior tmp #x8)))
+            (setq tmp (logior tmp #x80)))
         (insert (byte-to-string tmp))
         (setq tmp 0)
         (setq i (1+ i))
