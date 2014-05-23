@@ -17,7 +17,7 @@ int RequestBuffer::feed(char buffer[], int cbytes) {
 
   // Do we have a complete Request?
   if (bytes.size() >= size) {
-    log(LOG_INFO, "Request size: " + itos(size));
+    log(LOG_INFO, "Complete Request of size: " + itos(size));
     return 1;
   }
 

@@ -64,7 +64,8 @@ int Server::start(unsigned int port) {
           if (feed(events[i].data.fd, readBuffer, cbytes)) {
               // we have a complete request
               Request request = getRequest(events[i].data.fd);
-              projHandler->process(request);
+              Response response = projHandler->process(request);
+              // TODO:
           }
         }
 
