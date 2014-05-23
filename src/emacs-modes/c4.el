@@ -29,11 +29,28 @@
 
 (defun c4-connection-alivep (process-object)
   (and (processp process-object)
-       (not (process-command process-object))))
+       (process-live-p process-object)))
 
-(defun c4-write-request (request-str)
+(defun c4-write-request (encoded-message)
   "Send a request object to a c4 server"
-  (process-send-string c4-process-object request-str))
+  (process-send-string c4-process-object
+                       (concat (c4-payload encoded-message)
+                               encoded-message)))
+
+(defun c4-payload (message)
+  "Get the payload of the message as a string of bytes. The
+payload is 32bit number in network byte order."
+  (let ((mask-last (if (= c4-word-size 32) #x1f #xff))
+        (size (string-bytes message))
+        (i 1))
+    (with-temp-buffer
+      (while (<= i 4)
+        (goto-char (point-min))
+        (insert (byte-to-string
+                 (logand size (if (= i 4) mask-last #xff))))
+        (setq size (lsh size -8))
+        (setq i (1+ i)))
+      (buffer-substring-no-properties 1 (point-max)))))
 
 ;; ----------------------------------------------------------------------------
 ;; Public API
@@ -58,6 +75,7 @@
       (insert (byte-to-string c4-field-unit))
       (insert (c4-protobuf-encode-varint (string-bytes compilation-unit)))
       (insert compilation-unit)
+      ;; encoded message
       (c4-write-request (buffer-substring-no-properties 1 (point-max))))))
 
 (defun c4-get-project-id ()
@@ -106,8 +124,6 @@ positive number is (2^29 - 1)."
   (if (< (1+ 536870911) 0) 32 64))
 
 (defconst c4-word-size (c4-calculate-word-size))
-
-(defconst c4-msb-mask (lsh 1 7))
 
 (defun c4-protobuf-encode-varint (int)
   "Encode a var int and returns it as a string"
