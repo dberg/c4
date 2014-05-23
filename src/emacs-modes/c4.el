@@ -51,14 +51,12 @@
       (insert (byte-to-string c4-request-action-compile))
       ;; project-id
       (insert (byte-to-string c4-field-project-id))
-      (insert (c4-protobuf-encode-varint (string-bytes project-id)
-                                         (current-buffer)))
+      (insert (c4-protobuf-encode-varint (string-bytes project-id)))
       (insert project-id)
       ;; unit
       (setq compilation-unit (c4-encode-compilation-unit filename unit))
       (insert (byte-to-string c4-field-unit))
-      (insert (c4-protobuf-encode-varint (string-bytes compilation-unit)
-                                         (current-buffer)))
+      (insert (c4-protobuf-encode-varint (string-bytes compilation-unit)))
       (insert compilation-unit)
       (c4-write-request (buffer-substring-no-properties 1 (point-max))))))
 
@@ -111,13 +109,13 @@ positive number is (2^29 - 1)."
 
 (defconst c4-msb-mask (lsh 1 7))
 
-(defun c4-protobuf-encode-varint (int buffer)
-  "Encode a var int"
+(defun c4-protobuf-encode-varint (int)
+  "Encode a var int and returns it as a string"
   (let* ((bit-count (c4-bit-count int))
          (varint-count (ceiling (/ bit-count 7.0)))
          (tmp 0)
          (i 1))
-    (with-current-buffer buffer
+    (with-temp-buffer
       (while (<= i varint-count)
         (setq tmp (logand int #x7F))
         (if (< i varint-count)
@@ -125,7 +123,8 @@ positive number is (2^29 - 1)."
         (insert (byte-to-string tmp))
         (setq tmp 0)
         (setq i (1+ i))
-        (setq int (lsh int -7))))))
+        (setq int (lsh int -7)))
+      (buffer-substring-no-properties 1 (point-max)))))
 
 (defun c4-bit-count (int)
   "Count how many bits are needed to represent the integer int."
@@ -144,12 +143,12 @@ positive number is (2^29 - 1)."
   "Encode the filename and unit and returns it a string"
   (with-temp-buffer
     ;; filename
-    (insert (byte-tostring c4-request-unit-filename-index))
-    (insert (c4-protobuf-encode-varint (string-to-bytes filename)))
+    (insert (byte-to-string c4-request-unit-filename-index))
+    (insert (c4-protobuf-encode-varint (string-bytes filename)))
     (insert filename)
     ;; unit
-    (insert (byte-tostring c4-request-unit-buffer-index))
-    (insert (c4-protobuf-encode-varint (string-to-bytes unit)))
+    (insert (byte-to-string c4-request-unit-buffer-index))
+    (insert (c4-protobuf-encode-varint (string-bytes unit)))
     (insert unit)
     (buffer-substring-no-properties 1 (point-max))))
 
