@@ -137,6 +137,7 @@ private:
     if (it != responses.end()) {
       std::vector<spResponse> socketResponses = it->second;
       for (auto response : socketResponses) {
+        log(LOG_INFO, "Writing response fd#" + itos(socket));
         response->SerializeToFileDescriptor(socket);
       }
     }

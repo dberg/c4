@@ -48,7 +48,7 @@ int Server::start(unsigned int port) {
         createRequestBuffer(connfd);
 
         // monitor new connection
-        ev.events = EPOLLIN;
+        ev.events = EPOLLIN | EPOLLOUT;
         ev.data.fd = connfd;
         if (epoll_ctl(epollfd, EPOLL_CTL_ADD, connfd, &ev) < 0) {
           log(LOG_ERROR, "Failed to monitor new connection fd#" + itos(connfd));
@@ -71,15 +71,17 @@ int Server::start(unsigned int port) {
           }
         }
 
-        // TODO:
         // connection closed by the client
         // stop monitoring this socket
         if (cbytes < 0 || events[i].events & EPOLLERR) {
           close(events[i].data.fd);
         }
+      }
 
-        // TODO:
-        // write data
+      // write data
+      if (events[i].events & EPOLLOUT) {
+        int socket = events[i].data.fd;
+        writeResponses(socket);
       }
     }
   }
