@@ -23,7 +23,7 @@ private:
 
 public:
   ProjectHandler(): projects() {}
-  spResponse process(spRequest &request);
+  void process(spRequest &request, spResponse &response);
 };
 
 } // namespace

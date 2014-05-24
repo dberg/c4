@@ -3,7 +3,7 @@
 #define __RESPONSE_H__
 
 #include <memory>
-#include "Response.pb.h"
+#include "c4/server/Response.pb.h"
 
 namespace c4 {
 

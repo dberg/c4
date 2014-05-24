@@ -3,7 +3,7 @@
 #define __REQUEST_H__
 
 #include <memory>
-#include "Request.pb.h"
+#include "c4/server/Request.pb.h"
 
 namespace c4 {
 
