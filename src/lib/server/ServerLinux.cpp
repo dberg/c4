@@ -59,13 +59,15 @@ int Server::start(unsigned int port) {
       // handle socket communication
       // read data
       if (events[i].events & EPOLLIN) {
-        int cbytes = read(events[i].data.fd, readBuffer, READ_BUFFER_MAX);
+        int socket = events[i].data.fd;
+        int cbytes = read(socket, readBuffer, READ_BUFFER_MAX);
         if (cbytes > 0) {
-          if (feed(events[i].data.fd, readBuffer, cbytes)) {
+          if (feed(socket, readBuffer, cbytes)) {
               // we have a complete request
               spRequest request = getRequest(events[i].data.fd);
               spResponse response = spResponse(new Response);
               projHandler->process(request, response);
+              responses[socket].push_back(response);
           }
         }
 
