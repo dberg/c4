@@ -7,7 +7,7 @@
 #include <vector>
 #include "c4/common/Log.h"
 #include "c4/common/Util.h"
-#include "c4/server/Request.pb.h"
+#include "c4/server/Request.h"
 
 namespace c4 {
 
@@ -24,7 +24,7 @@ class RequestBuffer {
 public:
   RequestBuffer(): size(0) {}
   int feed(char buffer[], int cbytes);
-  Request buildAndRemoveRequest();
+  spRequest buildAndRemoveRequest();
 };
 
 } // namespace

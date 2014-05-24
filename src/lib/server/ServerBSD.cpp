@@ -72,8 +72,8 @@ int Server::start(unsigned int port) {
         if (cbytes > 0) {
           if (feed(socket, readBuffer, cbytes)) {
             // we have a complete request
-            Request request = getRequest(socket);
-            Response response = projHandler->process(request);
+            spRequest request = getRequest(socket);
+            spResponse response = projHandler->process(request);
             responses[socket].push_back(response);
           }
         }

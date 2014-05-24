@@ -63,8 +63,8 @@ int Server::start(unsigned int port) {
         if (cbytes > 0) {
           if (feed(events[i].data.fd, readBuffer, cbytes)) {
               // we have a complete request
-              Request request = getRequest(events[i].data.fd);
-              Response response = projHandler->process(request);
+              spRequest request = getRequest(events[i].data.fd);
+              spResponse response = projHandler->process(request);
               // TODO:
           }
         }

@@ -24,7 +24,8 @@
 #include "c4/common/Log.h"
 #include "c4/common/Util.h"
 #include "c4/main/CmdInput.h"
-#include "c4/server/Request.pb.h"
+#include "c4/server/Request.h"
+#include "c4/server/Response.h"
 #include "c4/server/RequestBuffer.h"
 
 namespace c4 {
@@ -41,7 +42,7 @@ public:
 private:
 
   std::unordered_map<int, spRequestBuffer> reqBuffers;
-  std::unordered_map<int, std::vector<Response>> responses;
+  std::unordered_map<int, std::vector<spResponse>> responses;
 
   int listenfd;
 
@@ -115,13 +116,13 @@ private:
   /**
    * Build a Request from a RequestBuffer.
    */
-  Request getRequest(int connfd) {
+  spRequest getRequest(int connfd) {
     auto it = reqBuffers.find(connfd);
     if (it != reqBuffers.end()) {
       return it->second->buildAndRemoveRequest();
     }
 
-    Request request;
+    spRequest request = spRequest(new Request);
     return request;
   }
 
@@ -134,9 +135,9 @@ private:
 
     auto it = responses.find(socket);
     if (it != responses.end()) {
-      std::vector<Response> socketResponses = it->second;
+      std::vector<spResponse> socketResponses = it->second;
       for (auto response : socketResponses) {
-        response.SerializeToFileDescriptor(socket);
+        response->SerializeToFileDescriptor(socket);
       }
     }
   }

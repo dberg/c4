@@ -34,15 +34,15 @@ void RequestBuffer::calculateSize() {
   }
 }
 
-Request RequestBuffer::buildAndRemoveRequest() {
-  Request request;
+spRequest RequestBuffer::buildAndRemoveRequest() {
+  spRequest request = spRequest(new Request);
   if (size == 0 || size < bytes.size()) {
     return request;
   }
 
   std::string reqStr(bytes.begin(), bytes.begin() + size);
   bytes.erase(bytes.begin(), bytes.begin() + size);
-  request.ParseFromString(reqStr);
+  request->ParseFromString(reqStr);
   calculateSize();
   return request;
 }
