@@ -28,8 +28,6 @@ int Server::start(unsigned int port) {
   struct epoll_event events[MAX_EVENTS];
 
   struct sockaddr_in cliaddr;
-  const int READ_BUFFER_MAX = 1024;
-  char readBuffer[READ_BUFFER_MAX];
 
   while (true) {
     int nevs = epoll_wait(epollfd, events, MAX_EVENTS, -1);
@@ -67,7 +65,7 @@ int Server::start(unsigned int port) {
               spRequest request = getRequest(events[i].data.fd);
               spResponse response = spResponse(new Response);
               projHandler->process(request, response);
-              responses[socket].push_back(response);
+              queueResponse(socket, response);
           }
         }
 

@@ -7,6 +7,7 @@
 #include <string>
 #include <unistd.h>
 #include <unordered_map>
+#include <deque>
 
 #include "c4/main/Config.h"
 
@@ -42,11 +43,16 @@ public:
 private:
 
   std::unordered_map<int, spRequestBuffer> reqBuffers;
-  std::unordered_map<int, std::vector<spResponse>> responses;
+  std::unordered_map<int, std::deque<char>> responses;
 
   int listenfd;
 
   spProjectHandler projHandler;
+
+  static const unsigned int READ_BUFFER_MAX = 1024;
+  char readBuffer[READ_BUFFER_MAX];
+  static const unsigned int WRITE_BUFFER_MAX = 1024;
+  char writeBuffer[WRITE_BUFFER_MAX];
 
   /**
    * Create the listening socket that will accept incoming connections.
@@ -127,20 +133,43 @@ private:
   }
 
   /**
+   * Add a response to the queue of bytes to be delivered to the client.
+   */
+  void queueResponse(int socket, spResponse &response) {
+    auto it = responses.find(socket);
+    if (it != responses.end()) {
+      auto &r = it->second;
+
+      // payload
+      uint32_t responseLen = response->ByteSize();
+      r.push_back(responseLen & 0xFF);
+      r.push_back((responseLen >> 8) & 0xFF);
+      r.push_back((responseLen >> 16) & 0xFF);
+      r.push_back((responseLen >> 24) & 0xFF);
+
+      // response
+      char buffer[responseLen];
+      response->SerializeToArray(buffer, responseLen);
+      r.insert(r.end(), &buffer[0], &buffer[responseLen]);
+    }
+  }
+
+  /**
    * Write Responses to a socket.
    */
   void writeResponses(int socket) {
-    // TODO: get the bytes of the message and keep track of what has been
-    // written. See SerializeToOstream(ostream* output).
-
     auto it = responses.find(socket);
-    if (it != responses.end()) {
-      std::vector<spResponse> socketResponses = it->second;
-      for (auto response : socketResponses) {
-        log(LOG_INFO, "Writing response fd#" + itos(socket));
-        response->SerializeToFileDescriptor(socket);
-      }
+    if (it == responses.end()) {
+      log(LOG_ERROR, "Could not find fd# " + itos(socket) + " for writing");
+      return;
     }
+
+    auto &r = it->second;
+    unsigned long len = std::min((unsigned long) WRITE_BUFFER_MAX, r.size());
+    std::copy(r.begin(), r.begin() + len, writeBuffer);
+    int written = write(socket, writeBuffer, len);
+    // TODO: - handle errors
+    //       - remove written data from deque
   }
 
 };

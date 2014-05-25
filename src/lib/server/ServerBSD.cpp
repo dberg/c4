@@ -24,8 +24,6 @@ int Server::start(unsigned int port) {
   EV_SET(&chlist[0], listenfd, EVFILT_READ, EV_ADD, 0, 0, 0);
 
   struct sockaddr_in cliaddr;
-  const int READ_BUFFER_MAX = 1024;
-  char readBuffer[READ_BUFFER_MAX];
 
   while (true) {
     int nev = kevent(kqfd, chlist, chListCounter, evlist, EVENT_LIST_COUNT, NULL);
@@ -75,7 +73,7 @@ int Server::start(unsigned int port) {
             spRequest request = getRequest(socket);
             spResponse response = spResponse(new Response);
             projHandler->process(request, response);
-            responses[socket].push_back(response);
+            queueResponse(socket, response);
           }
         }
 
