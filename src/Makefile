@@ -190,6 +190,8 @@ $(obj_java)/%.o: \
 
 # objects scala - libscala
 $(obj_scala)/libscala.a: \
+  $(obj_scala)/Global.o \
+  $(obj_scala)/Phase.o \
   $(obj_scala)/Indentation.o \
   $(obj_scala)/Parser.o \
   $(obj_scala)/Lexer.o \
