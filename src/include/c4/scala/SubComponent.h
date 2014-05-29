@@ -2,7 +2,8 @@
 #ifndef __C4S_SUB_COMPONENT__H__
 #define __C4S_SUB_COMPONENT__H__
 
-#include <memory>
+#include <string>
+
 #include "c4/scala/TypeDefs.h"
 #include "c4/scala/Global.h"
 
@@ -15,6 +16,9 @@ class SubComponent {
 
 private:
   spGlobal global;
+
+protected:
+  std::string phaseName;
 
 public:
   SubComponent(spGlobal global): global(global) {}
