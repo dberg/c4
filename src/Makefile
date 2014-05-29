@@ -196,6 +196,7 @@ $(obj_scala)/libscala.a: \
   $(obj_scala)/Parser.o \
   $(obj_scala)/Lexer.o \
   $(obj_scala)/EmacsOutput.o \
+  $(obj_scala)/SubComponent.o \
   $(obj_scala)/SyntaxHighlighting.o
 	ar -rv $@ $+
 

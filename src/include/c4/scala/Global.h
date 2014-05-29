@@ -6,12 +6,11 @@
 #include <vector>
 
 #include "c4/common/CompilationUnit.h"
+#include "c4/scala/TypeDefs.h"
 #include "c4/scala/Phase.h"
+#include "c4/scala/SubComponent.h"
 
 namespace c4s {
-
-class Global;
-typedef std::shared_ptr<Global> spGlobal;
 
 class Run;
 typedef std::shared_ptr<Run> spRun;
@@ -22,9 +21,14 @@ private:
 
   spPhase globalPhase;
 
+  /** Each Component is a phase factory */
+  std::vector<spSubComponent> phaseDescriptors;
+
 public:
 
-  Global(): globalPhase(spNoPhase(new NoPhase)) {}
+  Global(): globalPhase(spNoPhase(new NoPhase)) {
+    // TODO: initialize phaseDescriptors
+  }
 
 };
 
@@ -35,6 +39,7 @@ class Run {
 
 private:
   spGlobal global;
+  spPhase firstPhase;
 
 public:
 
