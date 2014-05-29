@@ -6,4 +6,8 @@ void NoPhase::run() {
   // TODO:
 }
 
+void GlobalPhase::run() {
+  // TODO:
+}
+
 } // namespace
