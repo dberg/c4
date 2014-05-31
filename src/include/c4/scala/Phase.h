@@ -38,14 +38,16 @@ public:
   virtual void run();
 };
 
-/**
- * First Phase to run.
- */
 class GlobalPhase : public Phase {
 public:
   GlobalPhase(spPhase prev): Phase(prev) {}
   virtual void run();
 };
+
+class ParserPhase : public GlobalPhase {
+public:
+  ParserPhase(spPhase prev): GlobalPhase(prev) {}
+}
 
 } // namespace
 
