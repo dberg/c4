@@ -6,7 +6,9 @@
 
 #include "c4/scala/TypeDefs.h"
 #include "c4/scala/Global.h"
+#include "c4/scala/Phase.h"
 #include "c4/scala/SubComponent.h"
+#include "c4/scala/SyntaxAnalyzer.h"
 
 namespace c4s {
 

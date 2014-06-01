@@ -3,17 +3,9 @@
 #define __C4S_PHASE_H__
 
 #include <memory>
+#include "c4/scala/TypeDefs.h"
 
 namespace c4s {
-
-class Phase;
-typedef std::shared_ptr<Phase> spPhase;
-
-class NoPhase;
-typedef std::shared_ptr<NoPhase> spNoPhase;
-
-class GlobalPhase;
-typedef std::shared_ptr<GlobalPhase> spGlobalPhase;
 
 /**
  * Phase abstract class.
@@ -47,7 +39,7 @@ public:
 class ParserPhase : public GlobalPhase {
 public:
   ParserPhase(spPhase prev): GlobalPhase(prev) {}
-}
+};
 
 } // namespace
 

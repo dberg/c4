@@ -13,6 +13,22 @@ typedef std::shared_ptr<SubComponent> spSubComponent;
 class SyntaxAnalyzer;
 typedef std::shared_ptr<SyntaxAnalyzer> spSyntaxAnalyzer;
 
+
+// ----------------------------------------------------------------------------
+// Phase
+// ----------------------------------------------------------------------------
+class Phase;
+typedef std::shared_ptr<Phase> spPhase;
+
+class NoPhase;
+typedef std::shared_ptr<NoPhase> spNoPhase;
+
+class GlobalPhase;
+typedef std::shared_ptr<GlobalPhase> spGlobalPhase;
+
+class ParserPhase;
+typedef std::shared_ptr<ParserPhase> spParserPhase;
+
 } // namespace
 
 #endif
