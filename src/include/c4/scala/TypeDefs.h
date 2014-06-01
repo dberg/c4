@@ -2,6 +2,8 @@
 #ifndef __C4S_TYPE_DEFS_H__
 #define __C4S_TYPE_DEFS_H__
 
+#include <memory>
+
 namespace c4s {
 
 class Global;
