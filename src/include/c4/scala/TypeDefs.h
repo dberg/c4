@@ -15,7 +15,6 @@ typedef std::shared_ptr<SubComponent> spSubComponent;
 class SyntaxAnalyzer;
 typedef std::shared_ptr<SyntaxAnalyzer> spSyntaxAnalyzer;
 
-
 // ----------------------------------------------------------------------------
 // Phase
 // ----------------------------------------------------------------------------

@@ -3,8 +3,7 @@
 namespace c4s {
 
 spPhase SyntaxAnalyzer::newPhase(spPhase prev) {
-  // TODO:
-  return spNoPhase(new NoPhase);
+  return spPhase(new ParserPhase(prev));
 }
 
 } // namespace
