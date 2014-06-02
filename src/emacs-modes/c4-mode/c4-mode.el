@@ -1,3 +1,22 @@
+(eval-and-compile
+  (require 'cc-mode))     ; (only) for `c-populate-syntax-table'
+
+(require 'c4j) ;; java support
+(require 'c4s) ;; scala support
+
+;; TODO: remove hardcoded paths
+(defvar c4-executable "~/dev/c4/src/out/Debug/bin/c4")
+(defvar c4-tmp-buffer "/tmp/c4-mode-buffer")
+
+;;;###autoload
+(defun c4-mode ()
+  "Major mode for Java and Scala"
+  (interactive)
+  (let ((ext (file-name-extension buffer-file-name)))
+    (cond ((string= ext "java") (c4j-mode))
+          ((string= ext "scala") (c4j-mode))
+          (t (message "Invalid file extension")))))
+
 ;; ----------------------------------------------------------------------------
 ;; Server
 ;; ----------------------------------------------------------------------------
@@ -168,4 +187,4 @@ positive number is (2^29 - 1)."
     (insert unit)
     (buffer-substring-no-properties 1 (point-max))))
 
-(provide 'c4)
+(provide 'c4-mode)
