@@ -10,4 +10,15 @@ void GlobalPhase::run() {
   // TODO:
 }
 
+/**
+ * @private
+ */
+void GlobalPhase::applyPhase(c4::spCompilationUnit &unit) {
+  // TODO:
+}
+
+void ParserPhase::apply(c4::spCompilationUnit &unit) {
+  // TODO:
+}
+
 } // namespace
