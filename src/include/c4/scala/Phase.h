@@ -13,25 +13,8 @@ namespace c4s {
  */
 class Phase {
 
-private:
-  // Previous and next phases.
-  Phase *prev;
-  Phase *nx;
-
 public:
-
-  Phase(Phase *prev): prev(prev), nx(nullptr) {
-    if (prev != nullptr) {
-      prev->nx = this;
-    }
-  }
-
   virtual void run() = 0;
-
-  virtual bool hasNext() {
-    /** TODO **/
-    return false;
-  }
 };
 
 /**
@@ -40,7 +23,6 @@ public:
 class NoPhase : public Phase {
 
 public:
-  NoPhase(): Phase(nullptr) {}
   virtual void run();
 };
 
@@ -49,19 +31,16 @@ private:
   virtual void applyPhase(c4::spCompilationUnit &unit);
 
 public:
-  GlobalPhase(Phase *prev): Phase(prev) {}
   virtual void run();
   virtual void apply(c4::spCompilationUnit &unit) = 0;
 };
 
 class StdPhase : public GlobalPhase {
-public:
-  StdPhase(Phase *prev) : GlobalPhase(prev) {}
+
 };
 
 class ParserPhase : public StdPhase {
 public:
-  ParserPhase(Phase *prev): StdPhase(prev) {}
   virtual void apply(c4::spCompilationUnit &unit);
 };
 

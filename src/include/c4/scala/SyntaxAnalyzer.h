@@ -18,10 +18,10 @@ protected:
   std::string phaseName;
 
 public:
-  SyntaxAnalyzer(Global *global)
+  SyntaxAnalyzer(spGlobal &global)
     : SubComponent(global), phaseName("parser")
     {}
-  virtual StdPhase* newPhase(Phase *prev);
+  virtual spPhase newPhase();
 };
 
 } // namespace

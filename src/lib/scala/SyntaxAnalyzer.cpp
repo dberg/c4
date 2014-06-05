@@ -2,8 +2,8 @@
 
 namespace c4s {
 
-StdPhase* SyntaxAnalyzer::newPhase(Phase *prev) {
-  return new ParserPhase(prev);
+spPhase SyntaxAnalyzer::newPhase() {
+  return spPhase(new ParserPhase);
 }
 
 } // namespace

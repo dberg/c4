@@ -15,14 +15,14 @@ namespace c4s {
 class SubComponent {
 
 private:
-  Global *global;
+  spGlobal global;
 
 protected:
   std::string phaseName;
 
 public:
-  SubComponent(Global *global): global(global) {}
-  virtual Phase* newPhase(Phase* prev) = 0;
+  SubComponent(spGlobal &global): global(global) {}
+  virtual spPhase newPhase() = 0;
 };
 
 } // namespace

@@ -19,7 +19,11 @@ class Global {
 
 private:
 
+  /** The current phase being run */
   spPhase globalPhase;
+
+  /** The phases to be applied in order */
+  std::vector<spPhase> phases;
 
   /** Each Component is a phase factory */
   std::vector<spSubComponent> phaseDescriptors;
