@@ -17,7 +17,7 @@ typedef std::shared_ptr<Run> spRun;
 
 class Global {
 
-private:
+protected:
 
   /** The current phase being run */
   spPhase globalPhase;
@@ -39,15 +39,11 @@ public:
 /**
  * Single execution of the compiler on a set of units.
  */
-class Run {
+class Run : public Global {
 
-private:
-  spGlobal global;
-  spPhase firstPhase;
+  std::vector<c4::spCompilationUnit> units;
 
 public:
-
-  Run(spGlobal global): global(global) {}
 
   void compileUnits(std::vector<c4::spCompilationUnit> &units);
 

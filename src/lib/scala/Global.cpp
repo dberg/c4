@@ -3,7 +3,11 @@
 namespace c4s {
 
 void Run::compileUnits(std::vector<c4::spCompilationUnit> &units) {
-  // TODO:
+  this->units = units;
+  for (auto &phase : phases) {
+    globalPhase = phase;
+    globalPhase->run();
+  }
 }
 
 } // namespace

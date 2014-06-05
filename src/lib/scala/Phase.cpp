@@ -8,6 +8,9 @@ void NoPhase::run() {
 
 void GlobalPhase::run() {
   // TODO:
+  // for (auto &unit : globalRun->units) {
+  //   applyPhase(unit);
+  // }
 }
 
 /**
