@@ -16,11 +16,11 @@ void GlobalPhase::run() {
 /**
  * @private
  */
-void GlobalPhase::applyPhase(c4::spCompilationUnit &unit) {
+void GlobalPhase::applyPhase(spCompilationUnit &unit) {
   // TODO:
 }
 
-void ParserPhase::apply(c4::spCompilationUnit &unit) {
+void ParserPhase::apply(spCompilationUnit &unit) {
   // TODO:
 }
 

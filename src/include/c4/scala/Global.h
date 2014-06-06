@@ -5,8 +5,8 @@
 #include <memory>
 #include <vector>
 
-#include "c4/common/CompilationUnit.h"
 #include "c4/scala/TypeDefs.h"
+#include "c4/scala/CompilationUnits.h"
 #include "c4/scala/Phase.h"
 #include "c4/scala/SubComponent.h"
 
@@ -41,11 +41,11 @@ public:
  */
 class Run : public Global {
 
-  std::vector<c4::spCompilationUnit> units;
+  std::vector<spCompilationUnit> units;
 
 public:
 
-  void compileUnits(std::vector<c4::spCompilationUnit> &units);
+  void compileUnits(std::vector<spCompilationUnit> &units);
 
 private:
 
@@ -53,7 +53,7 @@ private:
    * Add unit to be compiled in this run.
    * Update 'unitbuf' and 'compiledFiles'.
    */
-  void addUnit(c4::spCompilationUnit &unit);
+  void addUnit(spCompilationUnit &unit);
 
 };
 

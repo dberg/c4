@@ -2,7 +2,7 @@
 
 namespace c4s {
 
-void Run::compileUnits(std::vector<c4::spCompilationUnit> &units) {
+void Run::compileUnits(std::vector<spCompilationUnit> &units) {
   this->units = units;
   for (auto &phase : phases) {
     globalPhase = phase;

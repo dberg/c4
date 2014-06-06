@@ -3,8 +3,8 @@
 #define __C4S_PHASE_H__
 
 #include <memory>
-#include "c4/common/CompilationUnit.h"
 #include "c4/scala/TypeDefs.h"
+#include "c4/scala/CompilationUnits.h"
 
 namespace c4s {
 
@@ -28,11 +28,11 @@ public:
 
 class GlobalPhase : public Phase {
 private:
-  virtual void applyPhase(c4::spCompilationUnit &unit);
+  virtual void applyPhase(spCompilationUnit &unit);
 
 public:
   virtual void run();
-  virtual void apply(c4::spCompilationUnit &unit) = 0;
+  virtual void apply(spCompilationUnit &unit) = 0;
 };
 
 class StdPhase : public GlobalPhase {
@@ -41,7 +41,7 @@ class StdPhase : public GlobalPhase {
 
 class ParserPhase : public StdPhase {
 public:
-  virtual void apply(c4::spCompilationUnit &unit);
+  virtual void apply(spCompilationUnit &unit);
 };
 
 } // namespace
