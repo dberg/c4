@@ -4,16 +4,23 @@
 
 #include <memory>
 
+#include "c4/scala/Trees.h"
+
 namespace c4s {
 
 class CompilationUnit;
 typedef std::shared_ptr<CompilationUnit> spCompilationUnit;
 
 class CompilationUnit {
-  // TODO:
+
+public:
+
+  spTree body;
+
+  CompilationUnit(): body(nullptr) {}
+
 };
 
 } // namespace
-
 
 #endif
