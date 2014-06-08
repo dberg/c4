@@ -14,12 +14,15 @@ namespace c4s {
 
 class SyntaxAnalyzer : public SubComponent {
 
+private:
+  spGlobal global;
+
 protected:
   std::string phaseName;
 
 public:
   SyntaxAnalyzer(spGlobal &global)
-    : SubComponent(global), phaseName("parser")
+    : SubComponent(global), global(global), phaseName("parser")
     {}
   virtual spPhase newPhase();
 };

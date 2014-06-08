@@ -2,22 +2,18 @@
 
 namespace c4s {
 
-void NoPhase::run() {
-  // TODO:
-}
-
 void GlobalPhase::run() {
-  // TODO:
-  // for (auto &unit : globalRun->units) {
-  //   applyPhase(unit);
-  // }
+//  auto units = getGlobal()->units;
+//  for (auto &unit : units) {
+//    applyPhase(unit);
+//  }
 }
 
 /**
  * @private
  */
 void GlobalPhase::applyPhase(spCompilationUnit &unit) {
-  // TODO:
+  apply(unit);
 }
 
 void ParserPhase::apply(spCompilationUnit &unit) {

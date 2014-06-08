@@ -12,9 +12,6 @@
 
 namespace c4s {
 
-class Run;
-typedef std::shared_ptr<Run> spRun;
-
 class Global {
 
 protected:
@@ -30,31 +27,14 @@ protected:
 
 public:
 
+  /** Compilation units to be compiled */
+  std::vector<spCompilationUnit> units;
+
   Global(): globalPhase(spNoPhase(new NoPhase)) {
     // TODO: initialize phaseDescriptors
   }
 
-};
-
-/**
- * Single execution of the compiler on a set of units.
- */
-class Run : public Global {
-
-  std::vector<spCompilationUnit> units;
-
-public:
-
-  void compileUnits(std::vector<spCompilationUnit> &units);
-
-private:
-
-  /**
-   * Add unit to be compiled in this run.
-   * Update 'unitbuf' and 'compiledFiles'.
-   */
-  void addUnit(spCompilationUnit &unit);
-
+  void compile(std::vector<spCompilationUnit> &units);
 };
 
 } // namespace
