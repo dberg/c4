@@ -5,19 +5,15 @@ namespace c4s {
 void GlobalPhase::run() {
   auto units = global->units;
   for (auto &unit : units) {
-    applyPhase(unit);
+    apply(unit);
   }
 }
 
-/**
- * @private
- */
-void GlobalPhase::applyPhase(spCompilationUnit &unit) {
-  apply(unit);
-}
-
 void ParserPhase::apply(spCompilationUnit &unit) {
-  // TODO:
+  if (!unit->body) {
+    // TODO:
+    // unit->body = (new UnitParser(unit))->parse();
+  }
 }
 
 } // namespace

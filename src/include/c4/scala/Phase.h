@@ -17,8 +17,6 @@ public:
 };
 
 class GlobalPhase : public Phase {
-private:
-  virtual void applyPhase(spCompilationUnit &unit);
 
 public:
   spGlobal global;
