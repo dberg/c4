@@ -30,7 +30,7 @@ public:
   /** Compilation units to be compiled */
   std::vector<spCompilationUnit> units;
 
-  Global(): globalPhase(spNoPhase(new NoPhase)) {
+  Global(): globalPhase(nullptr) {
     // TODO: initialize phaseDescriptors
   }
 

@@ -3,10 +3,10 @@
 namespace c4s {
 
 void GlobalPhase::run() {
-//  auto units = getGlobal()->units;
-//  for (auto &unit : units) {
-//    applyPhase(unit);
-//  }
+  auto units = global->units;
+  for (auto &unit : units) {
+    applyPhase(unit);
+  }
 }
 
 /**
