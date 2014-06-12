@@ -56,7 +56,6 @@ gtest_dir = third_party/gtest
 gtest_obj = $(builddir)/third_party/gtest
 protobuf_compiler = protoc
 
-
 # includes
 incdir_common := include/c4/common
 incdir_bytecode := include/c4/bytecode
@@ -192,13 +191,8 @@ $(obj_java)/%.o: \
 $(obj_scala)/libscala.a: \
   $(obj_scala)/Global.o \
   $(obj_scala)/Phase.o \
-  $(obj_scala)/Indentation.o \
-  $(obj_scala)/Parser.o \
-  $(obj_scala)/Lexer.o \
-  $(obj_scala)/EmacsOutput.o \
   $(obj_scala)/SubComponent.o \
-  $(obj_scala)/SyntaxAnalyzer.o \
-  $(obj_scala)/SyntaxHighlighting.o
+  $(obj_scala)/SyntaxAnalyzer.o
 	ar -rv $@ $+
 
 $(obj_scala)/%.o: \
@@ -288,9 +282,7 @@ $(bin)/test-java: \
 
 $(bin)/test-scala: \
   $(tests_scala)/ScalaTests.cpp \
-  $(tests_scala)/ScalaParserTest.cpp \
-  $(tests_scala)/ScalaIndentationTest.cpp \
-  $(tests_scala)/ScalaSyntaxHighlightingTest.cpp \
+  $(tests_scala)/ScalaCompilerTest.cpp \
   $(obj_common)/libcommon.a \
   $(obj_scala)/libscala.a \
   $(gtest_obj)/libgtest.a
