@@ -4,10 +4,17 @@
 
 namespace c4s {
 
-// ParserCommon
-// Parser
-// SourceFileParser
-// ParserUnit
+/* Notes:
+
+ParserCommon
+Parser
+SourceFileParser
+ParserUnit
+
+// CompilationUnit ::= {package QualId semi} TopStatSeq
+def compilationUnit(): PackageDef
+
+*/
 
 } // namespace
 
