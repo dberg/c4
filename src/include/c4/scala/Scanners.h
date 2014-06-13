@@ -2,9 +2,12 @@
 #ifndef __C4_SCALA_SCANNERS_H__
 #define __C4_SCALA_SCANNERS_H__
 
+#include "c4/scala/ScannersTypeDefs.h"
+#include "c4/scala/Tokens.h"
+
 namespace c4s {
 
-/* Notes:
+/* TODO Notes:
 
 CommonTokenData
 ScannerCommon
@@ -23,6 +26,21 @@ SourceFileScanner
 UnitScanner
 
 */
+
+class TokenData {
+protected:
+  Token token;
+public:
+  TokenData() : token(EMPTY) {}
+};
+
+class Scanner : public TokenData {
+
+};
+
+class UnitScanner : public Scanner {
+
+};
 
 } // namespace
 
