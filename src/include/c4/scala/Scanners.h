@@ -35,7 +35,8 @@ public:
 };
 
 class Scanner : public TokenData {
-
+protected:
+  virtual void nextToken();
 };
 
 class UnitScanner : public Scanner {

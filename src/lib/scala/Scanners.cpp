@@ -2,4 +2,8 @@
 
 namespace c4s {
 
+void Scanner::nextToken() {
+  // TODO:
+}
+
 } // namespace
