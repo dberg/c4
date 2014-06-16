@@ -29,6 +29,16 @@ UnitScanner
 
 */
 
+class ScannerData {
+protected:
+  spTokenData next;
+  spTokenData prev;
+
+  ScannerData()
+    : next(spTokenData(new TokenData)), prev(spTokenData(new TokenData))
+  {}
+};
+
 class TokenData {
 protected:
 
@@ -51,7 +61,7 @@ public:
   TokenData() : token(EMPTY) {}
 };
 
-class Scanner : public TokenData {
+class Scanner : public TokenData, public ScannerData {
 protected:
   virtual void nextToken();
 };
