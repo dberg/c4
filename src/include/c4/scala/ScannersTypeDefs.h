@@ -6,6 +6,8 @@
 
 namespace c4s {
 
+typedef int Offset;
+
 class ScannerData;
 typedef std::shared_ptr<ScannerData> spScannerData;
 

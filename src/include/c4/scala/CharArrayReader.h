@@ -4,6 +4,8 @@
 
 #include <memory>
 
+#include "c4/scala/TypeDefs.h"
+
 namespace c4s {
 
 //class CharArrayReaderData;
@@ -12,7 +14,18 @@ namespace c4s {
 //class CharArrayReader;
 //typedef std::shared_ptr<CharArrayReader> spCharArrayReader;
 
-class CharArrayReaderData {};
+class CharArrayReaderData {
+protected:
+
+  /** the last read character */
+  Char ch;
+
+  /** The offset one past the last read character */
+  int charOffset;
+
+  CharArrayReaderData(): charOffset(0) {}
+
+};
 
 class CharArrayReader : public CharArrayReaderData {};
 
