@@ -18,14 +18,21 @@ MAKEFLAGS=-r
 CXX ?= g++
 BUILDTYPE ?= Debug
 
-# Darwin:
+# If we're running OSX we try to understand if we're running homebrew or
+# macports.
 UNAME := $(shell uname)
 ifeq ($(UNAME), Darwin)
   CXX = clang++
   CXX11FLAGS = -std=c++11 -stdlib=libc++
-  # We use the default macports installation path under OSX
-  INC_EXTRA ?= -I/opt/local/include
-  LIB_EXTRA ?= -L/opt/local/lib
+  ifeq ($(wildcard /opt/local/include),)
+    # homebrew
+    INC_EXTRA ?= -I/usr/local/include
+    LIB_EXTRA ?= -L/usr/local/lib
+  else
+    # macports
+    INC_EXTRA ?= -I/opt/local/include
+    LIB_EXTRA ?= -L/opt/local/lib
+  endif
 endif
 
 CXX11FLAGS ?= -std=c++11

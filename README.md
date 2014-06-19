@@ -51,6 +51,8 @@ Install Protocol Buffers before compiling c4. See https://developers.google.com/
 sudo yum install protobuf-compiler protobuf-devel
 # OSX running macports
 sudo port install protobuf-cpp
+# OSX running homebrew
+brew install protobuf-c
 ```
 
 To build c4 in Release mode:
