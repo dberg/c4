@@ -2,6 +2,12 @@
 
 namespace c4s {
 
+void Scanner::init() {
+  // TODO:
+  //nextChar();
+  //nextToken();
+}
+
 void Scanner::nextToken() {
   Token lastToken = token;
 

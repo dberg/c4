@@ -54,6 +54,7 @@ protected:
 
   virtual void nextToken();
   virtual void fetchToken();
+  virtual void init();
 
 public:
   Scanner() : offset(0), lastOffset(0) {}
