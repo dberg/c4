@@ -29,6 +29,10 @@ protected:
 
 class CharArrayReader : public CharArrayReaderData {};
 
+public:
+
+  virtual void nextChar();
+
 } // namespace
 
 #endif
