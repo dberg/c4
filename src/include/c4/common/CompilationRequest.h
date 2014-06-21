@@ -1,6 +1,6 @@
 //-*- C++ -*-
-#ifndef __C4_SERVER_COMPILATION_REQUEST_H__
-#define __C4_SERVER_COMPILATION_REQUEST_H__
+#ifndef __C4_COMMON_COMPILATION_REQUEST_H__
+#define __C4_COMMON_COMPILATION_REQUEST_H__
 
 #include <memory>
 #include <string>

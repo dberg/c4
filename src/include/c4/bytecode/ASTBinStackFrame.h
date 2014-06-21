@@ -1,6 +1,6 @@
 //-*- C++ -*-
-#ifndef __AST_BIN_STACK_FRAME_H__
-#define __AST_BIN_STACK_FRAME_H__
+#ifndef __C4_BYTECODE_AST_BIN_STACK_FRAME_H__
+#define __C4_BYTECODE_AST_BIN_STACK_FRAME_H__
 
 namespace c4 {
 

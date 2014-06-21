@@ -1,6 +1,7 @@
 //-*- C++ -*-
-#ifndef __INDENTATION_H__
-#define __INDENTATION_H__
+#ifndef __C4_JAVA_INDENTATION_H__
+#define __C4_JAVA_INDENTATION_H__
+
 #include <memory>
 #include <map>
 

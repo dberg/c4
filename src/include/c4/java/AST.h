@@ -1,6 +1,7 @@
 //-*- C++ -*-
-#ifndef __AST_H__
-#define __AST_H__
+#ifndef __C4_JAVA_AST_H__
+#define __C4_JAVA_AST_H__
+
 #include <memory>
 #include <utility>
 #include <vector>

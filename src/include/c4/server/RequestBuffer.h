@@ -1,6 +1,6 @@
 //-*- C++ -*-
-#ifndef __REQUEST_BUFFER_H__
-#define __REQUEST_BUFFER_H__
+#ifndef __C4_SERVER_REQUEST_BUFFER_H__
+#define __C4_SERVER_REQUEST_BUFFER_H__
 
 #include <memory>
 #include <string>

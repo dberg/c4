@@ -1,6 +1,7 @@
 //-*- C++ -*-
-#ifndef __OPCODES_H__
-#define __OPCODES_H__
+#ifndef __C4_BYTECODE_OPCODES_H__
+#define __C4_BYTECODE_OPCODES_H__
+
 #include <string>
 #include <unordered_map>
 

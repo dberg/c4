@@ -1,6 +1,7 @@
 //-*- C++ -*-
-#ifndef __BIN_OUTPUT_CODE_H__
-#define __BIN_OUTPUT_CODE_H__
+#ifndef __C4_BYTECODE_BIN_OUTPUT_CODE_H__
+#define __C4_BYTECODE_BIN_OUTPUT_CODE_H__
+
 #include <iomanip>
 #include <iostream>
 #include <sstream>

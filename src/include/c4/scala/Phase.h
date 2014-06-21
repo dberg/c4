@@ -1,6 +1,6 @@
 //-*- C++ -*-
-#ifndef __C4S_PHASE_H__
-#define __C4S_PHASE_H__
+#ifndef __C4_SCALA_PHASE_H__
+#define __C4_SCALA_PHASE_H__
 
 #include <memory>
 #include "c4/scala/TypeDefs.h"

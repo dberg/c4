@@ -1,6 +1,6 @@
 //-*- C++ -*-
-#ifndef __TYPE_DEFS_H__
-#define __TYPE_DEFS_H__
+#ifndef __C4_BYTECODE_TYPE_DEFS_H__
+#define __C4_BYTECODE_TYPE_DEFS_H__
 
 namespace c4 {
 

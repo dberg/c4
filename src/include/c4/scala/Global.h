@@ -1,6 +1,6 @@
 //-*- C++ -*-
-#ifndef __C4S_GLOBAL_H__
-#define __C4S_GLOBAL_H__
+#ifndef __C4_SCALA_GLOBAL_H__
+#define __C4_SCALA_GLOBAL_H__
 
 #include <memory>
 #include <vector>

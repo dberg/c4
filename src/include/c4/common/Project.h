@@ -1,6 +1,6 @@
 //-*- C++ -*-
-#ifndef __PROJECT_H__
-#define __PROJECT_H__
+#ifndef __C4_COMMON_PROJECT_H__
+#define __C4_COMMON_PROJECT_H__
 
 #include <memory>
 #include <string>

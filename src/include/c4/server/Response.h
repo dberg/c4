@@ -1,6 +1,6 @@
 //-*- C++ -*-
-#ifndef __RESPONSE_H__
-#define __RESPONSE_H__
+#ifndef __C4_SERVER_RESPONSE_H__
+#define __C4_SERVER_RESPONSE_H__
 
 #include <memory>
 #include "c4/server/Response.pb.h"

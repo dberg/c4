@@ -1,6 +1,7 @@
 //-*- C++ -*-
-#ifndef __BIN_OUTPUT_H__
-#define __BIN_OUTPUT_H__
+#ifndef __C4_BYTECODE_BIN_OUTPUT_H__
+#define __C4_BYTECODE_BIN_OUTPUT_H__
+
 #include <iostream>
 #include <sstream>
 #include <unordered_map>

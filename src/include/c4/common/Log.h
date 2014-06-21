@@ -1,6 +1,6 @@
 //-*- C++ -*-
-#ifndef __LOG_H__
-#define __LOG_H__
+#ifndef __C4_COMMON_LOG_H__
+#define __C4_COMMON_LOG_H__
 
 #include <iostream>
 #include <string>

@@ -1,6 +1,7 @@
 //-*- C++ -*-
-#ifndef __PARSER_H__
-#define __PARSER_H__
+#ifndef __C4_JAVA_PARSER_H__
+#define __C4_JAVA_PARSER_H__
+
 #include <string>
 #include <sstream>
 #include <vector>

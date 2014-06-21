@@ -1,6 +1,7 @@
 //-*- C++ -*-
-#ifndef __SYMBOL_TABLE_H__
-#define __SYMBOL_TABLE_H__
+#ifndef __C4_JAVA_SYMBOL_TABLE_H__
+#define __C4_JAVA_SYMBOL_TABLE_H__
+
 #include <cassert>
 #include <memory>
 #include <string>

@@ -1,6 +1,6 @@
 //-*- C++ -*-
-#ifndef __C4S_SUB_COMPONENT__H__
-#define __C4S_SUB_COMPONENT__H__
+#ifndef __C4_SCALA_SUB_COMPONENT__H__
+#define __C4_SCALA_SUB_COMPONENT__H__
 
 #include <string>
 

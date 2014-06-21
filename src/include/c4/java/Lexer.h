@@ -1,6 +1,7 @@
 //-*- C++ -*-
-#ifndef __LEXER_H__
-#define __LEXER_H__
+#ifndef __C4_JAVA_LEXER_H__
+#define __C4_JAVA_LEXER_H__
+
 #include <cctype>
 #include <string>
 #include <sstream>

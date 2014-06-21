@@ -1,6 +1,6 @@
 //-*- C++ -*-
-#ifndef __PROJECT_HANDLER_H__
-#define __PROJECT_HANDLER_H__
+#ifndef __C4_COMMON_PROJECT_HANDLER_H__
+#define __C4_COMMON_PROJECT_HANDLER_H__
 
 #include <memory>
 #include <string>

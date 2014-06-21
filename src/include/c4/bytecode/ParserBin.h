@@ -1,6 +1,7 @@
 //-*- C++ -*-
-#ifndef __PARSERBIN_H__
-#define __PARSERBIN_H__
+#ifndef __C4_BYTECODE_PARSERBIN_H__
+#define __C4_BYTECODE_PARSERBIN_H__
+
 #include <stdint.h> // cstdint
 #include <string>
 #include <vector>

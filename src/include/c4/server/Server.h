@@ -1,6 +1,6 @@
 //-*- C++ -*-
-#ifndef __SERVER_H__
-#define __SERVER_H__
+#ifndef __C4_SERVER_SERVER_H__
+#define __C4_SERVER_SERVER_H__
 
 #include <netinet/in.h>     // sockaddr_in
 #include <sys/socket.h>

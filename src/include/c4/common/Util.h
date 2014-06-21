@@ -1,6 +1,6 @@
 //-*- C++ -*-
-#ifndef __UTIL_H__
-#define __UTIL_H__
+#ifndef __C4_COMMON_UTIL_H__
+#define __C4_COMMON_UTIL_H__
 
 #include <string>
 #include <sstream>

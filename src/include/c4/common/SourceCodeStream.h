@@ -1,6 +1,6 @@
 //-*- C++ -*-
-#ifndef __SOURCE_CODE_STREAM_H_
-#define __SOURCE_CODE_STREAM_H_
+#ifndef __C4_COMMON_SOURCE_CODE_STREAM_H_
+#define __C4_COMMON_SOURCE_CODE_STREAM_H_
 #include <memory>
 #include <string>
 

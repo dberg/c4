@@ -1,6 +1,6 @@
 //-*- C++ -*-
-#ifndef __DIAGNOSIS_H__
-#define __DIAGNOSIS_H__
+#ifndef __C4_COMMON_DIAGNOSIS_H__
+#define __C4_COMMON_DIAGNOSIS_H__
 #include <memory>
 #include <vector>
 #include "c4/common/ErrorCodes.h"

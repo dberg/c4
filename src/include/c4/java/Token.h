@@ -1,6 +1,7 @@
 //-*- C++ -*-
-#ifndef __TOKEN_H__
-#define __TOKEN_H__
+#ifndef __C4_JAVA_TOKEN_H__
+#define __C4_JAVA_TOKEN_H__
+
 #include <map>
 #include <string>
 

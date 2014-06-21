@@ -1,6 +1,6 @@
 //-*- C++ -*-
-#ifndef __ERROR_CODES__
-#define __ERROR_CODES__
+#ifndef __C4_COMMON_ERROR_CODES__
+#define __C4_COMMON_ERROR_CODES__
 #include <unordered_map>
 #include <memory>
 #include <string>

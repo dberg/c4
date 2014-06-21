@@ -1,6 +1,6 @@
 //-*- C++ -*-
-#ifndef __REQUEST_H__
-#define __REQUEST_H__
+#ifndef __C4_SERVER_REQUEST_H__
+#define __C4_SERVER_REQUEST_H__
 
 #include <memory>
 #include "c4/server/Request.pb.h"

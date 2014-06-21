@@ -1,6 +1,7 @@
 //-*- C++ -*-
-#ifndef __EMACS_OUTPUT_H__
-#define __EMACS_OUTPUT_H__
+#ifndef __C4_JAVA_EMACS_OUTPUT_H__
+#define __C4_JAVA_EMACS_OUTPUT_H__
+
 #include <iostream>
 #include <map>
 #include <sstream>

@@ -1,6 +1,7 @@
 //-*- C++ -*-
-#ifndef __PARSER_STATE_H__
-#define __PARSER_STATE_H__
+#ifndef __C4_JAVA_PARSER_STATE_H__
+#define __C4_JAVA_PARSER_STATE_H__
+
 #include <string>
 
 namespace c4j {

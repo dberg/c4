@@ -1,6 +1,7 @@
 //-*- C++ -*-
-#ifndef __ASTBIN_H__
-#define __ASTBIN_H__
+#ifndef __C4_BYTECODE_ASTBIN_H__
+#define __C4_BYTECODE_ASTBIN_H__
+
 #include <stdint.h> // cstdint
 #include <memory>
 #include "c4/bytecode/TypeDefs.h"

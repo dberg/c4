@@ -1,6 +1,6 @@
 //-*- C++ -*-
-#ifndef __LITERAL_SUPPORT_H__
-#define __LITERAL_SUPPORT_H__
+#ifndef __C4_COMMON_LITERAL_SUPPORT_H__
+#define __C4_COMMON_LITERAL_SUPPORT_H__
 #include <memory>
 #include <sstream>
 #include "c4/common/SourceCodeStream.h"
