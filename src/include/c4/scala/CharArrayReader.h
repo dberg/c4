@@ -3,6 +3,7 @@
 #define __C4_SCALA_CHAR_ARRAY_READER_H__
 
 #include <memory>
+#include <vector>
 
 #include "c4/scala/TypeDefs.h"
 
@@ -28,6 +29,10 @@ protected:
 };
 
 class CharArrayReader : public CharArrayReaderData {};
+
+protected:
+
+  std::vector<Char> buf;
 
 public:
 

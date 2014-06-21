@@ -71,7 +71,7 @@ incdir_scala := include/c4/scala
 incdir_server := include/c4/server
 incdir_main := include/c4/main
 
-INC = $(INC_EXTRA) -Iinclude
+INC = $(INC_EXTRA) -Iinclude -Ithird_party
 
 libdir_common := lib/common
 libdir_java := lib/java
