@@ -160,7 +160,6 @@ $(obj_common)/libcommon.a: \
   $(obj_common)/ProjectHandler.o \
   $(obj_common)/ProjectJava.o \
   $(obj_common)/ProjectScala.o \
-  $(obj_common)/SourceCodeStream.o \
   $(obj_common)/Util.o
 	ar -rv $@ $+
 
@@ -184,6 +183,7 @@ $(obj_java)/libjava.a: \
   $(obj_java)/Lexer.o \
   $(obj_java)/LiteralSupport.o \
   $(obj_java)/Parser.o \
+  $(obj_java)/SourceCodeStream.o \
   $(obj_java)/SymbolTable.o \
   $(obj_java)/EmacsOutput.o
 	ar -rv $@ $+
