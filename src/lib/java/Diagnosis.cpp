@@ -1,4 +1,4 @@
-#include "c4/common/Diagnosis.h"
+#include "c4/java/Diagnosis.h"
 
 namespace c4 {
 

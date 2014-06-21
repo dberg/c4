@@ -5,9 +5,10 @@
 #include <iostream>
 #include <map>
 #include <sstream>
-#include "c4/common/Diagnosis.h"
-#include "c4/java/Indentation.h"
+
 #include "c4/java/AST.h"
+#include "c4/java/Diagnosis.h"
+#include "c4/java/Indentation.h"
 #include "c4/java/Parser.h"
 #include "c4/java/SymbolTable.h"
 #include "c4/java/Token.h"

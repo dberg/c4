@@ -5,10 +5,11 @@
 #include <string>
 #include <sstream>
 #include <vector>
+
 #include "c4/common/SourceCodeStream.h"
-#include "c4/common/Diagnosis.h"
-#include "c4/java/Indentation.h"
 #include "c4/java/AST.h"
+#include "c4/java/Diagnosis.h"
+#include "c4/java/Indentation.h"
 #include "c4/java/Lexer.h"
 #include "c4/java/ParserState.h"
 #include "c4/java/SymbolTable.h"

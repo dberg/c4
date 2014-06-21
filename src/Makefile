@@ -155,7 +155,6 @@ $(obj_main)/c4.o: $(libdir_main)/c4.cpp
 
 # objects common - libcommon
 $(obj_common)/libcommon.a: \
-  $(obj_common)/Diagnosis.o \
   $(obj_common)/Log.o \
   $(obj_common)/Project.o \
   $(obj_common)/ProjectHandler.o \
@@ -180,6 +179,7 @@ $(obj_bytecode)/%.o: \
 
 # objects java - libjava
 $(obj_java)/libjava.a: \
+  $(obj_java)/Diagnosis.o \
   $(obj_java)/Indentation.o \
   $(obj_java)/Lexer.o \
   $(obj_java)/LiteralSupport.o \

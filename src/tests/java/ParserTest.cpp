@@ -1,9 +1,11 @@
 #include <iostream>
-#include "c4/common/Diagnosis.h"
+
+#include "c4/java/Diagnosis.h"
 #include "c4/java/EmacsOutput.h"
 #include "c4/java/Parser.h"
 #include "c4/java/SymbolTable.h"
 #include "gtest/gtest.h"
+
 using namespace c4j;
 
 /**
