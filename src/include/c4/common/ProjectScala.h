@@ -1,9 +1,9 @@
 //-*- C++ -*-
-#ifndef __PROJECT_SCALA_H__
-#define __PROJECT_SCALA_H__
+#ifndef __C4_COMMON_PROJECT_SCALA_H__
+#define __C4_COMMON_PROJECT_SCALA_H__
 
 #include <memory>
-#include "c4/common/CompilationUnit.h"
+#include "c4/common/CompilationRequest.h"
 
 namespace c4 {
 
@@ -14,7 +14,7 @@ class ProjectScala {
 
 public:
   ProjectScala() {}
-  void compile(spCompilationUnit unit);
+  void compile(spCompilationRequest compReq);
 };
 
 } // namespace

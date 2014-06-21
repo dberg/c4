@@ -2,8 +2,8 @@
 
 namespace c4 {
 
-void ProjectScala::compile(spCompilationUnit unit) {
+void ProjectScala::compile(spCompilationRequest compReq) {
   // TODO:
 }
 
-}
+} // namespace

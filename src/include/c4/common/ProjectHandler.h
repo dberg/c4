@@ -5,7 +5,6 @@
 #include <memory>
 #include <string>
 #include <unordered_map>
-#include "c4/common/CompilationUnit.h"
 #include "c4/common/Project.h"
 #include "c4/server/Response.h"
 #include "c4/server/Request.h"

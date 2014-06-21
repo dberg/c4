@@ -27,13 +27,16 @@ void ProjectHandler::process(spRequest &request, spResponse &response) {
   if (request->action() == Request::COMPILE) {
     Request::CompilationUnit reqUnit = request->unit();
 
-    spCompilationUnit unit = std::shared_ptr<CompilationUnit>(
-      new CompilationUnit(reqUnit.filename(), reqUnit.buffer()));
+    spCompilationRequest compReq = spCompilationRequest(new CompilationRequest(
+      reqUnit.filename(),
+      reqUnit.buffer()
+    ));
 
-    project->compile(unit);
+    project->compile(compReq);
 
+    // TODO: get response
     response->set_code(Response::OK_COMPILE);
-    response->set_body(unit->output);
+    response->set_body("TODO");
     return;
   }
 

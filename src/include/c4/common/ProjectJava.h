@@ -1,9 +1,9 @@
 //-*- C++ -*-
-#ifndef __PROJECT_JAVA_H__
-#define __PROJECT_JAVA_H__
+#ifndef __C4_COMMON_PROJECT_JAVA_H__
+#define __C4_COMMON_PROJECT_JAVA_H__
 
 #include <memory>
-#include "c4/common/CompilationUnit.h"
+#include "c4/common/CompilationRequest.h"
 #include "c4/java/EmacsOutput.h"
 #include "c4/java/Parser.h"
 
@@ -16,7 +16,7 @@ class ProjectJava {
 
 public:
   ProjectJava() {}
-  void compile(spCompilationUnit unit);
+  void compile(spCompilationRequest compReq);
 };
 
 } // namespace
