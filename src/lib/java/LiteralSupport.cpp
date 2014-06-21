@@ -1,4 +1,4 @@
-#include "c4/common/LiteralSupport.h"
+#include "c4/java/LiteralSupport.h"
 
 namespace c4 {
 
