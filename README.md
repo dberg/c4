@@ -1,11 +1,6 @@
 ## C4
 
-C4 is a collection of emacs modes and parsers for Java 7, Scala 2.10 and the JVM bytecode.
-
-The java emacs mode provides:
-
-- Syntax highlighting
-- Indentation
+C4 is an emacs mode for Java 7, Scala 2.12 and the JVM bytecode.
 
 Scala support is under development.
 
@@ -78,7 +73,7 @@ make CXX=g++
 
 ### Emacs mode (c4-mode) installation
 
-1. Open the file $SRC/emacs-modes/c4-mode/c4-mode.el and set the variable
+1. Open the file $SRC/c4-mode/c4-mode.el and set the variable
 
 ```elisp
 (defvar c4-executable "$BIN/c4")
@@ -87,7 +82,7 @@ make CXX=g++
 2. Add the following to your .emacs or init.el file:
 
 ```elisp
-(add-to-list 'load-path "$SRC/emacs-modes/c4-mode")
+(add-to-list 'load-path "$SRC/c4-mode")
 (autoload 'c4j-mode "c4j-mode" "C4 Major mode." t)
 (add-to-list 'auto-mode-alist '("\\.java$" . c4-mode))
 ```
