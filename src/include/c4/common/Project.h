@@ -5,6 +5,7 @@
 #include <memory>
 #include <string>
 #include <unordered_map>
+
 #include "c4/common/CompilationRequest.h"
 #include "c4/common/ProjectJava.h"
 #include "c4/common/ProjectScala.h"

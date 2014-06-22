@@ -7,7 +7,7 @@ namespace c4 {
  * the unit member variable "output".
  */
 void ProjectJava::compile(spCompilationRequest compReq) {
-  c4j::Parser parser(compReq->filename, compReq->buffer);
+  c4j::Parser parser(compReq->filename, compReq->bufferStr);
   parser.parse();
 
   c4j::EmacsOutput output(parser);

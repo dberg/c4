@@ -6,8 +6,6 @@
 
 namespace c4s {
 
-typedef unsigned short Char;
-
 class Global;
 typedef std::shared_ptr<Global> spGlobal;
 

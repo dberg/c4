@@ -23,13 +23,12 @@ void ProjectHandler::process(spRequest &request, spResponse &response) {
     return;
   }
 
-  // Compile units request
+  // Compilation request
   if (request->action() == Request::COMPILE) {
-    Request::CompilationUnit reqUnit = request->unit();
+    Request::CompilationUnit unit = request->unit();
 
     spCompilationRequest compReq = spCompilationRequest(new CompilationRequest(
-      reqUnit.filename(),
-      reqUnit.buffer()
+      unit.filename(), unit.buffer()
     ));
 
     project->compile(compReq);

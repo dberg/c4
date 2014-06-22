@@ -5,9 +5,12 @@
 #include <memory>
 #include <string>
 #include <unordered_map>
+
+#include "c4/common/CompilationRequest.h"
 #include "c4/common/Project.h"
 #include "c4/server/Response.h"
 #include "c4/server/Request.h"
+#include "utf8/utf8.h"
 
 namespace c4 {
 
