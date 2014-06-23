@@ -103,9 +103,14 @@ private:
   }
 
   /**
-   * Add data to RequestBuffer
+   * Add data to RequestBuffer.
+   *
+   * @returns 1 on success and the RequestBuffer has a complete Request;
+   *          0 on success but the Request is still incomplete;
+   *         -1 on error
    */
   int feed(int connfd, char bytes[], int cbytes) {
+    // Find the RequestBuffer for this connection
     auto it = reqBuffers.find(connfd);
 
     // Invalid RequestBuffer.

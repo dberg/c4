@@ -6,7 +6,7 @@
 #include <string>
 #include <unordered_map>
 
-#include "c4/common/CompilationRequest.h"
+#include "c4/common/Compilation.h"
 #include "c4/common/ProjectJava.h"
 #include "c4/common/ProjectScala.h"
 #include "c4/common/Util.h"
@@ -19,7 +19,7 @@ typedef std::shared_ptr<Project> spProject;
 class Project {
 
   std::string id;
-  std::unordered_map<std::string, spCompilationRequest> compReqs;
+  std::unordered_map<std::string, spCompilation> comps;
   spProjectJava projJava;
   spProjectScala projScala;
 
@@ -31,7 +31,7 @@ public:
     projScala(std::shared_ptr<ProjectScala>(new ProjectScala))
     {}
 
-  void compile(spCompilationRequest compReq);
+  void compile(spCompilation comp);
 
 };
 

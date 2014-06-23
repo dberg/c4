@@ -27,15 +27,15 @@ void ProjectHandler::process(spRequest &request, spResponse &response) {
   if (request->action() == Request::COMPILE) {
     Request::CompilationUnit unit = request->unit();
 
-    spCompilationRequest compReq = spCompilationRequest(new CompilationRequest(
+    spCompilation comp = spCompilation(new Compilation(
       unit.filename(), unit.buffer()
     ));
 
-    project->compile(compReq);
+    project->compile(comp);
 
     // TODO: get response
     response->set_code(Response::OK_COMPILE);
-    response->set_body("TODO");
+    response->set_body(comp->output);
     return;
   }
 

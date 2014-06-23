@@ -6,14 +6,13 @@ namespace c4 {
  * Compile the unit buffer and then assign the output result for the client in
  * the unit member variable "output".
  */
-void ProjectJava::compile(spCompilationRequest compReq) {
-  c4j::Parser parser(compReq->filename, compReq->bufferStr);
+void ProjectJava::compile(spCompilation comp) {
+  c4j::Parser parser(comp->filename, comp->bufferStr);
   parser.parse();
 
   c4j::EmacsOutput output(parser);
   output.build();
-  // TODO: return the compilation response
-  // output.body();
+  comp->output = output.body();
 }
 
 }

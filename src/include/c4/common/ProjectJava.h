@@ -3,7 +3,7 @@
 #define __C4_COMMON_PROJECT_JAVA_H__
 
 #include <memory>
-#include "c4/common/CompilationRequest.h"
+#include "c4/common/Compilation.h"
 #include "c4/java/EmacsOutput.h"
 #include "c4/java/Parser.h"
 
@@ -16,7 +16,7 @@ class ProjectJava {
 
 public:
   ProjectJava() {}
-  void compile(spCompilationRequest compReq);
+  void compile(spCompilation comp);
 };
 
 } // namespace

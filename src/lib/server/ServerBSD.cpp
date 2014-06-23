@@ -68,6 +68,7 @@ int Server::start(unsigned int port) {
         int socket = evlist[i].ident;
         int cbytes = read(socket, readBuffer, READ_BUFFER_MAX);
         if (cbytes > 0) {
+          // TODO: handle error when result is -1
           if (feed(socket, readBuffer, cbytes)) {
             // we have a complete request
             spRequest request = getRequest(socket);

@@ -3,7 +3,7 @@
 #define __C4_COMMON_PROJECT_SCALA_H__
 
 #include <memory>
-#include "c4/common/CompilationRequest.h"
+#include "c4/common/Compilation.h"
 
 namespace c4 {
 
@@ -14,7 +14,7 @@ class ProjectScala {
 
 public:
   ProjectScala() {}
-  void compile(spCompilationRequest compReq);
+  void compile(spCompilation comp);
 };
 
 } // namespace

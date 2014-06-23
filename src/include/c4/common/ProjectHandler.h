@@ -6,7 +6,7 @@
 #include <string>
 #include <unordered_map>
 
-#include "c4/common/CompilationRequest.h"
+#include "c4/common/Compilation.h"
 #include "c4/common/Project.h"
 #include "c4/server/Response.h"
 #include "c4/server/Request.h"
