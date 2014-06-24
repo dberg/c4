@@ -8,7 +8,7 @@
 namespace c4 {
 
 class ProjectScala;
-typedef std::shared_ptr<ProjectScala> spProjectScala;
+typedef std::unique_ptr<ProjectScala> spProjectScala;
 
 class ProjectScala {
 

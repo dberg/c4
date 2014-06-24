@@ -10,7 +10,7 @@
 namespace c4 {
 
 class ProjectJava;
-typedef std::shared_ptr<ProjectJava> spProjectJava;
+typedef std::unique_ptr<ProjectJava> spProjectJava;
 
 class ProjectJava {
 

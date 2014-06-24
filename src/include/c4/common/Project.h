@@ -27,8 +27,8 @@ public:
 
   Project(std::string id):
     id(id),
-    projJava(std::shared_ptr<ProjectJava>(new ProjectJava)),
-    projScala(std::shared_ptr<ProjectScala>(new ProjectScala))
+    projJava(std::unique_ptr<ProjectJava>(new ProjectJava)),
+    projScala(std::unique_ptr<ProjectScala>(new ProjectScala))
     {}
 
   void compile(spCompilation comp);
