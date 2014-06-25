@@ -32,8 +32,6 @@ void ProjectHandler::process(spRequest &request, spResponse &response) {
     ));
 
     project->compile(comp);
-
-    // TODO: get response
     response->set_code(Response::OK_COMPILE);
     response->set_body(comp->output);
     return;
