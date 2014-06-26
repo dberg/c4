@@ -171,10 +171,32 @@ private:
 
     auto &r = it->second;
     unsigned long len = std::min((unsigned long) WRITE_BUFFER_MAX, r.size());
+    if (len == 0) {
+      log(LOG_INFO, "There's no data to be written to fd# " + itos(socket));
+      return;
+    }
+
     std::copy(r.begin(), r.begin() + len, writeBuffer);
     int written = write(socket, writeBuffer, len);
-    // TODO: - handle errors
-    //       - remove written data from deque
+
+    if (written == 0) {
+      // TODO:
+      log(LOG_INFO, "No bytes written to fd# " + itos(socket));
+      return;
+    }
+
+    // If we have written data to the socket remove it from the response
+    if (written > 0) {
+      log(LOG_INFO, "Written " + itos(len) +
+        " bytes to the client in fd# " + itos(socket));
+      r.erase(r.begin() + (len - 1));
+      // TODO: if we have more data write it but check for E_WOULDBLOCK
+      return;
+    }
+
+    if (written < 0) {
+      log(LOG_ERROR, "Failed to write to fd#" + itos(socket));
+    }
   }
 
 };
