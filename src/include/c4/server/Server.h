@@ -2,6 +2,7 @@
 #ifndef __C4_SERVER_SERVER_H__
 #define __C4_SERVER_SERVER_H__
 
+#include <fcntl.h>
 #include <netinet/in.h>     // sockaddr_in
 #include <sys/socket.h>
 #include <string>
@@ -180,8 +181,7 @@ private:
     int written = write(socket, writeBuffer, len);
 
     if (written == 0) {
-      // TODO:
-      log(LOG_INFO, "No bytes written to fd# " + itos(socket));
+      log(LOG_ERROR, "No bytes written to fd# " + itos(socket));
       return;
     }
 
@@ -189,16 +189,23 @@ private:
     if (written > 0) {
       log(LOG_INFO, "Written " + itos(len) +
         " bytes to the client in fd# " + itos(socket));
-      r.erase(r.begin() + (len - 1));
-      // TODO: if we have more data write it but check for E_WOULDBLOCK
+      r.erase(r.begin() + (written - 1));
+      // if we have more data try writing it
+      if (r.size() > 0) {
+        writeResponses(socket);
+        return;
+      }
       return;
     }
 
     if (written < 0) {
+      if (written == -1 && errno == EWOULDBLOCK) {
+        log(LOG_INFO, "Writing to fd#" + itos(socket) + " would block.");
+        return;
+      }
       log(LOG_ERROR, "Failed to write to fd#" + itos(socket));
     }
   }
-
 };
 
 } // namespace

@@ -41,6 +41,9 @@ int Server::start(unsigned int port) {
           continue;
         }
 
+        // Set file descriptor to non-blocking
+        fcntl(connfd, F_SETFL, O_NONBLOCK);
+
         log(LOG_INFO, "New connection fd#" + itos(connfd));
 
         createRequestBuffer(connfd);
