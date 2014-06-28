@@ -162,19 +162,22 @@ private:
 
   /**
    * Write Responses to a socket.
+   * Returns: 0 if there's no more data to be written;
+   *          1 if there's still data to be written;
+   *         -1 if an error occurred
    */
-  void writeResponses(int socket) {
+  int writeResponses(int socket) {
     auto it = responses.find(socket);
     if (it == responses.end()) {
       log(LOG_ERROR, "Could not find fd# " + itos(socket) + " for writing");
-      return;
+      return -1;
     }
 
     auto &r = it->second;
     unsigned long len = std::min((unsigned long) WRITE_BUFFER_MAX, r.size());
     if (len == 0) {
       log(LOG_INFO, "There's no data to be written to fd# " + itos(socket));
-      return;
+      return 0;
     }
 
     std::copy(r.begin(), r.begin() + len, writeBuffer);
@@ -182,28 +185,30 @@ private:
 
     if (written == 0) {
       log(LOG_ERROR, "No bytes written to fd# " + itos(socket));
-      return;
+      // let the client try again later
+      return 1;
     }
 
     // If we have written data to the socket remove it from the response
-    if (written > 0) {
+    else if (written > 0) {
       log(LOG_INFO, "Written " + itos(len) +
         " bytes to the client in fd# " + itos(socket));
       r.erase(r.begin() + (written - 1));
       // if we have more data try writing it
       if (r.size() > 0) {
-        writeResponses(socket);
-        return;
+        return writeResponses(socket);
       }
-      return;
+      return 0;
     }
 
-    if (written < 0) {
+    // written < 0
+    else {
       if (written == -1 && errno == EWOULDBLOCK) {
         log(LOG_INFO, "Writing to fd#" + itos(socket) + " would block.");
-        return;
+        return 1;
       }
       log(LOG_ERROR, "Failed to write to fd#" + itos(socket));
+      return -1;
     }
   }
 };
