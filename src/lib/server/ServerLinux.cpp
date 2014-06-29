@@ -46,7 +46,7 @@ int Server::start(unsigned int port) {
 
         log(LOG_INFO, "New connection fd#" + itos(connfd));
 
-        createRequestBuffer(connfd);
+        createSocketBuffers(connfd);
 
         // monitor new connection
         ev.events = EPOLLIN | EPOLLOUT;

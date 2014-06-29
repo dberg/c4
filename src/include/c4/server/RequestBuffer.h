@@ -16,7 +16,7 @@ typedef std::shared_ptr<RequestBuffer> spRequestBuffer;
 
 class RequestBuffer {
 
-  unsigned long size;
+  uint32_t size;
   std::vector<char> bytes;
 
   void calculateSize();

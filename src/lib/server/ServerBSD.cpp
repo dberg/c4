@@ -56,30 +56,26 @@ int Server::start(unsigned int port) {
 
         log(LOG_INFO, "New connection fd#" + itos(connfd));
 
-        createRequestBuffer(connfd);
+        createSocketBuffers(connfd);
 
         // monitor new connection
         EV_SET(&chlist[chListCounter++], connfd, EVFILT_READ, EV_ADD, 0, 0, 0);
         continue;
       }
 
-      int disabledWrites = 0;
-
       // Write data
-      // It's important that we check for writes first since we stop listening
-      // for writes if there's no more data to be written. If next we read more
-      // data and queue data to be written the read section will change the
-      // socket flag for writes.
-      if (evlist[i].flags & EVFILT_WRITE) {
+      if (evlist[i].filter == EVFILT_WRITE) {
         int socket = evlist[i].ident;
         int result = writeResponses(socket);
         if (result < 0) {
           // TODO: handle error case.
+          log(LOG_ERROR, "Failed to write to fd#" + itos(socket));
         } else if (result == 0) {
           // No more data to be written, stop listening for writes
+          log(LOG_INFO, "All data written. Disabling writes on fd#" + itos(socket));
           EV_SET(&chlist[chListCounter++], socket,
-            EVFILT_READ, EV_ADD, 0, 0, 0);
-          disabledWrites = 1;
+            EVFILT_WRITE,
+            EV_DISABLE, 0, 0, 0);
         }
 
         // If result is positive we keep listening for writes.
@@ -87,7 +83,7 @@ int Server::start(unsigned int port) {
 
       // handle socket communication
       // read data
-      if (evlist[i].flags & EVFILT_READ) {
+      if (evlist[i].filter == EVFILT_READ) {
         // evlist[i].data also contains the number of bytes available
         int socket = evlist[i].ident;
         int cbytes = read(socket, readBuffer, READ_BUFFER_MAX);
@@ -100,15 +96,15 @@ int Server::start(unsigned int port) {
             projHandler->process(request, response);
             queueResponse(socket, response);
             // Add EVFILT_WRITE since we now have data to be written
-            int counter = disabledWrites ? (chListCounter - 1) : chListCounter++;
-            EV_SET(&chlist[counter], socket,
-              EVFILT_READ | EVFILT_WRITE, EV_ADD, 0, 0, 0);
+            log(LOG_INFO, "add write filter to fd#" + itos(socket));
+            EV_SET(&chlist[chListCounter++], socket, EVFILT_WRITE, EV_ADD, 0, 0, 0);
           }
         }
 
         // connection closed by the client
         // stop monitoring this socket
         if (cbytes < 0 || evlist[i].flags & EV_EOF) {
+          log(LOG_INFO, "closing fd#" + itos(evlist[i].ident));
           close(evlist[i].ident);
         }
       }

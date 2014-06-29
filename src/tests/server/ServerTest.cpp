@@ -1,8 +1,9 @@
-#include <iostream>
-#include <thread>
 #include <arpa/inet.h>  // inet_pton
-#include <strings.h>    // bzero on linux
+#include <iostream>
 #include <netinet/in.h> // sockaddr_in
+#include <strings.h>    // bzero on linux
+#include <thread>
+
 #include "gtest/gtest.h"
 #include "c4/server/Server.h"
 
@@ -41,6 +42,16 @@ int serverConnect(std::string &errMsg) {
   return sockfd;
 }
 
+int read(int socket, std::string &response) {
+  const int bufferLen = 1024;
+  char buffer[bufferLen];
+  int cbytes = read(socket, buffer, bufferLen);
+  if (cbytes > 0) {
+    response.append(buffer, cbytes);
+  }
+  return cbytes;
+}
+
 TEST(Server, Connections) {
   std::string errMsg = "";
   int sockfd = serverConnect(errMsg);
@@ -62,6 +73,11 @@ TEST(Server, Connections) {
     "}\n";
   unit->set_buffer(buffer);
 
+  // write request payload
+  uint32_t byteSize = htonl(request.ByteSize());
+  char *payload = reinterpret_cast<char*>(&byteSize);
+  int written = write(sockfd, payload, sizeof(uint32_t));
+
   // 08 01
   // (field #1, wire type 0) COMPILE
   //
@@ -80,10 +96,18 @@ TEST(Server, Connections) {
   // 6964 206d 6169 6e28 5374 7269 6e67 5b5d
   // 2061 7267 7329 207b 0a20 207d 0a7d 0a
   // (field #2, wire type 2) (len) public ...
-  int written = request.SerializeToFileDescriptor(sockfd);
+  written = request.SerializeToFileDescriptor(sockfd);
   if (written <= 0) {
     FAIL() << "Fail to write bytes to test server";
   }
+
+  std::string response;
+  int result = read(sockfd, response);
+  if (result <= 0) {
+    FAIL() << "Failed to read data from server.";
+  }
+
+  // TODO: check response
 }
 
 // TODO: Stop server before exiting.

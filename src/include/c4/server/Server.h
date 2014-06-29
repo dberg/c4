@@ -2,13 +2,13 @@
 #ifndef __C4_SERVER_SERVER_H__
 #define __C4_SERVER_SERVER_H__
 
+#include <deque>
 #include <fcntl.h>
 #include <netinet/in.h>     // sockaddr_in
 #include <sys/socket.h>
 #include <string>
 #include <unistd.h>
 #include <unordered_map>
-#include <deque>
 
 #include "c4/main/Config.h"
 
@@ -92,14 +92,22 @@ private:
   }
 
   /**
-   * Create a RequestBuffer when a new connection is created.
+   * Create a RequestBuffer and initalize the response buffer when a new
+   * connection is created.
    */
-  int createRequestBuffer(int connfd) {
+  int createSocketBuffers(int connfd) {
     if (reqBuffers.find(connfd) != reqBuffers.end()) {
       log(LOG_ERROR, "Existing RequestBuffer in fd#" + itos(connfd));
+    } else {
+      reqBuffers[connfd] = spRequestBuffer(new RequestBuffer);
     }
 
-    reqBuffers[connfd] = spRequestBuffer(new RequestBuffer);
+    if (responses.find(connfd) != responses.end()) {
+      log(LOG_ERROR, "Existing ResponseBuffer in fd#" + itos(connfd));
+    } else {
+      responses[connfd] = std::deque<char>();
+    }
+
     return 0;
   }
 
@@ -169,7 +177,7 @@ private:
   int writeResponses(int socket) {
     auto it = responses.find(socket);
     if (it == responses.end()) {
-      log(LOG_ERROR, "Could not find fd# " + itos(socket) + " for writing");
+      log(LOG_ERROR, "Could not find fd#" + itos(socket) + " for writing");
       return -1;
     }
 
@@ -182,18 +190,16 @@ private:
 
     std::copy(r.begin(), r.begin() + len, writeBuffer);
     int written = write(socket, writeBuffer, len);
+    log(LOG_INFO, "written " + itos(written) + " bytes on fd#" + itos(socket));
 
     if (written == 0) {
-      log(LOG_ERROR, "No bytes written to fd# " + itos(socket));
       // let the client try again later
       return 1;
     }
 
     // If we have written data to the socket remove it from the response
     else if (written > 0) {
-      log(LOG_INFO, "Written " + itos(len) +
-        " bytes to the client in fd# " + itos(socket));
-      r.erase(r.begin() + (written - 1));
+      r.erase(r.begin(), r.begin() + written);
       // if we have more data try writing it
       if (r.size() > 0) {
         return writeResponses(socket);

@@ -31,6 +31,8 @@ void RequestBuffer::calculateSize() {
       | (bytes[1] << 16)
       | (bytes[2] << 8)
       | bytes[3];
+
+    log(LOG_INFO, "request size is known: " + itos(size));
   }
 }
 
