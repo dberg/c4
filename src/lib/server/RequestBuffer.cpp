@@ -38,12 +38,13 @@ void RequestBuffer::calculateSize() {
 
 spRequest RequestBuffer::buildAndRemoveRequest() {
   spRequest request = spRequest(new Request);
-  if (size == 0 || size < bytes.size()) {
+  if (size == 0 || bytes.size() < sizeof(size)) {
+    log(LOG_ERROR, "buildAndRemoveRequest called with invalid request size.");
     return request;
   }
 
-  std::string reqStr(bytes.begin(), bytes.begin() + size);
-  bytes.erase(bytes.begin(), bytes.begin() + size);
+  std::string reqStr(bytes.begin() + sizeof(size), bytes.begin() + sizeof(size) + size);
+  bytes.erase(bytes.begin(), bytes.begin() + sizeof(size) + size);
   request->ParseFromString(reqStr);
   calculateSize();
   return request;
