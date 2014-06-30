@@ -42,14 +42,17 @@ int serverConnect(std::string &errMsg) {
   return sockfd;
 }
 
-int read(int socket, std::string &response) {
+// TODO: we're assuming we get the entire response in one read call
+int readResponse(int socket, std::string &response) {
+  const int payloadSize = sizeof(uint32_t);
   const int bufferLen = 1024;
   char buffer[bufferLen];
   int cbytes = read(socket, buffer, bufferLen);
-  if (cbytes > 0) {
-    response.append(buffer, cbytes);
+  if (cbytes > payloadSize) {
+    response.append(buffer + payloadSize, cbytes - payloadSize);
+    return 1;
   }
-  return cbytes;
+  return -1;
 }
 
 TEST(Server, Connections) {
@@ -101,13 +104,15 @@ TEST(Server, Connections) {
     FAIL() << "Fail to write bytes to test server";
   }
 
-  std::string response;
-  int result = read(sockfd, response);
+  std::string responseStr;
+  int result = readResponse(sockfd, responseStr);
   if (result <= 0) {
     FAIL() << "Failed to read data from server.";
   }
 
-  // TODO: check response
+  c4::Response response;
+  response.ParseFromString(responseStr);
+  ASSERT_TRUE(response.IsInitialized());
 }
 
 // TODO: Stop server before exiting.
