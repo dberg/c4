@@ -3,7 +3,9 @@
 #define __C4_COMMON_PROJECT_SCALA_H__
 
 #include <memory>
+
 #include "c4/common/Compilation.h"
+#include "c4/scala/Global.h"
 
 namespace c4 {
 

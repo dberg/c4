@@ -3,7 +3,8 @@
 namespace c4 {
 
 /**
- * Process a request coming from the client.
+ * Process a request coming from the client and update the response object with
+ * the results of the request.
  */
 void ProjectHandler::process(spRequest &request, spResponse &response) {
   // Message error
