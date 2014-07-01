@@ -113,6 +113,7 @@ TEST(Server, Connections) {
   c4::Response response;
   response.ParseFromString(responseStr);
   ASSERT_TRUE(response.IsInitialized());
+  ASSERT_EQ(c4::Response::OK_COMPILE, response.code());
 }
 
 // TODO: Stop server before exiting.
