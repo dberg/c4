@@ -18,8 +18,7 @@ void ProjectScala::compile(spCompilation comp) {
   std::vector<c4s::spCompilationUnit> units;
   units.push_back(unit);
 
-  // TODO:
-  //global->compile(units);
+  global->compile(units);
 }
 
 } // namespace

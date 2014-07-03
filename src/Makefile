@@ -305,12 +305,13 @@ $(bin)/test-scala: \
   $(gtest_obj)/libgtest.a \
   -lpthread
 
-# We reference libjava twice because it's a circular dependency and we want to
+# We reference libcommon twice because it's a circular dependency and we want to
 # make ld happy. Joy.
 $(bin)/test-server: \
   $(tests_server)/ServerTest.cpp \
   $(obj_common)/libcommon.a \
   $(obj_java)/libjava.a \
+  $(obj_scala)/libscala.a \
   $(obj_server)/libserver.a \
   $(gtest_obj)/libgtest.a
 
@@ -322,6 +323,7 @@ $(bin)/test-server: \
   $(obj_server)/libserver.a \
   $(obj_common)/libcommon.a \
   $(obj_java)/libjava.a \
+  $(obj_scala)/libscala.a \
   $(obj_common)/libcommon.a \
   $(LIB_EXTRA) -lprotobuf \
   -lpthread
