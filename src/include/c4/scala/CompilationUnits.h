@@ -4,6 +4,7 @@
 
 #include <memory>
 
+#include "c4/scala/SourceFile.h"
 #include "c4/scala/Trees.h"
 
 namespace c4s {
@@ -15,9 +16,10 @@ class CompilationUnit {
 
 public:
 
+  spSourceFile source;
   spTree body;
 
-  CompilationUnit(): body(nullptr) {}
+  CompilationUnit(spSourceFile source): source(source), body(nullptr) {}
 
 };
 

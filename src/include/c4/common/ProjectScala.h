@@ -5,6 +5,7 @@
 #include <memory>
 
 #include "c4/common/Compilation.h"
+#include "c4/scala/CompilationUnits.h"
 #include "c4/scala/Global.h"
 
 namespace c4 {
