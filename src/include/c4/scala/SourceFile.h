@@ -4,6 +4,7 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "c4/common/TypeDefs.h"
 using c4::Char;
@@ -17,7 +18,7 @@ class ClientSourceFile;
 typedef std::shared_ptr<ClientSourceFile> spClientSourceFile;
 
 class SourceFile {
-  virtual std::vector<Char> content();
+  virtual std::vector<Char> content() = 0;
 };
 
 /**

@@ -34,7 +34,7 @@ public:
     // TODO: initialize phaseDescriptors
   }
 
-  void compile(std::vector<spCompilationUnit> &units);
+  void compile(std::vector<spCompilationUnit> units);
 };
 
 } // namespace

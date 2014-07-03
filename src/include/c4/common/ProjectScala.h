@@ -7,6 +7,7 @@
 #include "c4/common/Compilation.h"
 #include "c4/scala/CompilationUnits.h"
 #include "c4/scala/Global.h"
+#include "c4/scala/SourceFile.h"
 
 namespace c4 {
 
