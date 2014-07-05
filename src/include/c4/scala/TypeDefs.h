@@ -10,7 +10,6 @@ class Global;
 typedef std::shared_ptr<Global> spGlobal;
 
 class SubComponent;
-typedef std::shared_ptr<SubComponent> spSubComponent;
 
 class SyntaxAnalyzer;
 typedef std::shared_ptr<SyntaxAnalyzer> spSyntaxAnalyzer;

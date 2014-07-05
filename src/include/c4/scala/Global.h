@@ -9,6 +9,7 @@
 #include "c4/scala/CompilationUnits.h"
 #include "c4/scala/Phase.h"
 #include "c4/scala/SubComponent.h"
+#include "c4/scala/SyntaxAnalyzer.h"
 
 namespace c4s {
 
@@ -23,16 +24,14 @@ protected:
   std::vector<spPhase> phases;
 
   /** Each Component is a phase factory */
-  std::vector<spSubComponent> phaseDescriptors;
+  // TODO: std::vector<spSubComponent> phaseDescriptors;
 
 public:
 
   /** Compilation units to be compiled */
   std::vector<spCompilationUnit> units;
 
-  Global(): globalPhase(nullptr) {
-    // TODO: initialize phaseDescriptors
-  }
+  Global();
 
   void compile(std::vector<spCompilationUnit> units);
 };

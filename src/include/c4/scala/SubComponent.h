@@ -5,7 +5,6 @@
 #include <string>
 
 #include "c4/scala/TypeDefs.h"
-#include "c4/scala/Global.h"
 
 namespace c4s {
 
@@ -14,14 +13,13 @@ namespace c4s {
  */
 class SubComponent {
 
-private:
-  spGlobal global;
-
 protected:
+  spGlobal global;
   std::string phaseName;
 
 public:
-  SubComponent(spGlobal &global): global(global) {}
+  SubComponent(spGlobal global, std::string phaseName)
+    : global(global), phaseName(phaseName) {}
   virtual spPhase newPhase() = 0;
 };
 
