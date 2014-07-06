@@ -14,7 +14,7 @@ namespace c4s {
 class SyntaxAnalyzer : public SubComponent {
 
 public:
-  SyntaxAnalyzer(spGlobal global) : SubComponent(global, "parser") {}
+  SyntaxAnalyzer(Global *global) : SubComponent(global, "parser") {}
   virtual spPhase newPhase();
 };
 

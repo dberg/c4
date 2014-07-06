@@ -19,24 +19,24 @@ public:
 class GlobalPhase : public Phase {
 
 public:
-  spGlobal global;
+  Global *global;
 
-  GlobalPhase(spGlobal &global) : global(global) {}
+  GlobalPhase(Global *global) : global(global) {}
 
   virtual void run();
 
-  virtual void apply(spCompilationUnit &unit) = 0;
+  virtual void apply(spCompilationUnit unit) = 0;
 };
 
 class StdPhase : public GlobalPhase {
 public:
-  StdPhase(spGlobal &global) : GlobalPhase(global) {}
+  StdPhase(Global *global) : GlobalPhase(global) {}
 };
 
 class ParserPhase : public StdPhase {
 public:
-  ParserPhase(spGlobal &global) : StdPhase(global) {}
-  virtual void apply(spCompilationUnit &unit);
+  ParserPhase(Global *global) : StdPhase(global) {}
+  virtual void apply(spCompilationUnit unit);
 };
 
 } // namespace

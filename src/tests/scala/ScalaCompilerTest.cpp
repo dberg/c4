@@ -9,7 +9,7 @@
 
 using namespace c4s;
 
-TEST(ScalaCompiler, PackageDef) {
+TEST(ScalaCompiler, HelloWorld) {
 
   std::string filename = "A.scala";
   std::string sourceCode =

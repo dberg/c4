@@ -14,11 +14,11 @@ namespace c4s {
 class SubComponent {
 
 protected:
-  spGlobal global;
+  Global *global;
   std::string phaseName;
 
 public:
-  SubComponent(spGlobal global, std::string phaseName)
+  SubComponent(Global *global, std::string phaseName)
     : global(global), phaseName(phaseName) {}
   virtual spPhase newPhase() = 0;
 };

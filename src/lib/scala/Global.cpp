@@ -3,8 +3,7 @@
 namespace c4s {
 
 Global::Global(): globalPhase(nullptr) {
-  spGlobal global = spGlobal(this);
-  spSyntaxAnalyzer synAnalyzer = spSyntaxAnalyzer(new SyntaxAnalyzer(global));
+  spSyntaxAnalyzer synAnalyzer = spSyntaxAnalyzer(new SyntaxAnalyzer(this));
   phases.push_back(synAnalyzer->newPhase());
 }
 
