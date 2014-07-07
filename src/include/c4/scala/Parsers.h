@@ -19,7 +19,9 @@ def compilationUnit(): PackageDef
 */
 
 class Parser : public ParserCommon {
-
+public:
+  // TODO:
+  //virtual Tree parse();
 };
 
 class SourceFileParser : public Parser {
@@ -28,6 +30,11 @@ class SourceFileParser : public Parser {
 
 class UnitParser : public SourceFileParser {
 
+private:
+  spCompilationUnit unit;
+
+public:
+  UnitParser(spCompilationUnit unit) : unit(unit) {}
 };
 
 } // namespace
