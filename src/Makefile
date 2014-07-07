@@ -198,6 +198,7 @@ $(obj_java)/%.o: \
 $(obj_scala)/libscala.a: \
   $(obj_scala)/CompilationUnits.o \
   $(obj_scala)/Global.o \
+  $(obj_scala)/Parsers.o \
   $(obj_scala)/Phase.o \
   $(obj_scala)/SourceFile.o \
   $(obj_scala)/SubComponent.o \

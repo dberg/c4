@@ -2,9 +2,9 @@
 
 namespace c4s {
 
-// TODO:
-//Tree Parser::parse() {
-//
-//}
+spTree Parser::parse() {
+  // TODO:
+  return spTree(new Tree);
+}
 
 } // namespace

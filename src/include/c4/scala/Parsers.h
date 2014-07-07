@@ -2,26 +2,24 @@
 #ifndef __C4_SCALA_PARSERS_H__
 #define __C4_SCALA_PARSERS_H__
 
-#incude "c4/scala/ParsersTypeDefs.h"
+#include "c4/scala/CompilationUnits.h"
+#include "c4/scala/ParsersTypeDefs.h"
+#include "c4/scala/Trees.h"
 
 namespace c4s {
 
 /* Notes:
-
-ParserCommon
-Parser
-SourceFileParser
-UnitParser
-
 // CompilationUnit ::= {package QualId semi} TopStatSeq
 def compilationUnit(): PackageDef
-
 */
+
+class ParserCommon {
+
+};
 
 class Parser : public ParserCommon {
 public:
-  // TODO:
-  //virtual Tree parse();
+  virtual spTree parse();
 };
 
 class SourceFileParser : public Parser {

@@ -3,9 +3,11 @@
 #define __C4_SCALA_PHASE_H__
 
 #include <memory>
-#include "c4/scala/TypeDefs.h"
-#include "c4/scala/Global.h"
+
 #include "c4/scala/CompilationUnits.h"
+#include "c4/scala/Global.h"
+#include "c4/scala/Parsers.h"
+#include "c4/scala/TypeDefs.h"
 
 namespace c4s {
 
