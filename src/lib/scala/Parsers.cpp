@@ -3,8 +3,15 @@
 namespace c4s {
 
 spTree Parser::parse() {
+  return spTree(compilationUnit());
+}
+
+/**
+ *  CompilationUnit ::= {package QualId semi} TopStatSeq
+ */
+PackageDef* Parser::compilationUnit() {
   // TODO:
-  return spTree(new Tree);
+  return new PackageDef;
 }
 
 } // namespace

@@ -8,11 +8,6 @@
 
 namespace c4s {
 
-/* Notes:
-// CompilationUnit ::= {package QualId semi} TopStatSeq
-def compilationUnit(): PackageDef
-*/
-
 class ParserCommon {
 
 };
@@ -20,6 +15,7 @@ class ParserCommon {
 class Parser : public ParserCommon {
 public:
   virtual spTree parse();
+  virtual PackageDef* compilationUnit();
 };
 
 class SourceFileParser : public Parser {

@@ -14,13 +14,13 @@ class Tree {};
  * Tree, NameTreeApi
  * NameTree
  */
-class NameTree : public Tree {};
+class NameTree : virtual public Tree {};
 
 /** TODO:
  * Tree, SymTreeApi
  * SymTree
  */
-class SymTree : public Tree {};
+class SymTree : virtual public Tree {};
 
 /** TODO:
  * SymTree, NameTree, DefTreeApi
