@@ -11,6 +11,7 @@ spTree Parser::parse() {
  */
 PackageDef* Parser::compilationUnit() {
   // TODO:
+  resetPackage();
   return new PackageDef;
 }
 

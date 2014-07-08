@@ -13,6 +13,15 @@ class ParserCommon {
 };
 
 class Parser : public ParserCommon {
+private:
+  // Set for files that start with package scala
+  bool inScalaPackage;
+  std::string currentPackage;
+  void resetPackage() {
+    inScalaPackage = false;
+    currentPackage = "";
+  }
+
 public:
   virtual spTree parse();
   virtual PackageDef* compilationUnit();
