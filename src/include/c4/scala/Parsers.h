@@ -4,6 +4,8 @@
 
 #include "c4/scala/CompilationUnits.h"
 #include "c4/scala/ParsersTypeDefs.h"
+#include "c4/scala/ScannersTypeDefs.h"
+#include "c4/scala/Scanners.h"
 #include "c4/scala/Trees.h"
 
 namespace c4s {
@@ -22,6 +24,9 @@ private:
     currentPackage = "";
   }
 
+protected:
+  spScanner in;
+
 public:
   virtual spTree parse();
   virtual PackageDef* compilationUnit();
@@ -37,7 +42,12 @@ private:
   spCompilationUnit unit;
 
 public:
-  UnitParser(spCompilationUnit unit) : unit(unit) {}
+  UnitParser(spCompilationUnit unit) : unit(unit) {
+    // TODO:
+    //in = spUnitScanner(new UnitScanner(unit));
+    // TODO:
+    //in.init();
+  }
 };
 
 } // namespace

@@ -10,20 +10,8 @@
 
 namespace c4s {
 
-class ScannerData {
-protected:
-  spTokenData next;
-  spTokenData prev;
-
-  ScannerData()
-    : next(spTokenData(new TokenData)), prev(spTokenData(new TokenData))
-  {}
-};
-
 class TokenData {
-
 protected:
-
   Token token;
 
   /** A stack of tokens which indicates whether line-ends can be statement
@@ -40,10 +28,24 @@ protected:
   std::vector<Token> sepRegions;
 
 public:
-  TokenData() : token(EMPTY) {}
+  TokenData() : token(Token::T_EMPTY) {}
 };
 
-class Scanner : public CharArrayReader,
+class ScannerData {
+protected:
+  spTokenData next;
+  spTokenData prev;
+
+  ScannerData()
+    : next(spTokenData(new TokenData)), prev(spTokenData(new TokenData))
+  {}
+};
+
+class ScannerCommon {
+
+};
+
+  class Scanner : /*public CharArrayReader,*/
                 public TokenData,
                 public ScannerData,
                 public ScannerCommon {
@@ -61,7 +63,11 @@ public:
 };
 
 class UnitScanner : public Scanner {
+private:
+  spCompilationUnit unit;
 
+public:
+  UnitScanner(spCompilationUnit unit): unit(unit) {}
 };
 
 } // namespace
