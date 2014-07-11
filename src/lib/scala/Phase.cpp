@@ -11,7 +11,8 @@ void GlobalPhase::run() {
 
 void ParserPhase::apply(spCompilationUnit unit) {
   if (!unit->body) {
-    unit->body = (new UnitParser(unit))->parse();
+    spUnitParser parser = spUnitParser(new UnitParser(unit));
+    unit->body = parser->parse();
   }
 }
 

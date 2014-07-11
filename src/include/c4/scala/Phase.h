@@ -20,9 +20,10 @@ public:
 
 class GlobalPhase : public Phase {
 
-public:
+protected:
   Global *global;
 
+public:
   GlobalPhase(Global *global) : global(global) {}
 
   virtual void run();
