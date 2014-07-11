@@ -6,10 +6,6 @@
 
 #include "c4/common/TypeDefs.h"
 
-class CharArrayReader;
-
-
-
 namespace c4s {
 
 class CharArrayReaderData {

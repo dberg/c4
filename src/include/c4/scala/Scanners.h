@@ -11,6 +11,10 @@
 
 namespace c4s {
 
+class ScannerCommon {
+
+};
+
 class TokenData {
 protected:
   Token token;
@@ -42,11 +46,7 @@ protected:
   {}
 };
 
-class ScannerCommon {
-
-};
-
-  class Scanner : /*public CharArrayReader,*/
+class Scanner : /*public CharArrayReader,*/
                 public TokenData,
                 public ScannerData,
                 public ScannerCommon {
