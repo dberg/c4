@@ -118,6 +118,7 @@ directories:
 	mkdir -p $(c4_directories) $(third_party_directories)
 
 # main c4
+# We repeat libscala.a to make ld happy under linux
 $(bin)/c4: \
   $(obj_bytecode)/BinOutput.o \
   $(obj_bytecode)/BinOutputCode.o \
@@ -140,6 +141,7 @@ $(bin)/c4: \
   $(obj_scala)/libscala.a \
   $(obj_server)/libserver.a \
   $(obj_common)/libcommon.a \
+  $(obj_scala)/libscala.a \
   $(LIB_EXTRA) -lprotobuf
 
 # objects main
