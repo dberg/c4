@@ -9,18 +9,11 @@
 
 namespace c4s {
 
-class CompilationUnit;
-typedef std::shared_ptr<CompilationUnit> spCompilationUnit;
-
 class CompilationUnit {
-
 public:
-
   spSourceFile source;
   spTree body;
-
   CompilationUnit(spSourceFile source): source(source), body(nullptr) {}
-
 };
 
 } // namespace

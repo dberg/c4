@@ -4,6 +4,7 @@
 
 #include <vector>
 
+#include "c4/scala/TypeDefs.h"
 #include "c4/scala/CharArrayReader.h"
 #include "c4/scala/ScannersTypeDefs.h"
 #include "c4/scala/Tokens.h"

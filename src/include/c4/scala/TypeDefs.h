@@ -6,6 +6,9 @@
 
 namespace c4s {
 
+class CompilationUnit;
+typedef std::shared_ptr<CompilationUnit> spCompilationUnit;
+
 class Global;
 typedef std::shared_ptr<Global> spGlobal;
 
