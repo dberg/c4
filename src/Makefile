@@ -203,6 +203,7 @@ $(obj_scala)/libscala.a: \
   $(obj_scala)/Global.o \
   $(obj_scala)/Parsers.o \
   $(obj_scala)/Phase.o \
+  $(obj_scala)/Scanners.o \
   $(obj_scala)/SourceFile.o \
   $(obj_scala)/SubComponent.o \
   $(obj_scala)/SyntaxAnalyzer.o

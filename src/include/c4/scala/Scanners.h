@@ -11,13 +11,9 @@
 
 namespace c4s {
 
-class ScannerCommon {
-
-};
+//class ScannerCommon {};
 
 class TokenData {
-protected:
-  Token token;
 
   /** A stack of tokens which indicates whether line-ends can be statement
    *  separators. It's also used for keeping track of nesting levels.
@@ -33,6 +29,7 @@ protected:
   std::vector<Token> sepRegions;
 
 public:
+  Token token;
   TokenData() : token(Token::T_EMPTY) {}
 };
 
@@ -41,26 +38,26 @@ protected:
   spTokenData next;
   spTokenData prev;
 
+public:
   ScannerData()
-    : next(spTokenData(new TokenData)), prev(spTokenData(new TokenData))
-  {}
+    : next(spTokenData(new TokenData)), prev(spTokenData(new TokenData)) {}
 };
 
 class Scanner : /*public CharArrayReader,*/
                 public TokenData,
-                public ScannerData,
-                public ScannerCommon {
-protected:
+                public ScannerData //,
+                /*public ScannerCommon*/ {
 
   Offset offset;
   Offset lastOffset;
 
+public:
+
+  Scanner() : TokenData(), ScannerData(), offset(0), lastOffset(0) {}
+
   virtual void nextToken();
   virtual void fetchToken();
   virtual void init();
-
-public:
-  Scanner() : offset(0), lastOffset(0) {}
 };
 
 class UnitScanner : public Scanner {
@@ -68,7 +65,7 @@ private:
   spCompilationUnit unit;
 
 public:
-  UnitScanner(spCompilationUnit unit): unit(unit) {}
+  UnitScanner(spCompilationUnit unit): Scanner(), unit(unit) {}
 };
 
 } // namespace

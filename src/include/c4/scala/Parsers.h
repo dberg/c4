@@ -44,10 +44,8 @@ private:
 
 public:
   UnitParser(spCompilationUnit unit) : unit(unit) {
-    // TODO:
-    //in = spScanner(new UnitScanner(unit));
-    // TODO:
-    //in.init();
+    in = spScanner(new UnitScanner(unit));
+    in->init();
   }
 };
 

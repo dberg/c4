@@ -8,13 +8,17 @@ void Scanner::init() {
   //nextToken();
 }
 
+void Scanner::fetchToken() {
+  // TODO:
+}
+
 void Scanner::nextToken() {
-  Token lastToken = token;
+  //Token lastToken = token;
 
   // TODO: sepRegions
 
   // Read a token or copy it from 'next' tokenData
-  if (next.token == EMPTY) {
+  if (next->token == Token::T_EMPTY) {
     // TODO:
   }
 }
