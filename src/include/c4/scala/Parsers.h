@@ -11,9 +11,7 @@
 
 namespace c4s {
 
-class ParserCommon {
-
-};
+class ParserCommon {};
 
 class Parser : public ParserCommon {
 private:
@@ -29,13 +27,12 @@ protected:
   spScanner in;
 
 public:
+  Parser(): ParserCommon() {}
   virtual spTree parse();
   virtual PackageDef* compilationUnit();
 };
 
-class SourceFileParser : public Parser {
-
-};
+class SourceFileParser : public Parser {};
 
 class UnitParser : public SourceFileParser {
 
@@ -43,7 +40,7 @@ private:
   spCompilationUnit unit;
 
 public:
-  UnitParser(spCompilationUnit unit) : unit(unit) {
+  UnitParser(spCompilationUnit unit) : SourceFileParser(), unit(unit) {
     in = spScanner(new UnitScanner(unit));
     in->init();
   }

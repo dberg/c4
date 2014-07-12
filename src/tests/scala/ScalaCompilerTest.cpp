@@ -3,6 +3,7 @@
 
 #include "gtest/gtest.h"
 
+#include "c4/common/TypeDefs.h"
 #include "c4/scala/SourceFile.h"
 #include "c4/scala/Global.h"
 #include "utf8/utf8.h"
@@ -19,7 +20,7 @@ TEST(ScalaCompiler, HelloWorld) {
     "  }"
     "}";
 
-  std::vector<Char> buffer;
+  std::vector<c4::Char> buffer;
   utf8::utf8to16(sourceCode.begin(), sourceCode.end(),
     std::back_inserter(buffer));
 

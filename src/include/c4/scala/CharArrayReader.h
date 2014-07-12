@@ -27,8 +27,8 @@ protected:
   std::vector<c4::Char> buf;
 
 public:
-  CharArrayReader() {}
-  virtual void nextChar();
+  CharArrayReader(): CharArrayReaderData() {}
+  void nextChar();
 };
 
 } // namespace

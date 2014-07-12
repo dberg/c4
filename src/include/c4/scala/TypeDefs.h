@@ -20,7 +20,7 @@ typedef std::shared_ptr<SyntaxAnalyzer> spSyntaxAnalyzer;
 class Phase;
 typedef std::shared_ptr<Phase> spPhase;
 
-class ParserPhase;
+//class ParserPhase;
 
 } // namespace
 

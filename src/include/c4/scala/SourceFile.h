@@ -7,7 +7,6 @@
 #include <vector>
 
 #include "c4/common/TypeDefs.h"
-using c4::Char;
 
 namespace c4s {
 
@@ -18,7 +17,11 @@ class ClientSourceFile;
 typedef std::shared_ptr<ClientSourceFile> spClientSourceFile;
 
 class SourceFile {
-  virtual std::vector<Char> content() = 0;
+protected:
+  virtual std::vector<c4::Char> content() = 0;
+
+public:
+  SourceFile() {}
 };
 
 /**
@@ -27,13 +30,13 @@ class SourceFile {
 class ClientSourceFile : public SourceFile {
 
   std::string filename;
-  std::vector<Char> buffer;
+  std::vector<c4::Char> buffer;
 
 public:
-  ClientSourceFile(std::string filename, std::vector<Char> buffer)
-    : filename(filename), buffer(buffer) {}
+  ClientSourceFile(std::string filename, std::vector<c4::Char> buffer)
+    : SourceFile(), filename(filename), buffer(buffer) {}
 
-  std::vector<Char> content() { return buffer; }
+  std::vector<c4::Char> content() { return buffer; }
 };
 
 } // namespace
