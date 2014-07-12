@@ -43,7 +43,7 @@ public:
     : next(spTokenData(new TokenData)), prev(spTokenData(new TokenData)) {}
 };
 
-class Scanner : /*public CharArrayReader,*/
+class Scanner : public CharArrayReader,
                 public TokenData,
                 public ScannerData //,
                 /*public ScannerCommon*/ {
