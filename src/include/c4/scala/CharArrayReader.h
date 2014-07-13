@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "c4/common/TypeDefs.h"
+#include "c4/scala/Chars.h"
 
 namespace c4s {
 
@@ -15,7 +16,7 @@ protected:
   c4::Char ch;
 
   /** The offset one past the last read character */
-  int charOffset;
+  unsigned long charOffset;
 
 public:
   CharArrayReaderData(): charOffset(0) {}

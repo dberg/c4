@@ -3,8 +3,8 @@
 namespace c4s {
 
 void Scanner::init() {
+  nextChar();
   // TODO:
-  //nextChar();
   //nextToken();
 }
 
@@ -13,7 +13,7 @@ void Scanner::fetchToken() {
 }
 
 void Scanner::nextToken() {
-  //Token lastToken = token;
+  Token lastToken = token;
 
   // TODO: sepRegions
 

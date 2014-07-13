@@ -199,6 +199,7 @@ $(obj_java)/%.o: \
 # objects scala - libscala
 $(obj_scala)/libscala.a: \
   $(obj_scala)/CharArrayReader.o \
+  $(obj_scala)/Chars.o \
   $(obj_scala)/CompilationUnits.o \
   $(obj_scala)/Global.o \
   $(obj_scala)/Parsers.o \
