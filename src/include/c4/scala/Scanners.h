@@ -54,6 +54,7 @@ class Scanner : public CharArrayReader,
 private:
 
   void getIdentRest();
+  void finishNamed(Token idToken = Token::T_IDENTIFIER);
 
 protected:
 
