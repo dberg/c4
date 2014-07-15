@@ -7,6 +7,20 @@ void CharArrayReader::nextChar() {
   // TODO:
   if (charOffset >= buf.size()) {
     ch = Chars::SU;
+  } else {
+    c4::Char c = buf[charOffset++];
+    ch = c;
+
+    if (c == '\\') {
+      // TODO:
+      // potentialUnicode()
+    }
+
+    if (ch < ' ') {
+      // TODO:
+      //skipCR();
+      //potentialLineEnd();
+    }
   }
 }
 

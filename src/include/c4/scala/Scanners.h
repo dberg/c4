@@ -51,10 +51,20 @@ class Scanner : public CharArrayReader,
   Offset offset;
   Offset lastOffset;
 
+private:
+
+  void getIdentRest();
+
+protected:
+
+  std::vector<c4::Char> cbuf;
+  void putChar(c4::Char c);
+
 public:
 
   Scanner() : TokenData(), ScannerData(), offset(0), lastOffset(0) {}
 
+  virtual bool inStringInterpolation();
   virtual void nextToken();
   virtual void fetchToken();
   virtual void init();
