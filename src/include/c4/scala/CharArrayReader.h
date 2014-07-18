@@ -24,9 +24,9 @@ public:
 
 class CharArrayReader : public CharArrayReaderData {
 public:
-  std::vector<c4::Char> buf;
+  std::vector<c4::Char> &buf;
 
-  CharArrayReader(): CharArrayReaderData() {}
+  CharArrayReader(std::vector<c4::Char> &buf): buf(buf) {}
   void nextChar();
 };
 

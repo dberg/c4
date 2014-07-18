@@ -13,8 +13,6 @@
 
 namespace c4s {
 
-//class ScannerCommon {};
-
 class TokenData {
 
   /** A stack of tokens which indicates whether line-ends can be statement
@@ -45,29 +43,32 @@ public:
     : next(spTokenData(new TokenData)), prev(spTokenData(new TokenData)) {}
 };
 
-class Scanner : public TokenData,
-                public ScannerData //,
-                /*public ScannerCommon*/ {
+class Scanner: public TokenData, public ScannerData {
+
+private:
+
+  // SourceFile data
+  spSourceFile source;
+  std::vector<c4::Char> &buf;
 
   Offset offset;
   Offset lastOffset;
 
-private:
+  spCharArrayReader r;
 
   void getIdentRest();
   void finishNamed(Token idToken = Token::T_IDENTIFIER);
 
 protected:
 
-  spCharArrayReader r;
-
   std::vector<c4::Char> cbuf;
   void putChar(c4::Char c);
 
 public:
 
-  Scanner() : TokenData(), ScannerData(), offset(0), lastOffset(0),
-              r(spCharArrayReader(new CharArrayReader)) {}
+  Scanner(spSourceFile source)
+    : source(source), buf(source->content()), offset(0), lastOffset(0),
+      r(spCharArrayReader(new CharArrayReader(source->content()))) {}
 
   virtual bool inStringInterpolation();
   virtual void nextToken();
@@ -75,19 +76,13 @@ public:
   virtual void init();
 };
 
-class SourceFileScanner : public Scanner {
-public:
-  spSourceFile source;
-  SourceFileScanner(spSourceFile source): source(source) {}
-};
-
-class UnitScanner : public SourceFileScanner {
+class UnitScanner : public Scanner {
 private:
   spCompilationUnit unit;
 
 public:
   UnitScanner(spCompilationUnit unit)
-    : SourceFileScanner(unit->source), unit(unit) {}
+    : Scanner(unit->source), unit(unit) {}
 };
 
 } // namespace

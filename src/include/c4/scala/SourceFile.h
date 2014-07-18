@@ -11,10 +11,8 @@
 namespace c4s {
 
 class SourceFile {
-protected:
-  virtual std::vector<c4::Char> content() = 0;
-
 public:
+  virtual std::vector<c4::Char>& content() = 0;
   SourceFile() {}
 };
 
@@ -22,15 +20,14 @@ public:
  * A source file sent over the wire.
  */
 class ClientSourceFile : public SourceFile {
-
+public:
   std::string filename;
   std::vector<c4::Char> buffer;
 
-public:
   ClientSourceFile(std::string filename, std::vector<c4::Char> buffer)
     : SourceFile(), filename(filename), buffer(buffer) {}
 
-  std::vector<c4::Char> content() { return buffer; }
+  std::vector<c4::Char>& content() { return buffer; }
 };
 
 } // namespace
