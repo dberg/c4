@@ -6,7 +6,9 @@
 
 #include "c4/scala/TypeDefs.h"
 #include "c4/scala/CharArrayReader.h"
+#include "c4/scala/CompilationUnits.h"
 #include "c4/scala/ScannersTypeDefs.h"
+#include "c4/scala/SourceFile.h"
 #include "c4/scala/Tokens.h"
 
 namespace c4s {
@@ -43,8 +45,7 @@ public:
     : next(spTokenData(new TokenData)), prev(spTokenData(new TokenData)) {}
 };
 
-class Scanner : public CharArrayReader,
-                public TokenData,
+class Scanner : public TokenData,
                 public ScannerData //,
                 /*public ScannerCommon*/ {
 
@@ -58,12 +59,15 @@ private:
 
 protected:
 
+  spCharArrayReader r;
+
   std::vector<c4::Char> cbuf;
   void putChar(c4::Char c);
 
 public:
 
-  Scanner() : TokenData(), ScannerData(), offset(0), lastOffset(0) {}
+  Scanner() : TokenData(), ScannerData(), offset(0), lastOffset(0),
+              r(spCharArrayReader(new CharArrayReader)) {}
 
   virtual bool inStringInterpolation();
   virtual void nextToken();
@@ -71,12 +75,19 @@ public:
   virtual void init();
 };
 
-class UnitScanner : public Scanner {
+class SourceFileScanner : public Scanner {
+public:
+  spSourceFile source;
+  SourceFileScanner(spSourceFile source): source(source) {}
+};
+
+class UnitScanner : public SourceFileScanner {
 private:
   spCompilationUnit unit;
 
 public:
-  UnitScanner(spCompilationUnit unit): Scanner(), unit(unit) {}
+  UnitScanner(spCompilationUnit unit)
+    : SourceFileScanner(unit->source), unit(unit) {}
 };
 
 } // namespace

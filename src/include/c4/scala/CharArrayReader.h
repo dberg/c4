@@ -10,7 +10,7 @@
 namespace c4s {
 
 class CharArrayReaderData {
-protected:
+public:
 
   /** the last read character */
   c4::Char ch;
@@ -18,16 +18,14 @@ protected:
   /** The offset one past the last read character */
   unsigned long charOffset;
 
-public:
   CharArrayReaderData(): charOffset(0) {}
 
 };
 
 class CharArrayReader : public CharArrayReaderData {
-protected:
+public:
   std::vector<c4::Char> buf;
 
-public:
   CharArrayReader(): CharArrayReaderData() {}
   void nextChar();
 };

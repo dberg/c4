@@ -4,6 +4,7 @@
 
 #include <memory>
 
+#include "c4/scala/TypeDefs.h"
 #include "c4/scala/SourceFile.h"
 #include "c4/scala/Trees.h"
 

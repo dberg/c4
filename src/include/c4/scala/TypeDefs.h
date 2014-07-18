@@ -6,6 +6,9 @@
 
 namespace c4s {
 
+class CharArrayReader;
+typedef std::shared_ptr<CharArrayReader> spCharArrayReader;
+
 class CompilationUnit;
 typedef std::shared_ptr<CompilationUnit> spCompilationUnit;
 
@@ -20,7 +23,11 @@ typedef std::shared_ptr<SyntaxAnalyzer> spSyntaxAnalyzer;
 class Phase;
 typedef std::shared_ptr<Phase> spPhase;
 
-//class ParserPhase;
+class SourceFile;
+typedef std::shared_ptr<SourceFile> spSourceFile;
+
+class ClientSourceFile;
+typedef std::shared_ptr<ClientSourceFile> spClientSourceFile;
 
 } // namespace
 

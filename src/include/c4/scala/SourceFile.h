@@ -10,12 +10,6 @@
 
 namespace c4s {
 
-class SourceFile;
-typedef std::shared_ptr<SourceFile> spSourceFile;
-
-class ClientSourceFile;
-typedef std::shared_ptr<ClientSourceFile> spClientSourceFile;
-
 class SourceFile {
 protected:
   virtual std::vector<c4::Char> content() = 0;

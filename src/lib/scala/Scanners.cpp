@@ -7,7 +7,8 @@ void Scanner::putChar(c4::Char c) {
 }
 
 void Scanner::finishNamed(Token idToken) {
-
+  // TODO:
+  //name = newTermName(cbuf.toString);
 }
 
 bool Scanner::inStringInterpolation() {
@@ -17,20 +18,20 @@ bool Scanner::inStringInterpolation() {
 }
 
 void Scanner::init() {
-  nextChar();
+  r->nextChar();
   nextToken();
 }
 
 /** Read next token, filling TokenData fields of Scanner. */
 void Scanner::fetchToken() {
-  offset = charOffset - 1;
+  offset = r->charOffset - 1;
   switch (offset) {
   case ' ':
   case '\t':
   case Chars::CR:
   case Chars::LF:
   case Chars::FF:
-    nextChar();
+    r->nextChar();
     fetchToken();
   case 'A': case 'B': case 'C': case 'D': case 'E':
   case 'F': case 'G': case 'H': case 'I': case 'J':
@@ -43,8 +44,8 @@ void Scanner::fetchToken() {
   case 'm': case 'n': case 'o': case 'p': case 'q':
   case 'r': case 's': case 't': case 'u': case 'v':
   case 'w': case 'x': case 'y': case 'z':
-    putChar(ch);
-    nextChar();
+    putChar(r->ch);
+    r->nextChar();
     getIdentRest();
   }
   // TODO:
@@ -54,7 +55,7 @@ void Scanner::fetchToken() {
 // Identifiers
 // -----------------------------------------------------------------------------
 void Scanner::getIdentRest() {
-  switch (ch) {
+  switch (r->ch) {
   case 'A': case 'B': case 'C': case 'D': case 'E': case 'F':
   case 'G': case 'H': case 'I': case 'J': case 'K': case 'L':
   case 'M': case 'N': case 'O': case 'P': case 'Q': case 'R':
@@ -66,12 +67,12 @@ void Scanner::getIdentRest() {
   case 'v': case 'w': case 'x': case 'y': case 'z': case '0':
   case '1': case '2': case '3': case '4': case '5': case '6':
   case '7': case '8': case '9':
-    putChar(ch);
-    nextChar();
+    putChar(r->ch);
+    r->nextChar();
     getIdentRest();
   case '_':
-    putChar(ch);
-    nextChar();
+    putChar(r->ch);
+    r->nextChar();
     // TODO:
     //getIdentOrOperatorRest();
   case Chars::SU:
@@ -80,7 +81,7 @@ void Scanner::getIdentRest() {
     // TODO:
     //if (Character::isUnicodeIdentifierPart(ch)) {
     //  putChar(ch);
-    //  nextChar();
+    //  r->nextChar();
     //  getIdentRest();
     //} else {
       finishNamed();
@@ -96,8 +97,9 @@ void Scanner::nextToken() {
 
   // Read a token or copy it from 'next' tokenData
   if (next->token == Token::T_EMPTY) {
-    lastOffset = charOffset - 1;
-    if (lastOffset > 0 && buf[lastOffset] == '\n' && buf[lastOffset - 1] == '\r') {
+    lastOffset = r->charOffset - 1;
+    if (lastOffset > 0 && r->buf[lastOffset] == '\n' &&
+        r->buf[lastOffset - 1] == '\r') {
       lastOffset--;
     }
 

@@ -3,8 +3,7 @@
 namespace c4s {
 
 void GlobalPhase::run() {
-  auto units = global->units;
-  for (auto &unit : units) {
+  for (auto &unit : global->units) {
     apply(unit);
   }
 }
