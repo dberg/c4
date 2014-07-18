@@ -6,7 +6,9 @@ void Scanner::putChar(c4::Char c) {
   cbuf.push_back(c);
 }
 
+/** Clear buffer and set name and token */
 void Scanner::finishNamed(Token idToken) {
+  std::string nameStr(cbuf.begin(), cbuf.end());
   // TODO:
   //name = newTermName(cbuf.toString);
 }
@@ -25,7 +27,7 @@ void Scanner::init() {
 /** Read next token, filling TokenData fields of Scanner. */
 void Scanner::fetchToken() {
   offset = reader->charOffset - 1;
-  switch (offset) {
+  switch (reader->ch) {
   case ' ':
   case '\t':
   case Chars::CR:

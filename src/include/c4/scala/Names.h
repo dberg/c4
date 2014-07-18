@@ -4,6 +4,9 @@
 
 namespace c4s {
 
+class Names {
+
+};
 
 } // namespace
 
