@@ -23,6 +23,9 @@ typedef std::shared_ptr<SyntaxAnalyzer> spSyntaxAnalyzer;
 class Phase;
 typedef std::shared_ptr<Phase> spPhase;
 
+class ScannerData;
+typedef std::shared_ptr<ScannerData> spScannerData;
+
 class SourceFile;
 typedef std::shared_ptr<SourceFile> spSourceFile;
 

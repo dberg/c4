@@ -96,7 +96,7 @@ void Scanner::nextToken() {
   // TODO: sepRegions
 
   // Read a token or copy it from 'next' tokenData
-  if (next->token == Token::T_EMPTY) {
+  if (d->next->token == Token::T_EMPTY) {
     lastOffset = r->charOffset - 1;
     if (lastOffset > 0 && r->buf[lastOffset] == '\n' &&
         r->buf[lastOffset - 1] == '\r') {
