@@ -18,20 +18,20 @@ bool Scanner::inStringInterpolation() {
 }
 
 void Scanner::init() {
-  r->nextChar();
+  reader->nextChar();
   nextToken();
 }
 
 /** Read next token, filling TokenData fields of Scanner. */
 void Scanner::fetchToken() {
-  offset = r->charOffset - 1;
+  offset = reader->charOffset - 1;
   switch (offset) {
   case ' ':
   case '\t':
   case Chars::CR:
   case Chars::LF:
   case Chars::FF:
-    r->nextChar();
+    reader->nextChar();
     fetchToken();
   case 'A': case 'B': case 'C': case 'D': case 'E':
   case 'F': case 'G': case 'H': case 'I': case 'J':
@@ -44,8 +44,8 @@ void Scanner::fetchToken() {
   case 'm': case 'n': case 'o': case 'p': case 'q':
   case 'r': case 's': case 't': case 'u': case 'v':
   case 'w': case 'x': case 'y': case 'z':
-    putChar(r->ch);
-    r->nextChar();
+    putChar(reader->ch);
+    reader->nextChar();
     getIdentRest();
   }
   // TODO:
@@ -55,7 +55,7 @@ void Scanner::fetchToken() {
 // Identifiers
 // -----------------------------------------------------------------------------
 void Scanner::getIdentRest() {
-  switch (r->ch) {
+  switch (reader->ch) {
   case 'A': case 'B': case 'C': case 'D': case 'E': case 'F':
   case 'G': case 'H': case 'I': case 'J': case 'K': case 'L':
   case 'M': case 'N': case 'O': case 'P': case 'Q': case 'R':
@@ -67,12 +67,12 @@ void Scanner::getIdentRest() {
   case 'v': case 'w': case 'x': case 'y': case 'z': case '0':
   case '1': case '2': case '3': case '4': case '5': case '6':
   case '7': case '8': case '9':
-    putChar(r->ch);
-    r->nextChar();
+    putChar(reader->ch);
+    reader->nextChar();
     getIdentRest();
   case '_':
-    putChar(r->ch);
-    r->nextChar();
+    putChar(reader->ch);
+    reader->nextChar();
     // TODO:
     //getIdentOrOperatorRest();
   case Chars::SU:
@@ -81,7 +81,7 @@ void Scanner::getIdentRest() {
     // TODO:
     //if (Character::isUnicodeIdentifierPart(ch)) {
     //  putChar(ch);
-    //  r->nextChar();
+    //  reader->nextChar();
     //  getIdentRest();
     //} else {
       finishNamed();
@@ -91,15 +91,15 @@ void Scanner::getIdentRest() {
 
 /** Produce next token, filling TokenData fields of Scanner. */
 void Scanner::nextToken() {
-  Token lastToken = token;
+  Token lastToken = tData->token;
 
   // TODO: sepRegions
 
   // Read a token or copy it from 'next' tokenData
-  if (d->next->token == Token::T_EMPTY) {
-    lastOffset = r->charOffset - 1;
-    if (lastOffset > 0 && r->buf[lastOffset] == '\n' &&
-        r->buf[lastOffset - 1] == '\r') {
+  if (sData->next->token == Token::T_EMPTY) {
+    lastOffset = reader->charOffset - 1;
+    if (lastOffset > 0 && reader->buf[lastOffset] == '\n' &&
+        reader->buf[lastOffset - 1] == '\r') {
       lastOffset--;
     }
 
@@ -109,7 +109,7 @@ void Scanner::nextToken() {
       fetchToken();
     }
 
-    if (token == Token::T_ERROR) {
+    if (tData->token == Token::T_ERROR) {
       // TODO:
     }
   } else {

@@ -42,7 +42,7 @@ public:
     : next(spTokenData(new TokenData)), prev(spTokenData(new TokenData)) {}
 };
 
-class Scanner: public TokenData {
+class Scanner {
 
 private:
 
@@ -53,8 +53,9 @@ private:
   Offset offset;
   Offset lastOffset;
 
-  spCharArrayReader r;
-  spScannerData d;
+  spCharArrayReader reader;
+  spScannerData sData;
+  spTokenData tData;
 
   void getIdentRest();
   void finishNamed(Token idToken = Token::T_IDENTIFIER);
@@ -68,8 +69,9 @@ public:
 
   Scanner(spSourceFile source)
     : source(source), buf(source->content()), offset(0), lastOffset(0),
-      r(spCharArrayReader(new CharArrayReader(source->content()))),
-      d(spScannerData(new ScannerData)) {}
+      reader(spCharArrayReader(new CharArrayReader(source->content()))),
+      sData(spScannerData(new ScannerData)),
+      tData(spTokenData(new TokenData)) {}
 
   virtual bool inStringInterpolation();
   virtual void nextToken();
