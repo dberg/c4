@@ -7,13 +7,47 @@
 #include "c4/scala/TypeDefs.h"
 #include "c4/scala/CharArrayReader.h"
 #include "c4/scala/CompilationUnits.h"
-#include "c4/scala/ScannersTypeDefs.h"
 #include "c4/scala/SourceFile.h"
 #include "c4/scala/Tokens.h"
 
 namespace c4s {
 
 class TokenData {
+
+public:
+
+  /** The next token */
+  Token token;
+
+  /** The offset of the first character of the current token */
+  Offset offset;
+
+  /** The offset of the character following the token preceding this one */
+  Offset lastOffset;
+
+  /** The name of an identifier */
+  spTermName name;
+
+  /** The string value of a literal */
+  std::string strVal;
+
+  /** The base of a number */
+  int base;
+
+  TokenData() : token(Token::T_EMPTY), offset(0), lastOffset(0), base(0) {}
+};
+
+class ScannerData {
+public:
+  spTokenData next;
+  spTokenData prev;
+
+  ScannerData()
+    : next(spTokenData(new TokenData)), prev(spTokenData(new TokenData)) {}
+};
+
+class Scanner {
+private:
 
   /** A stack of tokens which indicates whether line-ends can be statement
    *  separators. It's also used for keeping track of nesting levels.
@@ -28,30 +62,9 @@ class TokenData {
    */
   std::vector<Token> sepRegions;
 
-public:
-  Token token;
-  TokenData() : token(Token::T_EMPTY) {}
-};
-
-class ScannerData {
-public:
-  spTokenData next;
-  spTokenData prev;
-
-  ScannerData()
-    : next(spTokenData(new TokenData)), prev(spTokenData(new TokenData)) {}
-};
-
-class Scanner {
-
-private:
-
   // SourceFile data
   spSourceFile source;
   std::vector<c4::Char> &buf;
-
-  Offset offset;
-  Offset lastOffset;
 
   spCharArrayReader reader;
   spScannerData sData;
@@ -67,11 +80,14 @@ protected:
 
 public:
 
-  Scanner(spSourceFile source)
-    : source(source), buf(source->content()), offset(0), lastOffset(0),
+  Global *global;
+
+  Scanner(Global *global, spSourceFile source)
+    : source(source), buf(source->content()),
       reader(spCharArrayReader(new CharArrayReader(source->content()))),
       sData(spScannerData(new ScannerData)),
-      tData(spTokenData(new TokenData)) {}
+      tData(spTokenData(new TokenData)),
+      global(global) {}
 
   virtual bool inStringInterpolation();
   virtual void nextToken();
@@ -84,8 +100,8 @@ private:
   spCompilationUnit unit;
 
 public:
-  UnitScanner(spCompilationUnit unit)
-    : Scanner(unit->source), unit(unit) {}
+  UnitScanner(Global *global, spCompilationUnit unit)
+    : Scanner(global, unit->source), unit(unit) {}
 };
 
 } // namespace

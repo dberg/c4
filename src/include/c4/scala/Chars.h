@@ -15,6 +15,6 @@ public:
   Chars() {}
 };
 
-}
+} // namespace
 
 #endif

@@ -4,16 +4,12 @@
 
 #include "c4/scala/TypeDefs.h"
 #include "c4/scala/CompilationUnits.h"
-#include "c4/scala/ParsersTypeDefs.h"
-#include "c4/scala/ScannersTypeDefs.h"
 #include "c4/scala/Scanners.h"
 #include "c4/scala/Trees.h"
 
 namespace c4s {
 
-class ParserCommon {};
-
-class Parser : public ParserCommon {
+class Parser {
 private:
   // Set for files that start with package scala
   bool inScalaPackage;
@@ -27,12 +23,16 @@ protected:
   spScanner in;
 
 public:
-  Parser(): ParserCommon() {}
+  Global *global;
+  Parser(Global *global): global(global) {}
   virtual spTree parse();
   virtual PackageDef* compilationUnit();
 };
 
-class SourceFileParser : public Parser {};
+class SourceFileParser : public Parser {
+public:
+  SourceFileParser(Global *global): Parser(global) {}
+};
 
 class UnitParser : public SourceFileParser {
 
@@ -40,8 +40,9 @@ private:
   spCompilationUnit unit;
 
 public:
-  UnitParser(spCompilationUnit unit) : SourceFileParser(), unit(unit) {
-    in = spScanner(new UnitScanner(unit));
+  UnitParser(Global *global, spCompilationUnit unit)
+    : SourceFileParser(global), unit(unit) {
+    in = spScanner(new UnitScanner(global, unit));
     in->init();
   }
 };

@@ -7,8 +7,8 @@
 
 #include "c4/scala/TypeDefs.h"
 #include "c4/scala/CompilationUnits.h"
+#include "c4/scala/Names.h"
 #include "c4/scala/Phase.h"
-#include "c4/scala/SubComponent.h"
 #include "c4/scala/SyntaxAnalyzer.h"
 
 namespace c4s {
@@ -27,6 +27,8 @@ protected:
   // TODO: std::vector<spSubComponent> phaseDescriptors;
 
 public:
+
+  spNames names;
 
   /** Compilation units to be compiled */
   std::vector<spCompilationUnit> units;

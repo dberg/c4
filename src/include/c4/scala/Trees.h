@@ -1,10 +1,10 @@
 //-*- C++ -*-
-#ifndef __C4_SCALA_TREE_H__
-#define __C4_SCALA_TREE_H__
+#ifndef __C4_SCALA_TREES_H__
+#define __C4_SCALA_TREES_H__
 
 #include <memory>
 
-#include "c4/scala/TreesTypeDefs.h"
+#include "c4/scala/TypeDefs.h"
 
 namespace c4s {
 
