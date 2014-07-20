@@ -1,10 +1,31 @@
 #include "c4/scala/Scanners.h"
+#include "c4/scala/Global.h"
+#include "c4/scala/CharArrayReader.h"
+#include "c4/scala/SourceFile.h"
+#include "c4/scala/Chars.h"
+#include "c4/scala/CompilationUnits.h"
 
 namespace c4s {
+
+/** Constructor */
+TokenData::TokenData()
+  : token(Token::T_EMPTY), offset(0), lastOffset(0), base(0) {}
 
 void Scanner::putChar(c4::Char c) {
   cbuf.push_back(c);
 }
+
+/** Constructor */
+ScannerData::ScannerData()
+  : next(spTokenData(new TokenData)), prev(spTokenData(new TokenData)) {}
+
+/** Constructor */
+Scanner::Scanner(Global *global, spSourceFile source)
+  : source(source), buf(source->content()),
+    reader(spCharArrayReader(new CharArrayReader(source->content()))),
+    sData(spScannerData(new ScannerData)),
+    tData(spTokenData(new TokenData)),
+    global(global) {}
 
 /** Clear buffer and set name and token */
 void Scanner::finishNamed(Token idToken) {
@@ -118,5 +139,10 @@ void Scanner::nextToken() {
     // TODO:
   }
 }
+
+/** Constructor */
+UnitScanner::UnitScanner(Global *global, spCompilationUnit unit)
+  : Scanner(global, unit->source), unit(unit) {}
+
 
 } // namespace

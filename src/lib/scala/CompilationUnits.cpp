@@ -2,4 +2,7 @@
 
 namespace c4s {
 
+CompilationUnit::CompilationUnit(spSourceFile source)
+  : source(source), body(nullptr) {}
+
 } // namespace

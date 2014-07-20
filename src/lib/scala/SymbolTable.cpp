@@ -2,4 +2,7 @@
 
 namespace c4s {
 
+/** Constructor */
+SymbolTable::SymbolTable(): names(spNames(new Names)) {}
+
 } // namespace

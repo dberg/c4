@@ -2,11 +2,6 @@
 #ifndef __C4_SCALA_PHASE_H__
 #define __C4_SCALA_PHASE_H__
 
-#include <memory>
-
-#include "c4/scala/CompilationUnits.h"
-#include "c4/scala/Global.h"
-#include "c4/scala/Parsers.h"
 #include "c4/scala/TypeDefs.h"
 
 namespace c4s {
@@ -24,7 +19,7 @@ protected:
   Global *global;
 
 public:
-  GlobalPhase(Global *global) : global(global) {}
+  GlobalPhase(Global *global);
 
   virtual void run();
 
@@ -33,12 +28,12 @@ public:
 
 class StdPhase : public GlobalPhase {
 public:
-  StdPhase(Global *global) : GlobalPhase(global) {}
+  StdPhase(Global *global);
 };
 
 class ParserPhase : public StdPhase {
 public:
-  ParserPhase(Global *global) : StdPhase(global) {}
+  ParserPhase(Global *global);
   virtual void apply(spCompilationUnit unit);
 };
 

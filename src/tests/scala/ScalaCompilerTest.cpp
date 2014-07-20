@@ -2,11 +2,12 @@
 #include <vector>
 
 #include "gtest/gtest.h"
+#include "utf8/utf8.h"
 
 #include "c4/common/TypeDefs.h"
 #include "c4/scala/SourceFile.h"
 #include "c4/scala/Global.h"
-#include "utf8/utf8.h"
+#include "c4/scala/CompilationUnits.h"
 
 using namespace c4s;
 

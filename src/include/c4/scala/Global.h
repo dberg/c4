@@ -2,16 +2,12 @@
 #ifndef __C4_SCALA_GLOBAL_H__
 #define __C4_SCALA_GLOBAL_H__
 
-#include <memory>
 #include <vector>
-
 #include "c4/scala/TypeDefs.h"
-#include "c4/scala/CompilationUnits.h"
-#include "c4/scala/Names.h"
-#include "c4/scala/Phase.h"
-#include "c4/scala/SyntaxAnalyzer.h"
 
 namespace c4s {
+
+class Names;
 
 class Global {
 

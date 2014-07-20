@@ -2,12 +2,10 @@
 #ifndef __C4_SCALA_SCANNERS_H__
 #define __C4_SCALA_SCANNERS_H__
 
+#include <string>
 #include <vector>
-
+#include "c4/common/TypeDefs.h"
 #include "c4/scala/TypeDefs.h"
-#include "c4/scala/CharArrayReader.h"
-#include "c4/scala/CompilationUnits.h"
-#include "c4/scala/SourceFile.h"
 #include "c4/scala/Tokens.h"
 
 namespace c4s {
@@ -34,7 +32,7 @@ public:
   /** The base of a number */
   int base;
 
-  TokenData() : token(Token::T_EMPTY), offset(0), lastOffset(0), base(0) {}
+  TokenData();
 };
 
 class ScannerData {
@@ -42,8 +40,7 @@ public:
   spTokenData next;
   spTokenData prev;
 
-  ScannerData()
-    : next(spTokenData(new TokenData)), prev(spTokenData(new TokenData)) {}
+  ScannerData();
 };
 
 class Scanner {
@@ -82,12 +79,7 @@ public:
 
   Global *global;
 
-  Scanner(Global *global, spSourceFile source)
-    : source(source), buf(source->content()),
-      reader(spCharArrayReader(new CharArrayReader(source->content()))),
-      sData(spScannerData(new ScannerData)),
-      tData(spTokenData(new TokenData)),
-      global(global) {}
+  Scanner(Global *global, spSourceFile source);
 
   virtual bool inStringInterpolation();
   virtual void nextToken();
@@ -100,8 +92,7 @@ private:
   spCompilationUnit unit;
 
 public:
-  UnitScanner(Global *global, spCompilationUnit unit)
-    : Scanner(global, unit->source), unit(unit) {}
+  UnitScanner(Global *global, spCompilationUnit unit);
 };
 
 } // namespace

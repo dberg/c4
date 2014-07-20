@@ -3,9 +3,7 @@
 #define __C4_SCALA_CHAR_ARRAY_READER_H__
 
 #include <vector>
-
 #include "c4/common/TypeDefs.h"
-#include "c4/scala/Chars.h"
 
 namespace c4s {
 
@@ -19,14 +17,13 @@ public:
   unsigned long charOffset;
 
   CharArrayReaderData(): charOffset(0) {}
-
 };
 
 class CharArrayReader : public CharArrayReaderData {
 public:
   std::vector<c4::Char> &buf;
 
-  CharArrayReader(std::vector<c4::Char> &buf): buf(buf) {}
+  CharArrayReader(std::vector<c4::Char> &buf);
   void nextChar();
 };
 
