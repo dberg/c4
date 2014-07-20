@@ -4,6 +4,7 @@
 #include "c4/scala/SourceFile.h"
 #include "c4/scala/Chars.h"
 #include "c4/scala/CompilationUnits.h"
+#include "c4/scala/Names.h"
 
 namespace c4s {
 
@@ -29,9 +30,9 @@ Scanner::Scanner(Global *global, spSourceFile source)
 
 /** Clear buffer and set name and token */
 void Scanner::finishNamed(Token idToken) {
+  tData->name = global->names->newTermName(cbuf, 0, cbuf.size());
+  cbuf.clear();
   // TODO:
-  //tData->name = global->names->newTermName(cbuf, 0, cbuf.size());
-  //cbuf.clear();
 }
 
 bool Scanner::inStringInterpolation() {

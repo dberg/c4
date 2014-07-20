@@ -202,6 +202,7 @@ $(obj_scala)/libscala.a: \
   $(obj_scala)/Chars.o \
   $(obj_scala)/CompilationUnits.o \
   $(obj_scala)/Global.o \
+  $(obj_scala)/Names.o \
   $(obj_scala)/Parsers.o \
   $(obj_scala)/Phase.o \
   $(obj_scala)/Scanners.o \

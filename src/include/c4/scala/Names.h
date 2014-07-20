@@ -4,8 +4,8 @@
 
 #include <string>
 #include <vector>
-
 #include "c4/common/TypeDefs.h"
+#include "c4/scala/TypeDefs.h"
 
 namespace c4s {
 
