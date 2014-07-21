@@ -68,7 +68,7 @@ private:
   spTokenData tData;
 
   void getIdentRest();
-  void finishNamed(Token idToken = Token::T_IDENTIFIER);
+  void finishNamed(Token idtoken = Token::T_IDENTIFIER);
 
 protected:
 

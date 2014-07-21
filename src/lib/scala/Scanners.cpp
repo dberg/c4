@@ -29,10 +29,14 @@ Scanner::Scanner(Global *global, spSourceFile source)
     global(global) {}
 
 /** Clear buffer and set name and token */
-void Scanner::finishNamed(Token idToken) {
+void Scanner::finishNamed(Token idtoken) {
   tData->name = global->names->newTermName(cbuf, 0, cbuf.size());
   cbuf.clear();
-  // TODO:
+  tData->token = idtoken;
+  if (idtoken == Token::T_IDENTIFIER) {
+    // TODO:
+    //auto idx = tData->name.start -kwOffset;
+  }
 }
 
 bool Scanner::inStringInterpolation() {
