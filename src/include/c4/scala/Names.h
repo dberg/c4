@@ -21,10 +21,10 @@ private:
   unsigned long nc;
 
   /** Hashtable for finding term names quickly. */
-  std::vector<c4::Char> termHashtable;
+  std::vector<spTermName> termHashtable;
 
   /** Hashtable for finding type names quickly. */
-  std::vector<c4::Char> typeHashtable;
+  std::vector<spTypeName> typeHashtable;
 
   int hashValue(std::vector<c4::Char> cs, int offset, int len);
 
@@ -42,6 +42,9 @@ class Name {
 
 // TODO:
 class TermName : public Name {};
+
+// TODO:
+class TypeName : public Name {};
 
 } // namespace
 
