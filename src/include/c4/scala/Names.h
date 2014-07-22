@@ -35,16 +35,30 @@ public:
   Names();
 };
 
-// TODO:
 class Name {
+protected:
+  int index;
+  int len;
 
+public:
+  Name(int index, int len);
 };
 
-// TODO:
-class TermName : public Name {};
+class TermName : public Name {
+private:
+  spTermName next;
 
-// TODO:
-class TypeName : public Name {};
+public:
+  TermName(int index, int len, spTermName next);
+};
+
+class TypeName : public Name {
+private:
+  spTypeName next;
+
+public:
+  TypeName(int index, int len, spTypeName next);
+};
 
 } // namespace
 

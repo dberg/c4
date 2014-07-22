@@ -3,7 +3,8 @@
 namespace c4s {
 
 /** Constructor */
-Names::Names(): nc(0), chrs(NAME_SIZE), termHashtable(HASH_SIZE),
+Names::Names(): chrs(NAME_SIZE), nc(0),
+                termHashtable(HASH_SIZE),
                 typeHashtable(HASH_SIZE) {}
 
 /**
@@ -27,7 +28,18 @@ int Names::hashValue(std::vector<c4::Char> cs, int offset, int len) {
 spTermName Names::newTermName(std::vector<c4::Char> cs, int offset, int len,
   std::string cachedString) {
   // TODO:
-  return spTermName(new TermName);
+  return spTermName(new TermName(0, 0, nullptr));
 }
+
+/** Constructor */
+Name::Name(int index, int len): index(index), len(len) {}
+
+/** Constructor */
+TermName::TermName(int index, int len, spTermName next)
+  : Name(index, len), next(next) {}
+
+/** Constructor */
+TypeName::TypeName(int index, int len, spTypeName next)
+  : Name(index, len), next(next) {}
 
 } // namespace
