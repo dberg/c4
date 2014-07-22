@@ -11,11 +11,28 @@ namespace c4s {
 
 class Names {
 private:
+
+  constexpr static int HASH_SIZE = 0x8000;
+  constexpr static int HASH_MASK = 0x7FFF;
+  constexpr static int NAME_SIZE = 0x20000;
+
+  /** Memory to store all names sequentially. */
+  std::vector<c4::Char> chrs;
+  unsigned long nc;
+
+  /** Hashtable for finding term names quickly. */
+  std::vector<c4::Char> termHashtable;
+
+  /** Hashtable for finding type names quickly. */
+  std::vector<c4::Char> typeHashtable;
+
   int hashValue(std::vector<c4::Char> cs, int offset, int len);
 
 public:
   spTermName newTermName(std::vector<c4::Char> cs, int offset, int len,
     std::string cachedString = "");
+
+  Names();
 };
 
 // TODO:

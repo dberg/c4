@@ -2,6 +2,10 @@
 
 namespace c4s {
 
+/** Constructor */
+Names::Names(): nc(0), chrs(NAME_SIZE), termHashtable(HASH_SIZE),
+                typeHashtable(HASH_SIZE) {}
+
 /**
  * The hashcode of a name depends on the first, the last and the middle
  * character, and the length of the name.
