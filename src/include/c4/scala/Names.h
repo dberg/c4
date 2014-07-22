@@ -60,6 +60,29 @@ public:
   TypeName(int index, int len, spTypeName next);
 };
 
+/** TermName_S and TypeName_S have fields containing the string version of the name.
+ *  TermName_R and TypeName_R recreate it each time toString is called.
+ */
+// TODO:
+class TermName_S : public TermName {
+
+};
+
+// TODO:
+class TypeName_S : public TypeName {
+
+};
+
+// TODO:
+class TermName_R : public TermName {
+
+};
+
+// TODO:
+class TypeName_R : public TypeName {
+
+};
+
 } // namespace
 
 #endif
