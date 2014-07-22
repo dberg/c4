@@ -10,8 +10,10 @@
 namespace c4s {
 
 class Names {
-public:
+private:
+  int hashValue(std::vector<c4::Char> cs, int offset, int len);
 
+public:
   spTermName newTermName(std::vector<c4::Char> cs, int offset, int len,
     std::string cachedString = "");
 };
