@@ -28,6 +28,8 @@ private:
 
   int hashValue(std::vector<c4::Char> cs, int offset, int len);
 
+  bool equals(int index, std::vector<c4::Char> cs, int offset, int len);
+
 public:
   spTermName newTermName(std::vector<c4::Char> cs, int offset, int len,
     std::string cachedString = "");
@@ -42,43 +44,44 @@ protected:
 
 public:
   Name(int index, int len);
+
+  virtual int start();
+  virtual int length();
 };
 
 class TermName : public Name {
-private:
-  spTermName next;
-
 public:
+  spTermName next;
   TermName(int index, int len, spTermName next);
 };
 
 class TypeName : public Name {
-private:
-  spTypeName next;
-
 public:
+  spTypeName next;
   TypeName(int index, int len, spTypeName next);
 };
 
 /** TermName_S and TypeName_S have fields containing the string version of the name.
  *  TermName_R and TypeName_R recreate it each time toString is called.
  */
-// TODO:
 class TermName_S : public TermName {
+protected:
+  std::string cachedString;
 
+public:
+  TermName_S(int index, int len, spTermName next, std::string cachedString);
+  virtual std::string toString();
 };
 
-// TODO:
 class TypeName_S : public TypeName {
 
 };
 
-// TODO:
 class TermName_R : public TermName {
-
+public:
+  TermName_R(int index, int len, spTermName next);
 };
 
-// TODO:
 class TypeName_R : public TypeName {
 
 };
