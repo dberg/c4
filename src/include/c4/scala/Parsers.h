@@ -3,6 +3,7 @@
 #define __C4_SCALA_PARSERS_H__
 
 #include <string>
+#include <vector>
 #include "c4/scala/TypeDefs.h"
 
 namespace c4s {
@@ -19,6 +20,8 @@ private:
 
 protected:
   spScanner in;
+
+  virtual std::vector<spTree> topstatus();
 
 public:
   Global *global;

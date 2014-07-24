@@ -26,6 +26,7 @@ Scanner::Scanner(Global *global, spSourceFile source)
     reader(spCharArrayReader(new CharArrayReader(source->content()))),
     sData(spScannerData(new ScannerData)),
     tData(spTokenData(new TokenData)),
+    kwOffset(0),
     global(global) {}
 
 /** Clear buffer and set name and token */
@@ -34,8 +35,11 @@ void Scanner::finishNamed(Token idtoken) {
   cbuf.clear();
   tData->token = idtoken;
   if (idtoken == Token::T_IDENTIFIER) {
+    int idx = tData->name->start() - kwOffset;
     // TODO:
-    //auto idx = tData->name.start -kwOffset;
+    //if (idx >= 0 && idx < kwArray.size()) {
+    //
+    //}
   }
 }
 
@@ -143,6 +147,16 @@ void Scanner::nextToken() {
   } else {
     // TODO:
   }
+
+  // Insert NEWLINE or NEWLINES if
+  // - we are after a newline
+  // - we are within a { ... } or on toplevel (wrt sepRegions)
+  // - the current token can start a statement and the one before can end it
+  // insert NEWLINES if we are past a blank line, NEWLINE otherwise
+  // TODO:
+
+  // Join CASE + CLASS => CASECLASS, CASE + OBJECT => CASEOBJECT, SEMI + ELSE => ELSE
+  // TODO:
 }
 
 /** Constructor */

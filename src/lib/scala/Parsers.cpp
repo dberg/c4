@@ -21,7 +21,15 @@ spTree Parser::parse() {
 PackageDef* Parser::compilationUnit() {
   // TODO:
   resetPackage();
+  topstatus();
   return new PackageDef;
+}
+
+std::vector<spTree> Parser::topstatus() {
+  // TODO:
+  std::vector<spTree> trees;
+  trees.push_back(spTree(new Tree));
+  return trees;
 }
 
 /** Constructor */
