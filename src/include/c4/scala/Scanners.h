@@ -67,8 +67,12 @@ private:
   spScannerData sData;
   spTokenData tData;
 
+  // Identifiers
   void getIdentRest();
   void finishNamed(Token idtoken = Token::T_IDENTIFIER);
+
+  // Keyword configuration
+  Offset kwOffset;
 
 protected:
 
