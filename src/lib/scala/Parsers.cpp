@@ -27,6 +27,13 @@ PackageDef* Parser::compilationUnit() {
 
 std::vector<spTree> Parser::topstatus() {
   // TODO:
+  // auto ts = std::vector<spTree>;
+  // while (in.token == SEMI) in->nextToken();
+  if (in->tData->token == Token:: T_PACKAGE) {
+
+  }
+
+  // TODO:
   std::vector<spTree> trees;
   trees.push_back(spTree(new Tree));
   return trees;

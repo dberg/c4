@@ -65,7 +65,6 @@ private:
 
   spCharArrayReader reader;
   spScannerData sData;
-  spTokenData tData;
 
   // Identifiers
   void getIdentRest();
@@ -73,6 +72,10 @@ private:
 
   // Keyword configuration
   Offset kwOffset;
+  std::vector<Token> kwArray;
+
+  std::pair<Token, std::vector<Token>> createKeywordArray(
+    std::vector<std::pair<spName, Token>> keywords, Token defaultToken);
 
 protected:
 
@@ -82,6 +85,7 @@ protected:
 public:
 
   Global *global;
+  spTokenData tData;
 
   Scanner(Global *global, spSourceFile source);
 

@@ -22,6 +22,9 @@ typedef std::shared_ptr<Global> spGlobal;
 class Names;
 typedef std::shared_ptr<Names> spNames;
 
+class Name;
+typedef std::shared_ptr<Name> spName;
+
 class TermName;
 typedef std::shared_ptr<TermName> spTermName;
 

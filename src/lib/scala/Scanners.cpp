@@ -1,3 +1,4 @@
+#include <algorithm>
 #include "c4/scala/Scanners.h"
 #include "c4/scala/Global.h"
 #include "c4/scala/CharArrayReader.h"
@@ -25,9 +26,45 @@ Scanner::Scanner(Global *global, spSourceFile source)
   : source(source), buf(source->content()),
     reader(spCharArrayReader(new CharArrayReader(source->content()))),
     sData(spScannerData(new ScannerData)),
-    tData(spTokenData(new TokenData)),
     kwOffset(0),
-    global(global) {}
+    global(global),
+    tData(spTokenData(new TokenData))
+{
+  // TODO: 'allKeyWords'
+  //auto pair = createKeywordArray(allKeywords, Token::T_IDENTIFIER);
+  //kwOffset = pair.first;
+  //kwArray = pair.second;
+}
+
+/** @returns (lowest Name.start(), vector of Tokens) */
+std::pair<Token, std::vector<Token>> Scanner::createKeywordArray(
+  std::vector<std::pair<spName, Token>> keywords, Token defaultToken) {
+
+  // Sort the keywords by Name.start()
+  sort(keywords.begin(), keywords.end(),
+    [] (const std::pair<spName, Token> &p1, const std::pair<spName, Token> &p2) {
+      return p1.first->start() < p2.first->start();
+    }
+  );
+
+  // name->start(), Token
+  std::vector<std::pair<int, Token>> names;
+  for (auto pair: keywords) {
+    names.push_back(std::make_pair(pair.first->start(), pair.second));
+  }
+
+  int low = names[0].first;
+  int high = names.empty() ? 0 : names.back().first;
+
+  int size = high - low + 1;
+  std::vector<Token> arr(size, defaultToken);
+  for (auto pair: names) {
+    arr[pair.first + low] = pair.second;
+  }
+
+  return std::make_pair((Token) low, arr);
+}
+
 
 /** Clear buffer and set name and token */
 void Scanner::finishNamed(Token idtoken) {
