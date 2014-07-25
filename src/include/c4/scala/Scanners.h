@@ -71,6 +71,7 @@ private:
   void finishNamed(Token idtoken = Token::T_IDENTIFIER);
 
   // Keyword configuration
+  std::vector<std::pair<spName, Token>> allKeywords;
   Offset kwOffset;
   std::vector<Token> kwArray;
 

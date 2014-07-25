@@ -30,7 +30,8 @@ Scanner::Scanner(Global *global, spSourceFile source)
     global(global),
     tData(spTokenData(new TokenData))
 {
-  // TODO: 'allKeyWords'
+  // TODO:
+  // init allKeyWords
   //auto pair = createKeywordArray(allKeywords, Token::T_IDENTIFIER);
   //kwOffset = pair.first;
   //kwArray = pair.second;
