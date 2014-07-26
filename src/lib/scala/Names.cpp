@@ -1,3 +1,4 @@
+#include "utf8/utf8.h"
 #include "c4/scala/Names.h"
 
 namespace c4s {
@@ -63,6 +64,12 @@ spTermName Names::newTermName(std::vector<c4::Char> cs, int offset, int len,
     return termName;
     // }
   }
+}
+
+spTermName Names::newTermNameCached(std::string s) {
+  std::vector<c4::Char> tmp;
+  utf8::utf8to16(s.begin(), s.end(), back_inserter(tmp));
+  return newTermName(tmp, 0, tmp.size(), s);
 }
 
 /** Constructor */

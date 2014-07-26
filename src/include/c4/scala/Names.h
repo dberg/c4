@@ -34,6 +34,8 @@ public:
   spTermName newTermName(std::vector<c4::Char> cs, int offset, int len,
     std::string cachedString = "");
 
+  spTermName newTermNameCached(std::string s);
+
   Names();
 };
 
