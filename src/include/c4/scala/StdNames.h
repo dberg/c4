@@ -4,9 +4,23 @@
 
 namespace c4s {
 
-class Keywords {
+class KeywordSetBuilder {
+private:
+  Global *global;
+  std::set<spTermName> kws;
+
 public:
-  Keywords();
+  KeywordSetBuilder(Global *global);
+  spTermName apply(std::string s);
+  std::set<spTermName> result();
+};
+
+class Keywords {
+private:
+  Global *global;
+
+public:
+  Keywords(Global *global);
 };
 
 class TermNames {
