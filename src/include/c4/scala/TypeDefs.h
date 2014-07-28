@@ -61,6 +61,16 @@ typedef std::shared_ptr<SourceFile> spSourceFile;
 class ClientSourceFile;
 typedef std::shared_ptr<ClientSourceFile> spClientSourceFile;
 
+// StdNames.h
+class StdNames;
+typedef std::shared_ptr<StdNames> spStdNames;
+
+class Keywords;
+typedef std::shared_ptr<Keywords> spKeywords;
+
+class KeywordSetBuilder;
+typedef std::shared_ptr<KeywordSetBuilder> spKeywordSetBuilder;
+
 // SubComponent.h
 class SubComponent;
 

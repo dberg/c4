@@ -1,3 +1,6 @@
+#include <string>
+#include "c4/scala/TypeDefs.h"
+#include "c4/scala/Names.h"
 #include "c4/scala/StdNames.h"
 
 namespace c4s {
@@ -18,62 +21,63 @@ std::set<spTermName> KeywordSetBuilder::result() {
 }
 
 /** Constructor */
-Keywords::Keywords(Global *global): global(global) {
-  auto kw = new spKeywordsSetBuilder(new KeywordsSetBuilder(global));
-  spTermName ABSTRACTkw  = kw.apply("abstract");
-  spTermName CASEkw      = kw.apply("case");
-  spTermName CLASSkw     = kw.apply("class");
-  spTermName CATCHkw     = kw.apply("catch");
-  spTermName DEFkw       = kw.apply("def");
-  spTermName DOkw        = kw.apply("do");
-  spTermName ELSEkw      = kw.apply("else");
-  spTermName EXTENDSkw   = kw.apply("extends");
-  spTermName FALSEkw     = kw.apply("false");
-  spTermName FINALkw     = kw.apply("final");
-  spTermName FINALLYkw   = kw.apply("finally");
-  spTermName FORkw       = kw.apply("for");
-  spTermName FORSOMEkw   = kw.apply("forSome");
-  spTermName IFkw        = kw.apply("if");
-  spTermName IMPLICITkw  = kw.apply("implicit");
-  spTermName IMPORTkw    = kw.apply("import");
-  spTermName LAZYkw      = kw.apply("lazy");
-  spTermName MACROkw     = kw.apply("macro");
-  spTermName MATCHkw     = kw.apply("match");
-  spTermName NEWkw       = kw.apply("new");
-  spTermName NULLkw      = kw.apply("null");
-  spTermName OBJECTkw    = kw.apply("object");
-  spTermName OVERRIDEkw  = kw.apply("override");
-  spTermName PACKAGEkw   = kw.apply("package");
-  spTermName PRIVATEkw   = kw.apply("private");
-  spTermName PROTECTEDkw = kw.apply("protected");
-  spTermName RETURNkw    = kw.apply("return");
-  spTermName SEALEDkw    = kw.apply("sealed");
-  spTermName SUPERkw     = kw.apply("super");
-  spTermName THENkw      = kw.apply("then");
-  spTermName THISkw      = kw.apply("this");
-  spTermName THROWkw     = kw.apply("throw");
-  spTermName TRAITkw     = kw.apply("trait");
-  spTermName TRUEkw      = kw.apply("true");
-  spTermName TRYkw       = kw.apply("try");
-  spTermName TYPEkw      = kw.apply("type");
-  spTermName VALkw       = kw.apply("val");
-  spTermName VARkw       = kw.apply("var");
-  spTermName WITHkw      = kw.apply("with");
-  spTermName WHILEkw     = kw.apply("while");
-  spTermName YIELDkw     = kw.apply("yield");
-  spTermName DOTkw       = kw.apply(".");
-  spTermName USCOREkw    = kw.apply("_");
-  spTermName COLONkw     = kw.apply(":");
-  spTermName EQUALSkw    = kw.apply("=");
-  spTermName ARROWkw     = kw.apply("=>");
-  spTermName LARROWkw    = kw.apply("<-");
-  spTermName SUBTYPEkw   = kw.apply("<:");
-  spTermName VIEWBOUNDkw = kw.apply("<%");
-  spTermName SUPERTYPEkw = kw.apply(">:");
-  spTermName HASHkw      = kw.apply("#");
-  spTermName ATkw        = kw.apply("@");
+Keywords::Keywords(Global *global) {
+  auto kw = spKeywordSetBuilder(new KeywordSetBuilder(global));
+  ABSTRACTkw  = kw->apply("abstract");
+  CASEkw      = kw->apply("case");
+  CLASSkw     = kw->apply("class");
+  CATCHkw     = kw->apply("catch");
+  DEFkw       = kw->apply("def");
+  DOkw        = kw->apply("do");
+  ELSEkw      = kw->apply("else");
+  EXTENDSkw   = kw->apply("extends");
+  FALSEkw     = kw->apply("false");
+  FINALkw     = kw->apply("final");
+  FINALLYkw   = kw->apply("finally");
+  FORkw       = kw->apply("for");
+  FORSOMEkw   = kw->apply("forSome");
+  IFkw        = kw->apply("if");
+  IMPLICITkw  = kw->apply("implicit");
+  IMPORTkw    = kw->apply("import");
+  LAZYkw      = kw->apply("lazy");
+  MACROkw     = kw->apply("macro");
+  MATCHkw     = kw->apply("match");
+  NEWkw       = kw->apply("new");
+  NULLkw      = kw->apply("null");
+  OBJECTkw    = kw->apply("object");
+  OVERRIDEkw  = kw->apply("override");
+  PACKAGEkw   = kw->apply("package");
+  PRIVATEkw   = kw->apply("private");
+  PROTECTEDkw = kw->apply("protected");
+  RETURNkw    = kw->apply("return");
+  SEALEDkw    = kw->apply("sealed");
+  SUPERkw     = kw->apply("super");
+  THENkw      = kw->apply("then");
+  THISkw      = kw->apply("this");
+  THROWkw     = kw->apply("throw");
+  TRAITkw     = kw->apply("trait");
+  TRUEkw      = kw->apply("true");
+  TRYkw       = kw->apply("try");
+  TYPEkw      = kw->apply("type");
+  VALkw       = kw->apply("val");
+  VARkw       = kw->apply("var");
+  WITHkw      = kw->apply("with");
+  WHILEkw     = kw->apply("while");
+  YIELDkw     = kw->apply("yield");
+  DOTkw       = kw->apply(".");
+  USCOREkw    = kw->apply("_");
+  COLONkw     = kw->apply(":");
+  EQUALSkw    = kw->apply("=");
+  ARROWkw     = kw->apply("=>");
+  LARROWkw    = kw->apply("<-");
+  SUBTYPEkw   = kw->apply("<:");
+  VIEWBOUNDkw = kw->apply("<%");
+  SUPERTYPEkw = kw->apply(">:");
+  HASHkw      = kw->apply("#");
+  ATkw        = kw->apply("@");
 
-  std::set<spTermName> keywords = kw.result();
+  // TODO:
+  //keywords = kw->result();
 
   // TODO:
   // auto javaKeywords = new JavaKeywords();
@@ -86,6 +90,7 @@ TermNames::TermNames() {}
 nme::nme() {}
 
 /** Constructor */
-StdNames::StdNames() {}
+StdNames::StdNames(Global *global):
+  keywords(spKeywords(new Keywords(global))) {}
 
 } // namespace

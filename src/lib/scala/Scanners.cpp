@@ -6,6 +6,7 @@
 #include "c4/scala/Chars.h"
 #include "c4/scala/CompilationUnits.h"
 #include "c4/scala/Names.h"
+#include "c4/scala/StdNames.h"
 
 namespace c4s {
 
@@ -30,11 +31,114 @@ Scanner::Scanner(Global *global, spSourceFile source)
     global(global),
     tData(spTokenData(new TokenData))
 {
-  // TODO:
-  // init allKeyWords
-  //auto pair = createKeywordArray(allKeywords, Token::T_IDENTIFIER);
-  //kwOffset = pair.first;
-  //kwArray = pair.second;
+  allKeywords.push_back(std::make_pair(
+    global->stdNames->keywords->ABSTRACTkw, Token::T_ABSTRACT));
+  allKeywords.push_back(std::make_pair(
+    global->stdNames->keywords->CASEkw, Token::T_CASE));
+  allKeywords.push_back(std::make_pair(
+    global->stdNames->keywords->CATCHkw, Token::T_CATCH));
+  allKeywords.push_back(std::make_pair(
+    global->stdNames->keywords->CLASSkw, Token::T_CLASS));
+  allKeywords.push_back(std::make_pair(
+    global->stdNames->keywords->DEFkw, Token::T_DEF));
+  allKeywords.push_back(std::make_pair(
+    global->stdNames->keywords->DOkw, Token::T_DO));
+  allKeywords.push_back(std::make_pair(
+    global->stdNames->keywords->ELSEkw, Token::T_ELSE));
+  allKeywords.push_back(std::make_pair(
+    global->stdNames->keywords->EXTENDSkw, Token::T_EXTENDS));
+  allKeywords.push_back(std::make_pair(
+    global->stdNames->keywords->FALSEkw, Token::T_FALSE));
+  allKeywords.push_back(std::make_pair(
+    global->stdNames->keywords->FINALkw, Token::T_FINAL));
+  allKeywords.push_back(std::make_pair(
+    global->stdNames->keywords->FINALLYkw, Token::T_FINALLY));
+  allKeywords.push_back(std::make_pair(
+    global->stdNames->keywords->FORkw, Token::T_FOR));
+  allKeywords.push_back(std::make_pair(
+    global->stdNames->keywords->FORSOMEkw, Token::T_FORSOME));
+  allKeywords.push_back(std::make_pair(
+    global->stdNames->keywords->IFkw, Token::T_IF));
+  allKeywords.push_back(std::make_pair(
+    global->stdNames->keywords->IMPLICITkw, Token::T_IMPLICIT));
+  allKeywords.push_back(std::make_pair(
+    global->stdNames->keywords->IMPORTkw, Token::T_IMPORT));
+  allKeywords.push_back(std::make_pair(
+    global->stdNames->keywords->LAZYkw, Token::T_LAZY));
+  allKeywords.push_back(std::make_pair(
+    global->stdNames->keywords->MATCHkw, Token::T_MATCH));
+  allKeywords.push_back(std::make_pair(
+    global->stdNames->keywords->NEWkw, Token::T_NEW));
+  allKeywords.push_back(std::make_pair(
+    global->stdNames->keywords->NULLkw, Token::T_NULL));
+  allKeywords.push_back(std::make_pair(
+    global->stdNames->keywords->OBJECTkw, Token::T_OBJECT));
+  allKeywords.push_back(std::make_pair(
+    global->stdNames->keywords->OVERRIDEkw, Token::T_OVERRIDE));
+  allKeywords.push_back(std::make_pair(
+    global->stdNames->keywords->PACKAGEkw, Token::T_PACKAGE));
+  allKeywords.push_back(std::make_pair(
+    global->stdNames->keywords->PRIVATEkw, Token::T_PRIVATE));
+  allKeywords.push_back(std::make_pair(
+    global->stdNames->keywords->PROTECTEDkw, Token::T_PROTECTED));
+  allKeywords.push_back(std::make_pair(
+    global->stdNames->keywords->RETURNkw, Token::T_RETURN));
+  allKeywords.push_back(std::make_pair(
+    global->stdNames->keywords->SEALEDkw, Token::T_SEALED));
+  allKeywords.push_back(std::make_pair(
+    global->stdNames->keywords->SUPERkw, Token::T_SUPER));
+  allKeywords.push_back(std::make_pair(
+    global->stdNames->keywords->THISkw, Token::T_THIS));
+  allKeywords.push_back(std::make_pair(
+    global->stdNames->keywords->THROWkw, Token::T_THROW));
+  allKeywords.push_back(std::make_pair(
+    global->stdNames->keywords->TRAITkw, Token::T_TRAIT));
+  allKeywords.push_back(std::make_pair(
+    global->stdNames->keywords->TRUEkw, Token::T_TRUE));
+  allKeywords.push_back(std::make_pair(
+    global->stdNames->keywords->TRYkw, Token::T_TRY));
+  allKeywords.push_back(std::make_pair(
+    global->stdNames->keywords->TYPEkw, Token::T_TYPE));
+  allKeywords.push_back(std::make_pair(
+    global->stdNames->keywords->VALkw, Token::T_VAL));
+  allKeywords.push_back(std::make_pair(
+    global->stdNames->keywords->VARkw, Token::T_VAR));
+  allKeywords.push_back(std::make_pair(
+    global->stdNames->keywords->WHILEkw, Token::T_WHILE));
+  allKeywords.push_back(std::make_pair(
+    global->stdNames->keywords->WITHkw, Token::T_WITH));
+  allKeywords.push_back(std::make_pair(
+    global->stdNames->keywords->YIELDkw, Token::T_YIELD));
+  allKeywords.push_back(std::make_pair(
+    global->stdNames->keywords->DOTkw, Token::T_DOT));
+  allKeywords.push_back(std::make_pair(
+    global->stdNames->keywords->USCOREkw, Token::T_USCORE));
+  allKeywords.push_back(std::make_pair(
+    global->stdNames->keywords->COLONkw, Token::T_COLON));
+  allKeywords.push_back(std::make_pair(
+    global->stdNames->keywords->EQUALSkw, Token::T_EQUALS));
+  allKeywords.push_back(std::make_pair(
+    global->stdNames->keywords->ARROWkw, Token::T_ARROW));
+  allKeywords.push_back(std::make_pair(
+    global->stdNames->keywords->LARROWkw, Token::T_LARROW));
+  allKeywords.push_back(std::make_pair(
+    global->stdNames->keywords->SUBTYPEkw, Token::T_SUBTYPE));
+  allKeywords.push_back(std::make_pair(
+    global->stdNames->keywords->VIEWBOUNDkw, Token::T_VIEWBOUND));
+  allKeywords.push_back(std::make_pair(
+    global->stdNames->keywords->SUPERTYPEkw, Token::T_SUPERTYPE));
+  allKeywords.push_back(std::make_pair(
+    global->stdNames->keywords->HASHkw, Token::T_HASH));
+  allKeywords.push_back(std::make_pair(
+    global->stdNames->keywords->ATkw, Token::T_AT));
+  allKeywords.push_back(std::make_pair(
+    global->stdNames->keywords->MACROkw, Token::T_IDENTIFIER));
+  allKeywords.push_back(std::make_pair(
+    global->stdNames->keywords->THENkw, Token::T_IDENTIFIER));
+
+  auto pair = createKeywordArray(allKeywords, Token::T_IDENTIFIER);
+  kwOffset = (int) pair.first;
+  kwArray = pair.second;
 }
 
 /** @returns (lowest Name.start(), vector of Tokens) */

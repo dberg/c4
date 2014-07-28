@@ -207,6 +207,7 @@ $(obj_scala)/libscala.a: \
   $(obj_scala)/Phase.o \
   $(obj_scala)/Scanners.o \
   $(obj_scala)/SourceFile.o \
+  $(obj_scala)/StdNames.o \
   $(obj_scala)/SubComponent.o \
   $(obj_scala)/SyntaxAnalyzer.o
 	ar -rv $@ $+

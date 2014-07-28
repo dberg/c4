@@ -25,6 +25,7 @@ protected:
 public:
 
   spNames names;
+  spStdNames stdNames;
 
   /** Compilation units to be compiled */
   std::vector<spCompilationUnit> units;
