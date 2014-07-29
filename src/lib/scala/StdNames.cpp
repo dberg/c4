@@ -76,8 +76,7 @@ Keywords::Keywords(Global *global) {
   HASHkw      = kw->apply("#");
   ATkw        = kw->apply("@");
 
-  // TODO:
-  //keywords = kw->result();
+  keywords = kw->result();
 
   // TODO:
   // auto javaKeywords = new JavaKeywords();

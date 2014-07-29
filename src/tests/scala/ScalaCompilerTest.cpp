@@ -15,11 +15,12 @@ TEST(ScalaCompiler, HelloWorld) {
 
   std::string filename = "A.scala";
   std::string sourceCode =
-    "object A {"
-    "  def main(args: Array[String]) = {"
-    "    println(\"Hello world\")"
-    "  }"
-    "}";
+    "package test\n"
+    "object A {\n"
+    "  def main(args: Array[String]) = {\n"
+    "    println(\"Hello world\")\n"
+    "  }\n"
+    "}\n";
 
   std::vector<c4::Char> buffer;
   utf8::utf8to16(sourceCode.begin(), sourceCode.end(),

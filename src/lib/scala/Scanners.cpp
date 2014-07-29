@@ -178,10 +178,12 @@ void Scanner::finishNamed(Token idtoken) {
   tData->token = idtoken;
   if (idtoken == Token::T_IDENTIFIER) {
     int idx = tData->name->start() - kwOffset;
-    // TODO:
-    //if (idx >= 0 && idx < kwArray.size()) {
-    //
-    //}
+    if (idx >= 0 && idx < (int) kwArray.size()) {
+      tData->token = kwArray[idx];
+      //if (token == Token::T_IDENTIFIER && allowIdent != name) {
+      // TODO:
+      //}
+    }
   }
 }
 
