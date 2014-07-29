@@ -209,6 +209,7 @@ void Scanner::fetchToken() {
   case Chars::FF:
     reader->nextChar();
     fetchToken();
+    break;
   case 'A': case 'B': case 'C': case 'D': case 'E':
   case 'F': case 'G': case 'H': case 'I': case 'J':
   case 'K': case 'L': case 'M': case 'N': case 'O':
@@ -223,6 +224,7 @@ void Scanner::fetchToken() {
     putChar(reader->ch);
     reader->nextChar();
     getIdentRest();
+    break;
   }
   // TODO:
 }
@@ -246,13 +248,16 @@ void Scanner::getIdentRest() {
     putChar(reader->ch);
     reader->nextChar();
     getIdentRest();
+    break;
   case '_':
     putChar(reader->ch);
     reader->nextChar();
     // TODO:
     //getIdentOrOperatorRest();
+    break;
   case Chars::SU:
     finishNamed();
+    break;
   default:
     // TODO:
     //if (Character::isUnicodeIdentifierPart(ch)) {
@@ -261,6 +266,7 @@ void Scanner::getIdentRest() {
     //  getIdentRest();
     //} else {
       finishNamed();
+      break;
     //}
   }
 }
