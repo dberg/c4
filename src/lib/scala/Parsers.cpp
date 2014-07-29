@@ -21,16 +21,21 @@ spTree Parser::parse() {
 PackageDef* Parser::compilationUnit() {
   // TODO:
   resetPackage();
-  topstatus();
+  topstats();
   return new PackageDef;
 }
 
-std::vector<spTree> Parser::topstatus() {
+std::vector<spTree> Parser::topstats() {
   // TODO:
   // auto ts = std::vector<spTree>;
   // while (in.token == SEMI) in->nextToken();
   if (in->tData->token == Token:: T_PACKAGE) {
-
+    in->nextToken();
+    if (in->tData->token == Token::T_OBJECT) {
+      // TODO:
+    } else {
+      // TODO:
+    }
   }
 
   // TODO:

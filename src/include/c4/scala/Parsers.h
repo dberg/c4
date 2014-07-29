@@ -21,7 +21,7 @@ private:
 protected:
   spScanner in;
 
-  virtual std::vector<spTree> topstatus();
+  virtual std::vector<spTree> topstats();
 
 public:
   Global *global;
