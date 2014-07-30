@@ -30,6 +30,8 @@ private:
 
   bool equals(int index, std::vector<c4::Char> cs, int offset, int len);
 
+  void enterChars(std::vector<c4::Char> cs, int offset, int len);
+
 public:
   spTermName newTermName(std::vector<c4::Char> cs, int offset, int len,
     std::string cachedString = "");

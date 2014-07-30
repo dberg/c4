@@ -35,6 +35,21 @@ bool Names::equals(int index, std::vector<c4::Char> cs, int offset, int len) {
   return i == len;
 }
 
+/** Enter characters into chrs array. */
+void Names::enterChars(std::vector<c4::Char> cs, int offset, int len) {
+  int i = 0;
+  while (i < len) {
+    chrs[nc + i] = cs[offset + i];
+    ++i;
+  }
+
+  if (len == 0) {
+    ++nc;
+  } else {
+    nc += len;
+  }
+}
+
 /**
  * Create a term name from the characters in cs[offset..offset+len-1].
  */
@@ -56,13 +71,17 @@ spTermName Names::newTermName(std::vector<c4::Char> cs, int offset, int len,
     //   // Optimize for subName, the new name is already stored in chrs
     //   startIndex = offset;
     // } else {
+    startIndex = nc;
+    enterChars(cs, offset, len);
+    // }
+
     spTermName next = termHashtable[h];
     spTermName termName = (cachedString.size())
       ? spTermName(new TermName_S(startIndex, len, next, cachedString))
       : spTermName(new TermName_R(startIndex, len, next));
     termHashtable[h] = termName;
     return termName;
-    // }
+
   }
 }
 

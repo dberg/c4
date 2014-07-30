@@ -170,7 +170,6 @@ std::pair<Token, std::vector<Token>> Scanner::createKeywordArray(
   return std::make_pair((Token) low, arr);
 }
 
-
 /** Clear buffer and set name and token */
 void Scanner::finishNamed(Token idtoken) {
   tData->name = global->names->newTermName(cbuf, 0, cbuf.size());

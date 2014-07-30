@@ -33,6 +33,8 @@ std::vector<spTree> Parser::topstats() {
     in->nextToken();
     if (in->tData->token == Token::T_OBJECT) {
       // TODO:
+      //in->flushDoc();
+      //auto pkg = pkgQualId();
     } else {
       // TODO:
     }
