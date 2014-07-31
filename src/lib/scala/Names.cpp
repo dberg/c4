@@ -102,6 +102,11 @@ int Name::length() {
   return len;
 }
 
+/** Replace operator symbols by corresponding \$op_name. */
+spThisNameType Name::encode() {
+  // TODO:
+}
+
 /** Constructor */
 TermName::TermName(int index, int len, spTermName next)
   : Name(index, len), next(next) {}

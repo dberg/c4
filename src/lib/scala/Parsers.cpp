@@ -1,6 +1,7 @@
 #include "c4/scala/Parsers.h"
 #include "c4/scala/Trees.h"
 #include "c4/scala/Scanners.h"
+#include "c4/scala/Names.h"
 
 namespace c4s {
 
@@ -24,6 +25,7 @@ bool Parser::isIdent() {
 spName Parser::ident(bool skipIt) {
   if (isIdent()) {
     // TODO:
+    auto name = in->tData->name->encode();
   }
 
   // TODO:

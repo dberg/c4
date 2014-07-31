@@ -31,6 +31,8 @@ typedef std::shared_ptr<TermName> spTermName;
 class TypeName;
 typedef std::shared_ptr<TypeName> spTypeName;
 
+typedef spName spThisNameType;
+
 // Parsers.h
 class UnitParser;
 typedef std::shared_ptr<UnitParser> spUnitParser;

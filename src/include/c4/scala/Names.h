@@ -51,6 +51,7 @@ public:
 
   virtual int start();
   virtual int length();
+  virtual spThisNameType encode();
 };
 
 class TermName : public Name {
