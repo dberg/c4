@@ -21,6 +21,18 @@ private:
 protected:
   spScanner in;
 
+  //---------------------------------------------------------------------------
+  // Token Classes
+  //---------------------------------------------------------------------------
+  bool isIdent();
+
+  //---------------------------------------------------------------------------
+  // Identifiers and literals
+  //---------------------------------------------------------------------------
+  virtual spName ident(bool skipIt = true);
+  virtual spTree qualId();
+  virtual spTree pkgQualId();
+
   virtual std::vector<spTree> topstats();
 
 public:
