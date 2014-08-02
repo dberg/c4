@@ -3,8 +3,11 @@
 #define __C4_SCALA_TYPE_DEFS_H__
 
 #include <memory>
+#include "c4/common/TypeDefs.h"
 
 namespace c4s {
+
+typedef c4::Char Char;
 
 // CharArrayReader.h
 class CharArrayReader;
@@ -32,6 +35,13 @@ class TypeName;
 typedef std::shared_ptr<TypeName> spTypeName;
 
 typedef spName spThisNameType;
+
+// NameTransformer.h
+class NameTransformer;
+typedef std::shared_ptr<NameTransformer> spNameTransformer;
+
+class OpCodes;
+typedef std::shared_ptr<OpCodes> spOpCodes;
 
 // Parsers.h
 class UnitParser;

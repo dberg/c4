@@ -26,6 +26,7 @@ public:
 
   spNames names;
   spStdNames stdNames;
+  spNameTransformer nameTransformer;
 
   /** Compilation units to be compiled */
   std::vector<spCompilationUnit> units;

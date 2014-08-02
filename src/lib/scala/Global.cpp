@@ -4,13 +4,15 @@
 #include "c4/scala/Phase.h"
 #include "c4/scala/StdNames.h"
 #include "c4/scala/SyntaxAnalyzer.h"
+#include "c4/scala/NameTransformer.h"
 
 namespace c4s {
 
 Global::Global():
   globalPhase(nullptr),
   names(spNames(new Names)),
-  stdNames(spStdNames(new StdNames(this)))
+  stdNames(spStdNames(new StdNames(this))),
+  nameTransformer(spNameTransformer(new NameTransformer()))
 {
   spSyntaxAnalyzer synAnalyzer = spSyntaxAnalyzer(new SyntaxAnalyzer(this));
   phases.push_back(synAnalyzer->newPhase());
