@@ -31,7 +31,7 @@ private:
 public:
   NameTransformer();
 
-  std::string encode(std::vector<Char> name);
+  std::vector<Char> encode(std::vector<Char> name);
 };
 
 } // namespace

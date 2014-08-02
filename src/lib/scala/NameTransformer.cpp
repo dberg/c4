@@ -1,3 +1,4 @@
+#include "utf8/utf8.h"
 #include "c4/scala/NameTransformer.h"
 
 namespace c4s {
@@ -35,13 +36,26 @@ void NameTransformer::enterOp(Char op, std::string code) {
 }
 
 /** Replace operator symbols by corresponding `\$opname`. */
-std::string NameTransformer::encode(std::vector<Char> name) {
-  std::vector<Char> buf;
+std::vector<Char> NameTransformer::encode(std::vector<Char> name) {
+  std::vector<Char> buf(name.size());
   for (auto c : name) {
-    if (c < nops && !(op2code[c].empty())) {
+    if (c < nops) {
+      std::string code = op2code[c];
+      if (code.empty()) {
+        buf.push_back(c);
+      } else {
+        utf8::utf8to16(code.begin(), code.end(), back_inserter(buf));
+      }
+    // TODO:
+    //} else if (!Character.isJavaIdentifierPart(c)) {
       // TODO:
+      // buf.append("$u%04X".format(c.toInt))
+    } else {
+      buf.push_back(c);
     }
   }
+
+  return buf;
 }
 
 } // namespace
