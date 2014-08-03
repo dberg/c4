@@ -1,12 +1,15 @@
 #include "utf8/utf8.h"
 #include "c4/scala/Names.h"
+#include "c4/scala/Global.h"
+#include "c4/scala/NameTransformer.h"
 
 namespace c4s {
 
 /** Constructor */
-Names::Names(): chrs(NAME_SIZE, 0), nc(0),
-                termHashtable(HASH_SIZE, nullptr),
-                typeHashtable(HASH_SIZE, nullptr) {}
+Names::Names(Global *global)
+  : global(global), chrs(NAME_SIZE, 0), nc(0),
+    termHashtable(HASH_SIZE, nullptr),
+    typeHashtable(HASH_SIZE, nullptr) {}
 
 /**
  * The hashcode of a name depends on the first, the last and the middle
@@ -77,8 +80,8 @@ spTermName Names::newTermName(std::vector<c4::Char> cs, int offset, int len,
 
     spTermName next = termHashtable[h];
     spTermName termName = (cachedString.size())
-      ? spTermName(new TermName_S(startIndex, len, next, cachedString))
-      : spTermName(new TermName_R(startIndex, len, next));
+      ? spTermName(new TermName_S(global, startIndex, len, next, cachedString))
+      : spTermName(new TermName_R(global, startIndex, len, next));
     termHashtable[h] = termName;
     return termName;
 
@@ -92,7 +95,8 @@ spTermName Names::newTermNameCached(std::string s) {
 }
 
 /** Constructor */
-Name::Name(int index, int len): index(index), len(len) {}
+Name::Name(Global *global, int index, int len)
+  : global(global), index(index), len(len) {}
 
 int Name::start() {
   return index;
@@ -104,28 +108,32 @@ int Name::length() {
 
 /** Replace operator symbols by corresponding \$op_name. */
 spThisNameType Name::encode() {
+  std::vector<Char> str(
+    global->names->chrs.begin() + index,
+    global->names->chrs.begin() + index + len);
+  std::vector<Char> res = global->nameTransformer->encode(str);
   // TODO:
 }
 
 /** Constructor */
-TermName::TermName(int index, int len, spTermName next)
-  : Name(index, len), next(next) {}
+TermName::TermName(Global *global, int index, int len, spTermName next)
+  : Name(global, index, len), next(next) {}
 
 /** Constructor */
-TypeName::TypeName(int index, int len, spTypeName next)
-  : Name(index, len), next(next) {}
+TypeName::TypeName(Global *global, int index, int len, spTypeName next)
+  : Name(global, index, len), next(next) {}
 
 /** Constructor */
-TermName_S::TermName_S(int index, int len, spTermName next,
-                       std::string cachedString)
-  : TermName(index, len, next), cachedString(cachedString) {}
+TermName_S::TermName_S(Global *global, int index, int len,
+                       spTermName next, std::string cachedString)
+  : TermName(global, index, len, next), cachedString(cachedString) {}
 
 std::string TermName_S::toString() {
   return cachedString;
 }
 
 /** Constructor */
-TermName_R::TermName_R(int index, int len, spTermName next)
-  : TermName(index, len, next) {}
+TermName_R::TermName_R(Global *global, int index, int len, spTermName next)
+  : TermName(global, index, len, next) {}
 
 } // namespace

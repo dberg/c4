@@ -10,7 +10,7 @@ namespace c4s {
 
 Global::Global():
   globalPhase(nullptr),
-  names(spNames(new Names)),
+  names(spNames(new Names(this))),
   stdNames(spStdNames(new StdNames(this))),
   nameTransformer(spNameTransformer(new NameTransformer()))
 {
