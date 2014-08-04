@@ -46,9 +46,15 @@ spTree Parser::pkgQualId() {
   // if (in.token == IDENTIFIER && in.name.encode = nme.scala_)
   //   inScalaPackage = true
 
-  auto pkg = qualId();
+  spTree pkg = qualId();
+  // TODO: newLineOptWhenFollowedBy(LBRACE)
 
-  // TODO:
+  if (currentPackage == "") {
+    //currentPackage = pkg->toString();
+  } else {
+    //currentPackage += ".";
+    //currentPackage += pkg->toString();
+  }
 
   return pkg;
 }
@@ -74,7 +80,7 @@ std::vector<spTree> Parser::topstats() {
     } else {
       // TODO:
       //in->flushDoc();
-      auto pkg = pkgQualId();
+      spTree pkg = pkgQualId();
       // TODO:
     }
   }
