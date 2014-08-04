@@ -17,15 +17,16 @@ spTree Parser::parse() {
 }
 
 bool Parser::isIdent() {
-  return in->tData->token == Token::T_IDENTIFIER &&
+  return in->tData->token == Token::T_IDENTIFIER ||
     in->tData->token == Token::T_BACKQUOTED_IDENT;
 }
 
 /** Assumed (provisionally) to be TermNames. */
 spName Parser::ident(bool skipIt) {
   if (isIdent()) {
-    // TODO:
     auto name = in->tData->name->encode();
+    in->nextToken();
+    return name;
   }
 
   // TODO:

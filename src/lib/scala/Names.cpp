@@ -112,7 +112,11 @@ spThisNameType Name::encode() {
     global->names->chrs.begin() + index,
     global->names->chrs.begin() + index + len);
   std::vector<Char> res = global->nameTransformer->encode(str);
-  // TODO:
+  //if (res == str) {
+    return std::make_shared<ThisNameType>(*this);
+  //} else {
+  //  return newName(res);
+  //}
 }
 
 /** Constructor */
