@@ -52,6 +52,10 @@ typedef std::shared_ptr<UnitParser> spUnitParser;
 class Phase;
 typedef std::shared_ptr<Phase> spPhase;
 
+// Positions.h
+class Positions;
+typedef std::shared_ptr<Positions> spPositions;
+
 // Scanners.h
 typedef int Offset;
 
