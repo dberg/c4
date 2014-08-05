@@ -41,6 +41,16 @@ class MemberDef : public DefTree {};
  */
 class PackageDef : public MemberDef {};
 
+/**
+ * A reference to identifier `name`.
+ * TODO: Inherits RefTree and IdentApi
+ */
+class Ident {
+public:
+  spName name;
+  Ident(spName name);
+};
+
 } // namespace
 
 #endif
