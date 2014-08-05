@@ -16,6 +16,15 @@ spTree Parser::parse() {
   return spTree(compilationUnit());
 }
 
+// TODO:
+//spPosition Parser::r2p(Offset start, Offset mid, Offset end);
+//spPosition Parser::r2p(Offset start, Offset mid);
+//spPosition Parser::r2p(Offset offset);
+
+spTree Parser::atPos(Offset offset, spTree t) {
+  // TODO:
+}
+
 bool Parser::isIdent() {
   return in->tData->token == Token::T_IDENTIFIER ||
     in->tData->token == Token::T_BACKQUOTED_IDENT;

@@ -21,10 +21,20 @@ private:
 protected:
   spScanner in;
 
+  // TODO:
+  //spPosition r2p(Offset start, Offset mid, Offset end);
+  //spPosition r2p(Offset start, Offset mid);
+  //spPosition r2p(Offset offset);
+
   //---------------------------------------------------------------------------
   // Token Classes
   //---------------------------------------------------------------------------
   bool isIdent();
+
+  //---------------------------------------------------------------------------
+  // Tree construction
+  //---------------------------------------------------------------------------
+  spTree atPos(Offset offset, spTree t);
 
   //---------------------------------------------------------------------------
   // Identifiers and literals
