@@ -211,7 +211,8 @@ $(obj_scala)/libscala.a: \
   $(obj_scala)/SourceFile.o \
   $(obj_scala)/StdNames.o \
   $(obj_scala)/SubComponent.o \
-  $(obj_scala)/SyntaxAnalyzer.o
+  $(obj_scala)/SyntaxAnalyzer.o \
+  $(obj_scala)/Trees.o
 	ar -rv $@ $+
 
 $(obj_scala)/%.o: \

@@ -114,6 +114,8 @@ typedef std::shared_ptr<MemberDef> spMemberDef;
 class PackageDef;
 typedef std::shared_ptr<PackageDef> spPackageDef;
 
+class Ident;
+
 } // namespace
 
 #endif
