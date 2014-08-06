@@ -10,6 +10,7 @@ class Positions {
 public:
   Positions();
   spTree atPos(spPosition pos);
+  spPosition rangePos(spSourceFile source, int start, int point, int end);
 };
 
 }; // namespace

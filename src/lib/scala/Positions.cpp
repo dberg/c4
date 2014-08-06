@@ -13,4 +13,10 @@ spTree Positions::atPos(spPosition pos) {
   // TODO:
 }
 
+spPosition Positions::rangePos(
+  spSourceFile source, int start, int point, int end)
+{
+  // TODO:
+}
+
 } // namespace
