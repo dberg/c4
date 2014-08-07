@@ -7,6 +7,7 @@ namespace c4s {
 class Position {
 public:
   Position();
+  bool isOpaqueRange();
 };
 
 }; // namespace

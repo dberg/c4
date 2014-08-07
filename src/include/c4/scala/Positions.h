@@ -9,7 +9,8 @@ namespace c4s {
 class Positions {
 public:
   Positions();
-  spTree atPos(spPosition pos);
+  bool useOffsetPositions();
+  spTree atPos(spPosition pos, spTree t);
   spPosition rangePos(spSourceFile source, int start, int point, int end);
 };
 
