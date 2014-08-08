@@ -80,10 +80,15 @@ spTree Parser::compilationUnit() {
 }
 
 std::vector<spTree> Parser::topstats() {
-  // TODO:
-  // auto ts = std::vector<spTree>;
-  // while (in.token == SEMI) in->nextToken();
-  if (in->tData->token == Token:: T_PACKAGE) {
+  auto ts = std::vector<spTree>();
+
+  while (in->tData->token == Token::T_SEMI) {
+    in->nextToken();
+  }
+
+  Offset start = in->tData->offset;
+
+  if (in->tData->token == Token::T_PACKAGE) {
     in->nextToken();
     if (in->tData->token == Token::T_OBJECT) {
       // TODO:
