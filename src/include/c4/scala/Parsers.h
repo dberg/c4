@@ -23,9 +23,9 @@ protected:
   spScanner in;
 
   // TODO:
-  //spPosition r2p(Offset start, Offset mid, Offset end);
-  //spPosition r2p(Offset start, Offset mid);
-  //spPosition r2p(Offset offset);
+  spPosition r2p(Offset start, Offset mid, Offset end);
+  spPosition r2p(Offset start, Offset mid);
+  spPosition r2p(Offset offset);
 
   //---------------------------------------------------------------------------
   // Token Classes

@@ -1,3 +1,4 @@
+#include <algorithm>
 #include "c4/scala/Parsers.h"
 #include "c4/scala/Trees.h"
 #include "c4/scala/Scanners.h"
@@ -16,10 +17,18 @@ spTree Parser::parse() {
   return spTree(compilationUnit());
 }
 
-// TODO:
-//spPosition Parser::r2p(Offset start, Offset mid, Offset end);
-//spPosition Parser::r2p(Offset start, Offset mid);
-//spPosition Parser::r2p(Offset offset);
+spPosition Parser::r2p(Offset start, Offset mid, Offset end) {
+  // TODO:
+  //return rangePos(source, start, mid, end);
+}
+
+spPosition Parser::r2p(Offset start, Offset mid) {
+  return r2p(start, mid, std::max(in->tData->lastOffset, start));
+}
+
+spPosition Parser::r2p(Offset offset) {
+  return r2p(offset, offset);
+}
 
 spTree Parser::atPos(Offset offset, spTree t) {
   // TODO:
@@ -49,22 +58,28 @@ spName Parser::ident(bool skipIt) {
   }
 
   // TODO:
-  //syntaxErrorOrIncompleteAnd(expectedMsg(IDENTIFIER), skipIt)(nme.ERROR)
+  //return syntaxErrorOrIncompleteAnd(expectedMsg(IDENTIFIER), skipIt)(nme.ERROR)
 }
 
 /** QualId ::= Id {`.' Id} */
 spTree Parser::qualId() {
   Offset start = in->tData->offset;
   // TODO:
-  // auto id = apPos(start, spTree(new Ident(ident())));
+  //auto id = apPos(start, spTree(new Ident(ident())));
+  //if (in->tData->token == Token::T_DOT) {
+  //  selectors(id, typeOK = false, in.skipToken())
+  //}
+
+  // TODO: dummy value
   return spTree(new Tree);
 }
 
 /** Calls `qualId()` and manages some package state. */
 spTree Parser::pkgQualId() {
   // TODO:
-  // if (in.token == IDENTIFIER && in.name.encode = nme.scala_)
-  //   inScalaPackage = true
+  //if (in->tData->token == Token::T_IDENTIFIER && in.name.encode = nme.scala_) {
+  //  inScalaPackage = true
+  //}
 
   spTree pkg = qualId();
   // TODO: newLineOptWhenFollowedBy(LBRACE)
