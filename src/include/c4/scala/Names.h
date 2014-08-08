@@ -4,7 +4,6 @@
 
 #include <string>
 #include <vector>
-#include "c4/common/TypeDefs.h"
 #include "c4/scala/TypeDefs.h"
 
 namespace c4s {
@@ -20,7 +19,7 @@ private:
 
 public:
   /** Memory to store all names sequentially. */
-  std::vector<c4::Char> chrs;
+  std::vector<Char> chrs;
   unsigned long nc;
 
 private:
@@ -30,14 +29,14 @@ private:
   /** Hashtable for finding type names quickly. */
   std::vector<spTypeName> typeHashtable;
 
-  int hashValue(std::vector<c4::Char> cs, int offset, int len);
+  int hashValue(std::vector<Char> cs, int offset, int len);
 
-  bool equals(int index, std::vector<c4::Char> cs, int offset, int len);
+  bool equals(int index, std::vector<Char> cs, int offset, int len);
 
-  void enterChars(std::vector<c4::Char> cs, int offset, int len);
+  void enterChars(std::vector<Char> cs, int offset, int len);
 
 public:
-  spTermName newTermName(std::vector<c4::Char> cs, int offset, int len,
+  spTermName newTermName(std::vector<Char> cs, int offset, int len,
     std::string cachedString = "");
 
   spTermName newTermNameCached(std::string s);

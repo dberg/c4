@@ -15,7 +15,7 @@ Names::Names(Global *global)
  * The hashcode of a name depends on the first, the last and the middle
  * character, and the length of the name.
  */
-int Names::hashValue(std::vector<c4::Char> cs, int offset, int len) {
+int Names::hashValue(std::vector<Char> cs, int offset, int len) {
   if (len > 0) {
     return len * (41 * 41 * 41) +
       cs[offset] * (41 * 41) +
@@ -30,7 +30,7 @@ int Names::hashValue(std::vector<c4::Char> cs, int offset, int len) {
  * Is (the ASCII representation of) name at given index equal to
  * cs[offset..offset+len-1]?
  */
-bool Names::equals(int index, std::vector<c4::Char> cs, int offset, int len) {
+bool Names::equals(int index, std::vector<Char> cs, int offset, int len) {
   int i = 0;
   while ((i < len) && (chrs[index + i] == cs[offset + i])) {
     ++i;
@@ -39,7 +39,7 @@ bool Names::equals(int index, std::vector<c4::Char> cs, int offset, int len) {
 }
 
 /** Enter characters into chrs array. */
-void Names::enterChars(std::vector<c4::Char> cs, int offset, int len) {
+void Names::enterChars(std::vector<Char> cs, int offset, int len) {
   int i = 0;
   while (i < len) {
     chrs[nc + i] = cs[offset + i];
@@ -56,7 +56,7 @@ void Names::enterChars(std::vector<c4::Char> cs, int offset, int len) {
 /**
  * Create a term name from the characters in cs[offset..offset+len-1].
  */
-spTermName Names::newTermName(std::vector<c4::Char> cs, int offset, int len,
+spTermName Names::newTermName(std::vector<Char> cs, int offset, int len,
   std::string cachedString) {
   if (len < 0) len = 0;
   int h = hashValue(cs, offset, len) & HASH_MASK;
@@ -89,7 +89,7 @@ spTermName Names::newTermName(std::vector<c4::Char> cs, int offset, int len,
 }
 
 spTermName Names::newTermNameCached(std::string s) {
-  std::vector<c4::Char> tmp;
+  std::vector<Char> tmp;
   utf8::utf8to16(s.begin(), s.end(), back_inserter(tmp));
   return newTermName(tmp, 0, tmp.size(), s);
 }
