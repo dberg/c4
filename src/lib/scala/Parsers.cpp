@@ -30,6 +30,16 @@ bool Parser::isIdent() {
     in->tData->token == Token::T_BACKQUOTED_IDENT;
 }
 
+bool Parser::isStatSep(Token token) {
+  return token == Token::T_NEWLINE
+    || token == Token::T_NEWLINES
+    || token == Token::T_SEMI;
+}
+
+bool Parser::isStatSep() {
+  return isStatSep(in->tData->token);
+}
+
 /** Assumed (provisionally) to be TermNames. */
 spName Parser::ident(bool skipIt) {
   if (isIdent()) {
@@ -96,11 +106,20 @@ std::vector<spTree> Parser::topstats() {
       // TODO:
       //in->flushDoc();
       spTree pkg = pkgQualId();
-      // TODO:
+
+      if (in->tData->token == Token::T_EOF) {
+        // TODO:
+      } else if (isStatSep()) {
+        // TODO:
+      } else {
+        // TODO:
+      }
     }
+  } else {
+    // TODO:
   }
 
-  // TODO:
+  // TODO: dummy value
   std::vector<spTree> trees;
   trees.push_back(spTree(new Tree));
   return trees;

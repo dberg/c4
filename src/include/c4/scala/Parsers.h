@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 #include "c4/scala/TypeDefs.h"
+#include "c4/scala/Tokens.h"
 
 namespace c4s {
 
@@ -30,6 +31,8 @@ protected:
   // Token Classes
   //---------------------------------------------------------------------------
   bool isIdent();
+  bool isStatSep(Token token);
+  bool isStatSep();
 
   //---------------------------------------------------------------------------
   // Tree construction
