@@ -72,11 +72,11 @@ spTree Parser::pkgQualId() {
 /**
  *  CompilationUnit ::= {package QualId semi} TopStatSeq
  */
-PackageDef* Parser::compilationUnit() {
-  // TODO:
+spTree Parser::compilationUnit() {
   resetPackage();
-  topstats();
-  return new PackageDef;
+  std::vector<spTree> res = topstats();
+  // TODO:
+  return spTree(new PackageDef());
 }
 
 std::vector<spTree> Parser::topstats() {

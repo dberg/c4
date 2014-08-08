@@ -49,7 +49,7 @@ public:
   Global *global;
   Parser(Global *global);
   virtual spTree parse();
-  virtual PackageDef* compilationUnit();
+  virtual spTree compilationUnit();
 };
 
 class SourceFileParser : public Parser {
