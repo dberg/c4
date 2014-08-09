@@ -4,7 +4,6 @@
 
 #include <string>
 #include <vector>
-#include "c4/common/TypeDefs.h"
 #include "c4/scala/TypeDefs.h"
 #include "c4/scala/Tokens.h"
 
@@ -59,10 +58,6 @@ private:
    */
   std::vector<Token> sepRegions;
 
-  // SourceFile data
-  spSourceFile source;
-  std::vector<c4::Char> &buf;
-
   spCharArrayReader reader;
   spScannerData sData;
 
@@ -87,6 +82,10 @@ public:
 
   Global *global;
   spTokenData tData;
+
+  // SourceFile data
+  spSourceFile source;
+  std::vector<Char> &buf;
 
   Scanner(Global *global, spSourceFile source);
 

@@ -24,12 +24,12 @@ ScannerData::ScannerData()
 
 /** Constructor */
 Scanner::Scanner(Global *global, spSourceFile source)
-  : source(source), buf(source->content()),
-    reader(spCharArrayReader(new CharArrayReader(source->content()))),
+  : reader(spCharArrayReader(new CharArrayReader(source->content()))),
     sData(spScannerData(new ScannerData)),
     kwOffset(0),
     global(global),
-    tData(spTokenData(new TokenData))
+    tData(spTokenData(new TokenData)),
+    source(source), buf(source->content())
 {
   allKeywords.push_back(std::make_pair(
     global->stdNames->keywords->ABSTRACTkw, Token::T_ABSTRACT));

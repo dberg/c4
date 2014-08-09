@@ -3,6 +3,8 @@
 #include "c4/scala/Trees.h"
 #include "c4/scala/Scanners.h"
 #include "c4/scala/Names.h"
+#include "c4/scala/Global.h"
+#include "c4/scala/Positions.h"
 
 namespace c4s {
 
@@ -18,8 +20,7 @@ spTree Parser::parse() {
 }
 
 spPosition Parser::r2p(Offset start, Offset mid, Offset end) {
-  // TODO:
-  //return rangePos(source, start, mid, end);
+  return global->positions->rangePos(in->source, start, mid, end);
 }
 
 spPosition Parser::r2p(Offset start, Offset mid) {
