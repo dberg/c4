@@ -30,7 +30,11 @@ spTree Positions::atPos(spPosition pos, spTree t) {
 spPosition Positions::rangePos(
   spSourceFile source, int start, int point, int end)
 {
-  // TODO:
+  if (useOffsetPositions()) {
+    //return Position.offset(source, point);
+  } else {
+    //return Position.range(source, start, point, end);
+  }
 }
 
 } // namespace
