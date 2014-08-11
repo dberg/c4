@@ -6,7 +6,11 @@
 
 namespace c4s {
 
-class Tree {};
+class Tree {
+public:
+  Tree();
+  virtual bool canHaveAttrs();
+};
 
 /** TODO:
  * Tree, NameTreeApi

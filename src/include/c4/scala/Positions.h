@@ -16,6 +16,7 @@ public:
 class DefaultPosAssigner : public PosAssigner {
 public:
   DefaultPosAssigner();
+  virtual void traverse(spTree tree);
 };
 
 class Positions {

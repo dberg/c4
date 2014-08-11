@@ -9,6 +9,13 @@ PosAssigner::PosAssigner(): Traverser() {}
 /** Constructor */
 DefaultPosAssigner::DefaultPosAssigner(): PosAssigner() {}
 
+void DefaultPosAssigner::traverse(spTree tree) {
+  // TODO:
+  //if (t.canHaveAttrs() && t->pos == NoPosition) {
+  //
+  //}
+}
+
 /** Constructor */
 Positions::Positions(): posAssigner(spPosAssigner(new DefaultPosAssigner)) {}
 
