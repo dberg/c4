@@ -57,6 +57,9 @@ class Position;
 typedef std::shared_ptr<Position> spPosition;
 
 // Positions.h
+class PosAssigner;
+typedef std::shared_ptr<PosAssigner> spPosAssigner;
+
 class Positions;
 typedef std::shared_ptr<Positions> spPositions;
 

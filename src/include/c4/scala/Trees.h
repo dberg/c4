@@ -53,6 +53,22 @@ public:
   Ident(spName name);
 };
 
+//-----------------------------------------------------------------------------
+// Traversing and transforming
+//-----------------------------------------------------------------------------
+
+/**
+ * A class that implements a default tree traversal strategy: breadth-first
+ * component-wise.
+ */
+class Traverser {
+public:
+  Traverser();
+
+  /** Traverses a single tree. */
+  virtual void traverse(spTree tree);
+};
+
 } // namespace
 
 #endif

@@ -4,7 +4,13 @@
 namespace c4s {
 
 /** Constructor */
-Positions::Positions() {}
+PosAssigner::PosAssigner(): Traverser() {}
+
+/** Constructor */
+DefaultPosAssigner::DefaultPosAssigner(): PosAssigner() {}
+
+/** Constructor */
+Positions::Positions(): posAssigner(spPosAssigner(new DefaultPosAssigner)) {}
 
 // TODO:
 // Global.scala -> override val useOffsetPositions = !currentSettings.Yrangepos
@@ -18,12 +24,14 @@ bool Positions::useOffsetPositions() {
  * Position a tree.
  * This means: Set position of a node and position all its unpositioned children.
  */
-spTree Positions::atPos(spPosition pos, spTree t) {
-  // TODO:
+spTree Positions::atPos(spPosition pos, spTree tree) {
   if (useOffsetPositions() || !pos->isOpaqueRange()) {
-    // TODO:
+    posAssigner->pos = pos;
+    posAssigner->traverse(tree);
+    return tree;
   } else {
     // TODO:
+    return tree;
   }
 }
 
