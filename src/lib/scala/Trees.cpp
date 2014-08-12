@@ -15,6 +15,12 @@ bool Tree::canHaveAttrs() {
   return true;
 }
 
+/** Position of the tree. */
+spPosition Tree::pos() {
+  // TODO:
+  //return rawatt->pos
+}
+
 Ident::Ident(spName name): name(name) {}
 
 /** Constructor */

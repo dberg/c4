@@ -11,4 +11,10 @@ bool Position::isOpaqueRange() {
   return false;
 }
 
+/** Constructor */
+UndefinedPosition::UndefinedPosition() {}
+
+/** Constructor */
+NoPosition::NoPosition(): UndefinedPosition() {}
+
 } // namespace

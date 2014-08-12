@@ -10,6 +10,16 @@ public:
   bool isOpaqueRange();
 };
 
+class UndefinedPosition {
+public:
+  UndefinedPosition();
+};
+
+class NoPosition : public UndefinedPosition {
+public:
+  NoPosition();
+};
+
 }; // namespace
 
 #endif

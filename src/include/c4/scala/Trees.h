@@ -10,6 +10,7 @@ class Tree {
 public:
   Tree();
   virtual bool canHaveAttrs();
+  spPosition pos();
 };
 
 /** TODO:
