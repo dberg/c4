@@ -2,6 +2,8 @@
 #ifndef __C4_SCALA_POSITION_H__
 #define __C4_SCALA_POSITION_H__
 
+#include "c4/scala/TypeDefs.h"
+
 namespace c4s {
 
 class Position {
@@ -10,14 +12,9 @@ public:
   bool isOpaqueRange();
 };
 
-class UndefinedPosition {
+class UndefinedPosition : public Position {
 public:
   UndefinedPosition();
-};
-
-class NoPosition : public UndefinedPosition {
-public:
-  NoPosition();
 };
 
 }; // namespace

@@ -14,7 +14,6 @@ bool Position::isOpaqueRange() {
 /** Constructor */
 UndefinedPosition::UndefinedPosition() {}
 
-/** Constructor */
-NoPosition::NoPosition(): UndefinedPosition() {}
+static spPosition NoPosition = spPosition(new UndefinedPosition());
 
 } // namespace
