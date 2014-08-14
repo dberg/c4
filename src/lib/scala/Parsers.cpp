@@ -32,7 +32,12 @@ spPosition Parser::r2p(Offset offset) {
 }
 
 spTree Parser::atPos(Offset offset, spTree t) {
+  return atPos(r2p(offset), t);
+}
+
+spTree Parser::atPos(spPosition pos, spTree t) {
   // TODO:
+  //return global->atPos(pos, t);
 }
 
 bool Parser::isIdent() {
@@ -66,7 +71,7 @@ spName Parser::ident(bool skipIt) {
 spTree Parser::qualId() {
   Offset start = in->tData->offset;
   // TODO:
-  //auto id = apPos(start, spTree(new Ident(ident())));
+  //spTree id = atPos(start, spTree(new Ident(ident())));
   //if (in->tData->token == Token::T_DOT) {
   //  selectors(id, typeOK = false, in.skipToken())
   //}
