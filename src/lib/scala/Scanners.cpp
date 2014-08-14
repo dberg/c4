@@ -192,9 +192,11 @@ bool Scanner::inStringInterpolation() {
   return false;
 }
 
-void Scanner::init() {
-  reader->nextChar();
+/** Read next token and return last offset. */
+Offset Scanner::skipToken() {
+  Offset off = tData->offset;
   nextToken();
+  return off;
 }
 
 /** Read next token, filling TokenData fields of Scanner. */
@@ -226,6 +228,11 @@ void Scanner::fetchToken() {
     break;
   }
   // TODO:
+}
+
+void Scanner::init() {
+  reader->nextChar();
+  nextToken();
 }
 
 //------------------------------------------------------------------------------

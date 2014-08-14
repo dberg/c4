@@ -89,9 +89,14 @@ public:
 
   Scanner(Global *global, spSourceFile source);
 
+  //---------------------------------------------------------------------------
+  // Get next Token
+  //---------------------------------------------------------------------------
   virtual bool inStringInterpolation();
+  virtual Offset skipToken();
   virtual void nextToken();
   virtual void fetchToken();
+
   virtual void init();
 };
 
