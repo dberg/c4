@@ -70,11 +70,11 @@ spName Parser::ident(bool skipIt) {
 /** QualId ::= Id {`.' Id} */
 spTree Parser::qualId() {
   Offset start = in->tData->offset;
-  // TODO:
-  //spTree id = atPos(start, spTree(new Ident(ident())));
-  //if (in->tData->token == Token::T_DOT) {
-  //  selectors(id, typeOK = false, in.skipToken())
-  //}
+  spTree id = atPos(start, spTree(new Ident(ident())));
+  if (in->tData->token == Token::T_DOT) {
+    // TODO:
+    //return selectors(id, typeOK = false, in.skipToken())
+  }
 
   // TODO: dummy value
   return spTree(new Tree);
