@@ -7,9 +7,14 @@
 namespace c4s {
 
 class Position {
+private:
+  static spPosition validate(spPosition pos);
+
 public:
   Position();
   bool isOpaqueRange();
+
+  static spPosition offset(spSourceFile source, int point);
 };
 
 class UndefinedPosition : public Position {

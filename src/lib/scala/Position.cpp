@@ -11,6 +11,17 @@ bool Position::isOpaqueRange() {
   return false;
 }
 
+spPosition Position::validate(spPosition pos) {
+  // TODO:
+  //if (pos.isRange)
+  //  assert(pos.start <= pos.end, s"bad position: ${pos.show}")
+  return pos;
+}
+
+spPosition Position::offset(spSourceFile source, int point) {
+  //return validate(spPosition(new OffsetPosition(source, point));
+}
+
 /** Constructor */
 UndefinedPosition::UndefinedPosition() {}
 
