@@ -17,6 +17,18 @@ public:
   static spPosition offset(spSourceFile source, int point);
 };
 
+class DefinedPosition : public Position {
+public:
+  DefinedPosition();
+};
+
+class OffsetPosition : public DefinedPosition {
+public:
+  spSourceFile sourceIn;
+  int pointIn;
+  OffsetPosition(spSourceFile sourceIn, int pointIn);
+};
+
 class UndefinedPosition : public Position {
 public:
   UndefinedPosition();

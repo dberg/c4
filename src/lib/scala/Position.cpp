@@ -19,8 +19,15 @@ spPosition Position::validate(spPosition pos) {
 }
 
 spPosition Position::offset(spSourceFile source, int point) {
-  //return validate(spPosition(new OffsetPosition(source, point));
+  return validate(spPosition(new OffsetPosition(source, point)));
 }
+
+/** Constructor */
+DefinedPosition::DefinedPosition(): Position() {}
+
+/** Constructor */
+OffsetPosition::OffsetPosition(spSourceFile sourceIn, int pointIn)
+  : DefinedPosition(), sourceIn(sourceIn), pointIn(pointIn) {}
 
 /** Constructor */
 UndefinedPosition::UndefinedPosition() {}
