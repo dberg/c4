@@ -67,6 +67,22 @@ spName Parser::ident(bool skipIt) {
   //return syntaxErrorOrIncompleteAnd(expectedMsg(IDENTIFIER), skipIt)(nme.ERROR)
 }
 
+spTree Parser::selectors(spTree t, bool typeOK, Offset dotOffset) {
+  if (typeOK && in->tData->token == Token::T_TYPE) {
+    in->nextToken();
+    // TODO:
+    //return atPos(t->pos->start, dotOffset, SingletonTypeTree(t));
+  } else {
+    // TODO:
+    //val t1 = selector(t)
+    //if (in->tData->token == Token::T_DOT) {
+    //  return selectors(t1, typeOK, in->skipToken());
+    //} else {
+    //  return t1;
+    //}
+  }
+}
+
 /** QualId ::= Id {`.' Id} */
 spTree Parser::qualId() {
   Offset start = in->tData->offset;
