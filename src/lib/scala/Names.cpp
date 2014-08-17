@@ -58,6 +58,7 @@ void Names::enterChars(std::vector<Char> cs, int offset, int len) {
  */
 spTermName Names::newTermName(std::vector<Char> cs, int offset, int len,
   std::string cachedString) {
+
   if (len < 0) len = 0;
   int h = hashValue(cs, offset, len) & HASH_MASK;
   spTermName n = termHashtable[h];

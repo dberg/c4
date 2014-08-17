@@ -13,6 +13,8 @@ private:
 public:
   Position();
   bool isOpaqueRange();
+  virtual int point();
+  virtual int start();
 
   static spPosition offset(spSourceFile source, int point);
 };
@@ -27,6 +29,8 @@ public:
   spSourceFile sourceIn;
   int pointIn;
   OffsetPosition(spSourceFile sourceIn, int pointIn);
+  virtual int point();
+  virtual int start();
 };
 
 class UndefinedPosition : public Position {
