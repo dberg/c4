@@ -36,8 +36,7 @@ spTree Parser::atPos(Offset offset, spTree t) {
 }
 
 spTree Parser::atPos(spPosition pos, spTree t) {
-  // TODO:
-  //return global->atPos(pos, t);
+  return global->positions->atPos(pos, t);
 }
 
 bool Parser::isIdent() {
