@@ -38,6 +38,8 @@ public:
   UndefinedPosition();
 };
 
+extern const spPosition NoPosition;
+
 }; // namespace
 
 #endif

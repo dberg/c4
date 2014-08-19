@@ -10,10 +10,11 @@ PosAssigner::PosAssigner(): Traverser() {}
 DefaultPosAssigner::DefaultPosAssigner(): PosAssigner() {}
 
 void DefaultPosAssigner::traverse(spTree tree) {
-  // TODO:
-  //if (t.canHaveAttrs() && t->pos == NoPosition) {
-  //
-  //}
+  if (tree->canHaveAttrs() && tree->pos() == NoPosition) {
+    // TODO:
+    //tree.setPos(pos);
+    //super.traverse(tree);
+  }
 }
 
 /** Constructor */

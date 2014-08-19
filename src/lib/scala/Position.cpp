@@ -52,6 +52,6 @@ int OffsetPosition::start() {
 /** Constructor */
 UndefinedPosition::UndefinedPosition() {}
 
-static spPosition NoPosition = spPosition(new UndefinedPosition());
+const spPosition NoPosition = spPosition(new UndefinedPosition());
 
 } // namespace
