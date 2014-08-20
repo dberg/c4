@@ -35,6 +35,10 @@ spTree Parser::atPos(Offset offset, spTree t) {
   return atPos(r2p(offset), t);
 }
 
+spTree Parser::atPos(Offset offset, Offset point, spTree t) {
+  return atPos(r2p(offset, point), t);
+}
+
 spTree Parser::atPos(spPosition pos, spTree t) {
   return global->positions->atPos(pos, t);
 }

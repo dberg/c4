@@ -37,6 +37,7 @@ protected:
   // Tree construction
   //---------------------------------------------------------------------------
   spTree atPos(Offset offset, spTree t);
+  spTree atPos(Offset offset, Offset point, spTree t);
   spTree atPos(spPosition pos, spTree t);
 
   //---------------------------------------------------------------------------
