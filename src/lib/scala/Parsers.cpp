@@ -70,6 +70,10 @@ spName Parser::ident(bool skipIt) {
   //return syntaxErrorOrIncompleteAnd(expectedMsg(IDENTIFIER), skipIt)(nme.ERROR)
 }
 
+spTree Parser::selector(spTree t) {
+  // TODO:
+}
+
 spTree Parser::selectors(spTree t, bool typeOK, Offset dotOffset) {
   if (typeOK && in->tData->token == Token::T_TYPE) {
     in->nextToken();

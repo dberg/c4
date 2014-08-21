@@ -44,6 +44,7 @@ protected:
   // Identifiers and literals
   //---------------------------------------------------------------------------
   virtual spName ident(bool skipIt = true);
+  virtual spTree selector(spTree t);
   virtual spTree selectors(spTree t, bool typeOK, Offset dotOffset);
   virtual spTree qualId();
   virtual spTree pkgQualId();
