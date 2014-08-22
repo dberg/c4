@@ -99,8 +99,7 @@ spTree Parser::qualId() {
     //return selectors(id, typeOK = false, in.skipToken())
   }
 
-  // TODO: dummy value
-  return spTree(new Tree);
+  return id;
 }
 
 /** Calls `qualId()` and manages some package state. */
