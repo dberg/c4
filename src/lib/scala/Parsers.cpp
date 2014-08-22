@@ -71,7 +71,13 @@ spName Parser::ident(bool skipIt) {
 }
 
 spTree Parser::selector(spTree t) {
-  // TODO:
+  Offset point = in->tData->offset;
+  //if (t != EmptyTree) {
+    //Select(t, ident(false)) setPos r2p(t.pos.start, point, in.lastOffset)
+  //} else {
+    // TODO:
+    //return errorTermTree;
+  //}
 }
 
 spTree Parser::selectors(spTree t, bool typeOK, Offset dotOffset) {
@@ -81,11 +87,11 @@ spTree Parser::selectors(spTree t, bool typeOK, Offset dotOffset) {
     //return atPos(t->pos->start, dotOffset, SingletonTypeTree(t));
   } else {
     // TODO:
-    //val t1 = selector(t)
+    spTree t1 = selector(t);
     //if (in->tData->token == Token::T_DOT) {
     //  return selectors(t1, typeOK, in->skipToken());
     //} else {
-    //  return t1;
+      return t1;
     //}
   }
 }
