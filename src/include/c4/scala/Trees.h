@@ -10,31 +10,20 @@ class Tree {
 public:
   Tree();
   virtual bool canHaveAttrs();
+  virtual bool isEmpty();
   spPosition pos();
 };
 
-/** TODO:
- * Tree, NameTreeApi
- * NameTree
- */
+// TODO: extends Tree, NameTreeApi
 class NameTree : virtual public Tree {};
 
-/** TODO:
- * Tree, SymTreeApi
- * SymTree
- */
+// TODO: extends Tree, SymTreeApi
 class SymTree : virtual public Tree {};
 
-/** TODO:
- * SymTree, NameTree, DefTreeApi
- * DefTree
- */
+// TODO: extends SymTree, NameTree, DefTreeApi
 class DefTree : public SymTree, public NameTree {};
 
-/** TODO:
- * DefTree, MemberDefApi
- * MemberDef
- */
+// TODO: extends DefTree, MemberDefApi
 class MemberDef : public DefTree {};
 
 /** TODO:
@@ -45,6 +34,25 @@ class MemberDef : public DefTree {};
  *  object PackageDef
  */
 class PackageDef : public MemberDef {};
+
+class CannotHaveAttrs : virtual public Tree {
+public:
+  CannotHaveAttrs();
+  virtual bool canHaveAttrs();
+};
+
+class TermTree : virtual public Tree {
+public:
+  TermTree();
+};
+
+class EmptyTree : public TermTree, public CannotHaveAttrs {
+public:
+  EmptyTree();
+  virtual bool isEmpty();
+};
+
+extern const spTree EMPTY_TREE;
 
 /**
  * A reference to identifier `name`.
