@@ -22,6 +22,10 @@ spPosition Tree::pos() {
 }
 
 /** Constructor */
+Select::Select(spTree qualifier, spName name)
+  : qualifier(qualifier), name(name) {}
+
+/** Constructor */
 CannotHaveAttrs::CannotHaveAttrs(): Tree() {}
 
 bool CannotHaveAttrs::canHaveAttrs() { return false; }

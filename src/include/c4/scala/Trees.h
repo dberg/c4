@@ -14,11 +14,11 @@ public:
   spPosition pos();
 };
 
-// TODO: extends Tree, NameTreeApi
-class NameTree : virtual public Tree {};
-
 // TODO: extends Tree, SymTreeApi
 class SymTree : virtual public Tree {};
+
+// TODO: extends Tree, NameTreeApi
+class NameTree : virtual public Tree {};
 
 // TODO: extends SymTree, NameTree, DefTreeApi
 class DefTree : public SymTree, public NameTree {};
@@ -34,6 +34,13 @@ class MemberDef : public DefTree {};
  *  object PackageDef
  */
 class PackageDef : public MemberDef {};
+
+class Select {
+public:
+  spTree qualifier;
+  spName name;
+  Select(spTree qualifier, spName name);
+};
 
 class CannotHaveAttrs : virtual public Tree {
 public:
