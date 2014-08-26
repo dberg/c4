@@ -35,7 +35,7 @@ class MemberDef : public DefTree {};
  */
 class PackageDef : public MemberDef {};
 
-class Select {
+class Select: public Tree {
 public:
   spTree qualifier;
   spName name;

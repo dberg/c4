@@ -73,7 +73,10 @@ spName Parser::ident(bool skipIt) {
 spTree Parser::selector(spTree t) {
   Offset point = in->tData->offset;
   if (t != EMPTY_TREE) {
-    //Select(t, ident(false)) setPos r2p(t.pos.start, point, in.lastOffset)
+    spTree selector = spTree(new Select(t, ident(false)));
+    // TODO:
+    //return selector->setPos(r2p(t.pos.start, point, in.lastOffset))
+    return selector;
   } else {
     // TODO:
     //return errorTermTree;
