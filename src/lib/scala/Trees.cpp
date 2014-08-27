@@ -22,6 +22,10 @@ spPosition Tree::pos() {
 }
 
 /** Constructor */
+PackageDef::PackageDef(spTree pid, std::vector<spTree> stats)
+  : Tree(), pid(pid), stats(stats) {}
+
+/** Constructor */
 Select::Select(spTree qualifier, spName name)
   : Tree(), qualifier(qualifier), name(name) {}
 

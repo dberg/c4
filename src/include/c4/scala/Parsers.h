@@ -55,6 +55,8 @@ public:
   Global *global;
   Parser(Global *global);
   virtual spTree parse();
+  virtual spTree makePackaging(
+    Offset start, spTree pkg, std::vector<spTree> stats);
   virtual spTree compilationUnit();
 };
 

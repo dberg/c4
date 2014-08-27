@@ -5,6 +5,7 @@
 #include "c4/scala/Names.h"
 #include "c4/scala/Global.h"
 #include "c4/scala/Positions.h"
+#include "c4/scala/Position.h"
 
 namespace c4s {
 
@@ -131,6 +132,14 @@ spTree Parser::pkgQualId() {
   return pkg;
 }
 
+/** Create a tree representing a packaging. */
+spTree Parser::makePackaging(
+  Offset start, spTree pkg, std::vector<spTree> stats) {
+
+  spTree pkgDef = spTree(new PackageDef(pkg, stats));
+  return atPos(start, pkg->pos()->point(), pkgDef);
+}
+
 /**
  *  CompilationUnit ::= {package QualId semi} TopStatSeq
  */
@@ -138,7 +147,6 @@ spTree Parser::compilationUnit() {
   resetPackage();
   std::vector<spTree> res = topstats();
   // TODO:
-  return spTree(new PackageDef());
 }
 
 std::vector<spTree> Parser::topstats() {
@@ -162,7 +170,9 @@ std::vector<spTree> Parser::topstats() {
       if (in->tData->token == Token::T_EOF) {
         // TODO:
       } else if (isStatSep()) {
+        in->nextToken();
         // TODO:
+        //ts += makePackaging(start, pkg, topstats())
       } else {
         // TODO:
       }

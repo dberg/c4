@@ -2,6 +2,7 @@
 #ifndef __C4_SCALA_TREES_H__
 #define __C4_SCALA_TREES_H__
 
+#include <vector>
 #include "c4/scala/TypeDefs.h"
 
 namespace c4s {
@@ -14,26 +15,12 @@ public:
   spPosition pos();
 };
 
-// TODO: extends Tree, SymTreeApi
-class SymTree : virtual public Tree {};
-
-// TODO: extends Tree, NameTreeApi
-class NameTree : virtual public Tree {};
-
-// TODO: extends SymTree, NameTree, DefTreeApi
-class DefTree : public SymTree, public NameTree {};
-
-// TODO: extends DefTree, MemberDefApi
-class MemberDef : public DefTree {};
-
-/** TODO:
- *  MemberDef, PackageDefApi
- *  case class PackageDef
- *
- *  PackageDefExtractor
- *  object PackageDef
- */
-class PackageDef : public MemberDef {};
+class PackageDef : public Tree {
+public:
+  spTree pid;
+  std::vector<spTree> stats;
+  PackageDef(spTree pid, std::vector<spTree> stats);
+};
 
 class Select: public Tree {
 public:
