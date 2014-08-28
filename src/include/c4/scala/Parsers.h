@@ -2,6 +2,7 @@
 #ifndef __C4_SCALA_PARSERS_H__
 #define __C4_SCALA_PARSERS_H__
 
+#include <functional>
 #include <string>
 #include <vector>
 #include "c4/scala/TypeDefs.h"
@@ -58,6 +59,7 @@ public:
   virtual spTree makePackaging(
     Offset start, spTree pkg, std::vector<spTree> stats);
   virtual std::vector<spTree> topStatSeq();
+  std::function<std::vector<spTree> (Token)> topStat();
   virtual spTree compilationUnit();
 };
 

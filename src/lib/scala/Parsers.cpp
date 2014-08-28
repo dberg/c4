@@ -156,9 +156,13 @@ std::vector<spTree> Parser::topStatSeq() {
   //statSeq(topStat, errorMsg = "expected class or object definition")
 }
 
-//PartialFunction[Token, List[Tree]] Parser::topStat() {
-  // TODO:
-//}
+std::function<std::vector<spTree> (Token)> Parser::topStat() {
+  return [](Token t) {
+    // TODO:
+    std::vector<spTree> v;
+    return v;
+  };
+}
 
 /**
  *  CompilationUnit ::= {package QualId semi} TopStatSeq
