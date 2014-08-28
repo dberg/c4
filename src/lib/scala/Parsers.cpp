@@ -141,6 +141,17 @@ spTree Parser::makePackaging(
 }
 
 /**
+ * TopStatSeq ::= TopStat {semi TopStat}
+ * TopStat ::= Annotations Modifiers TmplDef
+ *           | Packaging
+ *           | package object objectDef
+ *           | Import
+ */
+std::vector<spTree> Parser::topStatSeq() {
+  // TODO:
+}
+
+/**
  *  CompilationUnit ::= {package QualId semi} TopStatSeq
  */
 spTree Parser::compilationUnit() {
@@ -174,11 +185,10 @@ std::vector<spTree> Parser::topstats() {
         spTree pkgDef = makePackaging(start, pkg, topstats());
         ts.push_back(pkgDef);
       } else {
-        // TODO:
+        auto ts2 = topStatSeq();
+        ts.insert(ts.end(), ts2.begin(), ts2.end());
       }
     }
-  } else {
-    // TODO:
   }
 
   return ts;

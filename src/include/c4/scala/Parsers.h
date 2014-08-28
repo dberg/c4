@@ -57,6 +57,7 @@ public:
   virtual spTree parse();
   virtual spTree makePackaging(
     Offset start, spTree pkg, std::vector<spTree> stats);
+  virtual std::vector<spTree> topStatSeq();
   virtual spTree compilationUnit();
 };
 
