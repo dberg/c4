@@ -140,6 +140,10 @@ spTree Parser::makePackaging(
   return atPos(start, pkg->pos()->point(), pkgDef);
 }
 
+//std::vector<spTree> Parser::statSeq(PartialFunction[Token, List[Tree]] stat, std::string errorMsg) {
+  // TODO:
+//}
+
 /**
  * TopStatSeq ::= TopStat {semi TopStat}
  * TopStat ::= Annotations Modifiers TmplDef
@@ -149,7 +153,12 @@ spTree Parser::makePackaging(
  */
 std::vector<spTree> Parser::topStatSeq() {
   // TODO:
+  //statSeq(topStat, errorMsg = "expected class or object definition")
 }
+
+//PartialFunction[Token, List[Tree]] Parser::topStat() {
+  // TODO:
+//}
 
 /**
  *  CompilationUnit ::= {package QualId semi} TopStatSeq
