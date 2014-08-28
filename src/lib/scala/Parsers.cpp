@@ -171,8 +171,8 @@ std::vector<spTree> Parser::topstats() {
         // TODO:
       } else if (isStatSep()) {
         in->nextToken();
-        // TODO:
-        //ts += makePackaging(start, pkg, topstats())
+        spTree pkgDef = makePackaging(start, pkg, topstats());
+        ts.push_back(pkgDef);
       } else {
         // TODO:
       }
@@ -181,10 +181,7 @@ std::vector<spTree> Parser::topstats() {
     // TODO:
   }
 
-  // TODO: dummy value
-  std::vector<spTree> trees;
-  trees.push_back(spTree(new Tree));
-  return trees;
+  return ts;
 }
 
 /** Constructor */
