@@ -156,9 +156,19 @@ std::vector<spTree> Parser::topStatSeq() {
   //statSeq(topStat, errorMsg = "expected class or object definition")
 }
 
-std::function<std::vector<spTree> (Token)> Parser::topStat() {
+std::function<std::vector<spTree> (Token t)> Parser::topStat() {
   return [](Token t) {
-    // TODO:
+    if (t == Token::T_PACKAGE) {
+      // TODO:
+    } else if (t == Token::T_IMPORT) {
+      // TODO:
+    //} else if (isAnnotation(t) || isTemplateIntro(t) || isModifier(t)) {
+      // TODO:
+    } else {
+      // TODO:
+    }
+
+    // TODO: dummy value
     std::vector<spTree> v;
     return v;
   };

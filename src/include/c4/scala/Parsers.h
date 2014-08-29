@@ -59,7 +59,7 @@ public:
   virtual spTree makePackaging(
     Offset start, spTree pkg, std::vector<spTree> stats);
   virtual std::vector<spTree> topStatSeq();
-  std::function<std::vector<spTree> (Token)> topStat();
+  std::function<std::vector<spTree> (Token t)> topStat();
   virtual spTree compilationUnit();
 };
 
