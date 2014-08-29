@@ -50,17 +50,23 @@ protected:
   virtual spTree qualId();
   virtual spTree pkgQualId();
 
+  virtual spTree packageOrPackageObject(Offset start);
+
+  //---------------------------------------------------------------------------
+  // STATSEQS
+  //---------------------------------------------------------------------------
+  virtual spTree makePackaging(Offset start, spTree pkg,
+    std::vector<spTree> stats);
+  virtual std::vector<spTree> topStatSeq();
+  virtual std::function<std::vector<spTree> (Token)> topStat();
+
+  virtual spTree compilationUnit();
   virtual std::vector<spTree> topstats();
 
 public:
   Global *global;
   Parser(Global *global);
   virtual spTree parse();
-  virtual spTree makePackaging(
-    Offset start, spTree pkg, std::vector<spTree> stats);
-  virtual std::vector<spTree> topStatSeq();
-  std::function<std::vector<spTree> (Token t)> topStat();
-  virtual spTree compilationUnit();
 };
 
 class SourceFileParser : public Parser {

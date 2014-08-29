@@ -132,6 +132,10 @@ spTree Parser::pkgQualId() {
   return pkg;
 }
 
+spTree Parser::packageOrPackageObject(Offset start) {
+  // TODO:
+}
+
 /** Create a tree representing a packaging. */
 spTree Parser::makePackaging(
   Offset start, spTree pkg, std::vector<spTree> stats) {
@@ -156,10 +160,12 @@ std::vector<spTree> Parser::topStatSeq() {
   //statSeq(topStat, errorMsg = "expected class or object definition")
 }
 
-std::function<std::vector<spTree> (Token t)> Parser::topStat() {
-  return [](Token t) {
+std::function<std::vector<spTree> (Token)> Parser::topStat() {
+  return [this](Token t) {
     if (t == Token::T_PACKAGE) {
-      // TODO:
+      std::vector<spTree> v(1);
+      v.push_back(packageOrPackageObject(in->skipToken()));
+      return v;
     } else if (t == Token::T_IMPORT) {
       // TODO:
     //} else if (isAnnotation(t) || isTemplateIntro(t) || isModifier(t)) {
