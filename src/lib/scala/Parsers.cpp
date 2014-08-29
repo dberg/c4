@@ -165,6 +165,18 @@ spTree Parser::pkgQualId() {
   return pkg;
 }
 
+spTree Parser::topLevelTmpDef() {
+  // TODO:
+  //val annots = annotations(skipNewLines = true)
+  //val pos    = caseAwareTokenOffset
+  //val mods   = modifiers() withAnnotations annots
+  //tmplDef(pos, mods)
+}
+
+//spTree Parser::tmplDef(Offset pos, Modifiers mods) {
+//
+//}
+
 spTree Parser::packageOrPackageObject(Offset start) {
   if (in->tData->token == Token::T_OBJECT) {
     // TODO:
@@ -210,6 +222,7 @@ std::function<std::vector<spTree> (Token)> Parser::topStat() {
       // TODO:
     } else if (isAnnotation() || isTemplateIntro() || isModifier()) {
       // TODO:
+      //joinComment(topLevelTmplDef :: Nil)
     } else {
       // TODO:
     }
