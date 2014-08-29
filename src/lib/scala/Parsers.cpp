@@ -44,6 +44,39 @@ spTree Parser::atPos(spPosition pos, spTree t) {
   return global->positions->atPos(pos, t);
 }
 
+bool Parser::isModifier() {
+  switch (in->tData->token) {
+  case Token::T_ABSTRACT:
+  case Token::T_FINAL:
+  case Token::T_SEALED:
+  case Token::T_PRIVATE:
+  case Token::T_PROTECTED:
+  case Token::T_OVERRIDE:
+  case Token::T_IMPLICIT:
+  case Token::T_LAZY:
+    return true;
+  default:
+    return false;
+  }
+}
+
+bool Parser::isAnnotation() {
+  return in->tData->token == Token::T_AT;
+}
+
+bool Parser::isTemplateIntro() {
+  switch (in->tData->token) {
+  case Token::T_OBJECT:
+  case Token::T_CASEOBJECT:
+  case Token::T_CLASS:
+  case Token::T_CASECLASS:
+  case Token::T_TRAIT:
+    return true;
+  default:
+    return false;
+  }
+}
+
 bool Parser::isIdent() {
   return in->tData->token == Token::T_IDENTIFIER ||
     in->tData->token == Token::T_BACKQUOTED_IDENT;
@@ -133,7 +166,14 @@ spTree Parser::pkgQualId() {
 }
 
 spTree Parser::packageOrPackageObject(Offset start) {
-  // TODO:
+  if (in->tData->token == Token::T_OBJECT) {
+    // TODO:
+    //joinComment(packageObjectDef(start) :: Nil).head
+  } else {
+    // TODO:
+    //in->flushDoc
+    //return makePackaging(start, pkgQualId(), inBracesOrNil(topStatSeq()));
+  }
 }
 
 /** Create a tree representing a packaging. */
@@ -168,7 +208,7 @@ std::function<std::vector<spTree> (Token)> Parser::topStat() {
       return v;
     } else if (t == Token::T_IMPORT) {
       // TODO:
-    //} else if (isAnnotation(t) || isTemplateIntro(t) || isModifier(t)) {
+    } else if (isAnnotation() || isTemplateIntro() || isModifier()) {
       // TODO:
     } else {
       // TODO:

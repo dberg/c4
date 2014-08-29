@@ -30,6 +30,9 @@ protected:
   //---------------------------------------------------------------------------
   // Token Classes
   //---------------------------------------------------------------------------
+  bool isModifier();
+  bool isAnnotation();
+  bool isTemplateIntro();
   bool isIdent();
   bool isStatSep(Token token);
   bool isStatSep();
