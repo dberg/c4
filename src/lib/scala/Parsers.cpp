@@ -172,7 +172,28 @@ spTree Parser::pkgQualId() {
  *              |  override
  */
 spModifiers Parser::modifiers() {
-  // TODO:
+  auto loop = [this](Modifiers mods) {
+    switch(in->tData->token) {
+    case Token::T_PRIVATE:
+    case Token::T_PROTECTED:
+      // TODO:
+      //return loop(accessQualifierOpt(addMod(mods, flagTokens(in.token), tokenRange(in))))
+    case Token::T_ABSTRACT:
+    case Token::T_FINAL:
+    case Token::T_SEALED:
+    case Token::T_OVERRIDE:
+    case Token::T_IMPLICIT:
+    case Token::T_LAZY:
+      // TODO:
+      //return loop(addMod(mods, flagTokens(in.token), tokenRange(in)))
+    case Token::T_NEWLINE:
+      // TODO:
+      in->nextToken();
+      //return loop(mods)
+    default: return mods;
+    }
+  };
+  //loop(NoMods);
 }
 
 Offset Parser::caseAwareTokenOffset() {
