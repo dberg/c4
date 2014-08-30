@@ -59,7 +59,6 @@ private:
   std::vector<Token> sepRegions;
 
   spCharArrayReader reader;
-  spScannerData sData;
 
   // Identifiers
   void getIdentRest();
@@ -81,6 +80,7 @@ protected:
 public:
 
   Global *global;
+  spScannerData sData;
   spTokenData tData;
 
   // SourceFile data

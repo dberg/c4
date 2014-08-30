@@ -165,6 +165,15 @@ spTree Parser::pkgQualId() {
   return pkg;
 }
 
+Offset Parser::caseAwareTokenOffset() {
+  if (in->tData->token == Token::T_CASECLASS
+      || in->tData->token == Token::T_CASEOBJECT) {
+    return in->sData->prev->offset;
+  } else {
+    return in->tData->offset;
+  }
+}
+
 spTree Parser::topLevelTmpDef() {
   // TODO:
   //val annots = annotations(skipNewLines = true)

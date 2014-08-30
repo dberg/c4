@@ -25,9 +25,9 @@ ScannerData::ScannerData()
 /** Constructor */
 Scanner::Scanner(Global *global, spSourceFile source)
   : reader(spCharArrayReader(new CharArrayReader(source->content()))),
-    sData(spScannerData(new ScannerData)),
     kwOffset(0),
     global(global),
+    sData(spScannerData(new ScannerData)),
     tData(spTokenData(new TokenData)),
     source(source), buf(source->content())
 {
