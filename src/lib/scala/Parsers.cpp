@@ -165,6 +165,16 @@ spTree Parser::pkgQualId() {
   return pkg;
 }
 
+/**
+ *  Modifiers ::= {Modifier}
+ *  Modifier  ::= LocalModifier
+ *              |  AccessModifier
+ *              |  override
+ */
+spModifiers Parser::modifiers() {
+  // TODO:
+}
+
 Offset Parser::caseAwareTokenOffset() {
   if (in->tData->token == Token::T_CASECLASS
       || in->tData->token == Token::T_CASEOBJECT) {
@@ -177,7 +187,7 @@ Offset Parser::caseAwareTokenOffset() {
 spTree Parser::topLevelTmpDef() {
   // TODO:
   //val annots = annotations(skipNewLines = true)
-  //val pos    = caseAwareTokenOffset
+  Offset pos = caseAwareTokenOffset();
   //val mods   = modifiers() withAnnotations annots
   //tmplDef(pos, mods)
 }

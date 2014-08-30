@@ -108,6 +108,9 @@ typedef std::shared_ptr<Tree> spTree;
 
 class Ident;
 
+class Modifiers;
+typedef std::shared_ptr<Modifiers> spModifiers;
+
 } // namespace
 
 #endif

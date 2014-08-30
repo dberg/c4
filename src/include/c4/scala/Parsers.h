@@ -53,6 +53,8 @@ protected:
   virtual spTree qualId();
   virtual spTree pkgQualId();
 
+  virtual spModifiers modifiers();
+
   virtual Offset caseAwareTokenOffset();
   virtual spTree topLevelTmpDef();
   virtual spTree packageOrPackageObject(Offset start);
