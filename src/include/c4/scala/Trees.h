@@ -76,6 +76,15 @@ public:
   virtual void traverse(spTree tree);
 };
 
+class Modifiers {
+public:
+  long flags;
+  spName privateWithin;
+  std::vector<spTree> annotations;
+  Modifiers(long flags, spName privateWithin,
+            std::vector<spTree> annotations);
+};
+
 } // namespace
 
 #endif

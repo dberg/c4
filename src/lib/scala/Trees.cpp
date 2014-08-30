@@ -54,4 +54,9 @@ void Traverser::traverse(spTree tree) {
   //itraverse(this, tree)
 }
 
+/** Constructor */
+Modifiers::Modifiers(
+  long flags, spName privateWithin, std::vector<spTree> annotations)
+  : flags(flags), privateWithin(privateWithin), annotations(annotations) {}
+
 } // namespace
