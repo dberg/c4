@@ -81,6 +81,7 @@ public:
   long flags;
   spName privateWithin;
   std::vector<spTree> annotations;
+  //Modifiers();
   Modifiers(long flags, spName privateWithin,
             std::vector<spTree> annotations);
 };

@@ -1,4 +1,5 @@
 #include "c4/scala/Trees.h"
+#include "c4/scala/FlagSets.h"
 
 namespace c4s {
 
@@ -55,6 +56,9 @@ void Traverser::traverse(spTree tree) {
 }
 
 /** Constructor */
+//Modifiers::Modifiers()
+//  : flags(NoFlags), spName(tpnme.EMPTY), annotations(std::vector<spTree>()) {}
+
 Modifiers::Modifiers(
   long flags, spName privateWithin, std::vector<spTree> annotations)
   : flags(flags), privateWithin(privateWithin), annotations(annotations) {}
