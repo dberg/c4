@@ -92,4 +92,8 @@ nme::nme() {}
 StdNames::StdNames(Global *global):
   keywords(spKeywords(new Keywords(global))) {}
 
+/** Constructor */
+const NameType CommonNames::EMPTY = "";
+CommonNames::CommonNames() {}
+
 } // namespace

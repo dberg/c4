@@ -3,6 +3,7 @@
 #define __C4_SCALA_TYPE_DEFS_H__
 
 #include <memory>
+#include <string>
 #include "c4/common/TypeDefs.h"
 
 namespace c4s {
@@ -86,6 +87,8 @@ class ClientSourceFile;
 typedef std::shared_ptr<ClientSourceFile> spClientSourceFile;
 
 // StdNames.h
+typedef std::string NameType;
+
 class StdNames;
 typedef std::shared_ptr<StdNames> spStdNames;
 

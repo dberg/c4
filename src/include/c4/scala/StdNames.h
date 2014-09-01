@@ -97,6 +97,12 @@ public:
   StdNames(Global *global);
 };
 
+class CommonNames {
+public:
+  static const NameType EMPTY;
+  CommonNames();
+};
+
 } // namespace
 
 #endif
