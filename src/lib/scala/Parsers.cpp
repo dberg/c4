@@ -278,8 +278,29 @@ std::function<std::vector<spTree> (Token)> Parser::topStat() {
  */
 spTree Parser::compilationUnit() {
   resetPackage();
-  std::vector<spTree> res = topstats();
-  // TODO:
+  std::vector<spTree> stats = topstats();
+
+  if (stats.size() == 0) {
+    return stats[0];
+  } else {
+    bool allEmpty = true;
+    for (spTree t: stats) {
+      if (t != EMPTY_TREE) {
+        allEmpty = false;
+      }
+    }
+    int start = 0;
+    if (!allEmpty) {
+      //auto wpos = wrappingPos(stats);
+      //if (wpos.isDefined) {
+      //  start = wpos.start;
+      //} else {
+        start = 0;
+      //}
+    }
+
+    //return makeEmptyPackage(start, stats);
+  }
 }
 
 std::vector<spTree> Parser::topstats() {
