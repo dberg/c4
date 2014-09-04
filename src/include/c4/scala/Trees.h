@@ -2,6 +2,7 @@
 #ifndef __C4_SCALA_TREES_H__
 #define __C4_SCALA_TREES_H__
 
+#include <string>
 #include <vector>
 #include "c4/scala/TypeDefs.h"
 
@@ -13,6 +14,7 @@ public:
   virtual bool canHaveAttrs();
   virtual bool isEmpty();
   spPosition pos();
+  virtual std::string toString();
 };
 
 class PackageDef : public Tree {

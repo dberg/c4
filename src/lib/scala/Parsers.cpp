@@ -156,10 +156,10 @@ spTree Parser::pkgQualId() {
   // TODO: newLineOptWhenFollowedBy(LBRACE)
 
   if (currentPackage == "") {
-    //currentPackage = pkg->toString();
+    currentPackage = pkg->toString();
   } else {
-    //currentPackage += ".";
-    //currentPackage += pkg->toString();
+    currentPackage += ".";
+    currentPackage += pkg->toString();
   }
 
   return pkg;

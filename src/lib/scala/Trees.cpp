@@ -22,6 +22,12 @@ spPosition Tree::pos() {
   //return rawatt->pos;
 }
 
+std::string Tree::toString() {
+  // TODO:
+  //treeToString(this)
+  return "TODO";
+}
+
 /** Constructor */
 PackageDef::PackageDef(spTree pid, std::vector<spTree> stats)
   : Tree(), pid(pid), stats(stats) {}
