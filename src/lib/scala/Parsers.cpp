@@ -322,7 +322,8 @@ std::vector<spTree> Parser::topstats() {
       spTree pkg = pkgQualId();
 
       if (in->tData->token == Token::T_EOF) {
-        // TODO:
+        spTree pkgDef = makePackaging(start, pkg, std::vector<spTree>());
+        ts.push_back(pkgDef);
       } else if (isStatSep()) {
         in->nextToken();
         spTree pkgDef = makePackaging(start, pkg, topstats());
