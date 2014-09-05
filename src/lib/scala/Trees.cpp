@@ -24,7 +24,7 @@ spPosition Tree::pos() {
 
 std::string Tree::toString() {
   // TODO:
-  //treeToString(this)
+  //global->treeToString(this)
   return "TODO";
 }
 

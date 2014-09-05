@@ -6,6 +6,7 @@
 #include "c4/scala/SyntaxAnalyzer.h"
 #include "c4/scala/NameTransformer.h"
 #include "c4/scala/Positions.h"
+#include "c4/scala/Printers.h"
 
 namespace c4s {
 
@@ -14,7 +15,8 @@ Global::Global():
   names(spNames(new Names(this))),
   stdNames(spStdNames(new StdNames(this))),
   nameTransformer(spNameTransformer(new NameTransformer())),
-  positions(spPositions(new Positions()))
+  positions(spPositions(new Positions())),
+  printers(spPrinters(new Printers()))
 {
   spSyntaxAnalyzer synAnalyzer = spSyntaxAnalyzer(new SyntaxAnalyzer(this));
   phases.push_back(synAnalyzer->newPhase());

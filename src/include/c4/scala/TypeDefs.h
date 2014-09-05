@@ -64,6 +64,10 @@ typedef std::shared_ptr<PosAssigner> spPosAssigner;
 class Positions;
 typedef std::shared_ptr<Positions> spPositions;
 
+// Printers.h
+class Printers;
+typedef std::shared_ptr<Printers> spPrinters;
+
 // Scanners.h
 typedef int Offset;
 

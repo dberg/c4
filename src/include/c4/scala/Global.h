@@ -28,6 +28,7 @@ public:
   spStdNames stdNames;
   spNameTransformer nameTransformer;
   spPositions positions;
+  spPrinters printers;
 
   /** Compilation units to be compiled */
   std::vector<spCompilationUnit> units;
