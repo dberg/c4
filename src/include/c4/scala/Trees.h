@@ -9,8 +9,11 @@
 namespace c4s {
 
 class Tree {
+protected:
+  Global *global;
+
 public:
-  Tree();
+  Tree(Global *global);
   virtual bool canHaveAttrs();
   virtual bool isEmpty();
   spPosition pos();
@@ -21,30 +24,30 @@ class PackageDef : public Tree {
 public:
   spTree pid;
   std::vector<spTree> stats;
-  PackageDef(spTree pid, std::vector<spTree> stats);
+  PackageDef(Global *global, spTree pid, std::vector<spTree> stats);
 };
 
 class Select: public Tree {
 public:
   spTree qualifier;
   spName name;
-  Select(spTree qualifier, spName name);
+  Select(Global *global, spTree qualifier, spName name);
 };
 
 class CannotHaveAttrs : virtual public Tree {
 public:
-  CannotHaveAttrs();
+  CannotHaveAttrs(Global *global);
   virtual bool canHaveAttrs();
 };
 
 class TermTree : virtual public Tree {
 public:
-  TermTree();
+  TermTree(Global *global);
 };
 
 class EmptyTree : public TermTree, public CannotHaveAttrs {
 public:
-  EmptyTree();
+  EmptyTree(Global *global);
   virtual bool isEmpty();
 };
 
@@ -59,7 +62,7 @@ extern const spTree EMPTY_TREE;
 class Ident : public Tree {
 public:
   spName name;
-  Ident(spName name);
+  Ident(Global *global, spName name);
 };
 
 //-----------------------------------------------------------------------------

@@ -107,7 +107,7 @@ spName Parser::ident(bool skipIt) {
 spTree Parser::selector(spTree t) {
   Offset point = in->tData->offset;
   if (t != EMPTY_TREE) {
-    spTree selector = spTree(new Select(t, ident(false)));
+    spTree selector = spTree(new Select(global, t, ident(false)));
     // TODO:
     //return selector->setPos(r2p(t.pos.start, point, in.lastOffset))
     return selector;
@@ -136,7 +136,7 @@ spTree Parser::selectors(spTree t, bool typeOK, Offset dotOffset) {
 /** QualId ::= Id {`.' Id} */
 spTree Parser::qualId() {
   Offset start = in->tData->offset;
-  spTree id = atPos(start, spTree(new Ident(ident())));
+  spTree id = atPos(start, spTree(new Ident(global, ident())));
   if (in->tData->token == Token::T_DOT) {
     // TODO:
     //return selectors(id, typeOK = false, in.skipToken())
@@ -232,7 +232,7 @@ spTree Parser::packageOrPackageObject(Offset start) {
 spTree Parser::makePackaging(
   Offset start, spTree pkg, std::vector<spTree> stats) {
 
-  spTree pkgDef = spTree(new PackageDef(pkg, stats));
+  spTree pkgDef = spTree(new PackageDef(global, pkg, stats));
   return atPos(start, pkg->pos()->point(), pkgDef);
 }
 

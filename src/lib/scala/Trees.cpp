@@ -4,7 +4,7 @@
 namespace c4s {
 
 /** Constructor */
-Tree::Tree() {}
+Tree::Tree(Global *global): global(global) {}
 
 /**
  * TODO:
@@ -29,29 +29,30 @@ std::string Tree::toString() {
 }
 
 /** Constructor */
-PackageDef::PackageDef(spTree pid, std::vector<spTree> stats)
-  : Tree(), pid(pid), stats(stats) {}
+PackageDef::PackageDef(Global *global, spTree pid, std::vector<spTree> stats)
+  : Tree(global), pid(pid), stats(stats) {}
 
 /** Constructor */
-Select::Select(spTree qualifier, spName name)
-  : Tree(), qualifier(qualifier), name(name) {}
+Select::Select(Global *global, spTree qualifier, spName name)
+  : Tree(global), qualifier(qualifier), name(name) {}
 
 /** Constructor */
-CannotHaveAttrs::CannotHaveAttrs(): Tree() {}
+CannotHaveAttrs::CannotHaveAttrs(Global *global): Tree(global) {}
 
 bool CannotHaveAttrs::canHaveAttrs() { return false; }
 
 /** Constructor */
-TermTree::TermTree(): Tree() {}
+TermTree::TermTree(Global *global): Tree(global) {}
 
 /** Constructor */
-EmptyTree::EmptyTree(): TermTree(), CannotHaveAttrs() {}
+EmptyTree::EmptyTree(Global *global)
+  : Tree(global), TermTree(global), CannotHaveAttrs(global) {}
 
 bool EmptyTree::isEmpty() { return true; }
 
-const spTree EMPTY_TREE = spTree(new EmptyTree());
+const spTree EMPTY_TREE = spTree(new EmptyTree(nullptr));
 
-Ident::Ident(spName name): name(name) {}
+Ident::Ident(Global *global, spName name): Tree(global), name(name) {}
 
 /** Constructor */
 Traverser::Traverser() {}
