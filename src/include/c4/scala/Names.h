@@ -70,8 +70,9 @@ public:
   TypeName(Global *global, int index, int len, spTypeName next);
 };
 
-/** TermName_S and TypeName_S have fields containing the string version of the name.
- *  TermName_R and TypeName_R recreate it each time toString is called.
+/**
+ * TermName_S and TypeName_S have fields containing the string version of the name.
+ * TermName_R and TypeName_R recreate it each time toString is called.
  */
 class TermName_S : public TermName {
 protected:
@@ -84,16 +85,17 @@ public:
 };
 
 class TypeName_S : public TypeName {
-
+  // TODO:
 };
 
 class TermName_R : public TermName {
 public:
   TermName_R(Global *global, int index, int len, spTermName next);
+  virtual std::string toString();
 };
 
 class TypeName_R : public TypeName {
-
+  // TODO:
 };
 
 } // namespace

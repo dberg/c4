@@ -141,4 +141,11 @@ std::string TermName_S::toString() {
 TermName_R::TermName_R(Global *global, int index, int len, spTermName next)
   : TermName(global, index, len, next) {}
 
+std::string TermName_R::toString() {
+  return std::string(
+    global->names->chrs.begin() + index,
+    global->names->chrs.begin() + index + len
+  );
+}
+
 } // namespace
