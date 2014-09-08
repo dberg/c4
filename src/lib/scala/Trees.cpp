@@ -1,5 +1,7 @@
 #include "c4/scala/Trees.h"
 #include "c4/scala/FlagSets.h"
+#include "c4/scala/Global.h"
+#include "c4/scala/Printers.h"
 
 namespace c4s {
 
@@ -23,9 +25,7 @@ spPosition Tree::pos() {
 }
 
 std::string Tree::toString() {
-  // TODO:
-  //global->treeToString(this)
-  return "TODO";
+  return global->printers->treeToString(this);
 }
 
 /** Constructor */

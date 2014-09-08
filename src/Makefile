@@ -208,6 +208,7 @@ $(obj_scala)/libscala.a: \
   $(obj_scala)/Phase.o \
   $(obj_scala)/Position.o \
   $(obj_scala)/Positions.o \
+  $(obj_scala)/Printers.o \
   $(obj_scala)/Scanners.o \
   $(obj_scala)/SourceFile.o \
   $(obj_scala)/StdNames.o \
