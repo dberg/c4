@@ -105,6 +105,10 @@ typedef std::shared_ptr<KeywordSetBuilder> spKeywordSetBuilder;
 // SubComponent.h
 class SubComponent;
 
+// Symbols.h
+class Symbol;
+typedef std::shared_ptr<Symbol> spSymbol;
+
 // SyntaxAnalyzer.h
 class SyntaxAnalyzer;
 typedef std::shared_ptr<SyntaxAnalyzer> spSyntaxAnalyzer;

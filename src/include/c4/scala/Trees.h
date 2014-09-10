@@ -18,6 +18,7 @@ public:
   virtual bool canHaveAttrs();
   virtual bool isEmpty();
   spPosition pos();
+  virtual spSymbol symbol();
   virtual std::string toString();
 };
 

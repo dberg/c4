@@ -2,6 +2,7 @@
 #include "c4/scala/FlagSets.h"
 #include "c4/scala/Global.h"
 #include "c4/scala/Printers.h"
+#include "c4/scala/Symbols.h"
 
 namespace c4s {
 
@@ -25,6 +26,11 @@ bool Tree::isEmpty() { return false; }
 spPosition Tree::pos() {
   // TODO:
   //return rawatt->pos;
+}
+
+spSymbol Tree::symbol() {
+  // TODO:
+  return std::make_shared<Symbol>();
 }
 
 std::string Tree::toString() {
