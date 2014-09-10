@@ -7,7 +7,10 @@ namespace c4s {
 TreePrinter::TreePrinter() {}
 
 std::string TreePrinter::print(Tree *tree) {
-  // TODO:
+  if (tree->isDef() /*&& tree->symbol != NoSymbol && tree->symbol->isInitialized*/) {
+    // TODO:
+  }
+
   return "TODO";
 }
 

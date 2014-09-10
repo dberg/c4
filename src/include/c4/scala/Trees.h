@@ -14,6 +14,7 @@ protected:
 
 public:
   Tree(Global *global);
+  virtual bool isDef();
   virtual bool canHaveAttrs();
   virtual bool isEmpty();
   spPosition pos();

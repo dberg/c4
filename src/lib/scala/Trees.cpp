@@ -8,6 +8,9 @@ namespace c4s {
 /** Constructor */
 Tree::Tree(Global *global): global(global) {}
 
+/** Does this tree represent a definition? (of a method, of a class, etc) */
+bool Tree::isDef() { return false; }
+
 /**
  * TODO:
  * Can this tree carry attributes (i.e. symbols, types or positions)?
