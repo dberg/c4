@@ -5,4 +5,9 @@ namespace c4s {
 /** Constructor */
 Symbol::Symbol() {}
 
+bool Symbol::isInitialized() {
+  // TODO:
+  return false;
+}
+
 } // namespace

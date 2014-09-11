@@ -7,6 +7,7 @@ namespace c4s {
 class Symbol {
 public:
   Symbol();
+  bool isInitialized();
 };
 
 } // namespace
