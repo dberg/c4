@@ -8,8 +8,17 @@ namespace c4s {
 TreePrinter::TreePrinter() {}
 
 std::string TreePrinter::print(Tree *tree) {
+  // TODO:
+  //printPosition(tree)
   if (tree->isDef() /*&& tree->symbol != NoSymbol*/ && tree->symbol()->isInitialized()) {
     // TODO:
+    //printPosition(tree)
+    //printTree(
+
+    //)
+  } else {
+    // TODO:
+    //tree
   }
 
   return "TODO";

@@ -21,6 +21,7 @@ private:
 public:
   Printers();
   std::string treeToString(Tree *tree);
+  std::string printTree(Tree *tree);
 };
 
 }

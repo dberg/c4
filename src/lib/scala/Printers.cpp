@@ -22,4 +22,9 @@ std::string Printers::treeToString(Tree *tree) {
   return show(tree);
 }
 
+std::string printTree(Tree *tree) {
+  // TODO:
+  return "TODO";
+}
+
 } // namespace
