@@ -6,6 +6,14 @@ namespace c4s {
 /** Constructor */
 Printers::Printers() {}
 
+std::string Printers::symNameInternal(Tree *tree, spName name, bool decoded) {
+  return "TODO";
+}
+
+std::string Printers::symName(Tree *tree, spName name) {
+  return symNameInternal(tree, name, false);
+}
+
 std::string Printers::render(Tree *tree) {
   // TODO: Print missing parameters. See Printers::show.
   std::string buffer;
@@ -14,6 +22,10 @@ std::string Printers::render(Tree *tree) {
   return buffer;
 }
 
+// TODO: additional parameters are
+//       printTypes, printIds, printOwners, printKinds,
+//       printMirrors and printPositions.
+// We'll skip that for now.
 std::string Printers::show(Tree *tree) {
   return render(tree);
 }

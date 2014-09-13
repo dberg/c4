@@ -9,14 +9,11 @@ namespace c4s {
 
 class Printers {
 private:
+  // reflect.internal
+  std::string symNameInternal(Tree *tree, spName name, bool decoded);
+  std::string symName(Tree *tree, spName name);
 
-  // TODO: see Printers::show.
   std::string render(Tree *tree);
-
-  // TODO: additional parameters are
-  //       printTypes, printIds, printOwners, printKinds,
-  //       printMirrors and printPositions.
-  // We'll skip that for now.
   std::string show(Tree *tree);
 public:
   Printers();
