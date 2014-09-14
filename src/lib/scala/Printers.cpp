@@ -1,12 +1,19 @@
 #include "c4/scala/Printers.h"
 #include "c4/scala/TreePrinter.h"
+#include "c4/scala/Trees.h"
 
 namespace c4s {
 
 /** Constructor */
 Printers::Printers() {}
 
+std::string Printers::quotedName(spName name, bool decode) {
+  // TODO:
+  return "TODO";
+}
+
 std::string Printers::symNameInternal(Tree *tree, spName name, bool decoded) {
+  auto sym = tree->symbol();
   return "TODO";
 }
 

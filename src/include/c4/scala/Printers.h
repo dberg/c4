@@ -10,6 +10,7 @@ namespace c4s {
 class Printers {
 private:
   // reflect.internal
+  std::string quotedName(spName name, bool decode);
   std::string symNameInternal(Tree *tree, spName name, bool decoded);
   std::string symName(Tree *tree, spName name);
 
