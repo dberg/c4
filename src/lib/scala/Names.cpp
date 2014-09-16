@@ -120,6 +120,12 @@ spThisNameType Name::encode() {
   //}
 }
 
+//spTermName Name::dropLocal() {
+  // TODO:
+  // Implicit conversion TermName -> NameOps[TermName]
+  //name.toTermName stripSuffix LOCAL_SUFFIX_STRING
+//}
+
 /** Constructor */
 TermName::TermName(Global *global, int index, int len, spTermName next)
   : Name(global, index, len), next(next) {}

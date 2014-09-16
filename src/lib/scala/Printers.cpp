@@ -13,7 +13,19 @@ std::string Printers::quotedName(spName name, bool decode) {
 }
 
 std::string Printers::symNameInternal(Tree *tree, spName name, bool decoded) {
-  auto sym = tree->symbol();
+  spSymbol sym = tree->symbol();
+  // TODO:
+  if (sym == nullptr /* || sym == NoSymbol*/) {
+    // Names.class
+    // Implicit conversion Name -> NameOps[Name]
+    //return quotedName(name->dropLocal, decoded);
+  } //else if (sym.isErroneous) {
+    //return s"<$qname: error>";
+  //} else if (sym.isMixinConstructor) {
+  //  return s"/*$qowne*/$symbol";
+  //} else {
+  //  return qsymbol;
+  //}
   return "TODO";
 }
 
@@ -43,6 +55,9 @@ std::string Printers::treeToString(Tree *tree) {
 
 std::string printTree(Tree *tree) {
   // TODO:
+  // case id @ Ident(name) =>
+  //   val str = symName(tree, name)
+  //   print( if (id.isBackquoted) "`" + str + "`" else str)
   return "TODO";
 }
 

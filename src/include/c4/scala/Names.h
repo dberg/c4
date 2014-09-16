@@ -56,6 +56,10 @@ public:
   virtual int start();
   virtual int length();
   virtual spThisNameType encode();
+
+  // NameOps
+  //spTermName dropLocal();
+  //T stripSuffix(std::string suffix);
 };
 
 class TermName : public Name {
