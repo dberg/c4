@@ -64,7 +64,8 @@ public:
 
 class NameOps {
 public:
-  NameOps();
+  spName name;
+  NameOps(spName name);
 };
 
 class TermName : public Name {
