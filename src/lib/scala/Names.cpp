@@ -127,6 +127,9 @@ spThisNameType Name::encode() {
 //}
 
 /** Constructor */
+NameOps::NameOps() {}
+
+/** Constructor */
 TermName::TermName(Global *global, int index, int len, spTermName next)
   : Name(global, index, len), next(next) {}
 

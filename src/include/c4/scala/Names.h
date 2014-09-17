@@ -62,6 +62,11 @@ public:
   //T stripSuffix(std::string suffix);
 };
 
+class NameOps {
+public:
+  NameOps();
+};
+
 class TermName : public Name {
 public:
   spTermName next;
