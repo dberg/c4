@@ -11,16 +11,18 @@ std::string TreePrinter::print(Tree *tree) {
   // TODO:
   //printPosition(tree)
   if (tree->isDef() /*&& tree->symbol != NoSymbol*/ && tree->symbol()->isInitialized()) {
-    // TODO:
-    //printPosition(tree)
-    //printTree(
-
-    //)
+    //
   } else {
-    // TODO:
     //tree
   }
+  // case unit: CompilationUnit
+  // case arg => super.print(arg)
 
+  // TODO: case Tree
+  return printTree(tree);
+}
+
+std::string TreePrinter::printTree(Tree *tree) {
   return "TODO";
 }
 

@@ -11,6 +11,7 @@ class TreePrinter {
 public:
   TreePrinter();
   std::string print(Tree *tree);
+  std::string printTree(Tree *tree);
 };
 
 } // namespace
