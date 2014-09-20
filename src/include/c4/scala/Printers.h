@@ -12,6 +12,7 @@ private:
   // reflect.internal
   std::string quotedName(spName name, bool decode);
   std::string symNameInternal(Tree *tree, spName name, bool decoded);
+  std::string decodedSymName(Tree *tree, spName name);
   std::string symName(Tree *tree, spName name);
 
   std::string render(Tree *tree);

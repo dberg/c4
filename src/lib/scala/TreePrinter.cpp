@@ -23,6 +23,10 @@ std::string TreePrinter::print(Tree *tree) {
 }
 
 std::string TreePrinter::printTree(Tree *tree) {
+  // TODO:
+  // if Ident
+  // print(decodedSymName(tree, name))
+
   return "TODO";
 }
 
