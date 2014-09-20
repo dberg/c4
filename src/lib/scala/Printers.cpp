@@ -29,9 +29,8 @@ std::string Printers::symNameInternal(Tree *tree, spName name, bool decoded) {
   return "TODO";
 }
 
-std::string Printers::decodedSymName(Tree * tree, spName) {
-  // TODO:
-  return "TODO";
+std::string Printers::decodedSymName(Tree * tree, spName name) {
+  return symNameInternal(tree, name, false);
 }
 
 std::string Printers::symName(Tree *tree, spName name) {
