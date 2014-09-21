@@ -16,7 +16,7 @@ Global::Global():
   stdNames(spStdNames(new StdNames(this))),
   nameTransformer(spNameTransformer(new NameTransformer())),
   positions(spPositions(new Positions())),
-  printers(spPrinters(new Printers()))
+  printers(new Printers())
 {
   spSyntaxAnalyzer synAnalyzer = spSyntaxAnalyzer(new SyntaxAnalyzer(this));
   phases.push_back(synAnalyzer->newPhase());

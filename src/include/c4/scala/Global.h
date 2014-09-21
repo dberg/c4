@@ -28,12 +28,13 @@ public:
   spStdNames stdNames;
   spNameTransformer nameTransformer;
   spPositions positions;
-  spPrinters printers;
+  Printers *printers;
 
   /** Compilation units to be compiled */
   std::vector<spCompilationUnit> units;
 
   Global();
+  ~Global();
 
   void compile(std::vector<spCompilationUnit> units);
 };
