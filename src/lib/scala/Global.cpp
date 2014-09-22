@@ -15,7 +15,7 @@ Global::Global():
   globalPhase(nullptr),
   names(new Names(this)),
   stdNames(spStdNames(new StdNames(this))),
-  nameTransformer(spNameTransformer(new NameTransformer())),
+  nameTransformer(new NameTransformer()),
   positions(new Positions()),
   printers(new Printers())
 {

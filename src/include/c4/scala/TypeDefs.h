@@ -39,7 +39,6 @@ typedef spName spThisNameType;
 
 // NameTransformer.h
 class NameTransformer;
-typedef std::shared_ptr<NameTransformer> spNameTransformer;
 
 class OpCodes;
 typedef std::shared_ptr<OpCodes> spOpCodes;
