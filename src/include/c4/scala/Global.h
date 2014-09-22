@@ -24,7 +24,7 @@ protected:
 
 public:
 
-  spNames names;
+  Names *names;
   spStdNames stdNames;
   spNameTransformer nameTransformer;
   spPositions positions;

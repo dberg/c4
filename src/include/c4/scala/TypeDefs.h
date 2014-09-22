@@ -24,7 +24,6 @@ typedef std::shared_ptr<Global> spGlobal;
 
 // Names.h
 class Names;
-typedef std::shared_ptr<Names> spNames;
 
 class Name;
 typedef std::shared_ptr<Name> spName;

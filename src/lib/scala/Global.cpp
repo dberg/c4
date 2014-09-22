@@ -10,9 +10,10 @@
 
 namespace c4s {
 
+/** Constructor */
 Global::Global():
   globalPhase(nullptr),
-  names(spNames(new Names(this))),
+  names(new Names(this)),
   stdNames(spStdNames(new StdNames(this))),
   nameTransformer(spNameTransformer(new NameTransformer())),
   positions(spPositions(new Positions())),
@@ -20,6 +21,12 @@ Global::Global():
 {
   spSyntaxAnalyzer synAnalyzer = spSyntaxAnalyzer(new SyntaxAnalyzer(this));
   phases.push_back(synAnalyzer->newPhase());
+}
+
+/** Destructor */
+Global::~Global() {
+  delete printers;
+  delete names;
 }
 
 void Global::compile(std::vector<spCompilationUnit> units) {
