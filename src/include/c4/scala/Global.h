@@ -27,7 +27,7 @@ public:
   Names *names;
   spStdNames stdNames;
   spNameTransformer nameTransformer;
-  spPositions positions;
+  Positions *positions;
   Printers *printers;
 
   /** Compilation units to be compiled */

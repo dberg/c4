@@ -16,7 +16,7 @@ Global::Global():
   names(new Names(this)),
   stdNames(spStdNames(new StdNames(this))),
   nameTransformer(spNameTransformer(new NameTransformer())),
-  positions(spPositions(new Positions())),
+  positions(new Positions()),
   printers(new Printers())
 {
   spSyntaxAnalyzer synAnalyzer = spSyntaxAnalyzer(new SyntaxAnalyzer(this));
@@ -26,6 +26,7 @@ Global::Global():
 /** Destructor */
 Global::~Global() {
   delete printers;
+  delete positions;
   delete names;
 }
 
