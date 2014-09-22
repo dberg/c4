@@ -10,7 +10,8 @@ namespace c4s {
 class SyntaxAnalyzer : public SubComponent {
 public:
   SyntaxAnalyzer(Global *global);
-  virtual spPhase newPhase();
+  virtual ~SyntaxAnalyzer();
+  virtual Phase* newPhase();
 };
 
 } // namespace

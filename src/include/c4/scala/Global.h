@@ -14,10 +14,10 @@ class Global {
 protected:
 
   /** The current phase being run */
-  spPhase globalPhase;
+  Phase *globalPhase;
 
   /** The phases to be applied in order */
-  std::vector<spPhase> phases;
+  std::vector<Phase *> phases;
 
   /** Each Component is a phase factory */
   // TODO: std::vector<spSubComponent> phaseDescriptors;

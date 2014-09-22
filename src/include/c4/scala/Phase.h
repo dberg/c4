@@ -10,6 +10,7 @@ namespace c4s {
 class Phase {
 
 public:
+  virtual ~Phase();
   virtual void run() = 0;
 };
 
@@ -20,6 +21,7 @@ protected:
 
 public:
   GlobalPhase(Global *global);
+  virtual ~GlobalPhase();
 
   virtual void run();
 
@@ -29,11 +31,13 @@ public:
 class StdPhase : public GlobalPhase {
 public:
   StdPhase(Global *global);
+  virtual ~StdPhase();
 };
 
 class ParserPhase : public StdPhase {
 public:
   ParserPhase(Global *global);
+  virtual ~ParserPhase();
   virtual void apply(spCompilationUnit unit);
 };
 

@@ -5,8 +5,14 @@
 
 namespace c4s {
 
+/** Destructor */
+Phase::~Phase() {}
+
 /** Constructor */
 GlobalPhase::GlobalPhase(Global *global) : global(global) {}
+
+/** Destructor */
+GlobalPhase::~GlobalPhase() {}
 
 void GlobalPhase::run() {
   for (auto &unit : global->units) {
@@ -17,8 +23,14 @@ void GlobalPhase::run() {
 /** Constructor */
 StdPhase::StdPhase(Global *global) : GlobalPhase(global) {}
 
+/** Destructor */
+StdPhase::~StdPhase() {}
+
 /** Constructor */
 ParserPhase::ParserPhase(Global *global) : StdPhase(global) {}
+
+/** Destructor */
+ParserPhase::~ParserPhase() {}
 
 void ParserPhase::apply(spCompilationUnit unit) {
   if (!unit->body) {

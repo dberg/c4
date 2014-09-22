@@ -7,8 +7,11 @@ namespace c4s {
 SyntaxAnalyzer::SyntaxAnalyzer(Global *global)
   : SubComponent(global, "parser") {}
 
-spPhase SyntaxAnalyzer::newPhase() {
-  return spPhase(new ParserPhase(global));
+/** Destructor */
+SyntaxAnalyzer::~SyntaxAnalyzer() {}
+
+Phase* SyntaxAnalyzer::newPhase() {
+  return new ParserPhase(global);
 }
 
 } // namespace

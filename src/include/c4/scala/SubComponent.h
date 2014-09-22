@@ -16,7 +16,8 @@ protected:
 
 public:
   SubComponent(Global *global, std::string phaseName);
-  virtual spPhase newPhase() = 0;
+  ~SubComponent();
+  virtual Phase* newPhase() = 0;
 };
 
 } // namespace

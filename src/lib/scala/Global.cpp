@@ -19,8 +19,9 @@ Global::Global():
   positions(new Positions()),
   printers(new Printers())
 {
-  spSyntaxAnalyzer synAnalyzer = spSyntaxAnalyzer(new SyntaxAnalyzer(this));
+  SyntaxAnalyzer *synAnalyzer = new SyntaxAnalyzer(this);
   phases.push_back(synAnalyzer->newPhase());
+  delete synAnalyzer;
 }
 
 /** Destructor */
@@ -30,11 +31,15 @@ Global::~Global() {
   delete nameTransformer;
   delete stdNames;
   delete names;
+
+  for (Phase *phase : phases) {
+    delete phase;
+  }
 }
 
 void Global::compile(std::vector<spCompilationUnit> units) {
   this->units = units;
-  for (auto &phase : phases) {
+  for (Phase *phase : phases) {
     globalPhase = phase;
     globalPhase->run();
   }

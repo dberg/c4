@@ -49,7 +49,6 @@ typedef std::shared_ptr<UnitParser> spUnitParser;
 
 // Phase.h
 class Phase;
-typedef std::shared_ptr<Phase> spPhase;
 
 // Position.h
 class Position;
@@ -106,7 +105,6 @@ typedef std::shared_ptr<Symbol> spSymbol;
 
 // SyntaxAnalyzer.h
 class SyntaxAnalyzer;
-typedef std::shared_ptr<SyntaxAnalyzer> spSyntaxAnalyzer;
 
 // Trees.h
 class Tree;
