@@ -90,7 +90,6 @@ typedef std::shared_ptr<ClientSourceFile> spClientSourceFile;
 typedef std::string NameType;
 
 class StdNames;
-typedef std::shared_ptr<StdNames> spStdNames;
 
 class Keywords;
 typedef std::shared_ptr<Keywords> spKeywords;

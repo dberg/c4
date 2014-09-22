@@ -25,7 +25,7 @@ protected:
 public:
 
   Names *names;
-  spStdNames stdNames;
+  StdNames *stdNames;
   NameTransformer *nameTransformer;
   Positions *positions;
   Printers *printers;

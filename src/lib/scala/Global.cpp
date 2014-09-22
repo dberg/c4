@@ -14,7 +14,7 @@ namespace c4s {
 Global::Global():
   globalPhase(nullptr),
   names(new Names(this)),
-  stdNames(spStdNames(new StdNames(this))),
+  stdNames(new StdNames(this)),
   nameTransformer(new NameTransformer()),
   positions(new Positions()),
   printers(new Printers())
@@ -27,6 +27,8 @@ Global::Global():
 Global::~Global() {
   delete printers;
   delete positions;
+  delete nameTransformer;
+  delete stdNames;
   delete names;
 }
 
