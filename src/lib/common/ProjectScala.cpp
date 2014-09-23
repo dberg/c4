@@ -9,10 +9,9 @@ void ProjectScala::compile(spCompilation comp) {
     comp->buffer
   );
 
-  c4s::spCompilationUnit unit = c4s::spCompilationUnit(
-    new c4s::CompilationUnit(source));
+  c4s::CompilationUnit *unit = new c4s::CompilationUnit(source);
 
-  std::vector<c4s::spCompilationUnit> units;
+  std::vector<c4s::CompilationUnit *> units;
   units.push_back(unit);
 
   // TODO: we should only instantiate one global object and keep feeding it
@@ -20,8 +19,9 @@ void ProjectScala::compile(spCompilation comp) {
   c4s::Global *global = new c4s::Global;
   global->compile(units);
 
-  delete source;
   delete global;
+  for (auto u: units) { delete u; }
+  delete source;
 }
 
 } // namespace

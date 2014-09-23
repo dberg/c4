@@ -16,7 +16,6 @@ typedef std::shared_ptr<CharArrayReader> spCharArrayReader;
 
 // Compilation Unit.h
 class CompilationUnit;
-typedef std::shared_ptr<CompilationUnit> spCompilationUnit;
 
 // Global.h
 class Global;

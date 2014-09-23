@@ -319,7 +319,7 @@ void Scanner::nextToken() {
 }
 
 /** Constructor */
-UnitScanner::UnitScanner(Global *global, spCompilationUnit unit)
+UnitScanner::UnitScanner(Global *global, CompilationUnit *unit)
   : Scanner(global, unit->source), unit(unit) {}
 
 /** Destructor */

@@ -25,7 +25,7 @@ public:
 
   virtual void run();
 
-  virtual void apply(spCompilationUnit unit) = 0;
+  virtual void apply(CompilationUnit *unit) = 0;
 };
 
 class StdPhase : public GlobalPhase {
@@ -38,7 +38,7 @@ class ParserPhase : public StdPhase {
 public:
   ParserPhase(Global *global);
   virtual ~ParserPhase();
-  virtual void apply(spCompilationUnit unit);
+  virtual void apply(CompilationUnit *unit);
 };
 
 } // namespace

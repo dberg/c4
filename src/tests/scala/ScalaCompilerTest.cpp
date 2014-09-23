@@ -27,14 +27,15 @@ TEST(ScalaCompiler, HelloWorld) {
     std::back_inserter(buffer));
 
   ClientSourceFile *source = new ClientSourceFile(filename, buffer);
-  spCompilationUnit unit = spCompilationUnit(new CompilationUnit(source));
+  CompilationUnit *unit = new CompilationUnit(source);
 
-  std::vector<spCompilationUnit> units;
+  std::vector<CompilationUnit *> units;
   units.push_back(unit);
 
   Global *global = new Global;
   global->compile(units);
 
-  delete source;
   delete global;
+  for (auto u : units) { delete u; }
+  delete source;
 }

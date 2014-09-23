@@ -32,7 +32,7 @@ ParserPhase::ParserPhase(Global *global) : StdPhase(global) {}
 /** Destructor */
 ParserPhase::~ParserPhase() {}
 
-void ParserPhase::apply(spCompilationUnit unit) {
+void ParserPhase::apply(CompilationUnit *unit) {
   if (!unit->body) {
     UnitParser *parser = new UnitParser(global, unit);
     unit->body = parser->parse();

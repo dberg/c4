@@ -103,10 +103,10 @@ public:
 
 class UnitScanner : public Scanner {
 private:
-  spCompilationUnit unit;
+  CompilationUnit *unit;
 
 public:
-  UnitScanner(Global *global, spCompilationUnit unit);
+  UnitScanner(Global *global, CompilationUnit *unit);
   virtual ~UnitScanner();
 };
 

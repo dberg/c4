@@ -86,10 +86,10 @@ public:
 class UnitParser : public SourceFileParser {
 
 private:
-  spCompilationUnit unit;
+  CompilationUnit *unit;
 
 public:
-  UnitParser(Global *global, spCompilationUnit unit);
+  UnitParser(Global *global, CompilationUnit *unit);
   virtual ~UnitParser();
 };
 

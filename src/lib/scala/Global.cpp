@@ -37,7 +37,7 @@ Global::~Global() {
   }
 }
 
-void Global::compile(std::vector<spCompilationUnit> units) {
+void Global::compile(std::vector<CompilationUnit *> units) {
   this->units = units;
   for (Phase *phase : phases) {
     globalPhase = phase;

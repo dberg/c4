@@ -31,12 +31,12 @@ public:
   Printers *printers;
 
   /** Compilation units to be compiled */
-  std::vector<spCompilationUnit> units;
+  std::vector<CompilationUnit *> units;
 
   Global();
   ~Global();
 
-  void compile(std::vector<spCompilationUnit> units);
+  void compile(std::vector<CompilationUnit *> units);
 };
 
 } // namespace

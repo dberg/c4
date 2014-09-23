@@ -344,7 +344,7 @@ SourceFileParser::SourceFileParser(Global *global): Parser(global) {}
 SourceFileParser::~SourceFileParser() {}
 
 /** Constructor */
-UnitParser::UnitParser(Global *global, spCompilationUnit unit)
+UnitParser::UnitParser(Global *global, CompilationUnit *unit)
   : SourceFileParser(global), unit(unit) {
 
   in = new UnitScanner(global, unit);
