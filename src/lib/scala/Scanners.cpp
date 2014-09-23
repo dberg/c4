@@ -23,7 +23,7 @@ ScannerData::ScannerData()
   : next(spTokenData(new TokenData)), prev(spTokenData(new TokenData)) {}
 
 /** Constructor */
-Scanner::Scanner(Global *global, spSourceFile source)
+Scanner::Scanner(Global *global, SourceFile *source)
   : reader(spCharArrayReader(new CharArrayReader(source->content()))),
     kwOffset(0),
     global(global),

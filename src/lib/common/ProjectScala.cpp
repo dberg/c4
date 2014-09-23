@@ -4,10 +4,10 @@ namespace c4 {
 
 void ProjectScala::compile(spCompilation comp) {
 
-  c4s::spSourceFile source = c4s::spSourceFile(new c4s::ClientSourceFile(
+  c4s::SourceFile *source = new c4s::ClientSourceFile(
     comp->filename,
     comp->buffer
-  ));
+  );
 
   c4s::spCompilationUnit unit = c4s::spCompilationUnit(
     new c4s::CompilationUnit(source));
@@ -19,6 +19,8 @@ void ProjectScala::compile(spCompilation comp) {
   // compilation units as they arrive from the client.
   c4s::Global *global = new c4s::Global;
   global->compile(units);
+
+  delete source;
   delete global;
 }
 

@@ -16,7 +16,7 @@ public:
   virtual int point();
   virtual int start();
 
-  static spPosition offset(spSourceFile source, int point);
+  static spPosition offset(SourceFile *source, int point);
 };
 
 class DefinedPosition : public Position {
@@ -26,9 +26,9 @@ public:
 
 class OffsetPosition : public DefinedPosition {
 public:
-  spSourceFile sourceIn;
+  SourceFile *sourceIn;
   int pointIn;
-  OffsetPosition(spSourceFile sourceIn, int pointIn);
+  OffsetPosition(SourceFile *sourceIn, int pointIn);
   virtual int point();
   virtual int start();
 };

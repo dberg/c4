@@ -44,7 +44,7 @@ spTree Positions::atPos(spPosition pos, spTree tree) {
 }
 
 spPosition Positions::rangePos(
-  spSourceFile source, int start, int point, int end)
+  SourceFile *source, int start, int point, int end)
 {
   if (useOffsetPositions()) {
     //return Position.offset(source, point);

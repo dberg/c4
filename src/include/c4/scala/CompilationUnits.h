@@ -9,9 +9,9 @@ namespace c4s {
 
 class CompilationUnit {
 public:
-  spSourceFile source;
+  SourceFile *source;
   spTree body;
-  CompilationUnit(spSourceFile source);
+  CompilationUnit(SourceFile *source);
 };
 
 } // namespace

@@ -11,7 +11,8 @@ namespace c4s {
 class SourceFile {
 public:
   virtual std::vector<c4::Char>& content() = 0;
-  SourceFile() {}
+  SourceFile();
+  virtual ~SourceFile();
 };
 
 /**
@@ -23,6 +24,7 @@ public:
   std::vector<c4::Char> buffer;
 
   ClientSourceFile(std::string filename, std::vector<c4::Char> buffer);
+  virtual ~ClientSourceFile();
 
   std::vector<c4::Char>& content() { return buffer; }
 };

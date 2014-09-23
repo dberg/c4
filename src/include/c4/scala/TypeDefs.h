@@ -76,10 +76,8 @@ class UnitScanner;
 
 // SourceFile.h
 class SourceFile;
-typedef std::shared_ptr<SourceFile> spSourceFile;
 
 class ClientSourceFile;
-typedef std::shared_ptr<ClientSourceFile> spClientSourceFile;
 
 // StdNames.h
 typedef std::string NameType;

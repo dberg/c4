@@ -26,8 +26,7 @@ TEST(ScalaCompiler, HelloWorld) {
   utf8::utf8to16(sourceCode.begin(), sourceCode.end(),
     std::back_inserter(buffer));
 
-  spClientSourceFile source = spClientSourceFile(new ClientSourceFile(
-    filename, buffer));
+  ClientSourceFile *source = new ClientSourceFile(filename, buffer);
   spCompilationUnit unit = spCompilationUnit(new CompilationUnit(source));
 
   std::vector<spCompilationUnit> units;
@@ -35,5 +34,7 @@ TEST(ScalaCompiler, HelloWorld) {
 
   Global *global = new Global;
   global->compile(units);
+
+  delete source;
   delete global;
 }

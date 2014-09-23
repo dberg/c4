@@ -84,10 +84,10 @@ public:
   spTokenData tData;
 
   // SourceFile data
-  spSourceFile source;
+  SourceFile *source;
   std::vector<Char> &buf;
 
-  Scanner(Global *global, spSourceFile source);
+  Scanner(Global *global, SourceFile *source);
   virtual ~Scanner();
 
   //---------------------------------------------------------------------------

@@ -27,7 +27,7 @@ public:
   Positions();
   bool useOffsetPositions();
   spTree atPos(spPosition pos, spTree tree);
-  spPosition rangePos(spSourceFile source, int start, int point, int end);
+  spPosition rangePos(SourceFile *source, int start, int point, int end);
 };
 
 }; // namespace
