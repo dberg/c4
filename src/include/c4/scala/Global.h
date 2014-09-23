@@ -3,7 +3,7 @@
 #define __C4_SCALA_GLOBAL_H__
 
 #include <vector>
-#include "c4/scala/TypeDefs.h"
+#include "c4/scala/CompilationUnits.h"
 
 namespace c4s {
 

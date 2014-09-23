@@ -14,9 +14,6 @@ typedef c4::Char Char;
 class CharArrayReader;
 typedef std::shared_ptr<CharArrayReader> spCharArrayReader;
 
-// Compilation Unit.h
-class CompilationUnit;
-
 // Global.h
 class Global;
 

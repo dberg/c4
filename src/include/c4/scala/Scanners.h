@@ -4,6 +4,7 @@
 
 #include <string>
 #include <vector>
+#include "c4/scala/CompilationUnits.h"
 #include "c4/scala/TypeDefs.h"
 #include "c4/scala/Tokens.h"
 

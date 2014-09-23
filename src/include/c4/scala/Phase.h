@@ -2,6 +2,7 @@
 #ifndef __C4_SCALA_PHASE_H__
 #define __C4_SCALA_PHASE_H__
 
+#include "c4/scala/CompilationUnits.h"
 #include "c4/scala/TypeDefs.h"
 
 namespace c4s {
