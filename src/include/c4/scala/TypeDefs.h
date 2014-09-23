@@ -45,7 +45,6 @@ typedef std::shared_ptr<OpCodes> spOpCodes;
 
 // Parsers.h
 class UnitParser;
-typedef std::shared_ptr<UnitParser> spUnitParser;
 
 // Phase.h
 class Phase;
@@ -73,10 +72,8 @@ class TokenData;
 typedef std::shared_ptr<TokenData> spTokenData;
 
 class Scanner;
-typedef std::shared_ptr<Scanner> spScanner;
 
 class UnitScanner;
-typedef std::shared_ptr<UnitScanner> spUnitScanner;
 
 // SourceFile.h
 class SourceFile;

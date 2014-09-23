@@ -21,7 +21,7 @@ private:
   }
 
 protected:
-  spScanner in;
+  Scanner *in;
 
   spPosition r2p(Offset start, Offset mid, Offset end);
   spPosition r2p(Offset start, Offset mid);
@@ -73,12 +73,14 @@ protected:
 public:
   Global *global;
   Parser(Global *global);
+  virtual ~Parser();
   virtual spTree parse();
 };
 
 class SourceFileParser : public Parser {
 public:
   SourceFileParser(Global *global);
+  virtual ~SourceFileParser();
 };
 
 class UnitParser : public SourceFileParser {
@@ -88,6 +90,7 @@ private:
 
 public:
   UnitParser(Global *global, spCompilationUnit unit);
+  virtual ~UnitParser();
 };
 
 } // namespace

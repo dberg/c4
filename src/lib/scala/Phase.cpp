@@ -34,8 +34,9 @@ ParserPhase::~ParserPhase() {}
 
 void ParserPhase::apply(spCompilationUnit unit) {
   if (!unit->body) {
-    spUnitParser parser = spUnitParser(new UnitParser(global, unit));
+    UnitParser *parser = new UnitParser(global, unit);
     unit->body = parser->parse();
+    delete parser;
   }
 }
 

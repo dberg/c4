@@ -141,6 +141,9 @@ Scanner::Scanner(Global *global, spSourceFile source)
   kwArray = pair.second;
 }
 
+/** Destructor */
+Scanner::~Scanner() {}
+
 /** @returns (lowest Name.start(), vector of Tokens) */
 std::pair<Token, std::vector<Token>> Scanner::createKeywordArray(
   std::vector<std::pair<spName, Token>> keywords, Token defaultToken) {
@@ -319,5 +322,7 @@ void Scanner::nextToken() {
 UnitScanner::UnitScanner(Global *global, spCompilationUnit unit)
   : Scanner(global, unit->source), unit(unit) {}
 
+/** Destructor */
+UnitScanner::~UnitScanner() {}
 
 } // namespace

@@ -88,6 +88,7 @@ public:
   std::vector<Char> &buf;
 
   Scanner(Global *global, spSourceFile source);
+  virtual ~Scanner();
 
   //---------------------------------------------------------------------------
   // Get next Token
@@ -106,6 +107,7 @@ private:
 
 public:
   UnitScanner(Global *global, spCompilationUnit unit);
+  virtual ~UnitScanner();
 };
 
 } // namespace

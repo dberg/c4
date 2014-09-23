@@ -12,8 +12,7 @@ namespace c4s {
 /** Constructor */
 Parser::Parser(Global *global): global(global) {}
 
-/** Constructor */
-SourceFileParser::SourceFileParser(Global *global): Parser(global) {}
+Parser::~Parser() {}
 
 /** Parse a CompilationUnit */
 spTree Parser::parse() {
@@ -339,11 +338,22 @@ std::vector<spTree> Parser::topstats() {
 }
 
 /** Constructor */
+SourceFileParser::SourceFileParser(Global *global): Parser(global) {}
+
+/** Destructor */
+SourceFileParser::~SourceFileParser() {}
+
+/** Constructor */
 UnitParser::UnitParser(Global *global, spCompilationUnit unit)
   : SourceFileParser(global), unit(unit) {
 
   in = new UnitScanner(global, unit);
   in->init();
+}
+
+/** Destructor */
+UnitParser::~UnitParser() {
+  delete in;
 }
 
 } // namespace
