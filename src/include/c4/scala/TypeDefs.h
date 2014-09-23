@@ -20,7 +20,6 @@ typedef std::shared_ptr<CompilationUnit> spCompilationUnit;
 
 // Global.h
 class Global;
-typedef std::shared_ptr<Global> spGlobal;
 
 // Names.h
 class Names;

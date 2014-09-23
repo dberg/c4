@@ -33,6 +33,7 @@ TEST(ScalaCompiler, HelloWorld) {
   std::vector<spCompilationUnit> units;
   units.push_back(unit);
 
-  spGlobal global = spGlobal(new Global);
+  Global *global = new Global;
   global->compile(units);
+  delete global;
 }

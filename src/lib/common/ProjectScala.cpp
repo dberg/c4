@@ -3,9 +3,6 @@
 namespace c4 {
 
 void ProjectScala::compile(spCompilation comp) {
-  // TODO: we should only instantiate one global object and keep feeding it
-  // compilation units as they arrive from the client.
-  c4s::spGlobal global = c4s::spGlobal(new c4s::Global);
 
   c4s::spSourceFile source = c4s::spSourceFile(new c4s::ClientSourceFile(
     comp->filename,
@@ -18,7 +15,11 @@ void ProjectScala::compile(spCompilation comp) {
   std::vector<c4s::spCompilationUnit> units;
   units.push_back(unit);
 
+  // TODO: we should only instantiate one global object and keep feeding it
+  // compilation units as they arrive from the client.
+  c4s::Global *global = new c4s::Global;
   global->compile(units);
+  delete global;
 }
 
 } // namespace
