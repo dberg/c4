@@ -342,7 +342,7 @@ std::vector<spTree> Parser::topstats() {
 UnitParser::UnitParser(Global *global, spCompilationUnit unit)
   : SourceFileParser(global), unit(unit) {
 
-  in = spScanner(new UnitScanner(global, unit));
+  in = new UnitScanner(global, unit);
   in->init();
 }
 
