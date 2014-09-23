@@ -24,7 +24,7 @@ ScannerData::ScannerData()
 
 /** Constructor */
 Scanner::Scanner(Global *global, SourceFile *source)
-  : reader(spCharArrayReader(new CharArrayReader(source->content()))),
+  : reader(new CharArrayReader(source->content())),
     kwOffset(0),
     global(global),
     sData(spScannerData(new ScannerData)),
@@ -142,7 +142,9 @@ Scanner::Scanner(Global *global, SourceFile *source)
 }
 
 /** Destructor */
-Scanner::~Scanner() {}
+Scanner::~Scanner() {
+  delete reader;
+}
 
 /** @returns (lowest Name.start(), vector of Tokens) */
 std::pair<Token, std::vector<Token>> Scanner::createKeywordArray(

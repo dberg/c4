@@ -10,10 +10,6 @@ namespace c4s {
 
 typedef c4::Char Char;
 
-// CharArrayReader.h
-class CharArrayReader;
-typedef std::shared_ptr<CharArrayReader> spCharArrayReader;
-
 // Global.h
 class Global;
 

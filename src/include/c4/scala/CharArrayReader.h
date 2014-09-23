@@ -16,7 +16,8 @@ public:
   /** The offset one past the last read character */
   unsigned long charOffset;
 
-  CharArrayReaderData(): charOffset(0) {}
+  CharArrayReaderData();
+  virtual ~CharArrayReaderData();
 };
 
 class CharArrayReader : public CharArrayReaderData {
@@ -24,6 +25,7 @@ public:
   std::vector<c4::Char> &buf;
 
   CharArrayReader(std::vector<c4::Char> &buf);
+  virtual ~CharArrayReader();
   void nextChar();
 };
 

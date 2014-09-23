@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 #include "c4/scala/CompilationUnits.h"
+#include "c4/scala/CharArrayReader.h"
 #include "c4/scala/TypeDefs.h"
 #include "c4/scala/Tokens.h"
 
@@ -59,7 +60,7 @@ private:
    */
   std::vector<Token> sepRegions;
 
-  spCharArrayReader reader;
+  CharArrayReader *reader;
 
   // Identifiers
   void getIdentRest();
