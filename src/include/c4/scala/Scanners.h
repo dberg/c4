@@ -25,7 +25,7 @@ public:
   Offset lastOffset;
 
   /** The name of an identifier */
-  spTermName name;
+  TermName *name;
 
   /** The string value of a literal */
   std::string strVal;
@@ -67,12 +67,12 @@ private:
   void finishNamed(Token idtoken = Token::T_IDENTIFIER);
 
   // Keyword configuration
-  std::vector<std::pair<spName, Token>> allKeywords;
+  std::vector<std::pair<Name*, Token>> allKeywords;
   Offset kwOffset;
   std::vector<Token> kwArray;
 
   std::pair<Token, std::vector<Token>> createKeywordArray(
-    std::vector<std::pair<spName, Token>> keywords, Token defaultToken);
+    std::vector<std::pair<Name*, Token>> keywords, Token defaultToken);
 
 protected:
 

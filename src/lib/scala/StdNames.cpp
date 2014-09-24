@@ -8,13 +8,13 @@ namespace c4s {
 /** Constructor */
 KeywordSetBuilder::KeywordSetBuilder(Global *global): global(global) {}
 
-spTermName KeywordSetBuilder::apply(std::string s) {
-  spTermName result = global->names->newTermNameCached(s);
+TermName* KeywordSetBuilder::apply(std::string s) {
+  TermName *result = global->names->newTermNameCached(s);
   kws.insert(result);
   return result;
 }
 
-std::set<spTermName> KeywordSetBuilder::result() {
+std::set<TermName *> KeywordSetBuilder::result() {
   auto kwsCopy = kws;
   kws.clear();
   return kwsCopy;

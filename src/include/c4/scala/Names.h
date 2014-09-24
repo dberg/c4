@@ -24,10 +24,10 @@ public:
 
 private:
   /** Hashtable for finding term names quickly. */
-  std::vector<spTermName> termHashtable;
+  std::vector<TermName *> termHashtable;
 
   /** Hashtable for finding type names quickly. */
-  std::vector<spTypeName> typeHashtable;
+  std::vector<TypeName *> typeHashtable;
 
   int hashValue(std::vector<Char> cs, int offset, int len);
 
@@ -36,10 +36,10 @@ private:
   void enterChars(std::vector<Char> cs, int offset, int len);
 
 public:
-  spTermName newTermName(std::vector<Char> cs, int offset, int len,
+  TermName* newTermName(std::vector<Char> cs, int offset, int len,
     std::string cachedString = "");
 
-  spTermName newTermNameCached(std::string s);
+  TermName* newTermNameCached(std::string s);
 
   Names(Global *global);
 };
@@ -55,7 +55,7 @@ public:
 
   virtual int start();
   virtual int length();
-  virtual spThisNameType encode();
+  virtual ThisNameType * encode();
 
   // NameOps
   //spTermName dropLocal();
@@ -64,20 +64,20 @@ public:
 
 class NameOps {
 public:
-  spName name;
-  NameOps(spName name);
+  Name *name;
+  NameOps(Name *name);
 };
 
 class TermName : public Name {
 public:
-  spTermName next;
-  TermName(Global *global, int index, int len, spTermName next);
+  TermName *next;
+  TermName(Global *global, int index, int len, TermName *next);
 };
 
 class TypeName : public Name {
 public:
-  spTypeName next;
-  TypeName(Global *global, int index, int len, spTypeName next);
+  TypeName *next;
+  TypeName(Global *global, int index, int len, TypeName *next);
 };
 
 /**
@@ -90,7 +90,7 @@ protected:
 
 public:
   TermName_S(Global *global, int index, int len,
-             spTermName next, std::string cachedString);
+             TermName *next, std::string cachedString);
   virtual std::string toString();
 };
 
@@ -100,7 +100,7 @@ class TypeName_S : public TypeName {
 
 class TermName_R : public TermName {
 public:
-  TermName_R(Global *global, int index, int len, spTermName next);
+  TermName_R(Global *global, int index, int len, TermName *next);
   virtual std::string toString();
 };
 

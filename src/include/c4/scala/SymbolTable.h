@@ -6,7 +6,7 @@ namespace c4s {
 
 class SymbolTable {
 public:
-  spNames names;
+  Names *names;
   SymbolTable();
 };
 

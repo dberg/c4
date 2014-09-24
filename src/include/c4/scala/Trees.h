@@ -32,8 +32,8 @@ public:
 class Select: public Tree {
 public:
   spTree qualifier;
-  spName name;
-  Select(Global *global, spTree qualifier, spName name);
+  Name *name;
+  Select(Global *global, spTree qualifier, Name *name);
 };
 
 class CannotHaveAttrs : virtual public Tree {
@@ -63,8 +63,8 @@ extern const spTree EMPTY_TREE;
  */
 class Ident : public Tree {
 public:
-  spName name;
-  Ident(Global *global, spName name);
+  Name *name;
+  Ident(Global *global, Name *name);
 };
 
 //-----------------------------------------------------------------------------
@@ -86,10 +86,10 @@ public:
 class Modifiers {
 public:
   long flags;
-  spName privateWithin;
+  Name *privateWithin;
   std::vector<spTree> annotations;
   //Modifiers();
-  Modifiers(long flags, spName privateWithin,
+  Modifiers(long flags, Name *privateWithin,
             std::vector<spTree> annotations);
 };
 

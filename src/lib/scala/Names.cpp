@@ -56,12 +56,12 @@ void Names::enterChars(std::vector<Char> cs, int offset, int len) {
 /**
  * Create a term name from the characters in cs[offset..offset+len-1].
  */
-spTermName Names::newTermName(std::vector<Char> cs, int offset, int len,
+TermName* Names::newTermName(std::vector<Char> cs, int offset, int len,
   std::string cachedString) {
 
   if (len < 0) len = 0;
   int h = hashValue(cs, offset, len) & HASH_MASK;
-  spTermName n = termHashtable[h];
+  TermName *n = termHashtable[h];
   while (n && (n->length() != len || !equals(n->start(), cs, offset, len))) {
     n = n->next;
   }
@@ -79,17 +79,17 @@ spTermName Names::newTermName(std::vector<Char> cs, int offset, int len,
     enterChars(cs, offset, len);
     // }
 
-    spTermName next = termHashtable[h];
-    spTermName termName = (cachedString.size())
-      ? spTermName(new TermName_S(global, startIndex, len, next, cachedString))
-      : spTermName(new TermName_R(global, startIndex, len, next));
+    TermName *next = termHashtable[h];
+    TermName *termName = (cachedString.size())
+      ? static_cast<TermName*>(new TermName_S(global, startIndex, len, next, cachedString))
+      : static_cast<TermName*>(new TermName_R(global, startIndex, len, next));
     termHashtable[h] = termName;
     return termName;
 
   }
 }
 
-spTermName Names::newTermNameCached(std::string s) {
+TermName* Names::newTermNameCached(std::string s) {
   std::vector<Char> tmp;
   utf8::utf8to16(s.begin(), s.end(), back_inserter(tmp));
   return newTermName(tmp, 0, tmp.size(), s);
@@ -108,38 +108,38 @@ int Name::length() {
 }
 
 /** Replace operator symbols by corresponding \$op_name. */
-spThisNameType Name::encode() {
+ThisNameType* Name::encode() {
   std::vector<Char> str(
     global->names->chrs.begin() + index,
     global->names->chrs.begin() + index + len);
   std::vector<Char> res = global->nameTransformer->encode(str);
   //if (res == str) {
-    return std::make_shared<ThisNameType>(*this);
+    return this;
   //} else {
   //  return newName(res);
   //}
 }
 
-//spTermName Name::dropLocal() {
+//TermName* Name::dropLocal() {
   // TODO:
   // Implicit conversion TermName -> NameOps[TermName]
   //name.toTermName stripSuffix LOCAL_SUFFIX_STRING
 //}
 
 /** Constructor */
-NameOps::NameOps(spName name): name(name) {}
+NameOps::NameOps(Name *name): name(name) {}
 
 /** Constructor */
-TermName::TermName(Global *global, int index, int len, spTermName next)
+TermName::TermName(Global *global, int index, int len, TermName *next)
   : Name(global, index, len), next(next) {}
 
 /** Constructor */
-TypeName::TypeName(Global *global, int index, int len, spTypeName next)
+TypeName::TypeName(Global *global, int index, int len, TypeName *next)
   : Name(global, index, len), next(next) {}
 
 /** Constructor */
 TermName_S::TermName_S(Global *global, int index, int len,
-                       spTermName next, std::string cachedString)
+                       TermName *next, std::string cachedString)
   : TermName(global, index, len, next), cachedString(cachedString) {}
 
 std::string TermName_S::toString() {
@@ -147,7 +147,7 @@ std::string TermName_S::toString() {
 }
 
 /** Constructor */
-TermName_R::TermName_R(Global *global, int index, int len, spTermName next)
+TermName_R::TermName_R(Global *global, int index, int len, TermName *next)
   : TermName(global, index, len, next) {}
 
 std::string TermName_R::toString() {

@@ -92,7 +92,7 @@ bool Parser::isStatSep() {
 }
 
 /** Assumed (provisionally) to be TermNames. */
-spName Parser::ident(bool skipIt) {
+Name* Parser::ident(bool skipIt) {
   if (isIdent()) {
     auto name = in->tData->name->encode();
     in->nextToken();

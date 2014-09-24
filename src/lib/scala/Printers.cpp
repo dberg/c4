@@ -7,12 +7,12 @@ namespace c4s {
 /** Constructor */
 Printers::Printers() {}
 
-std::string Printers::quotedName(spName name, bool decode) {
+std::string Printers::quotedName(Name *name, bool decode) {
   // TODO:
   return "TODO";
 }
 
-std::string Printers::symNameInternal(Tree *tree, spName name, bool decoded) {
+std::string Printers::symNameInternal(Tree *tree, Name *name, bool decoded) {
   spSymbol sym = tree->symbol();
   // TODO:
   if (sym == nullptr /* || sym == NoSymbol*/) {
@@ -29,11 +29,11 @@ std::string Printers::symNameInternal(Tree *tree, spName name, bool decoded) {
   return "TODO";
 }
 
-std::string Printers::decodedSymName(Tree * tree, spName name) {
+std::string Printers::decodedSymName(Tree * tree, Name *name) {
   return symNameInternal(tree, name, false);
 }
 
-std::string Printers::symName(Tree *tree, spName name) {
+std::string Printers::symName(Tree *tree, Name *name) {
   return symNameInternal(tree, name, false);
 }
 

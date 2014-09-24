@@ -17,16 +17,12 @@ class Global;
 class Names;
 
 class Name;
-typedef std::shared_ptr<Name> spName;
 
 class TermName;
-typedef std::shared_ptr<TermName> spTermName;
 
 class TypeName;
-typedef std::shared_ptr<TypeName> spTypeName;
 
 typedef Name ThisNameType;
-typedef spName spThisNameType;
 
 // NameTransformer.h
 class NameTransformer;

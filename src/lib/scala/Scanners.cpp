@@ -148,11 +148,11 @@ Scanner::~Scanner() {
 
 /** @returns (lowest Name.start(), vector of Tokens) */
 std::pair<Token, std::vector<Token>> Scanner::createKeywordArray(
-  std::vector<std::pair<spName, Token>> keywords, Token defaultToken) {
+  std::vector<std::pair<Name *, Token>> keywords, Token defaultToken) {
 
   // Sort the keywords by Name.start()
   sort(keywords.begin(), keywords.end(),
-    [] (const std::pair<spName, Token> &p1, const std::pair<spName, Token> &p2) {
+    [] (const std::pair<Name *, Token> &p1, const std::pair<Name *, Token> &p2) {
       return p1.first->start() < p2.first->start();
     }
   );
