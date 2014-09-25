@@ -11,6 +11,9 @@ Names::Names(Global *global)
     termHashtable(HASH_SIZE, nullptr),
     typeHashtable(HASH_SIZE, nullptr) {}
 
+/** Destructor */
+Names::~Names() {}
+
 /**
  * The hashcode of a name depends on the first, the last and the middle
  * character, and the length of the name.
@@ -99,6 +102,9 @@ TermName* Names::newTermNameCached(std::string s) {
 Name::Name(Global *global, int index, int len)
   : global(global), index(index), len(len) {}
 
+/** Destructor */
+Name::~Name() {}
+
 int Name::start() {
   return index;
 }
@@ -129,18 +135,30 @@ ThisNameType* Name::encode() {
 /** Constructor */
 NameOps::NameOps(Name *name): name(name) {}
 
+/** Destructor */
+NameOps::~NameOps() {}
+
 /** Constructor */
 TermName::TermName(Global *global, int index, int len, TermName *next)
   : Name(global, index, len), next(next) {}
+
+/** Destructor */
+TermName::~TermName() {}
 
 /** Constructor */
 TypeName::TypeName(Global *global, int index, int len, TypeName *next)
   : Name(global, index, len), next(next) {}
 
 /** Constructor */
+TypeName::~TypeName() {}
+
+/** Constructor */
 TermName_S::TermName_S(Global *global, int index, int len,
                        TermName *next, std::string cachedString)
   : TermName(global, index, len, next), cachedString(cachedString) {}
+
+/** Destructor */
+TermName_S::~TermName_S() {}
 
 std::string TermName_S::toString() {
   return cachedString;
@@ -149,6 +167,9 @@ std::string TermName_S::toString() {
 /** Constructor */
 TermName_R::TermName_R(Global *global, int index, int len, TermName *next)
   : TermName(global, index, len, next) {}
+
+/** Destructor */
+TermName_R::~TermName_R() {}
 
 std::string TermName_R::toString() {
   return std::string(

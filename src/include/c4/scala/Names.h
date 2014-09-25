@@ -42,6 +42,7 @@ public:
   TermName* newTermNameCached(std::string s);
 
   Names(Global *global);
+  virtual ~Names();
 };
 
 class Name {
@@ -52,6 +53,7 @@ protected:
 
 public:
   Name(Global *global, int index, int len);
+  virtual ~Name();
 
   virtual int start();
   virtual int length();
@@ -66,18 +68,21 @@ class NameOps {
 public:
   Name *name;
   NameOps(Name *name);
+  ~NameOps();
 };
 
 class TermName : public Name {
 public:
   TermName *next;
   TermName(Global *global, int index, int len, TermName *next);
+  virtual ~TermName();
 };
 
 class TypeName : public Name {
 public:
   TypeName *next;
   TypeName(Global *global, int index, int len, TypeName *next);
+  virtual ~TypeName();
 };
 
 /**
@@ -91,6 +96,7 @@ protected:
 public:
   TermName_S(Global *global, int index, int len,
              TermName *next, std::string cachedString);
+  virtual ~TermName_S();
   virtual std::string toString();
 };
 
@@ -101,6 +107,7 @@ class TypeName_S : public TypeName {
 class TermName_R : public TermName {
 public:
   TermName_R(Global *global, int index, int len, TermName *next);
+  virtual ~TermName_R();
   virtual std::string toString();
 };
 
