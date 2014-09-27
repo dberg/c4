@@ -2,3 +2,6 @@
 
 /** Constructor */
 Attachments::Attachments() {}
+
+/** Destructor */
+Attachments::~Attachments() {}

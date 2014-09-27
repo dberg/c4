@@ -9,6 +9,7 @@ public:
   spPosition pos;
 
   Attachments();
+  ~Attachments();
 };
 
 } // namespace
