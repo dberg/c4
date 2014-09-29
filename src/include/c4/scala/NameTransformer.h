@@ -12,9 +12,9 @@ class OpCodes {
 public:
   Char op;
   std::string code;
-  spOpCodes next;
+  OpCodes* next;
 
-  OpCodes(Char op, std::string code, spOpCodes next);
+  OpCodes(Char op, std::string code, OpCodes* next);
   ~OpCodes();
 };
 
@@ -25,12 +25,13 @@ private:
   unsigned int ncodes = 26 * 26;
 
   std::vector<std::string> op2code;
-  std::vector<spOpCodes> code2op;
+  std::vector<OpCodes*> code2op;
 
   void enterOp(Char op, std::string code);
 
 public:
   NameTransformer();
+  ~NameTransformer();
 
   std::vector<Char> encode(std::vector<Char> name);
 };

@@ -28,7 +28,6 @@ typedef Name ThisNameType;
 class NameTransformer;
 
 class OpCodes;
-typedef std::shared_ptr<OpCodes> spOpCodes;
 
 // Parsers.h
 class UnitParser;

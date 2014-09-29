@@ -4,7 +4,7 @@
 namespace c4s {
 
 /** Constructor */
-OpCodes::OpCodes(Char op, std::string code, spOpCodes next)
+OpCodes::OpCodes(Char op, std::string code, OpCodes *next)
   : op(op), code(code), next(next) {}
 
 /** Destructor */
@@ -32,10 +32,17 @@ NameTransformer::NameTransformer(): op2code(nops), code2op(ncodes) {
   enterOp('@', "$at");
 }
 
+/** Destructor */
+NameTransformer::~NameTransformer() {
+  for (OpCodes* oc : code2op) {
+    delete oc;
+  }
+}
+
 void NameTransformer::enterOp(Char op, std::string code) {
   op2code[op] = code;
   int c = (code[1] - 'a') * 26 + code[2] - 'a';
-  code2op[c] = spOpCodes(new OpCodes(op, code, code2op[c]));
+  code2op[c] = new OpCodes(op, code, code2op[c]);
 }
 
 /** Replace operator symbols by corresponding `\$opname`. */
