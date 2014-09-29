@@ -73,10 +73,8 @@ typedef std::string NameType;
 class StdNames;
 
 class Keywords;
-typedef std::shared_ptr<Keywords> spKeywords;
 
 class KeywordSetBuilder;
-typedef std::shared_ptr<KeywordSetBuilder> spKeywordSetBuilder;
 
 // SubComponent.h
 class SubComponent;

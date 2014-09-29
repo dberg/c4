@@ -14,6 +14,7 @@ private:
 
 public:
   KeywordSetBuilder(Global *global);
+  ~KeywordSetBuilder();
   TermName* apply(std::string s);
   std::set<TermName*> result();
 };
@@ -77,6 +78,7 @@ public:
   std::set<TermName*> keywords;
 
   Keywords(Global *global);
+  ~Keywords();
 };
 
 class TermNames {
@@ -90,11 +92,10 @@ public:
 };
 
 class StdNames {
-
 public:
-  spKeywords keywords;
-
+  Keywords *keywords;
   StdNames(Global *global);
+  ~StdNames();
 };
 
 class CommonNames {

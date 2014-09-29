@@ -8,8 +8,11 @@ namespace c4s {
 /** Constructor */
 KeywordSetBuilder::KeywordSetBuilder(Global *global): global(global) {}
 
+/** Destructor */
+KeywordSetBuilder::~KeywordSetBuilder() {}
+
 TermName* KeywordSetBuilder::apply(std::string s) {
-  TermName *result = global->names->newTermNameCached(s);
+  TermName* result = global->names->newTermNameCached(s);
   kws.insert(result);
   return result;
 }
@@ -22,7 +25,7 @@ std::set<TermName *> KeywordSetBuilder::result() {
 
 /** Constructor */
 Keywords::Keywords(Global *global) {
-  auto kw = spKeywordSetBuilder(new KeywordSetBuilder(global));
+  auto kw = new KeywordSetBuilder(global);
   ABSTRACTkw  = kw->apply("abstract");
   CASEkw      = kw->apply("case");
   CLASSkw     = kw->apply("class");
@@ -77,9 +80,17 @@ Keywords::Keywords(Global *global) {
   ATkw        = kw->apply("@");
 
   keywords = kw->result();
+  delete kw;
 
   // TODO:
   // auto javaKeywords = new JavaKeywords();
+}
+
+/** Destructor */
+Keywords::~Keywords() {
+  for (TermName* termName : keywords) {
+    delete termName;
+  }
 }
 
 /** Constructor */
@@ -89,8 +100,12 @@ TermNames::TermNames() {}
 nme::nme() {}
 
 /** Constructor */
-StdNames::StdNames(Global *global):
-  keywords(spKeywords(new Keywords(global))) {}
+StdNames::StdNames(Global *global): keywords(new Keywords(global)) {}
+
+/** Destructor */
+StdNames::~StdNames() {
+  delete keywords;
+}
 
 /** Constructor */
 const NameType CommonNames::EMPTY = "";
