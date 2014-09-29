@@ -19,7 +19,7 @@ Global::Global():
   positions(new Positions()),
   printers(new Printers())
 {
-  SyntaxAnalyzer *synAnalyzer = new SyntaxAnalyzer(this);
+  SyntaxAnalyzer* synAnalyzer = new SyntaxAnalyzer(this);
   phases.push_back(synAnalyzer->newPhase());
   delete synAnalyzer;
 }
@@ -32,14 +32,14 @@ Global::~Global() {
   delete stdNames;
   delete names;
 
-  for (Phase *phase : phases) {
+  for (Phase* phase : phases) {
     delete phase;
   }
 }
 
-void Global::compile(std::vector<CompilationUnit *> units) {
+void Global::compile(std::vector<CompilationUnit*> units) {
   this->units = units;
-  for (Phase *phase : phases) {
+  for (Phase* phase : phases) {
     globalPhase = phase;
     globalPhase->run();
   }

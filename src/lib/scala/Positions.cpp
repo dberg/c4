@@ -6,8 +6,14 @@ namespace c4s {
 /** Constructor */
 PosAssigner::PosAssigner(): Traverser() {}
 
+/** Destructor */
+PosAssigner::~PosAssigner() {}
+
 /** Constructor */
 DefaultPosAssigner::DefaultPosAssigner(): PosAssigner() {}
+
+/** Destructor */
+DefaultPosAssigner::~DefaultPosAssigner() {}
 
 void DefaultPosAssigner::traverse(spTree tree) {
   if (tree->canHaveAttrs() && tree->pos() == NoPosition) {
@@ -18,7 +24,12 @@ void DefaultPosAssigner::traverse(spTree tree) {
 }
 
 /** Constructor */
-Positions::Positions(): posAssigner(spPosAssigner(new DefaultPosAssigner)) {}
+Positions::Positions(): posAssigner(new DefaultPosAssigner) {}
+
+/** Destructor */
+Positions::~Positions() {
+  delete posAssigner;
+}
 
 // TODO:
 // Global.scala -> override val useOffsetPositions = !currentSettings.Yrangepos
@@ -32,7 +43,7 @@ bool Positions::useOffsetPositions() {
  * Position a tree.
  * This means: Set position of a node and position all its unpositioned children.
  */
-spTree Positions::atPos(spPosition pos, spTree tree) {
+spTree Positions::atPos(Position* pos, spTree tree) {
   if (useOffsetPositions() || !pos->isOpaqueRange()) {
     posAssigner->pos = pos;
     posAssigner->traverse(tree);
@@ -43,7 +54,7 @@ spTree Positions::atPos(spPosition pos, spTree tree) {
   }
 }
 
-spPosition Positions::rangePos(
+Position* Positions::rangePos(
   SourceFile *source, int start, int point, int end)
 {
   if (useOffsetPositions()) {

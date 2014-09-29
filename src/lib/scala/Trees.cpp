@@ -66,6 +66,9 @@ Ident::Ident(Global *global, Name *name): Tree(global), name(name) {}
 /** Constructor */
 Traverser::Traverser() {}
 
+/** Destructor */
+Traverser::~Traverser() {}
+
 void Traverser::traverse(spTree tree) {
   // TODO:
   //itraverse(this, tree)

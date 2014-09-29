@@ -9,25 +9,28 @@ namespace c4s {
 
 class PosAssigner : public Traverser {
 public:
-  spPosition pos;
+  Position* pos;
   PosAssigner();
+  virtual ~PosAssigner();
 };
 
 class DefaultPosAssigner : public PosAssigner {
 public:
   DefaultPosAssigner();
+  virtual ~DefaultPosAssigner();
   virtual void traverse(spTree tree);
 };
 
 class Positions {
 protected:
-  spPosAssigner posAssigner;
+  PosAssigner* posAssigner;
 
 public:
   Positions();
+  ~Positions();
   bool useOffsetPositions();
-  spTree atPos(spPosition pos, spTree tree);
-  spPosition rangePos(SourceFile *source, int start, int point, int end);
+  spTree atPos(Position* pos, spTree tree);
+  Position* rangePos(SourceFile *source, int start, int point, int end);
 };
 
 }; // namespace

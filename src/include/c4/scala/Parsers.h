@@ -24,9 +24,9 @@ private:
 protected:
   Scanner *in;
 
-  spPosition r2p(Offset start, Offset mid, Offset end);
-  spPosition r2p(Offset start, Offset mid);
-  spPosition r2p(Offset offset);
+  Position* r2p(Offset start, Offset mid, Offset end);
+  Position* r2p(Offset start, Offset mid);
+  Position* r2p(Offset offset);
 
   //---------------------------------------------------------------------------
   // Token Classes
@@ -43,7 +43,7 @@ protected:
   //---------------------------------------------------------------------------
   spTree atPos(Offset offset, spTree t);
   spTree atPos(Offset offset, Offset point, spTree t);
-  spTree atPos(spPosition pos, spTree t);
+  spTree atPos(Position* pos, spTree t);
 
   //---------------------------------------------------------------------------
   // Identifiers and literals

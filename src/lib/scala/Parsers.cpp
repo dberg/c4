@@ -19,15 +19,15 @@ spTree Parser::parse() {
   return spTree(compilationUnit());
 }
 
-spPosition Parser::r2p(Offset start, Offset mid, Offset end) {
+Position* Parser::r2p(Offset start, Offset mid, Offset end) {
   return global->positions->rangePos(in->source, start, mid, end);
 }
 
-spPosition Parser::r2p(Offset start, Offset mid) {
+Position* Parser::r2p(Offset start, Offset mid) {
   return r2p(start, mid, std::max(in->tData->lastOffset, start));
 }
 
-spPosition Parser::r2p(Offset offset) {
+Position* Parser::r2p(Offset offset) {
   return r2p(offset, offset);
 }
 
@@ -39,7 +39,7 @@ spTree Parser::atPos(Offset offset, Offset point, spTree t) {
   return atPos(r2p(offset, point), t);
 }
 
-spTree Parser::atPos(spPosition pos, spTree t) {
+spTree Parser::atPos(Position* pos, spTree t) {
   return global->positions->atPos(pos, t);
 }
 

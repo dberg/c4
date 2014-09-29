@@ -78,6 +78,7 @@ public:
 class Traverser {
 public:
   Traverser();
+  virtual ~Traverser();
 
   /** Traverses a single tree. */
   virtual void traverse(spTree tree);

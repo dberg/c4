@@ -14,29 +14,29 @@ class Global {
 protected:
 
   /** The current phase being run */
-  Phase *globalPhase;
+  Phase* globalPhase;
 
   /** The phases to be applied in order */
-  std::vector<Phase *> phases;
+  std::vector<Phase*> phases;
 
   /** Each Component is a phase factory */
   // TODO: std::vector<spSubComponent> phaseDescriptors;
 
 public:
 
-  Names *names;
-  StdNames *stdNames;
-  NameTransformer *nameTransformer;
-  Positions *positions;
-  Printers *printers;
+  Names* names;
+  StdNames* stdNames;
+  NameTransformer* nameTransformer;
+  Positions* positions;
+  Printers* printers;
 
   /** Compilation units to be compiled */
-  std::vector<CompilationUnit *> units;
+  std::vector<CompilationUnit*> units;
 
   Global();
   ~Global();
 
-  void compile(std::vector<CompilationUnit *> units);
+  void compile(std::vector<CompilationUnit*> units);
 };
 
 } // namespace
