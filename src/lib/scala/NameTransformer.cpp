@@ -7,6 +7,9 @@ namespace c4s {
 OpCodes::OpCodes(Char op, std::string code, spOpCodes next)
   : op(op), code(code), next(next) {}
 
+/** Destructor */
+OpCodes::~OpCodes() {}
+
 /** Constructor */
 NameTransformer::NameTransformer(): op2code(nops), code2op(ncodes) {
   enterOp('~', "$tilde");

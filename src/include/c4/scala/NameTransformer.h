@@ -15,6 +15,7 @@ public:
   spOpCodes next;
 
   OpCodes(Char op, std::string code, spOpCodes next);
+  ~OpCodes();
 };
 
 /** Provides functions to encode and decode Scala symbolic names. */
