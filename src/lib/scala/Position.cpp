@@ -23,15 +23,15 @@ int Position::start() {
   std::abort();
 }
 
-spPosition Position::validate(spPosition pos) {
+Position* Position::validate(Position* pos) {
   // TODO:
   //if (pos.isRange)
   //  assert(pos.start <= pos.end, s"bad position: ${pos.show}")
   return pos;
 }
 
-spPosition Position::offset(SourceFile *source, int point) {
-  return validate(spPosition(new OffsetPosition(source, point)));
+Position* Position::offset(SourceFile *source, int point) {
+  return validate(new OffsetPosition(source, point));
 }
 
 /** Constructor */
@@ -52,6 +52,6 @@ int OffsetPosition::start() {
 /** Constructor */
 UndefinedPosition::UndefinedPosition() {}
 
-const spPosition NoPosition = spPosition(new UndefinedPosition());
+const Position* NoPosition = new UndefinedPosition();
 
 } // namespace

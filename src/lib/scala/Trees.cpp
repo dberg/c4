@@ -23,7 +23,7 @@ bool Tree::canHaveAttrs() { return true; }
 bool Tree::isEmpty() { return false; }
 
 /** Position of the tree. */
-spPosition Tree::pos() {
+Position* Tree::pos() {
   // TODO:
   //return rawatt->pos;
 }

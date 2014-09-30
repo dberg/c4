@@ -15,18 +15,13 @@ class Global;
 
 // Names.h
 class Names;
-
 class Name;
-
 class TermName;
-
 class TypeName;
-
 typedef Name ThisNameType;
 
 // NameTransformer.h
 class NameTransformer;
-
 class OpCodes;
 
 // Parsers.h
@@ -37,11 +32,9 @@ class Phase;
 
 // Position.h
 class Position;
-typedef std::shared_ptr<Position> spPosition;
 
 // Positions.h
 class PosAssigner;
-
 class Positions;
 
 // Printers.h
@@ -62,16 +55,12 @@ class UnitScanner;
 
 // SourceFile.h
 class SourceFile;
-
 class ClientSourceFile;
 
 // StdNames.h
 typedef std::string NameType;
-
 class StdNames;
-
 class Keywords;
-
 class KeywordSetBuilder;
 
 // SubComponent.h

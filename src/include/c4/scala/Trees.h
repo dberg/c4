@@ -17,7 +17,7 @@ public:
   virtual bool isDef();
   virtual bool canHaveAttrs();
   virtual bool isEmpty();
-  spPosition pos();
+  Position* pos();
   virtual spSymbol symbol();
   virtual std::string toString();
 };

@@ -8,7 +8,7 @@ namespace c4s {
 
 class Position {
 private:
-  static spPosition validate(spPosition pos);
+  static Position* validate(Position* pos);
 
 public:
   Position();
@@ -16,7 +16,7 @@ public:
   virtual int point();
   virtual int start();
 
-  static spPosition offset(SourceFile *source, int point);
+  static Position* offset(SourceFile *source, int point);
 };
 
 class DefinedPosition : public Position {
@@ -38,7 +38,7 @@ public:
   UndefinedPosition();
 };
 
-extern const spPosition NoPosition;
+extern const Position* NoPosition;
 
 }; // namespace
 
