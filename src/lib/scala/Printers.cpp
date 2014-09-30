@@ -7,6 +7,9 @@ namespace c4s {
 /** Constructor */
 Printers::Printers() {}
 
+/** Destructor */
+Printers::~Printers() {}
+
 std::string Printers::quotedName(Name *name, bool decode) {
   // TODO:
   return "TODO";

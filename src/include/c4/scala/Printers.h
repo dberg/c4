@@ -19,6 +19,7 @@ private:
   std::string show(Tree *tree);
 public:
   Printers();
+  ~Printers();
   std::string treeToString(Tree *tree);
   std::string printTree(Tree *tree);
 };
