@@ -41,41 +41,41 @@ protected:
   //---------------------------------------------------------------------------
   // Tree construction
   //---------------------------------------------------------------------------
-  spTree atPos(Offset offset, spTree t);
-  spTree atPos(Offset offset, Offset point, spTree t);
-  spTree atPos(Position* pos, spTree t);
+  Tree* atPos(Offset offset, Tree* t);
+  Tree* atPos(Offset offset, Offset point, Tree* t);
+  Tree* atPos(Position* pos, Tree* t);
 
   //---------------------------------------------------------------------------
   // Identifiers and literals
   //---------------------------------------------------------------------------
-  virtual Name * ident(bool skipIt = true);
-  virtual spTree selector(spTree t);
-  virtual spTree selectors(spTree t, bool typeOK, Offset dotOffset);
-  virtual spTree qualId();
-  virtual spTree pkgQualId();
+  virtual Name* ident(bool skipIt = true);
+  virtual Tree* selector(Tree* t);
+  virtual Tree* selectors(Tree* t, bool typeOK, Offset dotOffset);
+  virtual Tree* qualId();
+  virtual Tree* pkgQualId();
 
   virtual spModifiers modifiers();
 
   virtual Offset caseAwareTokenOffset();
-  virtual spTree topLevelTmpDef();
-  virtual spTree packageOrPackageObject(Offset start);
+  virtual Tree* topLevelTmpDef();
+  virtual Tree* packageOrPackageObject(Offset start);
 
   //---------------------------------------------------------------------------
   // STATSEQS
   //---------------------------------------------------------------------------
-  virtual spTree makePackaging(Offset start, spTree pkg,
-    std::vector<spTree> stats);
-  virtual std::vector<spTree> topStatSeq();
-  virtual std::function<std::vector<spTree> (Token)> topStat();
+  virtual Tree* makePackaging(Offset start, Tree* pkg,
+    std::vector<Tree*> stats);
+  virtual std::vector<Tree*> topStatSeq();
+  virtual std::function<std::vector<Tree*> (Token)> topStat();
 
-  virtual spTree compilationUnit();
-  virtual std::vector<spTree> topstats();
+  virtual Tree* compilationUnit();
+  virtual std::vector<Tree*> topstats();
 
 public:
   Global *global;
   Parser(Global *global);
   virtual ~Parser();
-  virtual spTree parse();
+  virtual Tree* parse();
 };
 
 class SourceFileParser : public Parser {

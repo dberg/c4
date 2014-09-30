@@ -24,16 +24,16 @@ public:
 
 class PackageDef : public Tree {
 public:
-  spTree pid;
-  std::vector<spTree> stats;
-  PackageDef(Global *global, spTree pid, std::vector<spTree> stats);
+  Tree* pid;
+  std::vector<Tree*> stats;
+  PackageDef(Global *global, Tree* pid, std::vector<Tree*> stats);
 };
 
 class Select: public Tree {
 public:
-  spTree qualifier;
-  Name *name;
-  Select(Global *global, spTree qualifier, Name *name);
+  Tree* qualifier;
+  Name* name;
+  Select(Global* global, Tree* qualifier, Name* name);
 };
 
 class CannotHaveAttrs : virtual public Tree {
@@ -53,7 +53,7 @@ public:
   virtual bool isEmpty();
 };
 
-extern const spTree EMPTY_TREE;
+extern const Tree* EMPTY_TREE;
 
 /**
  * A reference to identifier `name`.
@@ -81,17 +81,17 @@ public:
   virtual ~Traverser();
 
   /** Traverses a single tree. */
-  virtual void traverse(spTree tree);
+  virtual void traverse(Tree* tree);
 };
 
 class Modifiers {
 public:
   long flags;
   Name *privateWithin;
-  std::vector<spTree> annotations;
+  std::vector<Tree*> annotations;
   //Modifiers();
-  Modifiers(long flags, Name *privateWithin,
-            std::vector<spTree> annotations);
+  Modifiers(long flags, Name* privateWithin,
+            std::vector<Tree*> annotations);
 };
 
 } // namespace

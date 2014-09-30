@@ -75,8 +75,6 @@ class SyntaxAnalyzer;
 
 // Trees.h
 class Tree;
-typedef std::shared_ptr<Tree> spTree;
-
 class Ident;
 
 class Modifiers;

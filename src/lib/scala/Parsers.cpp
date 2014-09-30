@@ -15,8 +15,8 @@ Parser::Parser(Global *global): global(global) {}
 Parser::~Parser() {}
 
 /** Parse a CompilationUnit */
-spTree Parser::parse() {
-  return spTree(compilationUnit());
+Tree* Parser::parse() {
+  return compilationUnit();
 }
 
 Position* Parser::r2p(Offset start, Offset mid, Offset end) {
@@ -31,15 +31,15 @@ Position* Parser::r2p(Offset offset) {
   return r2p(offset, offset);
 }
 
-spTree Parser::atPos(Offset offset, spTree t) {
+Tree* Parser::atPos(Offset offset, Tree* t) {
   return atPos(r2p(offset), t);
 }
 
-spTree Parser::atPos(Offset offset, Offset point, spTree t) {
+Tree* Parser::atPos(Offset offset, Offset point, Tree* t) {
   return atPos(r2p(offset, point), t);
 }
 
-spTree Parser::atPos(Position* pos, spTree t) {
+Tree* Parser::atPos(Position* pos, Tree* t) {
   return global->positions->atPos(pos, t);
 }
 
@@ -103,10 +103,10 @@ Name* Parser::ident(bool skipIt) {
   //return syntaxErrorOrIncompleteAnd(expectedMsg(IDENTIFIER), skipIt)(nme.ERROR)
 }
 
-spTree Parser::selector(spTree t) {
+Tree* Parser::selector(Tree* t) {
   Offset point = in->tData->offset;
   if (t != EMPTY_TREE) {
-    spTree selector = spTree(new Select(global, t, ident(false)));
+    Tree* selector = new Select(global, t, ident(false));
     // TODO:
     //return selector->setPos(r2p(t.pos.start, point, in.lastOffset))
     return selector;
@@ -116,14 +116,14 @@ spTree Parser::selector(spTree t) {
   }
 }
 
-spTree Parser::selectors(spTree t, bool typeOK, Offset dotOffset) {
+Tree* Parser::selectors(Tree* t, bool typeOK, Offset dotOffset) {
   if (typeOK && in->tData->token == Token::T_TYPE) {
     in->nextToken();
     // TODO:
     //return atPos(t->pos->start, dotOffset, SingletonTypeTree(t));
   } else {
     // TODO:
-    spTree t1 = selector(t);
+    Tree* t1 = selector(t);
     //if (in->tData->token == Token::T_DOT) {
     //  return selectors(t1, typeOK, in->skipToken());
     //} else {
@@ -133,9 +133,9 @@ spTree Parser::selectors(spTree t, bool typeOK, Offset dotOffset) {
 }
 
 /** QualId ::= Id {`.' Id} */
-spTree Parser::qualId() {
+Tree* Parser::qualId() {
   Offset start = in->tData->offset;
-  spTree id = atPos(start, spTree(new Ident(global, ident())));
+  Tree* id = atPos(start, new Ident(global, ident()));
   if (in->tData->token == Token::T_DOT) {
     // TODO:
     //return selectors(id, typeOK = false, in.skipToken())
@@ -145,13 +145,13 @@ spTree Parser::qualId() {
 }
 
 /** Calls `qualId()` and manages some package state. */
-spTree Parser::pkgQualId() {
+Tree* Parser::pkgQualId() {
   // TODO:
   //if (in->tData->token == Token::T_IDENTIFIER && in.name.encode = nme.scala_) {
   //  inScalaPackage = true
   //}
 
-  spTree pkg = qualId();
+  Tree* pkg = qualId();
   // TODO: newLineOptWhenFollowedBy(LBRACE)
 
   if (currentPackage == "") {
@@ -204,7 +204,7 @@ Offset Parser::caseAwareTokenOffset() {
   }
 }
 
-spTree Parser::topLevelTmpDef() {
+Tree* Parser::topLevelTmpDef() {
   // TODO:
   //val annots = annotations(skipNewLines = true)
   Offset pos = caseAwareTokenOffset();
@@ -212,11 +212,11 @@ spTree Parser::topLevelTmpDef() {
   //tmplDef(pos, mods)
 }
 
-//spTree Parser::tmplDef(Offset pos, Modifiers mods) {
+//Tree* Parser::tmplDef(Offset pos, Modifiers mods) {
 // TODO:
 //}
 
-spTree Parser::packageOrPackageObject(Offset start) {
+Tree* Parser::packageOrPackageObject(Offset start) {
   if (in->tData->token == Token::T_OBJECT) {
     // TODO:
     //joinComment(packageObjectDef(start) :: Nil).head
@@ -228,14 +228,14 @@ spTree Parser::packageOrPackageObject(Offset start) {
 }
 
 /** Create a tree representing a packaging. */
-spTree Parser::makePackaging(
-  Offset start, spTree pkg, std::vector<spTree> stats) {
+Tree* Parser::makePackaging(
+  Offset start, Tree* pkg, std::vector<Tree*> stats) {
 
-  spTree pkgDef = spTree(new PackageDef(global, pkg, stats));
+  Tree* pkgDef = new PackageDef(global, pkg, stats);
   return atPos(start, pkg->pos()->point(), pkgDef);
 }
 
-//std::vector<spTree> Parser::statSeq(PartialFunction[Token, List[Tree]] stat, std::string errorMsg) {
+//std::vector<Tree*> Parser::statSeq(PartialFunction[Token, List[Tree]] stat, std::string errorMsg) {
   // TODO:
 //}
 
@@ -246,15 +246,15 @@ spTree Parser::makePackaging(
  *           | package object objectDef
  *           | Import
  */
-std::vector<spTree> Parser::topStatSeq() {
+std::vector<Tree*> Parser::topStatSeq() {
   // TODO:
   //statSeq(topStat, errorMsg = "expected class or object definition")
 }
 
-std::function<std::vector<spTree> (Token)> Parser::topStat() {
+std::function<std::vector<Tree*> (Token)> Parser::topStat() {
   return [this](Token t) {
     if (t == Token::T_PACKAGE) {
-      std::vector<spTree> v(1);
+      std::vector<Tree*> v(1);
       v.push_back(packageOrPackageObject(in->skipToken()));
       return v;
     } else if (t == Token::T_IMPORT) {
@@ -267,7 +267,7 @@ std::function<std::vector<spTree> (Token)> Parser::topStat() {
     }
 
     // TODO: dummy value
-    std::vector<spTree> v;
+    std::vector<Tree*> v;
     return v;
   };
 }
@@ -275,15 +275,15 @@ std::function<std::vector<spTree> (Token)> Parser::topStat() {
 /**
  *  CompilationUnit ::= {package QualId semi} TopStatSeq
  */
-spTree Parser::compilationUnit() {
+Tree* Parser::compilationUnit() {
   resetPackage();
-  std::vector<spTree> stats = topstats();
+  std::vector<Tree*> stats = topstats();
 
   if (stats.size() == 0) {
     return stats[0];
   } else {
     bool allEmpty = true;
-    for (spTree t: stats) {
+    for (Tree* t: stats) {
       if (t != EMPTY_TREE) {
         allEmpty = false;
       }
@@ -302,8 +302,8 @@ spTree Parser::compilationUnit() {
   }
 }
 
-std::vector<spTree> Parser::topstats() {
-  auto ts = std::vector<spTree>();
+std::vector<Tree*> Parser::topstats() {
+  auto ts = std::vector<Tree*>();
 
   while (in->tData->token == Token::T_SEMI) {
     in->nextToken();
@@ -318,14 +318,14 @@ std::vector<spTree> Parser::topstats() {
     } else {
       // TODO:
       //in->flushDoc();
-      spTree pkg = pkgQualId();
+      Tree* pkg = pkgQualId();
 
       if (in->tData->token == Token::T_EOF) {
-        spTree pkgDef = makePackaging(start, pkg, std::vector<spTree>());
+        Tree* pkgDef = makePackaging(start, pkg, std::vector<Tree*>());
         ts.push_back(pkgDef);
       } else if (isStatSep()) {
         in->nextToken();
-        spTree pkgDef = makePackaging(start, pkg, topstats());
+        Tree* pkgDef = makePackaging(start, pkg, topstats());
         ts.push_back(pkgDef);
       } else {
         auto ts2 = topStatSeq();

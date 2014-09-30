@@ -38,11 +38,11 @@ std::string Tree::toString() {
 }
 
 /** Constructor */
-PackageDef::PackageDef(Global *global, spTree pid, std::vector<spTree> stats)
+PackageDef::PackageDef(Global* global, Tree* pid, std::vector<Tree*> stats)
   : Tree(global), pid(pid), stats(stats) {}
 
 /** Constructor */
-Select::Select(Global *global, spTree qualifier, Name *name)
+Select::Select(Global* global, Tree* qualifier, Name* name)
   : Tree(global), qualifier(qualifier), name(name) {}
 
 /** Constructor */
@@ -59,7 +59,7 @@ EmptyTree::EmptyTree(Global *global)
 
 bool EmptyTree::isEmpty() { return true; }
 
-const spTree EMPTY_TREE = spTree(new EmptyTree(nullptr));
+const Tree* EMPTY_TREE = new EmptyTree(nullptr);
 
 Ident::Ident(Global *global, Name *name): Tree(global), name(name) {}
 
@@ -69,7 +69,7 @@ Traverser::Traverser() {}
 /** Destructor */
 Traverser::~Traverser() {}
 
-void Traverser::traverse(spTree tree) {
+void Traverser::traverse(Tree* tree) {
   // TODO:
   //itraverse(this, tree)
 }
@@ -79,7 +79,7 @@ void Traverser::traverse(spTree tree) {
 //  : flags(NoFlags), new Name(tpnme.EMPTY), annotations(std::vector<spTree>()) {}
 
 Modifiers::Modifiers(
-  long flags, Name *privateWithin, std::vector<spTree> annotations)
+  long flags, Name *privateWithin, std::vector<Tree*> annotations)
   : flags(flags), privateWithin(privateWithin), annotations(annotations) {}
 
 } // namespace

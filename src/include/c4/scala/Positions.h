@@ -18,7 +18,7 @@ class DefaultPosAssigner : public PosAssigner {
 public:
   DefaultPosAssigner();
   virtual ~DefaultPosAssigner();
-  virtual void traverse(spTree tree);
+  virtual void traverse(Tree* tree);
 };
 
 class Positions {
@@ -29,8 +29,8 @@ public:
   Positions();
   ~Positions();
   bool useOffsetPositions();
-  spTree atPos(Position* pos, spTree tree);
-  Position* rangePos(SourceFile *source, int start, int point, int end);
+  Tree* atPos(Position* pos, Tree* tree);
+  Position* rangePos(SourceFile* source, int start, int point, int end);
 };
 
 }; // namespace

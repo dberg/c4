@@ -2,7 +2,15 @@
 
 namespace c4s {
 
-CompilationUnit::CompilationUnit(SourceFile *source)
+/** Constructor */
+CompilationUnit::CompilationUnit(SourceFile* source)
   : source(source), body(nullptr) {}
+
+/** Destructor */
+CompilationUnit::~CompilationUnit() {
+  if (body) {
+    delete body;
+  }
+}
 
 } // namespace

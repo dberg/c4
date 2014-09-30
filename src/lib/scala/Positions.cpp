@@ -15,7 +15,7 @@ DefaultPosAssigner::DefaultPosAssigner(): PosAssigner() {}
 /** Destructor */
 DefaultPosAssigner::~DefaultPosAssigner() {}
 
-void DefaultPosAssigner::traverse(spTree tree) {
+void DefaultPosAssigner::traverse(Tree* tree) {
   if (tree->canHaveAttrs() && tree->pos() == NoPosition) {
     // TODO:
     //tree.setPos(pos);
@@ -43,7 +43,7 @@ bool Positions::useOffsetPositions() {
  * Position a tree.
  * This means: Set position of a node and position all its unpositioned children.
  */
-spTree Positions::atPos(Position* pos, spTree tree) {
+Tree* Positions::atPos(Position* pos, Tree* tree) {
   if (useOffsetPositions() || !pos->isOpaqueRange()) {
     posAssigner->pos = pos;
     posAssigner->traverse(tree);
