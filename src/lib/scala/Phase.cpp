@@ -5,6 +5,9 @@
 
 namespace c4s {
 
+/** Constructor */
+Phase::Phase() {}
+
 /** Destructor */
 Phase::~Phase() {}
 

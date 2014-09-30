@@ -11,6 +11,7 @@ namespace c4s {
 class Phase {
 
 public:
+  Phase();
   virtual ~Phase();
   virtual void run() = 0;
 };
