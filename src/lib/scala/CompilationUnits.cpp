@@ -1,4 +1,5 @@
 #include "c4/scala/CompilationUnits.h"
+#include "c4/scala/Trees.h"
 
 namespace c4s {
 

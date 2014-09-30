@@ -9,6 +9,9 @@ namespace c4s {
 /** Constructor */
 Tree::Tree(Global *global): global(global) {}
 
+/** Destructor */
+Tree::~Tree() {}
+
 /** Does this tree represent a definition? (of a method, of a class, etc) */
 bool Tree::isDef() { return false; }
 
@@ -41,27 +44,57 @@ std::string Tree::toString() {
 PackageDef::PackageDef(Global* global, Tree* pid, std::vector<Tree*> stats)
   : Tree(global), pid(pid), stats(stats) {}
 
+PackageDef::~PackageDef() {
+  // TODO:
+}
+
 /** Constructor */
 Select::Select(Global* global, Tree* qualifier, Name* name)
   : Tree(global), qualifier(qualifier), name(name) {}
 
+/** Destructor */
+Select::~Select() {
+  // TODO:
+}
+
 /** Constructor */
 CannotHaveAttrs::CannotHaveAttrs(Global *global): Tree(global) {}
+
+/** Destructor */
+CannotHaveAttrs::~CannotHaveAttrs() {
+  // TODO:
+}
 
 bool CannotHaveAttrs::canHaveAttrs() { return false; }
 
 /** Constructor */
 TermTree::TermTree(Global *global): Tree(global) {}
 
+/** Destructor */
+TermTree::~TermTree() {
+  // TODO:
+}
+
 /** Constructor */
 EmptyTree::EmptyTree(Global *global)
   : Tree(global), TermTree(global), CannotHaveAttrs(global) {}
+
+/** Destructor */
+EmptyTree::~EmptyTree() {
+  // TODO:
+}
 
 bool EmptyTree::isEmpty() { return true; }
 
 const Tree* EMPTY_TREE = new EmptyTree(nullptr);
 
-Ident::Ident(Global *global, Name *name): Tree(global), name(name) {}
+/** Constructor */
+Ident::Ident(Global* global, Name* name): Tree(global), name(name) {}
+
+/** Destructor */
+Ident::~Ident() {
+  // TODO:
+}
 
 /** Constructor */
 Traverser::Traverser() {}

@@ -10,10 +10,12 @@ namespace c4s {
 
 class Tree {
 protected:
-  Global *global;
+  Global* global;
 
 public:
-  Tree(Global *global);
+  Tree(Global* global);
+  virtual ~Tree();
+
   virtual bool isDef();
   virtual bool canHaveAttrs();
   virtual bool isEmpty();
@@ -27,29 +29,37 @@ public:
   Tree* pid;
   std::vector<Tree*> stats;
   PackageDef(Global *global, Tree* pid, std::vector<Tree*> stats);
+  virtual ~PackageDef();
 };
 
 class Select: public Tree {
 public:
   Tree* qualifier;
   Name* name;
+
   Select(Global* global, Tree* qualifier, Name* name);
+  virtual ~Select();
 };
 
 class CannotHaveAttrs : virtual public Tree {
 public:
   CannotHaveAttrs(Global *global);
+  virtual ~CannotHaveAttrs();
+
   virtual bool canHaveAttrs();
 };
 
 class TermTree : virtual public Tree {
 public:
   TermTree(Global *global);
+  virtual ~TermTree();
 };
 
 class EmptyTree : public TermTree, public CannotHaveAttrs {
 public:
   EmptyTree(Global *global);
+  virtual ~EmptyTree();
+
   virtual bool isEmpty();
 };
 
@@ -63,8 +73,10 @@ extern const Tree* EMPTY_TREE;
  */
 class Ident : public Tree {
 public:
-  Name *name;
-  Ident(Global *global, Name *name);
+  Name* name;
+
+  Ident(Global* global, Name* name);
+  virtual ~Ident();
 };
 
 //-----------------------------------------------------------------------------
