@@ -38,8 +38,8 @@ public:
 
 class ScannerData {
 public:
-  spTokenData next;
-  spTokenData prev;
+  TokenData* next;
+  TokenData* prev;
 
   ScannerData();
   ~ScannerData();
@@ -84,7 +84,7 @@ public:
 
   Global* global;
   ScannerData* sData;
-  spTokenData tData;
+  TokenData* tData;
 
   // SourceFile data
   SourceFile* source;

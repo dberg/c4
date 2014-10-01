@@ -43,12 +43,8 @@ class Printers;
 // Scanners.h
 typedef int Offset;
 class ScannerData;
-
 class TokenData;
-typedef std::shared_ptr<TokenData> spTokenData;
-
 class Scanner;
-
 class UnitScanner;
 
 // SourceFile.h

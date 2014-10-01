@@ -20,10 +20,13 @@ void Scanner::putChar(c4::Char c) {
 
 /** Constructor */
 ScannerData::ScannerData()
-  : next(spTokenData(new TokenData)), prev(spTokenData(new TokenData)) {}
+  : next(new TokenData), prev(new TokenData) {}
 
 /** Destructor */
-ScannerData::~ScannerData() {}
+ScannerData::~ScannerData() {
+  delete prev;
+  delete next;
+}
 
 /** Constructor */
 Scanner::Scanner(Global *global, SourceFile *source)
@@ -31,7 +34,7 @@ Scanner::Scanner(Global *global, SourceFile *source)
     kwOffset(0),
     global(global),
     sData(new ScannerData),
-    tData(spTokenData(new TokenData)),
+    tData(new TokenData),
     source(source), buf(source->content())
 {
   allKeywords.push_back(std::make_pair(
@@ -146,6 +149,7 @@ Scanner::Scanner(Global *global, SourceFile *source)
 
 /** Destructor */
 Scanner::~Scanner() {
+  delete tData;
   delete sData;
   delete reader;
 }
