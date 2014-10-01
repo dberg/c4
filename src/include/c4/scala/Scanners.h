@@ -25,7 +25,7 @@ public:
   Offset lastOffset;
 
   /** The name of an identifier */
-  TermName *name;
+  TermName* name;
 
   /** The string value of a literal */
   std::string strVal;
@@ -42,6 +42,7 @@ public:
   spTokenData prev;
 
   ScannerData();
+  ~ScannerData();
 };
 
 class Scanner {
@@ -60,7 +61,7 @@ private:
    */
   std::vector<Token> sepRegions;
 
-  CharArrayReader *reader;
+  CharArrayReader* reader;
 
   // Identifiers
   void getIdentRest();
@@ -81,15 +82,15 @@ protected:
 
 public:
 
-  Global *global;
-  spScannerData sData;
+  Global* global;
+  ScannerData* sData;
   spTokenData tData;
 
   // SourceFile data
-  SourceFile *source;
+  SourceFile* source;
   std::vector<Char> &buf;
 
-  Scanner(Global *global, SourceFile *source);
+  Scanner(Global* global, SourceFile* source);
   virtual ~Scanner();
 
   //---------------------------------------------------------------------------
@@ -105,10 +106,10 @@ public:
 
 class UnitScanner : public Scanner {
 private:
-  CompilationUnit *unit;
+  CompilationUnit* unit;
 
 public:
-  UnitScanner(Global *global, CompilationUnit *unit);
+  UnitScanner(Global* global, CompilationUnit* unit);
   virtual ~UnitScanner();
 };
 

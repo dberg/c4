@@ -22,12 +22,15 @@ void Scanner::putChar(c4::Char c) {
 ScannerData::ScannerData()
   : next(spTokenData(new TokenData)), prev(spTokenData(new TokenData)) {}
 
+/** Destructor */
+ScannerData::~ScannerData() {}
+
 /** Constructor */
 Scanner::Scanner(Global *global, SourceFile *source)
   : reader(new CharArrayReader(source->content())),
     kwOffset(0),
     global(global),
-    sData(spScannerData(new ScannerData)),
+    sData(new ScannerData),
     tData(spTokenData(new TokenData)),
     source(source), buf(source->content())
 {
@@ -143,6 +146,7 @@ Scanner::Scanner(Global *global, SourceFile *source)
 
 /** Destructor */
 Scanner::~Scanner() {
+  delete sData;
   delete reader;
 }
 
