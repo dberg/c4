@@ -72,25 +72,25 @@ protected:
   virtual std::vector<Tree*> topstats();
 
 public:
-  Global *global;
-  Parser(Global *global);
+  Global* global;
+  Parser(Global* global);
   virtual ~Parser();
   virtual Tree* parse();
 };
 
 class SourceFileParser : public Parser {
 public:
-  SourceFileParser(Global *global);
+  SourceFileParser(Global* global);
   virtual ~SourceFileParser();
 };
 
 class UnitParser : public SourceFileParser {
 
 private:
-  CompilationUnit *unit;
+  CompilationUnit* unit;
 
 public:
-  UnitParser(Global *global, CompilationUnit *unit);
+  UnitParser(Global* global, CompilationUnit* unit);
   virtual ~UnitParser();
 };
 

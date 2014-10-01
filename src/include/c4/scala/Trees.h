@@ -28,7 +28,7 @@ class PackageDef : public Tree {
 public:
   Tree* pid;
   std::vector<Tree*> stats;
-  PackageDef(Global *global, Tree* pid, std::vector<Tree*> stats);
+  PackageDef(Global* global, Tree* pid, std::vector<Tree*> stats);
   virtual ~PackageDef();
 };
 
@@ -43,7 +43,7 @@ public:
 
 class CannotHaveAttrs : virtual public Tree {
 public:
-  CannotHaveAttrs(Global *global);
+  CannotHaveAttrs(Global* global);
   virtual ~CannotHaveAttrs();
 
   virtual bool canHaveAttrs();
@@ -51,13 +51,13 @@ public:
 
 class TermTree : virtual public Tree {
 public:
-  TermTree(Global *global);
+  TermTree(Global* global);
   virtual ~TermTree();
 };
 
 class EmptyTree : public TermTree, public CannotHaveAttrs {
 public:
-  EmptyTree(Global *global);
+  EmptyTree(Global* global);
   virtual ~EmptyTree();
 
   virtual bool isEmpty();
@@ -99,7 +99,7 @@ public:
 class Modifiers {
 public:
   long flags;
-  Name *privateWithin;
+  Name* privateWithin;
   std::vector<Tree*> annotations;
   //Modifiers();
   Modifiers(long flags, Name* privateWithin,

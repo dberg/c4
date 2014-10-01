@@ -10,12 +10,12 @@ Printers::Printers() {}
 /** Destructor */
 Printers::~Printers() {}
 
-std::string Printers::quotedName(Name *name, bool decode) {
+std::string Printers::quotedName(Name* name, bool decode) {
   // TODO:
   return "TODO";
 }
 
-std::string Printers::symNameInternal(Tree *tree, Name *name, bool decoded) {
+std::string Printers::symNameInternal(Tree* tree, Name* name, bool decoded) {
   spSymbol sym = tree->symbol();
   // TODO:
   if (sym == nullptr /* || sym == NoSymbol*/) {
@@ -32,15 +32,15 @@ std::string Printers::symNameInternal(Tree *tree, Name *name, bool decoded) {
   return "TODO";
 }
 
-std::string Printers::decodedSymName(Tree * tree, Name *name) {
+std::string Printers::decodedSymName(Tree* tree, Name* name) {
   return symNameInternal(tree, name, false);
 }
 
-std::string Printers::symName(Tree *tree, Name *name) {
+std::string Printers::symName(Tree* tree, Name* name) {
   return symNameInternal(tree, name, false);
 }
 
-std::string Printers::render(Tree *tree) {
+std::string Printers::render(Tree* tree) {
   // TODO: Print missing parameters. See Printers::show.
   std::string buffer;
   auto printer = std::make_shared<TreePrinter>();
@@ -52,15 +52,15 @@ std::string Printers::render(Tree *tree) {
 //       printTypes, printIds, printOwners, printKinds,
 //       printMirrors and printPositions.
 // We'll skip that for now.
-std::string Printers::show(Tree *tree) {
+std::string Printers::show(Tree* tree) {
   return render(tree);
 }
 
-std::string Printers::treeToString(Tree *tree) {
+std::string Printers::treeToString(Tree* tree) {
   return show(tree);
 }
 
-std::string printTree(Tree *tree) {
+std::string printTree(Tree* tree) {
   // TODO:
   // case id @ Ident(name) =>
   //   val str = symName(tree, name)

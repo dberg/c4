@@ -19,28 +19,28 @@ public:
 class GlobalPhase : public Phase {
 
 protected:
-  Global *global;
+  Global* global;
 
 public:
-  GlobalPhase(Global *global);
+  GlobalPhase(Global* global);
   virtual ~GlobalPhase();
 
   virtual void run();
 
-  virtual void apply(CompilationUnit *unit) = 0;
+  virtual void apply(CompilationUnit* unit) = 0;
 };
 
 class StdPhase : public GlobalPhase {
 public:
-  StdPhase(Global *global);
+  StdPhase(Global* global);
   virtual ~StdPhase();
 };
 
 class ParserPhase : public StdPhase {
 public:
-  ParserPhase(Global *global);
+  ParserPhase(Global* global);
   virtual ~ParserPhase();
-  virtual void apply(CompilationUnit *unit);
+  virtual void apply(CompilationUnit* unit);
 };
 
 } // namespace

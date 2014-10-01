@@ -55,7 +55,7 @@ Tree* Positions::atPos(Position* pos, Tree* tree) {
 }
 
 Position* Positions::rangePos(
-  SourceFile *source, int start, int point, int end)
+  SourceFile* source, int start, int point, int end)
 {
   if (useOffsetPositions()) {
     //return Position.offset(source, point);

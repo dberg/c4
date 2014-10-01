@@ -16,7 +16,7 @@ public:
   virtual int point();
   virtual int start();
 
-  static Position* offset(SourceFile *source, int point);
+  static Position* offset(SourceFile* source, int point);
 };
 
 class DefinedPosition : public Position {
@@ -26,9 +26,9 @@ public:
 
 class OffsetPosition : public DefinedPosition {
 public:
-  SourceFile *sourceIn;
+  SourceFile* sourceIn;
   int pointIn;
-  OffsetPosition(SourceFile *sourceIn, int pointIn);
+  OffsetPosition(SourceFile* sourceIn, int pointIn);
   virtual int point();
   virtual int start();
 };

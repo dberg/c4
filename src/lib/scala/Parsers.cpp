@@ -10,7 +10,7 @@
 namespace c4s {
 
 /** Constructor */
-Parser::Parser(Global *global): global(global) {}
+Parser::Parser(Global* global): global(global) {}
 
 Parser::~Parser() {}
 
@@ -338,13 +338,13 @@ std::vector<Tree*> Parser::topstats() {
 }
 
 /** Constructor */
-SourceFileParser::SourceFileParser(Global *global): Parser(global) {}
+SourceFileParser::SourceFileParser(Global* global): Parser(global) {}
 
 /** Destructor */
 SourceFileParser::~SourceFileParser() {}
 
 /** Constructor */
-UnitParser::UnitParser(Global *global, CompilationUnit *unit)
+UnitParser::UnitParser(Global* global, CompilationUnit* unit)
   : SourceFileParser(global), unit(unit) {
 
   in = new UnitScanner(global, unit);

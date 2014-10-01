@@ -24,20 +24,20 @@ void GlobalPhase::run() {
 }
 
 /** Constructor */
-StdPhase::StdPhase(Global *global) : GlobalPhase(global) {}
+StdPhase::StdPhase(Global* global) : GlobalPhase(global) {}
 
 /** Destructor */
 StdPhase::~StdPhase() {}
 
 /** Constructor */
-ParserPhase::ParserPhase(Global *global) : StdPhase(global) {}
+ParserPhase::ParserPhase(Global* global) : StdPhase(global) {}
 
 /** Destructor */
 ParserPhase::~ParserPhase() {}
 
-void ParserPhase::apply(CompilationUnit *unit) {
+void ParserPhase::apply(CompilationUnit* unit) {
   if (!unit->body) {
-    UnitParser *parser = new UnitParser(global, unit);
+    UnitParser* parser = new UnitParser(global, unit);
     unit->body = parser->parse();
     delete parser;
   }

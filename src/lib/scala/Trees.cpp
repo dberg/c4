@@ -7,7 +7,7 @@
 namespace c4s {
 
 /** Constructor */
-Tree::Tree(Global *global): global(global) {}
+Tree::Tree(Global* global): global(global) {}
 
 /** Destructor */
 Tree::~Tree() {}
@@ -58,7 +58,7 @@ Select::~Select() {
 }
 
 /** Constructor */
-CannotHaveAttrs::CannotHaveAttrs(Global *global): Tree(global) {}
+CannotHaveAttrs::CannotHaveAttrs(Global* global): Tree(global) {}
 
 /** Destructor */
 CannotHaveAttrs::~CannotHaveAttrs() {
@@ -112,7 +112,7 @@ void Traverser::traverse(Tree* tree) {
 //  : flags(NoFlags), new Name(tpnme.EMPTY), annotations(std::vector<spTree>()) {}
 
 Modifiers::Modifiers(
-  long flags, Name *privateWithin, std::vector<Tree*> annotations)
+  long flags, Name* privateWithin, std::vector<Tree*> annotations)
   : flags(flags), privateWithin(privateWithin), annotations(annotations) {}
 
 } // namespace
