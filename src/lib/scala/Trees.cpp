@@ -31,9 +31,9 @@ Position* Tree::pos() {
   //return rawatt->pos;
 }
 
-spSymbol Tree::symbol() {
+Symbol* Tree::symbol() {
   // TODO:
-  return std::make_shared<Symbol>();
+  return new Symbol();
 }
 
 std::string Tree::toString() {

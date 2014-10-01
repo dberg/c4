@@ -20,7 +20,7 @@ public:
   virtual bool canHaveAttrs();
   virtual bool isEmpty();
   Position* pos();
-  virtual spSymbol symbol();
+  virtual Symbol* symbol();
   virtual std::string toString();
 };
 

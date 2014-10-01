@@ -1,6 +1,7 @@
 #include "c4/scala/Printers.h"
 #include "c4/scala/TreePrinter.h"
 #include "c4/scala/Trees.h"
+#include "c4/scala/Symbols.h"
 
 namespace c4s {
 
@@ -16,7 +17,7 @@ std::string Printers::quotedName(Name* name, bool decode) {
 }
 
 std::string Printers::symNameInternal(Tree* tree, Name* name, bool decoded) {
-  spSymbol sym = tree->symbol();
+  Symbol* sym = tree->symbol();
   // TODO:
   if (sym == nullptr /* || sym == NoSymbol*/) {
     // Names.class
@@ -29,6 +30,7 @@ std::string Printers::symNameInternal(Tree* tree, Name* name, bool decoded) {
   //} else {
   //  return qsymbol;
   //}
+  delete sym;
   return "TODO";
 }
 
