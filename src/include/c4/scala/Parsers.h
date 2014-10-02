@@ -68,7 +68,7 @@ protected:
   virtual std::vector<Tree*> topStatSeq();
   virtual std::function<std::vector<Tree*> (Token)> topStat();
 
-  virtual Tree* compilationUnit();
+  virtual PackageDef* compilationUnit();
   virtual std::vector<Tree*> topstats();
 
 public:

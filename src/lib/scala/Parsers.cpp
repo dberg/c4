@@ -275,12 +275,12 @@ std::function<std::vector<Tree*> (Token)> Parser::topStat() {
 /**
  *  CompilationUnit ::= {package QualId semi} TopStatSeq
  */
-Tree* Parser::compilationUnit() {
+PackageDef* Parser::compilationUnit() {
   resetPackage();
   std::vector<Tree*> stats = topstats();
 
-  if (stats.size() == 0) {
-    return stats[0];
+  if (stats.size() == 1 && static_cast<PackageDef*>(stats[0])) {
+    return static_cast<PackageDef*>(stats[0]);
   } else {
     bool allEmpty = true;
     for (Tree* t: stats) {

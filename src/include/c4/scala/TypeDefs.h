@@ -69,6 +69,7 @@ class SyntaxAnalyzer;
 // Trees.h
 class Tree;
 class Ident;
+class PackageDef;
 
 class Modifiers;
 
