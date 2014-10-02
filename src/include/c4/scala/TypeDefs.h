@@ -71,7 +71,6 @@ class Tree;
 class Ident;
 
 class Modifiers;
-typedef std::shared_ptr<Modifiers> spModifiers;
 
 } // namespace
 

@@ -170,7 +170,7 @@ Tree* Parser::pkgQualId() {
  *              |  AccessModifier
  *              |  override
  */
-spModifiers Parser::modifiers() {
+Modifiers* Parser::modifiers() {
   auto loop = [this](Modifiers mods) {
     switch(in->tData->token) {
     case Token::T_PRIVATE:

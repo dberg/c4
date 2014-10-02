@@ -54,7 +54,7 @@ protected:
   virtual Tree* qualId();
   virtual Tree* pkgQualId();
 
-  virtual spModifiers modifiers();
+  virtual Modifiers* modifiers();
 
   virtual Offset caseAwareTokenOffset();
   virtual Tree* topLevelTmpDef();
