@@ -12,7 +12,6 @@
 namespace c4s {
 
 class TokenData {
-
 public:
 
   /** The next token */

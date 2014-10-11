@@ -24,8 +24,8 @@ ScannerData::ScannerData()
 
 /** Destructor */
 ScannerData::~ScannerData() {
-  delete prev;
-  delete next;
+  if (prev) delete prev;
+  if (next) delete next;
 }
 
 /** Constructor */
@@ -224,17 +224,14 @@ void Scanner::fetchToken() {
     reader->nextChar();
     fetchToken();
     break;
-  case 'A': case 'B': case 'C': case 'D': case 'E':
-  case 'F': case 'G': case 'H': case 'I': case 'J':
-  case 'K': case 'L': case 'M': case 'N': case 'O':
-  case 'P': case 'Q': case 'R': case 'S': case 'T':
-  case 'U': case 'V': case 'W': case 'X': case 'Y':
-  case 'Z': case '$': case '_': case 'a': case 'b':
-  case 'c': case 'd': case 'e': case 'f': case 'g':
-  case 'h': case 'i': case 'j': case 'k': case 'l':
-  case 'm': case 'n': case 'o': case 'p': case 'q':
-  case 'r': case 's': case 't': case 'u': case 'v':
-  case 'w': case 'x': case 'y': case 'z':
+  case 'A': case 'B': case 'C': case 'D': case 'E': case 'F': case 'G':
+  case 'H': case 'I': case 'J': case 'K': case 'L': case 'M': case 'N':
+  case 'O': case 'P': case 'Q': case 'R': case 'S': case 'T': case 'U':
+  case 'V': case 'W': case 'X': case 'Y': case 'Z': case '$': case '_':
+  case 'a': case 'b': case 'c': case 'd': case 'e': case 'f': case 'g':
+  case 'h': case 'i': case 'j': case 'k': case 'l': case 'm': case 'n':
+  case 'o': case 'p': case 'q': case 'r': case 's': case 't': case 'u':
+  case 'v': case 'w': case 'x': case 'y': case 'z':
     putChar(reader->ch);
     reader->nextChar();
     getIdentRest();
@@ -253,17 +250,15 @@ void Scanner::init() {
 // -----------------------------------------------------------------------------
 void Scanner::getIdentRest() {
   switch (reader->ch) {
-  case 'A': case 'B': case 'C': case 'D': case 'E': case 'F':
-  case 'G': case 'H': case 'I': case 'J': case 'K': case 'L':
-  case 'M': case 'N': case 'O': case 'P': case 'Q': case 'R':
-  case 'S': case 'T': case 'U': case 'V': case 'W': case 'X':
-  case 'Y': case 'Z': case '$': case 'a': case 'b': case 'c':
-  case 'd': case 'e': case 'f': case 'g': case 'h': case 'i':
-  case 'j': case 'k': case 'l': case 'm': case 'n': case 'o':
-  case 'p': case 'q': case 'r': case 's': case 't': case 'u':
-  case 'v': case 'w': case 'x': case 'y': case 'z': case '0':
-  case '1': case '2': case '3': case '4': case '5': case '6':
-  case '7': case '8': case '9':
+  case 'A': case 'B': case 'C': case 'D': case 'E': case 'F': case 'G':
+  case 'H': case 'I': case 'J': case 'K': case 'L': case 'M': case 'N':
+  case 'O': case 'P': case 'Q': case 'R': case 'S': case 'T': case 'U':
+  case 'V': case 'W': case 'X': case 'Y': case 'Z': case '$': case 'a':
+  case 'b': case 'c': case 'd': case 'e': case 'f': case 'g': case 'h':
+  case 'i': case 'j': case 'k': case 'l': case 'm': case 'n': case 'o':
+  case 'p': case 'q': case 'r': case 's': case 't': case 'u': case 'v':
+  case 'w': case 'x': case 'y': case 'z': case '0': case '1': case '2':
+  case '3': case '4': case '5': case '6': case '7': case '8': case '9':
     putChar(reader->ch);
     reader->nextChar();
     getIdentRest();
@@ -315,6 +310,8 @@ void Scanner::nextToken() {
     }
   } else {
     // TODO:
+    //this copyFrom next
+    //tData->token = Token::T_EMPTY
   }
 
   // Insert NEWLINE or NEWLINES if

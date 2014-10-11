@@ -64,7 +64,7 @@ TermName* Names::newTermName(std::vector<Char> cs, int offset, int len,
 
   if (len < 0) len = 0;
   int h = hashValue(cs, offset, len) & HASH_MASK;
-  TermName *n = termHashtable[h];
+  TermName* n = termHashtable[h];
   while (n && (n->length() != len || !equals(n->start(), cs, offset, len))) {
     n = n->next;
   }
@@ -99,7 +99,7 @@ TermName* Names::newTermNameCached(std::string s) {
 }
 
 /** Constructor */
-Name::Name(Global *global, int index, int len)
+Name::Name(Global* global, int index, int len)
   : global(global), index(index), len(len) {}
 
 /** Destructor */
