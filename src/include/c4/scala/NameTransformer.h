@@ -6,15 +6,18 @@
 #include <vector>
 #include "c4/scala/TypeDefs.h"
 
+using std::string;
+using std::vector;
+
 namespace c4s {
 
 class OpCodes {
 public:
   Char op;
-  std::string code;
+  string code;
   OpCodes* next;
 
-  OpCodes(Char op, std::string code, OpCodes* next);
+  OpCodes(Char op, string code, OpCodes* next);
   ~OpCodes();
 };
 
@@ -24,16 +27,16 @@ private:
   unsigned int nops = 128;
   unsigned int ncodes = 26 * 26;
 
-  std::vector<std::string> op2code;
-  std::vector<OpCodes*> code2op;
+  vector<string> op2code;
+  vector<OpCodes*> code2op;
 
-  void enterOp(Char op, std::string code);
+  void enterOp(Char op, string code);
 
 public:
   NameTransformer();
   ~NameTransformer();
 
-  std::vector<Char> encode(std::vector<Char> name);
+  vector<Char> encode(vector<Char> name);
 };
 
 } // namespace

@@ -4,7 +4,7 @@
 namespace c4s {
 
 /** Constructor */
-OpCodes::OpCodes(Char op, std::string code, OpCodes *next)
+OpCodes::OpCodes(Char op, string code, OpCodes *next)
   : op(op), code(code), next(next) {}
 
 /** Destructor */
@@ -39,18 +39,18 @@ NameTransformer::~NameTransformer() {
   }
 }
 
-void NameTransformer::enterOp(Char op, std::string code) {
+void NameTransformer::enterOp(Char op, string code) {
   op2code[op] = code;
   int c = (code[1] - 'a') * 26 + code[2] - 'a';
   code2op[c] = new OpCodes(op, code, code2op[c]);
 }
 
 /** Replace operator symbols by corresponding `\$opname`. */
-std::vector<Char> NameTransformer::encode(std::vector<Char> name) {
-  std::vector<Char> buf(name.size());
+vector<Char> NameTransformer::encode(vector<Char> name) {
+  vector<Char> buf(name.size());
   for (auto c : name) {
     if (c < nops) {
-      std::string code = op2code[c];
+      string code = op2code[c];
       if (code.empty()) {
         buf.push_back(c);
       } else {
