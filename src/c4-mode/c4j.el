@@ -153,7 +153,7 @@
                   (c4j-mode-reset-timer))
               (setq c4j-mode-parsing nil)
               (unless interrupted-p
-                (setq c4j-mode-parse-timer nil))))))))
+                (setq c4j-mode-parser-timer nil))))))))
 
 (defun c4j-parse ()
   "We save the buffer content into a temporary file and trigger the compiler.

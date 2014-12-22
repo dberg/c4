@@ -328,6 +328,8 @@ std::vector<Tree*> Parser::topstats() {
         Tree* pkgDef = makePackaging(start, pkg, topstats());
         ts.push_back(pkgDef);
       } else {
+        // TODO: ts += inBraces(makePackaging(start, pkg, topStatSeq()))
+        // TODO: acceptStatSepOpt()
         auto ts2 = topStatSeq();
         ts.insert(ts.end(), ts2.begin(), ts2.end());
       }
