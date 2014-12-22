@@ -202,21 +202,9 @@ $(obj_scala)/libscala.a: \
   $(obj_scala)/Chars.o \
   $(obj_scala)/CompilationUnits.o \
   $(obj_scala)/Global.o \
-  $(obj_scala)/Names.o \
   $(obj_scala)/NameTransformer.o \
-  $(obj_scala)/Parsers.o \
-  $(obj_scala)/Phase.o \
-  $(obj_scala)/Position.o \
-  $(obj_scala)/Positions.o \
-  $(obj_scala)/Printers.o \
-  $(obj_scala)/Scanners.o \
   $(obj_scala)/SourceFile.o \
-  $(obj_scala)/StdNames.o \
-  $(obj_scala)/SubComponent.o \
-  $(obj_scala)/Symbols.o \
-  $(obj_scala)/SyntaxAnalyzer.o \
-  $(obj_scala)/TreePrinter.o \
-  $(obj_scala)/Trees.o
+  $(obj_scala)/Tokens.o
 	ar -rv $@ $+
 
 $(obj_scala)/%.o: \

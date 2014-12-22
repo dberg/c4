@@ -10,9 +10,7 @@ namespace c4s {
 class CompilationUnit {
 public:
   SourceFile* source;
-  Tree* body;
   CompilationUnit(SourceFile* source);
-  ~CompilationUnit();
 };
 
 } // namespace

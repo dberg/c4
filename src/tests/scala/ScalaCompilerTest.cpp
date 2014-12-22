@@ -4,17 +4,19 @@
 #include "gtest/gtest.h"
 #include "utf8/utf8.h"
 
-#include "c4/common/TypeDefs.h"
+#include "c4/scala/TypeDefs.h"
 #include "c4/scala/SourceFile.h"
 #include "c4/scala/Global.h"
 #include "c4/scala/CompilationUnits.h"
 
 using namespace c4s;
+using std::string;
+using std::vector;
 
 TEST(ScalaCompiler, HelloWorld) {
 
-  std::string filename = "A.scala";
-  std::string sourceCode =
+  string filename = "A.scala";
+  string sourceCode =
     "package test\n"
     "object A {\n"
     "  def main(args: Array[String]) = {\n"
@@ -22,14 +24,14 @@ TEST(ScalaCompiler, HelloWorld) {
     "  }\n"
     "}\n";
 
-  std::vector<c4::Char> buffer;
+  vector<Char> buffer;
   utf8::utf8to16(sourceCode.begin(), sourceCode.end(),
     std::back_inserter(buffer));
 
-  ClientSourceFile *source = new ClientSourceFile(filename, buffer);
+  SourceFile *source = new SourceFile(filename, buffer);
   CompilationUnit *unit = new CompilationUnit(source);
 
-  std::vector<CompilationUnit *> units;
+  vector<CompilationUnit *> units;
   units.push_back(unit);
 
   Global *global = new Global;

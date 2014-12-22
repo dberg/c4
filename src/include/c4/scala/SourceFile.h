@@ -4,29 +4,19 @@
 
 #include <string>
 #include <vector>
-#include "c4/common/TypeDefs.h"
+#include "c4/scala/TypeDefs.h"
+
+using std::string;
+using std::vector;
 
 namespace c4s {
 
 class SourceFile {
 public:
-  virtual std::vector<c4::Char>& content() = 0;
-  SourceFile();
-  virtual ~SourceFile();
-};
+  string filename;
+  vector<Char> buffer;
 
-/**
- * A source file sent over the wire.
- */
-class ClientSourceFile : public SourceFile {
-public:
-  std::string filename;
-  std::vector<c4::Char> buffer;
-
-  ClientSourceFile(std::string filename, std::vector<c4::Char> buffer);
-  virtual ~ClientSourceFile();
-
-  std::vector<c4::Char>& content() { return buffer; }
+  SourceFile(string filename, vector<Char> buffer);
 };
 
 } // namespace

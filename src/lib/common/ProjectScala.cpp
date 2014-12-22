@@ -4,7 +4,7 @@ namespace c4 {
 
 void ProjectScala::compile(spCompilation comp) {
 
-  c4s::SourceFile *source = new c4s::ClientSourceFile(
+  c4s::SourceFile *source = new c4s::SourceFile(
     comp->filename,
     comp->buffer
   );
@@ -14,8 +14,8 @@ void ProjectScala::compile(spCompilation comp) {
   std::vector<c4s::CompilationUnit *> units;
   units.push_back(unit);
 
-  // TODO: we should only instantiate one global object and keep feeding it
-  // compilation units as they arrive from the client.
+  // TODO: we should only instantiate one global object per project and keep
+  // feeding it compilation units as they arrive from the client.
   c4s::Global *global = new c4s::Global;
   global->compile(units);
 
