@@ -105,6 +105,10 @@ clean:
 .PHONY: clean-all
 clean-all:
 	$(RM) -r $(builddir_name)
+	$(RM) include/c4/server/Request.pb.cc
+	$(RM) include/c4/server/Request.pb.h
+	$(RM) include/c4/server/Response.pb.cc
+	$(RM) include/c4/server/Response.pb.h
 
 # List of directories to be created or deleted.
 c4_directories := \
@@ -362,6 +366,10 @@ $(incdir_server)/Request.pb.h: $(server_resources)/Request.proto
 	$(protobuf_compiler) -I$(server_resources) \
   --cpp_out=$(abspath $(incdir_server)) $(server_resources)/Request.proto
 
+$(incdir_server)/Request.pb.cc: $(incdir_server)/Request.pb.h
+
 $(incdir_server)/Response.pb.h: $(server_resources)/Response.proto
 	$(protobuf_compiler) -I$(server_resources) \
   --cpp_out=$(abspath $(incdir_server)) $(server_resources)/Response.proto
+
+$(incdir_server)/Response.pb.cc: $(incdir_server)/Response.pb.h
