@@ -8,6 +8,11 @@
 #include "c4/common/ErrorCodes.h"
 #include "c4/java/Token.h"
 
+using std::pair;
+using std::shared_ptr;
+using std::string;
+using std::vector;
+
 /**
  * We have to modify a few production rules from the grammar.
  *
@@ -167,195 +172,184 @@
  */
 namespace c4j {
 
-typedef std::shared_ptr<struct Annotation> spAnnotation;
-typedef std::shared_ptr<struct AnnotationElement> spAnnotationElement;
-typedef std::shared_ptr<struct AnnotationMethodOrConstantRest>
+typedef shared_ptr<struct Annotation> spAnnotation;
+typedef shared_ptr<struct AnnotationElement> spAnnotationElement;
+typedef shared_ptr<struct AnnotationMethodOrConstantRest>
   spAnnotationMethodOrConstantRest;
-typedef std::shared_ptr<struct AnnotationMethodRest> spAnnotationMethodRest;
-typedef std::shared_ptr<struct AnnotationTypeBody> spAnnotationTypeBody;
-typedef std::shared_ptr<struct AnnotationTypeDeclaration>
+typedef shared_ptr<struct AnnotationMethodRest> spAnnotationMethodRest;
+typedef shared_ptr<struct AnnotationTypeBody> spAnnotationTypeBody;
+typedef shared_ptr<struct AnnotationTypeDeclaration>
   spAnnotationTypeDeclaration;
-typedef std::shared_ptr<struct AnnotationTypeElementDeclaration>
+typedef shared_ptr<struct AnnotationTypeElementDeclaration>
   spAnnotationTypeElementDeclaration;
-typedef std::shared_ptr<struct AnnotationTypeElementDeclarations>
+typedef shared_ptr<struct AnnotationTypeElementDeclarations>
   spAnnotationTypeElementDeclarations;
-typedef std::shared_ptr<struct AnnotationTypeElementRest>
+typedef shared_ptr<struct AnnotationTypeElementRest>
   spAnnotationTypeElementRest;
-typedef std::shared_ptr<struct Arguments> spArguments;
-typedef std::shared_ptr<struct ArrayCreatorRest> spArrayCreatorRest;
-typedef std::shared_ptr<struct ArrayCreatorRestOpt1> spArrayCreatorRestOpt1;
-typedef std::shared_ptr<struct ArrayCreatorRestOpt2> spArrayCreatorRestOpt2;
-typedef std::shared_ptr<struct ArrayInitializer> spArrayInitializer;
-typedef std::shared_ptr<struct AssignmentOperator> spAssignmentOperator;
-typedef std::shared_ptr<struct BasicType> spBasicType;
-typedef std::shared_ptr<struct Block> spBlock;
-typedef std::shared_ptr<struct BlockStatement> spBlockStatement;
-typedef std::shared_ptr<struct BooleanLiteral> spBooleanLiteral;
-typedef std::shared_ptr<struct Bound> spBound;
-typedef std::shared_ptr<struct Catches> spCatches;
-typedef std::shared_ptr<struct CatchClause> spCatchClause;
-typedef std::shared_ptr<struct CatchType> spCatchType;
-typedef std::shared_ptr<struct CharacterLiteral> spCharacterLiteral;
-typedef std::shared_ptr<struct ClassBody> spClassBody;
-typedef std::shared_ptr<struct ClassBodyDeclaration> spClassBodyDeclaration;
-typedef std::shared_ptr<struct ClassCreatorRest> spClassCreatorRest;
-typedef std::shared_ptr<struct ClassDeclaration> spClassDeclaration;
-typedef std::shared_ptr<struct ClassOrInterfaceDeclaration>
+typedef shared_ptr<struct Arguments> spArguments;
+typedef shared_ptr<struct ArrayCreatorRest> spArrayCreatorRest;
+typedef shared_ptr<struct ArrayCreatorRestOpt1> spArrayCreatorRestOpt1;
+typedef shared_ptr<struct ArrayCreatorRestOpt2> spArrayCreatorRestOpt2;
+typedef shared_ptr<struct ArrayInitializer> spArrayInitializer;
+typedef shared_ptr<struct AssignmentOperator> spAssignmentOperator;
+typedef shared_ptr<struct BasicType> spBasicType;
+typedef shared_ptr<struct Block> spBlock;
+typedef shared_ptr<struct BlockStatement> spBlockStatement;
+typedef shared_ptr<struct BooleanLiteral> spBooleanLiteral;
+typedef shared_ptr<struct Bound> spBound;
+typedef shared_ptr<struct Catches> spCatches;
+typedef shared_ptr<struct CatchClause> spCatchClause;
+typedef shared_ptr<struct CatchType> spCatchType;
+typedef shared_ptr<struct CharacterLiteral> spCharacterLiteral;
+typedef shared_ptr<struct ClassBody> spClassBody;
+typedef shared_ptr<struct ClassBodyDeclaration> spClassBodyDeclaration;
+typedef shared_ptr<struct ClassCreatorRest> spClassCreatorRest;
+typedef shared_ptr<struct ClassDeclaration> spClassDeclaration;
+typedef shared_ptr<struct ClassOrInterfaceDeclaration>
   spClassOrInterfaceDeclaration;
-typedef std::shared_ptr<struct CompilationUnit> spCompilationUnit;
-typedef std::shared_ptr<struct ConstantDeclaratorsRest>
-  spConstantDeclaratorsRest;
-typedef std::shared_ptr<struct ConstantDeclaratorRest>
-  spConstantDeclaratorRest;
-typedef std::shared_ptr<struct ConstructorDeclaratorRest>
+typedef shared_ptr<struct CompilationUnit> spCompilationUnit;
+typedef shared_ptr<struct ConstantDeclaratorsRest> spConstantDeclaratorsRest;
+typedef shared_ptr<struct ConstantDeclaratorRest> spConstantDeclaratorRest;
+typedef shared_ptr<struct ConstructorDeclaratorRest>
   spConstructorDeclaratorRest;
-typedef std::shared_ptr<struct CreatedName> spCreatedName;
-typedef std::shared_ptr<struct CreatedNameTriplet> spCreatedNameTriplet;
-typedef std::shared_ptr<struct Creator> spCreator;
-typedef std::shared_ptr<struct CreatorOpt1> spCreatorOpt1;
-typedef std::shared_ptr<struct CreatorOpt2> spCreatorOpt2;
-typedef std::shared_ptr<struct CreatorOpt3> spCreatorOpt3;
-typedef std::shared_ptr<struct ElementValue> spElementValue;
-typedef std::shared_ptr<struct ElementValues> spElementValues;
-typedef std::shared_ptr<struct ElementValueArrayInitializer>
+typedef shared_ptr<struct CreatedName> spCreatedName;
+typedef shared_ptr<struct CreatedNameTriplet> spCreatedNameTriplet;
+typedef shared_ptr<struct Creator> spCreator;
+typedef shared_ptr<struct CreatorOpt1> spCreatorOpt1;
+typedef shared_ptr<struct CreatorOpt2> spCreatorOpt2;
+typedef shared_ptr<struct CreatorOpt3> spCreatorOpt3;
+typedef shared_ptr<struct ElementValue> spElementValue;
+typedef shared_ptr<struct ElementValues> spElementValues;
+typedef shared_ptr<struct ElementValueArrayInitializer>
   spElementValueArrayInitializer;
-typedef std::shared_ptr<struct ElementValuePair> spElementValuePair;
-typedef std::shared_ptr<struct EnumBody> spEnumBody;
-typedef std::shared_ptr<struct EnumBodyDeclarations> spEnumBodyDeclarations;
-typedef std::shared_ptr<struct EnumConstant> spEnumConstant;
-typedef std::shared_ptr<struct EnumConstants> spEnumConstants;
-typedef std::shared_ptr<struct EnumConstantName> spEnumConstantName;
-typedef std::shared_ptr<struct EnumDeclaration> spEnumDeclaration;
-typedef std::shared_ptr<struct ExplicitGenericInvocation>
+typedef shared_ptr<struct ElementValuePair> spElementValuePair;
+typedef shared_ptr<struct EnumBody> spEnumBody;
+typedef shared_ptr<struct EnumBodyDeclarations> spEnumBodyDeclarations;
+typedef shared_ptr<struct EnumConstant> spEnumConstant;
+typedef shared_ptr<struct EnumConstants> spEnumConstants;
+typedef shared_ptr<struct EnumConstantName> spEnumConstantName;
+typedef shared_ptr<struct EnumDeclaration> spEnumDeclaration;
+typedef shared_ptr<struct ExplicitGenericInvocation>
   spExplicitGenericInvocation;
-typedef std::shared_ptr<struct ExplicitGenericInvocationSuffix>
+typedef shared_ptr<struct ExplicitGenericInvocationSuffix>
   spExplicitGenericInvocationSuffix;
-typedef std::shared_ptr<struct Expression> spExpression;
-typedef std::shared_ptr<struct Expression1> spExpression1;
-typedef std::shared_ptr<struct Expression2> spExpression2;
-typedef std::shared_ptr<struct Expression3> spExpression3;
-typedef std::shared_ptr<struct Expression3Opt2> spExpression3Opt2;
-typedef std::shared_ptr<struct Expression3Opt3> spExpression3Opt3;
-typedef std::shared_ptr<struct Expression1Rest> spExpression1Rest;
-typedef std::shared_ptr<struct Expression2Rest> spExpression2Rest;
-typedef std::shared_ptr<struct Expression2RestHelper> spExpression2RestHelper;
-typedef std::shared_ptr<struct ExpressionInBrackets> spExpressionInBrackets;
-typedef std::shared_ptr<struct FieldDeclaratorsRest> spFieldDeclaratorsRest;
-typedef std::shared_ptr<struct Finally> spFinally;
-typedef std::shared_ptr<struct FloatingPointLiteral> spFloatingPointLiteral;
-typedef std::shared_ptr<struct ForControl> spForControl;
-typedef std::shared_ptr<struct ForInit> spForInit;
+typedef shared_ptr<struct Expression> spExpression;
+typedef shared_ptr<struct Expression1> spExpression1;
+typedef shared_ptr<struct Expression2> spExpression2;
+typedef shared_ptr<struct Expression3> spExpression3;
+typedef shared_ptr<struct Expression3Opt2> spExpression3Opt2;
+typedef shared_ptr<struct Expression3Opt3> spExpression3Opt3;
+typedef shared_ptr<struct Expression1Rest> spExpression1Rest;
+typedef shared_ptr<struct Expression2Rest> spExpression2Rest;
+typedef shared_ptr<struct Expression2RestHelper> spExpression2RestHelper;
+typedef shared_ptr<struct ExpressionInBrackets> spExpressionInBrackets;
+typedef shared_ptr<struct FieldDeclaratorsRest> spFieldDeclaratorsRest;
+typedef shared_ptr<struct Finally> spFinally;
+typedef shared_ptr<struct FloatingPointLiteral> spFloatingPointLiteral;
+typedef shared_ptr<struct ForControl> spForControl;
+typedef shared_ptr<struct ForInit> spForInit;
 typedef ForInit ForUpdate;
-typedef std::shared_ptr<struct ForInit> spForUpdate;
-typedef std::shared_ptr<struct ForVarControl> spForVarControl;
-typedef std::shared_ptr<struct ForVarControlRest> spForVarControlRest;
-typedef std::shared_ptr<struct ForVariableDeclaratorsRest>
+typedef shared_ptr<struct ForInit> spForUpdate;
+typedef shared_ptr<struct ForVarControl> spForVarControl;
+typedef shared_ptr<struct ForVarControlRest> spForVarControlRest;
+typedef shared_ptr<struct ForVariableDeclaratorsRest>
   spForVariableDeclaratorsRest;
-typedef std::shared_ptr<struct FormalParameters> spFormalParameters;
-typedef std::shared_ptr<struct FormalParameterDecls> spFormalParameterDecls;
-typedef std::shared_ptr<struct FormalParameterDeclsRest>
-  spFormalParameterDeclsRest;
-typedef std::shared_ptr<struct GenericMethodOrConstructorDecl>
+typedef shared_ptr<struct FormalParameters> spFormalParameters;
+typedef shared_ptr<struct FormalParameterDecls> spFormalParameterDecls;
+typedef shared_ptr<struct FormalParameterDeclsRest> spFormalParameterDeclsRest;
+typedef shared_ptr<struct GenericMethodOrConstructorDecl>
   spGenericMethodOrConstructorDecl;
-typedef std::shared_ptr<struct GenericMethodOrConstructorRest>
+typedef shared_ptr<struct GenericMethodOrConstructorRest>
   spGenericMethodOrConstructorRest;
-typedef std::shared_ptr<struct Identifier> spIdentifier;
-typedef std::shared_ptr<struct IdentifierSuffix> spIdentifierSuffix;
-typedef std::shared_ptr<struct ImportDeclaration> spImportDeclaration;
-typedef std::shared_ptr<struct ImportDeclarations> spImportDeclarations;
-typedef std::shared_ptr<struct IntegerLiteral> spIntegerLiteral;
-typedef std::shared_ptr<struct InterfaceBody> spInterfaceBody;
-typedef std::shared_ptr<struct InterfaceBodyDeclaration>
-  spInterfaceBodyDeclaration;
-typedef std::shared_ptr<struct InterfaceDeclaration> spInterfaceDeclaration;
-typedef std::shared_ptr<struct InterfaceGenericMethodDecl>
+typedef shared_ptr<struct Identifier> spIdentifier;
+typedef shared_ptr<struct IdentifierSuffix> spIdentifierSuffix;
+typedef shared_ptr<struct ImportDeclaration> spImportDeclaration;
+typedef shared_ptr<struct ImportDeclarations> spImportDeclarations;
+typedef shared_ptr<struct IntegerLiteral> spIntegerLiteral;
+typedef shared_ptr<struct InterfaceBody> spInterfaceBody;
+typedef shared_ptr<struct InterfaceBodyDeclaration> spInterfaceBodyDeclaration;
+typedef shared_ptr<struct InterfaceDeclaration> spInterfaceDeclaration;
+typedef shared_ptr<struct InterfaceGenericMethodDecl>
    spInterfaceGenericMethodDecl;
-typedef std::shared_ptr<struct InterfaceMemberDecl> spInterfaceMemberDecl;
-typedef std::shared_ptr<struct InterfaceMethodDeclaratorRest>
+typedef shared_ptr<struct InterfaceMemberDecl> spInterfaceMemberDecl;
+typedef shared_ptr<struct InterfaceMethodDeclaratorRest>
   spInterfaceMethodDeclaratorRest;
-typedef std::shared_ptr<struct InterfaceMethodOrFieldDecl>
+typedef shared_ptr<struct InterfaceMethodOrFieldDecl>
   spInterfaceMethodOrFieldDecl;
-typedef std::shared_ptr<struct InterfaceMethodOrFieldRest>
+typedef shared_ptr<struct InterfaceMethodOrFieldRest>
   spInterfaceMethodOrFieldRest;
-typedef std::shared_ptr<struct InnerCreator> spInnerCreator;
-typedef std::shared_ptr<struct Literal> spLiteral;
-typedef std::shared_ptr<struct LocalVariableDeclarationStatement>
+typedef shared_ptr<struct InnerCreator> spInnerCreator;
+typedef shared_ptr<struct Literal> spLiteral;
+typedef shared_ptr<struct LocalVariableDeclarationStatement>
   spLocalVariableDeclarationStatement;
-typedef std::shared_ptr<struct MemberDecl> spMemberDecl;
-typedef std::shared_ptr<struct MethodDeclaratorRest> spMethodDeclaratorRest;
-typedef std::shared_ptr<struct MethodOrFieldDecl> spMethodOrFieldDecl;
-typedef std::shared_ptr<struct MethodOrFieldRest> spMethodOrFieldRest;
-typedef std::shared_ptr<struct Modifier> spModifier;
-typedef std::shared_ptr<struct NormalClassDeclaration>
-  spNormalClassDeclaration;
-typedef std::shared_ptr<struct NormalInterfaceDeclaration>
+typedef shared_ptr<struct MemberDecl> spMemberDecl;
+typedef shared_ptr<struct MethodDeclaratorRest> spMethodDeclaratorRest;
+typedef shared_ptr<struct MethodOrFieldDecl> spMethodOrFieldDecl;
+typedef shared_ptr<struct MethodOrFieldRest> spMethodOrFieldRest;
+typedef shared_ptr<struct Modifier> spModifier;
+typedef shared_ptr<struct NormalClassDeclaration> spNormalClassDeclaration;
+typedef shared_ptr<struct NormalInterfaceDeclaration>
   spNormalInterfaceDeclaration;
-typedef std::shared_ptr<struct NonWildcardTypeArguments>
-  spNonWildcardTypeArguments;
-typedef std::shared_ptr<struct NonWildcardTypeArgumentsOrDiamond>
+typedef shared_ptr<struct NonWildcardTypeArguments> spNonWildcardTypeArguments;
+typedef shared_ptr<struct NonWildcardTypeArgumentsOrDiamond>
   spNonWildcardTypeArgumentsOrDiamond;
-typedef std::shared_ptr<struct PackageDeclaration> spPackageDeclaration;
-typedef std::shared_ptr<struct ParExpression> spParExpression;
-typedef std::shared_ptr<struct PostfixOp> spPostfixOp;
-typedef std::shared_ptr<struct PrefixOp> spPrefixOp;
-typedef std::shared_ptr<struct Primary> spPrimary;
-typedef std::shared_ptr<struct PrimaryBasicType> spPrimaryBasicType;
-typedef std::shared_ptr<struct PrimaryIdentifier> spPrimaryIdentifier;
-typedef std::shared_ptr<struct PrimarySuperSuperSuffix>
-  spPrimarySuperSuperSuffix;
-typedef std::shared_ptr<struct PrimaryThisArguments> spPrimaryThisArguments;
-typedef std::shared_ptr<struct PrimaryNewCreator> spPrimaryNewCreator;
-typedef std::shared_ptr<struct PrimaryNonWildcardTypeArguments>
+typedef shared_ptr<struct PackageDeclaration> spPackageDeclaration;
+typedef shared_ptr<struct ParExpression> spParExpression;
+typedef shared_ptr<struct PostfixOp> spPostfixOp;
+typedef shared_ptr<struct PrefixOp> spPrefixOp;
+typedef shared_ptr<struct Primary> spPrimary;
+typedef shared_ptr<struct PrimaryBasicType> spPrimaryBasicType;
+typedef shared_ptr<struct PrimaryIdentifier> spPrimaryIdentifier;
+typedef shared_ptr<struct PrimarySuperSuperSuffix> spPrimarySuperSuperSuffix;
+typedef shared_ptr<struct PrimaryThisArguments> spPrimaryThisArguments;
+typedef shared_ptr<struct PrimaryNewCreator> spPrimaryNewCreator;
+typedef shared_ptr<struct PrimaryNonWildcardTypeArguments>
   spPrimaryNonWildcardTypeArguments;
-typedef std::shared_ptr<struct PrimaryVoidClass> spPrimaryVoidClass;
-typedef std::shared_ptr<struct QualifiedIdentifier> spQualifiedIdentifier;
-typedef std::shared_ptr<struct QualifiedIdentifierList>
-  spQualifiedIdentifierList;
-typedef std::shared_ptr<struct ReferenceType> spReferenceType;
-typedef std::shared_ptr<struct ReferenceTypeTriplet> spReferenceTypeTriplet;
-typedef std::shared_ptr<struct Resource> spResource;
-typedef std::shared_ptr<struct Resources> spResources;
-typedef std::shared_ptr<struct ResourceSpecification> spResourceSpecification;
-typedef std::shared_ptr<struct Selector> spSelector;
-typedef std::shared_ptr<struct Statement> spStatement;
-typedef std::shared_ptr<struct StatementExpression> spStatementExpression;
-typedef std::shared_ptr<struct StringLiteral> spStringLiteral;
-typedef std::shared_ptr<struct SuperSuffix> spSuperSuffix;
-typedef std::shared_ptr<struct SwitchBlockStatementGroup>
+typedef shared_ptr<struct PrimaryVoidClass> spPrimaryVoidClass;
+typedef shared_ptr<struct QualifiedIdentifier> spQualifiedIdentifier;
+typedef shared_ptr<struct QualifiedIdentifierList> spQualifiedIdentifierList;
+typedef shared_ptr<struct ReferenceType> spReferenceType;
+typedef shared_ptr<struct ReferenceTypeTriplet> spReferenceTypeTriplet;
+typedef shared_ptr<struct Resource> spResource;
+typedef shared_ptr<struct Resources> spResources;
+typedef shared_ptr<struct ResourceSpecification> spResourceSpecification;
+typedef shared_ptr<struct Selector> spSelector;
+typedef shared_ptr<struct Statement> spStatement;
+typedef shared_ptr<struct StatementExpression> spStatementExpression;
+typedef shared_ptr<struct StringLiteral> spStringLiteral;
+typedef shared_ptr<struct SuperSuffix> spSuperSuffix;
+typedef shared_ptr<struct SwitchBlockStatementGroup>
   spSwitchBlockStatementGroup;
-typedef std::shared_ptr<struct SwitchBlockStatementGroups>
+typedef shared_ptr<struct SwitchBlockStatementGroups>
   spSwitchBlockStatementGroups;
-typedef std::shared_ptr<struct SwitchLabel> spSwitchLabel;
-typedef std::shared_ptr<struct SwitchLabels> spSwitchLabels;
-typedef std::shared_ptr<struct TokenExp> spTokenExp;
-typedef std::shared_ptr<struct TokenExp> spNullLiteral;
-typedef std::shared_ptr<struct Type> spType;
-typedef std::shared_ptr<struct TypeArgument> spTypeArgument;
-typedef std::shared_ptr<struct TypeArguments> spTypeArguments;
-typedef std::shared_ptr<struct TypeArgumentOpt2> spTypeArgumentOpt2;
-typedef std::shared_ptr<struct TypeArgumentsOrDiamond>
-  spTypeArgumentsOrDiamond;
-typedef std::shared_ptr<struct TypeDeclaration> spTypeDeclaration;
-typedef std::shared_ptr<struct TypeList> spTypeList;
-typedef std::shared_ptr<struct TypeList2> spTypeList2;
-typedef std::shared_ptr<struct TypeParameter> spTypeParameter;
-typedef std::shared_ptr<struct TypeParameters> spTypeParameters;
-typedef std::shared_ptr<struct VariableDeclarator> spVariableDeclarator;
-typedef std::shared_ptr<struct VariableDeclarators> spVariableDeclarators;
-typedef std::shared_ptr<struct VariableDeclaratorId> spVariableDeclaratorId;
-typedef std::shared_ptr<struct VariableDeclaratorRest>
-  spVariableDeclaratorRest;
-typedef std::shared_ptr<struct VariableInitializer> spVariableInitializer;
-typedef std::shared_ptr<struct VariableModifier> spVariableModifier;
-typedef std::shared_ptr<struct VoidInterfaceMethodDeclaratorRest>
+typedef shared_ptr<struct SwitchLabel> spSwitchLabel;
+typedef shared_ptr<struct SwitchLabels> spSwitchLabels;
+typedef shared_ptr<struct TokenExp> spTokenExp;
+typedef shared_ptr<struct TokenExp> spNullLiteral;
+typedef shared_ptr<struct Type> spType;
+typedef shared_ptr<struct TypeArgument> spTypeArgument;
+typedef shared_ptr<struct TypeArguments> spTypeArguments;
+typedef shared_ptr<struct TypeArgumentOpt2> spTypeArgumentOpt2;
+typedef shared_ptr<struct TypeArgumentsOrDiamond> spTypeArgumentsOrDiamond;
+typedef shared_ptr<struct TypeDeclaration> spTypeDeclaration;
+typedef shared_ptr<struct TypeList> spTypeList;
+typedef shared_ptr<struct TypeList2> spTypeList2;
+typedef shared_ptr<struct TypeParameter> spTypeParameter;
+typedef shared_ptr<struct TypeParameters> spTypeParameters;
+typedef shared_ptr<struct VariableDeclarator> spVariableDeclarator;
+typedef shared_ptr<struct VariableDeclarators> spVariableDeclarators;
+typedef shared_ptr<struct VariableDeclaratorId> spVariableDeclaratorId;
+typedef shared_ptr<struct VariableDeclaratorRest> spVariableDeclaratorRest;
+typedef shared_ptr<struct VariableInitializer> spVariableInitializer;
+typedef shared_ptr<struct VariableModifier> spVariableModifier;
+typedef shared_ptr<struct VoidInterfaceMethodDeclaratorRest>
   spVoidInterfaceMethodDeclaratorRest;
-typedef std::shared_ptr<struct VoidMethodDeclaratorRest>
-  spVoidMethodDeclaratorRest;
+typedef shared_ptr<struct VoidMethodDeclaratorRest> spVoidMethodDeclaratorRest;
 
-typedef std::pair<unsigned int, unsigned int> ArrayPair;
-typedef std::vector<ArrayPair> ArrayDepth;
-typedef std::shared_ptr<struct Comment> spComment;
-typedef std::pair<unsigned int, unsigned int> Diamond;
+typedef pair<unsigned int, unsigned int> ArrayPair;
+typedef vector<ArrayPair> ArrayDepth;
+typedef shared_ptr<struct Comment> spComment;
+typedef pair<unsigned int, unsigned int> Diamond;
 typedef struct TokenExp NullLiteral;
 
 struct ASTError {
@@ -388,7 +382,7 @@ struct Comment {
 struct CompilationUnit {
   spPackageDeclaration pkgDecl;
   spImportDeclarations impDecls;
-  std::vector<spTypeDeclaration> typeDecls;
+  vector<spTypeDeclaration> typeDecls;
 };
 
 /**
@@ -409,14 +403,14 @@ struct ConstantDeclaratorRest : ASTError {
  */
 struct ConstantDeclaratorsRest : ASTError {
   spConstantDeclaratorRest constDeclRest;
-  std::vector<std::pair<unsigned, spConstantDeclaratorRest> > pairs;
+  vector<pair<unsigned, spConstantDeclaratorRest> > pairs;
 };
 
 /**
  * PackageDeclaration: [ [Annotations]  package QualifiedIdentifier ; ]
  */
 struct PackageDeclaration : ASTError {
-  std::vector<spAnnotation> annotations;
+  vector<spAnnotation> annotations;
   spTokenExp tokPackage;
   spQualifiedIdentifier qualifiedId;
 };
@@ -470,8 +464,8 @@ struct TokenExp {
  *   strictfp
  */
 struct Modifier {
-  std::vector<spAnnotation> annotations;
-  std::vector<spTokenExp> tokens;
+  vector<spAnnotation> annotations;
+  vector<spTokenExp> tokens;
 };
 
 /**
@@ -530,7 +524,7 @@ struct NormalInterfaceDeclaration : ASTError {
 struct ClassBody : ASTError {
   unsigned posLCBrace;
   unsigned posRCBrace;
-  std::vector<spClassBodyDeclaration> classBodyDecls;
+  vector<spClassBodyDeclaration> classBodyDecls;
 
   ClassBody() : posLCBrace(0), posRCBrace(0) {}
 };
@@ -709,7 +703,7 @@ struct FormalParameterDecls {
  */
 struct VariableModifier : ASTError {
   spTokenExp tokFinal;
-  std::vector<spAnnotation> annotations;
+  vector<spAnnotation> annotations;
 
   bool isEmpty() {
     if (!tokFinal && annotations.size() == 0) {
@@ -802,7 +796,7 @@ struct VariableDeclarator : ASTError {
  */
 struct VariableDeclarators : ASTError {
   spVariableDeclarator varDecl;
-  std::vector<std::pair<unsigned, spVariableDeclarator> > pairs;
+  vector<pair<unsigned, spVariableDeclarator> > pairs;
 };
 
 /**
@@ -838,7 +832,7 @@ struct ReferenceType : ASTError {
   spIdentifier id;
   spTypeArguments typeArgs;
   // { . Identifier [TypeArguments] }
-  std::vector<spReferenceTypeTriplet> triplets;
+  vector<spReferenceTypeTriplet> triplets;
 };
 
 /**
@@ -873,7 +867,7 @@ struct Resource : ASTError {
  */
 struct Resources : ASTError {
   spResource res;
-  std::vector<std::pair<unsigned, spResource> > pairs;
+  vector<pair<unsigned, spResource> > pairs;
 };
 
 /**
@@ -1089,7 +1083,7 @@ struct TypeArguments : ASTError {
   unsigned int posLt;
   unsigned int posGt;
   spTypeArgument typeArg;
-  std::vector<std::pair<unsigned, spTypeArgument> > pairs;
+  vector<pair<unsigned, spTypeArgument> > pairs;
 
   TypeArguments() : ASTError(), posLt(0), posGt(0) {}
 };
@@ -1130,7 +1124,7 @@ struct TypeArgumentOpt2 : ASTError {
 struct Block : ASTError {
   unsigned posLCBrace;
   unsigned posRCBrace;
-  std::vector<spBlockStatement> blockStmts;
+  vector<spBlockStatement> blockStmts;
 
   Block() : posLCBrace(0), posRCBrace(0) {}
 };
@@ -1185,7 +1179,7 @@ struct EnumBody : ASTError {
  */
 struct EnumBodyDeclarations : ASTError {
   unsigned posSemiColon;
-  std::vector<spClassBodyDeclaration> classBodyDecls;
+  vector<spClassBodyDeclaration> classBodyDecls;
 
   EnumBodyDeclarations() : posSemiColon(0) {}
 };
@@ -1195,7 +1189,7 @@ struct EnumBodyDeclarations : ASTError {
  *   [Annotations] Identifier [Arguments] [ClassBody]
  */
 struct EnumConstant : ASTError {
-  std::vector<spAnnotation> annotations;
+  vector<spAnnotation> annotations;
   spIdentifier id;
   spArguments args;
   spClassBody classBody;
@@ -1208,7 +1202,7 @@ struct EnumConstant : ASTError {
  */
 struct EnumConstants : ASTError {
   spEnumConstant enumConst;
-  std::vector<std::pair<unsigned, spEnumConstant> > pairs;
+  vector<pair<unsigned, spEnumConstant> > pairs;
 };
 
 /**
@@ -1238,7 +1232,7 @@ struct EnumDeclaration : ASTError {
 struct InterfaceBody : ASTError {
   unsigned posLCBrace;
   unsigned posRCBrace;
-  std::vector<spInterfaceBodyDeclaration> bodyDecls;
+  vector<spInterfaceBodyDeclaration> bodyDecls;
 
   InterfaceBody() : posLCBrace(0), posRCBrace(0) {}
 };
@@ -1389,8 +1383,8 @@ struct InterfaceMethodOrFieldRest : ASTError {
  *   ImportDeclarations ImportDeclaration
  */
 struct ImportDeclarations {
-  std::vector<spImportDeclaration> imports;
-  ImportDeclarations(std::vector<spImportDeclaration> imports)
+  vector<spImportDeclaration> imports;
+  ImportDeclarations(vector<spImportDeclaration> imports)
     : imports(imports) {}
 };
 
@@ -1457,8 +1451,8 @@ struct GenericMethodOrConstructorRest : ASTError {
  */
 struct Identifier {
   int pos;
-  const std::string value;
-  Identifier(int pos, const std::string &value) : pos(pos), value(value) {}
+  const string value;
+  Identifier(int pos, const string &value) : pos(pos), value(value) {}
 };
 
 /**
@@ -1528,7 +1522,7 @@ struct IdentifierSuffix : ASTError {
  */
 struct QualifiedIdentifier : ASTError {
   spIdentifier id;
-  std::vector<std::pair<unsigned, spIdentifier> > pairs;
+  vector<pair<unsigned, spIdentifier> > pairs;
 };
 
 /**
@@ -1537,7 +1531,7 @@ struct QualifiedIdentifier : ASTError {
  */
 struct QualifiedIdentifierList : ASTError {
   spQualifiedIdentifier qualifiedId;
-  std::vector<std::pair<unsigned, spQualifiedIdentifier> > pairs;
+  vector<pair<unsigned, spQualifiedIdentifier> > pairs;
 };
 
 /**
@@ -1579,7 +1573,7 @@ struct AnnotationElement {
 
   AnnotationElementOpt opt;
   bool err;
-  std::vector<spElementValuePair> pairs;
+  vector<spElementValuePair> pairs;
   spElementValue value;
 
   AnnotationElement() : opt(OPT_UNDEFINED), err(false) {}
@@ -1657,7 +1651,7 @@ struct AnnotationTypeElementDeclaration : ASTError {
  *   AnnotationTypeElementDeclarations AnnotationTypeElementDeclaration
  */
 struct AnnotationTypeElementDeclarations : ASTError {
-  std::vector<spAnnotationTypeElementDeclaration> elemDecls;
+  vector<spAnnotationTypeElementDeclaration> elemDecls;
 };
 
 /**
@@ -1736,7 +1730,7 @@ struct ElementValue : ASTError {
  */
 struct ElementValues : ASTError {
   spElementValue elemVal;
-  std::vector<std::pair<unsigned, spElementValue> > pairs;
+  vector<pair<unsigned, spElementValue> > pairs;
 };
 
 /**
@@ -1842,7 +1836,7 @@ struct Expression2 {
  * See note in the top of this file.
  */
 struct Expression2Rest : ASTError {
-  std::vector<spExpression2RestHelper> pairs;
+  vector<spExpression2RestHelper> pairs;
 };
 
 struct Expression2RestHelper {
@@ -1872,7 +1866,7 @@ struct Arguments : ASTError {
   unsigned int posLParen;
   unsigned int posRParen;
   spExpression expr;
-  std::vector<std::pair<unsigned int, spExpression> > exprs;
+  vector<pair<unsigned int, spExpression> > exprs;
 
   Arguments() : posLParen(0), posRParen(0) {}
 };
@@ -1906,8 +1900,8 @@ struct Expression3 : ASTError {
 
   // (4) Primary { Selector } { PostfixOp }
   spPrimary primary;
-  std::vector<spSelector> selectors;
-  std::vector<spPostfixOp> postfixOps;
+  vector<spSelector> selectors;
+  vector<spPostfixOp> postfixOps;
 
   Expression3() : opt(OPT_UNDEFINED) {}
   bool isEmpty() { return opt == OPT_UNDEFINED; }
@@ -1998,7 +1992,7 @@ struct PrimaryBasicType : ASTError {
  */
 struct PrimaryIdentifier : ASTError {
   spIdentifier id;
-  std::vector<std::pair<unsigned, spIdentifier> > pairs;
+  vector<pair<unsigned, spIdentifier> > pairs;
   spIdentifierSuffix idSuffix;
 };
 
@@ -2127,7 +2121,7 @@ struct IntegerLiteral {
   IntegerLiteralEnum opt;
   bool intSuffix;
   int pos;
-  std::string value;
+  string value;
 
   IntegerLiteral() : opt(OPT_UNDEFINED), intSuffix(false), pos(-1) {}
 };
@@ -2146,7 +2140,7 @@ struct FloatingPointLiteral {
 
   FloatingPointLiteralEnum opt;
   int pos;
-  std::string value;
+  string value;
 
   FloatingPointLiteral() : opt(OPT_UNDEFINED), pos(-1) {}
 };
@@ -2186,7 +2180,7 @@ struct ForControl : ASTError {
  */
 struct ForInit : ASTError {
   spStatementExpression stmtExpr;
-  std::vector<std::pair<unsigned, spStatementExpression> > pairs;
+  vector<pair<unsigned, spStatementExpression> > pairs;
 };
 
 /**
@@ -2237,7 +2231,7 @@ struct ForVarControlRest : ASTError {
 struct ForVariableDeclaratorsRest : ASTError {
   unsigned posEquals;
   spVariableInitializer varInit;
-  std::vector<std::pair<unsigned, spVariableDeclarator> > pairs;
+  vector<pair<unsigned, spVariableDeclarator> > pairs;
 
   ForVariableDeclaratorsRest() : posEquals(0) {}
 };
@@ -2253,7 +2247,7 @@ struct BooleanLiteral {
  */
 struct Bound : ASTError {
   spReferenceType refType;
-  std::vector<std::pair<unsigned, spReferenceType> > pairs;
+  vector<pair<unsigned, spReferenceType> > pairs;
 };
 
 /**
@@ -2261,7 +2255,7 @@ struct Bound : ASTError {
  */
 struct Catches : ASTError {
   spCatchClause catchClause;
-  std::vector<spCatchClause> catchClauses;
+  vector<spCatchClause> catchClauses;
 };
 
 /**
@@ -2287,17 +2281,17 @@ struct CatchClause : ASTError {
  */
 struct CatchType : ASTError {
   spQualifiedIdentifier qualifiedId;
-  std::vector<std::pair<unsigned, spQualifiedIdentifier> > pairs;
+  vector<pair<unsigned, spQualifiedIdentifier> > pairs;
 };
 
 struct CharacterLiteral {
   int pos;
-  std::string val;
+  string val;
 };
 
 struct StringLiteral {
   int pos;
-  std::string val;
+  string val;
 };
 
 /**
@@ -2353,7 +2347,7 @@ struct SuperSuffix : ASTError {
  */
 struct SwitchBlockStatementGroup : ASTError {
   spSwitchLabels labels;
-  std::vector<spBlockStatement> blockStmts;
+  vector<spBlockStatement> blockStmts;
 };
 
 /**
@@ -2361,7 +2355,7 @@ struct SwitchBlockStatementGroup : ASTError {
  *   { SwitchBlockStatementGroup }
  */
 struct SwitchBlockStatementGroups : ASTError {
-  std::vector<spSwitchBlockStatementGroup> groups;
+  vector<spSwitchBlockStatementGroup> groups;
 };
 
 /**
@@ -2394,7 +2388,7 @@ struct SwitchLabel : ASTError {
  */
 struct SwitchLabels : ASTError {
   spSwitchLabel label;
-  std::vector<spSwitchLabel> labels;
+  vector<spSwitchLabel> labels;
 };
 
 /**
@@ -2483,7 +2477,7 @@ struct NonWildcardTypeArgumentsOrDiamond : ASTError {
  */
 struct TypeList : ASTError {
   spReferenceType refType;
-  std::vector<std::pair<unsigned, spReferenceType> > pairs;
+  vector<pair<unsigned, spReferenceType> > pairs;
 };
 
 /**
@@ -2491,7 +2485,7 @@ struct TypeList : ASTError {
  */
 struct TypeList2 : ASTError {
   spType type;
-  std::vector<std::pair<unsigned int, spType> > pairs;
+  vector<pair<unsigned int, spType> > pairs;
 };
 
 /**
@@ -2512,7 +2506,7 @@ struct TypeParameters : ASTError {
   unsigned posLt;
   unsigned posGt;
   spTypeParameter typeParam;
-  std::vector<std::pair<unsigned, spTypeParameter> > pairs;
+  vector<pair<unsigned, spTypeParameter> > pairs;
 
   TypeParameters() : posLt(0), posGt(0) {}
 };
@@ -2525,7 +2519,7 @@ struct TypeParameters : ASTError {
 struct CreatedName : ASTError {
   spIdentifier id;
   spTypeArgumentsOrDiamond typeArgsOrDiam;
-  std::vector<spCreatedNameTriplet> triplets;
+  vector<spCreatedNameTriplet> triplets;
 };
 
 /**
@@ -2609,7 +2603,7 @@ struct ArrayCreatorRestOpt1 : ASTError {
  */
 struct ArrayCreatorRestOpt2 : ASTError {
   spExpressionInBrackets exprInBrackets;
-  std::vector<spExpressionInBrackets> exprInBracketsList;
+  vector<spExpressionInBrackets> exprInBracketsList;
   ArrayDepth arrayDepth;
 };
 
@@ -2629,7 +2623,7 @@ struct ExpressionInBrackets : ASTError {
  */
 struct FieldDeclaratorsRest : ASTError {
   spVariableDeclaratorRest varDeclRest;
-  std::vector<std::pair<unsigned int, spVariableDeclarator> > pairs;
+  vector<pair<unsigned int, spVariableDeclarator> > pairs;
 };
 
 /**
@@ -2650,7 +2644,7 @@ struct ArrayInitializer : ASTError {
   unsigned posComma;
   spVariableInitializer varInit;
   // { , VariableInitializer }
-  std::vector<std::pair<unsigned, spVariableInitializer> > pairs;
+  vector<pair<unsigned, spVariableInitializer> > pairs;
 
   ArrayInitializer() : posLCBrace(0), posRCBrace(0), posComma(0) {}
 };
