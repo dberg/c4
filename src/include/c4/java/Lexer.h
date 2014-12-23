@@ -15,6 +15,12 @@
 #include "c4/java/SourceCodeStream.h"
 #include "c4/java/Token.h"
 
+using std::map;
+using std::shared_ptr;
+using std::string;
+using std::stringstream;
+using std::vector;
+
 namespace c4j {
 
 int toJavaTok(c4::LiteralToken litTok);
@@ -22,19 +28,19 @@ bool isJavaLetter(char c);
 bool isJavaLetterOrDigit(char c);
 
 class Lexer;
-typedef std::shared_ptr<Lexer> spLexer;
+typedef shared_ptr<Lexer> spLexer;
 
 class Lexer {
 
   int curToken;
-  std::string curTokenStr;
+  string curTokenStr;
   bool isPrevTokenSwitchLabelColon;
   int curIndentationLevel;
   c4::spDiagnosis diag;
   c4::spSourceCodeStream src;
   c4::spLiteralSupport litSupport;
   TokenUtil tokenUtil;
-  std::vector<spComment> comments;
+  vector<spComment> comments;
   LineIndentationMap &indentMap;
 
   int getToken();
@@ -44,14 +50,14 @@ class Lexer {
   int getCharacterLiteral();
   int getCommentOrDivToken();
   int getEqualsToken();
-  int getEscapeSequence(std::stringstream &ss);
+  int getEscapeSequence(stringstream &ss);
   int getExclamationToken();
   int getGreaterThenToken();
   int getLessThenToken();
   int getMinusToken();
   int getNumberToken(char c);
   int getMulToken();
-  int getPeriodOrEllipsisToken(std::stringstream &ss);
+  int getPeriodOrEllipsisToken(stringstream &ss);
   int getPeriodStartingToken();
   int getPipeToken();
   int getPlusToken();
@@ -73,12 +79,12 @@ public:
   void getNextToken();
   int getCurToken() { return curToken; }
   unsigned int getCursor() { return src->getCursor(); }
-  const std::string getCurTokenStr() { return curTokenStr; }
+  const string getCurTokenStr() { return curTokenStr; }
   unsigned int getCurTokenIni() {
     return src->getCursor() - curTokenStr.length();
   }
 
-  std::vector<spComment>& getComments() { return comments; }
+  vector<spComment>& getComments() { return comments; }
 
   void saveState(State &state);
   void restoreState(State &state);

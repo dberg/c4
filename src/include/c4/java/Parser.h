@@ -15,6 +15,10 @@
 #include "c4/java/SymbolTable.h"
 #include "c4/java/Token.h"
 
+using std::shared_ptr;
+using std::string;
+using std::vector;
+
 namespace c4j {
 
 // Helper functions
@@ -39,10 +43,10 @@ bool isValidInitTokenOfTypeDeclaration(int token);
 bool isVariableModifier(int token);
 
 class Parser {
-  const std::string filename;
+  const string filename;
   c4::spSourceCodeStream src;
   spLexer lexer;
-  std::vector<std::string> scopes;
+  vector<string> scopes;
   TokenUtil tokenUtil;
 
   // Parser
@@ -52,7 +56,7 @@ class Parser {
   void parseAnnotationMethodOrConstantRest(
     spAnnotationMethodOrConstantRest &methodOrConstRest);
   void parseAnnotationMethodRest(spAnnotationMethodRest &methRest);
-  void parseAnnotations(std::vector<spAnnotation> &annotations);
+  void parseAnnotations(vector<spAnnotation> &annotations);
   void parseAnnotationTypeBody(spAnnotationTypeBody &annTypeBody);
   void parseAnnotationTypeDeclaration(
     spAnnotationTypeDeclaration &annotationDecl);
@@ -67,7 +71,7 @@ class Parser {
   void parseArrayInitializer(spArrayInitializer &arrayInit);
   void parseBlock(spBlock &block);
   void parseBlockStatement(spBlockStatement &blockStmt);
-  void parseBlockStatements(std::vector<spBlockStatement> &blockStmts);
+  void parseBlockStatements(vector<spBlockStatement> &blockStmts);
   void parseBooleanLiteral(spBooleanLiteral &boolLit);
   void parseBound(spBound &bound);
   void parseCatches(spCatches &catches);
@@ -77,7 +81,7 @@ class Parser {
   void parseClassBody(spClassBody &classBody);
   void parseClassBodyDeclaration(spClassBodyDeclaration &decl);
   void parseClassBodyDeclarationsHelper(
-    std::vector<spClassBodyDeclaration> &classBodyDecls);
+    vector<spClassBodyDeclaration> &classBodyDecls);
   void parseClassCreatorRest(spClassCreatorRest &classCreatorRest);
   void parseClassDeclaration(spClassDeclaration &classDecl);
   void parseClassOrInterfaceDeclaration(spClassOrInterfaceDeclaration& decl);
@@ -96,7 +100,7 @@ class Parser {
   void parseElementValues(spElementValues &values);
   void parseElementValueArrayInitializer(
     spElementValueArrayInitializer &elemValArrayInit);
-  void parseElementValuePairs(std::vector<spElementValuePair> &pairs);
+  void parseElementValuePairs(vector<spElementValuePair> &pairs);
   void parseEnumBody(spEnumBody &enumBody);
   void parseEnumBodyDeclarations(spEnumBodyDeclarations &bodyDecls);
   void parseEnumConstant(spEnumConstant &enumConst);
@@ -165,7 +169,7 @@ class Parser {
     spNormalInterfaceDeclaration &normalDecl);
   void parseNullLiteral(spNullLiteral &nullLiteral);
   spPackageDeclaration parsePackageDeclaration(
-    std::vector<spAnnotation> &annotations, spPackageDeclaration &pkgDecl);
+    vector<spAnnotation> &annotations, spPackageDeclaration &pkgDecl);
   void parseParExpression(spParExpression &parExpr);
   void parsePostfixOp(spPostfixOp &postfixOp);
   void parsePrimary(spPrimary &primary);
@@ -199,8 +203,8 @@ class Parser {
   void parseTypeArgumentOpt2(spTypeArgumentOpt2 &opt2);
   void parseTypeArguments(spTypeArguments &typeArgs);
   void parseTypeArgumentsOrDiamond(spTypeArgumentsOrDiamond &typeArgsOrDiam);
-  std::vector<spTypeDeclaration> parseTypeDeclarations(
-    std::vector<spAnnotation> &annotations);
+  vector<spTypeDeclaration> parseTypeDeclarations(
+    vector<spAnnotation> &annotations);
   void parseTypeList(spTypeList &typeList);
   void parseTypeList2(spTypeList2 &typeList2);
   void parseTypeParameter(spTypeParameter &typeParam);
@@ -222,7 +226,7 @@ class Parser {
 
 public:
   Parser(
-    const std::string filename, const std::string &buffer)
+    const string filename, const string &buffer)
     : filename(filename),
       src(c4::spSourceCodeStream(new c4::SourceCodeStream(buffer))),
       compilationUnit(spCompilationUnit(new CompilationUnit)),
@@ -234,11 +238,11 @@ public:
 
   c4::spDiagnosis diag;
   spCompilationUnit compilationUnit;
-  std::vector<spComment> comments;
+  vector<spComment> comments;
   LineIndentationMap indentMap;
   ST st;
   int error;
-  std::string error_msg;
+  string error_msg;
 
   void parse();
 };

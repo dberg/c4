@@ -296,7 +296,7 @@ int Lexer::getCarretToken() {
  * Returns TOK_ERROR or TOK_CHARACTER_LITERAL
  */
 int Lexer::getCharacterLiteral() {
-  std::stringstream ss;
+  stringstream ss;
   curTokenStr = "";
   ss << '\''; // opening single quote
 
@@ -422,7 +422,7 @@ int Lexer::getEqualsToken() {
  *
  * Returns TOK_ESCAPE_SEQUENCE | TOK_ERROR
  */
-int Lexer::getEscapeSequence(std::stringstream &ss) {
+int Lexer::getEscapeSequence(stringstream &ss) {
   ss << src->getChar(); // consume '\'
   switch (src->peekChar()) {
     case 'b': // backspace BS
@@ -524,7 +524,7 @@ int Lexer::getMulToken() {
  *   TOK_ERROR
 */
 int Lexer::getNumberToken(char c) {
-  std::stringstream ss;
+  stringstream ss;
   int tok = toJavaTok(litSupport->getLiteralNumber(c, ss));
   curTokenStr = ss.str();
   return tok;
@@ -534,7 +534,7 @@ int Lexer::getNumberToken(char c) {
  * Return TOK_PERIOD | TOK_ELLIPS | TOK_DECIMAL_FLOATING_POINT_LITERAL
  */
 int Lexer::getPeriodStartingToken() {
-  std::stringstream ss;
+  stringstream ss;
   ss << '.';
 
   // If we have a digit following '.' this is a decimal floating point literal.
@@ -568,7 +568,7 @@ int Lexer::getPipeToken() {
 /**
  * Return TOK_PERIOD | TOK_ELLIPSIS
  */
-int Lexer::getPeriodOrEllipsisToken(std::stringstream &ss) {
+int Lexer::getPeriodOrEllipsisToken(stringstream &ss) {
   // We look 2 chars ahead to decide if we have an ellipsis.
   // At this point we have already found one dot char and the
   // cursor is pointing to the next char.
@@ -623,7 +623,7 @@ int Lexer::getRemToken() {
  * Returns TOK_STRING_LITERAL or TOK_ERROR
  */
 int Lexer::getStringLiteral() {
-  std::stringstream ss;
+  stringstream ss;
   ss << '"'; // opening double quotes
 
   char c;
@@ -723,7 +723,7 @@ int Lexer::getMinusToken() {
  * Return TOK_IDENTIFIER | TOK_INTEGER_TYPE_SUFFIX | TOK_KEY_*
  */
 int Lexer::getTokenIdentifier(char c) {
-  std::stringstream ss; ss << c;
+  stringstream ss; ss << c;
   while ((c = src->getChar())) {
     if (isJavaLetterOrDigit(c)) {
       ss << c;

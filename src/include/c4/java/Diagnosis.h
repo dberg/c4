@@ -7,14 +7,17 @@
 
 #include "c4/common/ErrorCodes.h"
 
+using std::shared_ptr;
+using std::vector;
+
 namespace c4 {
 
 class Diagnosis;
-typedef std::shared_ptr<Diagnosis> spDiagnosis;
+typedef shared_ptr<Diagnosis> spDiagnosis;
 
 class Diagnosis {
 public:
-  std::vector<spError> errors;
+  vector<spError> errors;
 
   int addErr(int err, unsigned ini, unsigned end = 0);
 };

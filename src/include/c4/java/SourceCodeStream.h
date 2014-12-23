@@ -5,14 +5,17 @@
 #include <memory>
 #include <string>
 
+using std::shared_ptr;
+using std::string;
+
 namespace c4 {
 
 class SourceCodeStream;
-typedef std::shared_ptr<SourceCodeStream> spSourceCodeStream;
+typedef shared_ptr<SourceCodeStream> spSourceCodeStream;
 
 class SourceCodeStream {
 
-  const std::string buffer;
+  const string buffer;
   unsigned int cursor;
   unsigned int line;
   unsigned int cursorMark;
@@ -37,7 +40,7 @@ public:
 
   unsigned int getStreamLength() { return buffer.length(); }
 
-  SourceCodeStream(const std::string &_buffer)
+  SourceCodeStream(const string &_buffer)
    : buffer(_buffer), cursor(0), line(0) {}
 };
 

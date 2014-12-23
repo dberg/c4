@@ -8,6 +8,10 @@
 #include "c4/java/Diagnosis.h"
 #include "c4/java/SourceCodeStream.h"
 
+using std::shared_ptr;
+using std::string;
+using std::stringstream;
+
 namespace c4 {
 
 enum class LiteralToken {
@@ -31,31 +35,29 @@ bool isHexDigit(char c);
 bool isOctalDigit(char c);
 
 class LiteralSupport;
-typedef std::shared_ptr<LiteralSupport> spLiteralSupport;
+typedef shared_ptr<LiteralSupport> spLiteralSupport;
 
 class LiteralSupport {
 
   spDiagnosis diag;
   spSourceCodeStream src;
 
-  int consumeDigitsPOrUnderscores(
-    std::stringstream &ss, bool (*fnDigitP) (char));
-  int consumeExponentPart(std::stringstream &ss);
+  int consumeDigitsPOrUnderscores(stringstream &ss, bool (*fnDigitP) (char));
+  int consumeExponentPart(stringstream &ss);
 
-  LiteralToken getBinaryNumeral(std::stringstream &ss);
-  LiteralToken getDecimalNumeral(std::stringstream &ss);
-  LiteralToken getHexNumeral(std::stringstream &ss);
-  LiteralToken getOctalNumeral(std::stringstream &ss);
-  LiteralToken getTokWithLeadingZero(std::stringstream &ss);
+  LiteralToken getBinaryNumeral(stringstream &ss);
+  LiteralToken getDecimalNumeral(stringstream &ss);
+  LiteralToken getHexNumeral(stringstream &ss);
+  LiteralToken getOctalNumeral(stringstream &ss);
+  LiteralToken getTokWithLeadingZero(stringstream &ss);
 
 public:
   LiteralSupport(spSourceCodeStream &src, spDiagnosis &diag)
     : diag(diag), src(src) {}
-  LiteralToken getLiteralNumber(char c, std::stringstream &ss);
+  LiteralToken getLiteralNumber(char c, stringstream &ss);
   LiteralToken getDecimalNumeralOrDecimalFloatingPoint(
-    char previous_c, std::stringstream &ss);
-  LiteralToken getDecimalFloatingPointStartingWithAPeriod(
-    std::stringstream &ss);
+    char previous_c, stringstream &ss);
+  LiteralToken getDecimalFloatingPointStartingWithAPeriod(stringstream &ss);
 };
 
 } // namespace

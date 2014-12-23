@@ -4,7 +4,7 @@
 namespace c4j {
 
 void ST::addSym(int type, unsigned pos, unsigned end, unsigned line,
-  const std::string metadata) {
+  const string metadata) {
 
   spSymbol sym = spSymbol(new Symbol(
     type, scopes.back(), pos, end, line, metadata));
@@ -18,13 +18,13 @@ void ST::addSym(int type, unsigned pos, unsigned end, unsigned line,
 /**
  * We match the identifier name with our current scope name.
  */
-bool ST::isConstructor(const std::string identifier) {
+bool ST::isConstructor(const string identifier) {
   // If the current scope is of type ST_MEMBER_DECL the previous scope should be
   // of type ST_CLASS or ST_ENUM. Given that the first scope is
   // ST_COMPILATION_UNIT unit the scope size should be equal or greater than 3
   // at this point.
   if (scopes.size() < 3) { return false; }
-  std::vector<std::size_t>::size_type classId = scopes[scopes.size() - 2];
+  vector<std::size_t>::size_type classId = scopes[scopes.size() - 2];
   spSymbol symClass = symbols[classId];
   if (symClass->type != ST_CLASS && symClass->type != ST_ENUM) {
     return false;

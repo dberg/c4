@@ -9,12 +9,12 @@ void EmacsOutput::build() {
   buildIndentationTable();
 }
 
-const std::string EmacsOutput::body() {
-  std::stringstream body;
+const string EmacsOutput::body() {
+  stringstream body;
   body
-    << outSH.str() << std::endl
-    << outErr.str() << std::endl
-    << outST.str() << std::endl
+    << outSH.str() << endl
+    << outErr.str() << endl
+    << outST.str() << endl
     << outIT.str();
 
   return body.str();
@@ -78,7 +78,7 @@ void EmacsOutput::buildSymbolTable() {
   outST << "]";
 }
 
-const std::string EmacsOutput::getSymbolTableType(int type) {
+const string EmacsOutput::getSymbolTableType(int type) {
   STTypes::iterator it = stTypes.find(type);
   if (it == stTypes.end()) {
     return "unknown";
@@ -117,7 +117,7 @@ void EmacsOutput::setAnnotation(const spAnnotation &annotation) {
 }
 
 void EmacsOutput::setAnnotations(
-  const std::vector<spAnnotation> &annotations) {
+  const vector<spAnnotation> &annotations) {
 
   for (std::size_t i = 0; i < annotations.size(); i++) {
     setAnnotation(annotations[i]);
@@ -439,7 +439,7 @@ void EmacsOutput::setCatchType(const spCatchType &catchType) {
   }
 
   for (unsigned i = 0; i < catchType->pairs.size(); i++) {
-    std::pair<unsigned, spQualifiedIdentifier> pair = catchType->pairs[i];
+    pair<unsigned, spQualifiedIdentifier> pair = catchType->pairs[i];
     setOp(pair.first);
     setQualifiedId(pair.second);
   }
@@ -787,7 +787,7 @@ void EmacsOutput::setEnumDeclaration(spEnumDeclaration &enumDecl) {
   }
 }
 
-void EmacsOutput::setErrors(const std::vector<c4::spError> &errors) {
+void EmacsOutput::setErrors(const vector<c4::spError> &errors) {
   for (std::size_t i = 0; i < errors.size(); i++) {
     outErr << "("
       << (errors[i]->ini + 1) << " "
@@ -1383,7 +1383,7 @@ void EmacsOutput::setImportDeclaration(const spImportDeclaration &import) {
 }
 
 void EmacsOutput::setImportDeclarations(const spImportDeclarations &impDecls) {
-  for (std::string::size_type i = 0; i < impDecls->imports.size(); i++) {
+  for (string::size_type i = 0; i < impDecls->imports.size(); i++) {
     setImportDeclaration(impDecls->imports[i]);
   }
 }
@@ -2500,7 +2500,7 @@ void EmacsOutput::setTypeArguments(const spTypeArguments &typeArgs) {
 }
 
 void EmacsOutput::setTypeDeclarations(
-  const std::vector<spTypeDeclaration> &typeDecls) {
+  const vector<spTypeDeclaration> &typeDecls) {
 
   for (std::size_t i = 0; i < typeDecls.size(); i++) {
     if (typeDecls[i]->classOrIntDecl) {
@@ -2624,7 +2624,7 @@ void EmacsOutput::setVariableDeclarators(const spVariableDeclarators &varDecls) 
   }
 
   for (unsigned i = 0; i < varDecls->pairs.size(); i++) {
-    std::pair<unsigned, spVariableDeclarator> pair = varDecls->pairs[i];
+    pair<unsigned, spVariableDeclarator> pair = varDecls->pairs[i];
     setOp(pair.first);
     setVariableDeclarator(pair.second);
   }

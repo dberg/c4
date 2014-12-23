@@ -13,6 +13,13 @@
 #include "c4/java/SymbolTable.h"
 #include "c4/java/Token.h"
 
+using std::endl;
+using std::map;
+using std::pair;
+using std::string;
+using std::stringstream;
+using std::vector;
+
 namespace c4j {
 
 /**
@@ -23,7 +30,7 @@ class EmacsOutput {
 
   // Lexer and Parser products:
   spCompilationUnit compilationUnit;
-  std::vector<spComment> comments;
+  vector<spComment> comments;
   ST st;
   c4::spDiagnosis diag;
   LineIndentationMap &indentMap;
@@ -32,7 +39,7 @@ class EmacsOutput {
   c4::ErrorUtil errUtil;
 
   // Symbol table types translation to elisp
-  typedef std::map<int, std::string> STTypes;
+  typedef map<int, string> STTypes;
   STTypes stTypes;
 
   // We distinguish references identifiers from other identifiers like variable
@@ -47,10 +54,10 @@ class EmacsOutput {
   void buildSymbolTable();
   void buildIndentationTable();
 
-  const std::string getSymbolTableType(int type);
+  const string getSymbolTableType(int type);
   void setAnnotationElement(const spAnnotationElement elem);
   void setAnnotation(const spAnnotation &annotation);
-  void setAnnotations(const std::vector<spAnnotation> &annotations);
+  void setAnnotations(const vector<spAnnotation> &annotations);
   void setAnnotationMethodOrConstantRest(
     const spAnnotationMethodOrConstantRest &methodOrConstRest);
   void setAnnotationMethodRest(const spAnnotationMethodRest &methRest);
@@ -100,7 +107,7 @@ class EmacsOutput {
   void setEnumConstant(const spEnumConstant &enumConst);
   void setEnumConstants(const spEnumConstants &enumConsts);
   void setEnumDeclaration(spEnumDeclaration &enumDecl);
-  void setErrors(const std::vector<c4::spError> &errors);
+  void setErrors(const vector<c4::spError> &errors);
   void setExplicitGenericInvocation(
     const spExplicitGenericInvocation &explGenInvocation);
   void setExplicitGenericInvocationSuffix(
@@ -188,7 +195,7 @@ class EmacsOutput {
   void setTypeArgument(const spTypeArgument &typeArg);
   void setTypeArguments(const spTypeArguments &typeArgs);
   void setTypeArgumentsOrDiamond(const spTypeArgumentsOrDiamond &typeArgsOrDiam);
-  void setTypeDeclarations(const std::vector<spTypeDeclaration> &typeDecls);
+  void setTypeDeclarations(const vector<spTypeDeclaration> &typeDecls);
   void setTypeList(const spTypeList &typeList);
   void setTypeList2(const spTypeList2 &typeList2);
   void setTypeParameter(const spTypeParameter &typeParam);
@@ -206,10 +213,10 @@ class EmacsOutput {
 
 public:
   // Output sent to emacs
-  std::stringstream outSH; // syntax highlighting
-  std::stringstream outErr;
-  std::stringstream outST; // symbol table
-  std::stringstream outIT; // indentation table
+  stringstream outSH; // syntax highlighting
+  stringstream outErr;
+  stringstream outST; // symbol table
+  stringstream outIT; // indentation table
 
   EmacsOutput(Parser &parser)
     : compilationUnit(parser.compilationUnit), comments(parser.comments),
@@ -232,7 +239,7 @@ public:
   }
 
   void build();
-  const std::string body();
+  const string body();
 };
 
 }

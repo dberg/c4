@@ -5,6 +5,9 @@
 #include <memory>
 #include <map>
 
+using std::map;
+using std::shared_ptr;
+
 namespace c4j {
 
 struct Indentation {
@@ -16,8 +19,8 @@ struct Indentation {
     : level(level), lineWrap(lineWrap), token(token), offset(offset) {}
 };
 
-typedef std::shared_ptr<Indentation> spIndentation;
-typedef std::map<int, spIndentation> LineIndentationMap;
+typedef shared_ptr<Indentation> spIndentation;
+typedef map<int, spIndentation> LineIndentationMap;
 
 void addIndentation(LineIndentationMap &indentMap, int line, int level,
   bool lineWrap, int token = 0, int offset = 0);

@@ -470,7 +470,7 @@ void Parser::parseAnnotationMethodRest(spAnnotationMethodRest &methRest) {
 /**
  * Annotations.
  */
-void Parser::parseAnnotations(std::vector<spAnnotation> &annotations) {
+void Parser::parseAnnotations(vector<spAnnotation> &annotations) {
   while (lexer->getCurToken() == TOK_ANNOTATION) {
     spAnnotation annotation = parseAnnotation();
     annotations.push_back(annotation);
@@ -1351,7 +1351,7 @@ void Parser::parseBlockStatement(spBlockStatement &blockStmt) {
 /**
  * BlockStatements: { BlockStatement }
  */
-void Parser::parseBlockStatements(std::vector<spBlockStatement> &blockStmts) {
+void Parser::parseBlockStatements(vector<spBlockStatement> &blockStmts) {
   unsigned pos = 0;
   while (lexer->getCurToken() != TOK_RCURLY_BRACKET
     && lexer->getCurToken() != TOK_KEY_CASE     // in case we are inside a
@@ -2956,7 +2956,7 @@ void Parser::parseIdentifierSuffix(spIdentifierSuffix &idSuffix) {
  * ElementValuePairs: ElementValuePair {, ElementValuePair }
  * ElementValuePair: Identifier = ElementValue
  */
-void Parser::parseElementValuePairs(std::vector<spElementValuePair> &pairs) {
+void Parser::parseElementValuePairs(vector<spElementValuePair> &pairs) {
   if (lexer->getCurToken() != TOK_IDENTIFIER) {
     return;
   }
@@ -3078,7 +3078,7 @@ void Parser::parseExplicitGenericInvocationSuffix(
  * PackageDeclaration: [ [Annotations]  package QualifiedIdentifier ; ]
  */
 spPackageDeclaration Parser::parsePackageDeclaration(
-  std::vector<spAnnotation> &annotations, spPackageDeclaration &pkgDecl) {
+  vector<spAnnotation> &annotations, spPackageDeclaration &pkgDecl) {
 
   // If we have annotations they belong to the package declaration
   if (annotations.size()) {
@@ -3141,7 +3141,7 @@ void Parser::parsePostfixOp(spPostfixOp &postfixOp) {
  * ImportDeclaration: import [static] QualifiedId [.*] ';'
  */
 spImportDeclarations Parser::parseImportDeclarations() {
-  std::vector<spImportDeclaration> imports;
+  vector<spImportDeclaration> imports;
   while (lexer->getCurToken() == TOK_KEY_IMPORT) {
     spImportDeclaration import = parseImportDeclaration();
     imports.push_back(import);
@@ -4850,10 +4850,10 @@ void Parser::parseTypeArgumentsOrDiamond(
  * TypeDeclarations: { TypeDeclaration }
  * TypeDeclaration: ClassOrInterfaceDeclaration ;
  */
-std::vector<spTypeDeclaration> Parser::parseTypeDeclarations(
-  std::vector<spAnnotation> &annotations) {
+vector<spTypeDeclaration> Parser::parseTypeDeclarations(
+  vector<spAnnotation> &annotations) {
 
-  std::vector<spTypeDeclaration> typeDecls = std::vector<spTypeDeclaration>();
+  vector<spTypeDeclaration> typeDecls = vector<spTypeDeclaration>();
 
   if (annotations.size() > 0) {
     spModifier modifier = spModifier(new Modifier);
@@ -5183,7 +5183,7 @@ void Parser::parseClassBody(spClassBody &classBody) {
  * { ClassBodyDeclaration }
  */
 void Parser::parseClassBodyDeclarationsHelper(
-  std::vector<spClassBodyDeclaration> &classBodyDecls) {
+  vector<spClassBodyDeclaration> &classBodyDecls) {
 
   unsigned pos = 0;
   while (isValidInitTokenOfClassBodyDeclaration(lexer->getCurToken())
@@ -5650,7 +5650,7 @@ void Parser::parseNonWildcardTypeArgumentsOrDiamond(
  *   [PackageDeclaration] [ImportDeclaration] [TypeDeclarations]
  */
 void Parser::parseCompilationUnit() {
-  std::vector<spAnnotation> annotations;
+  vector<spAnnotation> annotations;
   if (lexer->getCurToken() == TOK_ANNOTATION) {
     parseAnnotations(annotations);
   }

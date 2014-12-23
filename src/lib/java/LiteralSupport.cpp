@@ -48,7 +48,7 @@ bool isSign(char c) {
 //-----------------------------------------------------------------------------
 // LiteralSupport Class
 //-----------------------------------------------------------------------------
-LiteralToken LiteralSupport::getLiteralNumber(char c, std::stringstream &ss) {
+LiteralToken LiteralSupport::getLiteralNumber(char c, stringstream &ss) {
   if (c == '0') {
     return getTokWithLeadingZero(ss);
   }
@@ -64,7 +64,7 @@ LiteralToken LiteralSupport::getLiteralNumber(char c, std::stringstream &ss) {
  * previously peeking ahead that we have at least one digit.
  */
 LiteralToken LiteralSupport::getDecimalFloatingPointStartingWithAPeriod(
-  std::stringstream &ss) {
+  stringstream &ss) {
 
   // Consume all digits
   getDecimalNumeral(ss);
@@ -89,7 +89,7 @@ LiteralToken LiteralSupport::getDecimalFloatingPointStartingWithAPeriod(
  * See getDecimalFloatingPointStartingWithAPeriod.
  */
 LiteralToken LiteralSupport::getDecimalNumeralOrDecimalFloatingPoint(
-  char previous_c, std::stringstream &ss) {
+  char previous_c, stringstream &ss) {
 
   if (!isdigit(previous_c)) {
     return LiteralToken::ERROR;
@@ -158,7 +158,7 @@ LiteralToken LiteralSupport::getDecimalNumeralOrDecimalFloatingPoint(
  *          BINARY_NUMERAL_WITH_INT_TYPE_SUFFIX |
  *          ERROR.
  */
-LiteralToken LiteralSupport::getBinaryNumeral(std::stringstream &ss) {
+LiteralToken LiteralSupport::getBinaryNumeral(stringstream &ss) {
   // Lookahead and confirm that we have valid binary digit.
   char c = src->getChar();
   if (!isBinaryDigit(c)) {
@@ -186,7 +186,7 @@ LiteralToken LiteralSupport::getBinaryNumeral(std::stringstream &ss) {
  * @returns DECIMAL_NUMERAL |
  *          DECIMAL_NUMERAL_WITH_INT_TYPE_SUFFIX
  */
-LiteralToken LiteralSupport::getDecimalNumeral(std::stringstream &ss) {
+LiteralToken LiteralSupport::getDecimalNumeral(stringstream &ss) {
   consumeDigitsPOrUnderscores(ss, isDecimalDigit);
 
   // Check int type suffix
@@ -206,7 +206,7 @@ LiteralToken LiteralSupport::getDecimalNumeral(std::stringstream &ss) {
  *          HEXADECIMAL_FLOATING_POINT_LITERAL |
  *          ERROR
  */
-LiteralToken LiteralSupport::getHexNumeral(std::stringstream &ss) {
+LiteralToken LiteralSupport::getHexNumeral(stringstream &ss) {
   // We save the start position of the numeral for error diagnosis.
   int start = src->getCursor() - 2;
 
@@ -289,7 +289,7 @@ LiteralToken LiteralSupport::getHexNumeral(std::stringstream &ss) {
 /**
  * Returns TOK_OCTAL_NUMERAL | TOK_OCTAL_NUMERAL_WITH_INT_TYPE_SUFFIX
  */
-LiteralToken LiteralSupport::getOctalNumeral(std::stringstream &ss) {
+LiteralToken LiteralSupport::getOctalNumeral(stringstream &ss) {
   consumeDigitsPOrUnderscores(ss, isOctalDigit);
 
   // Check int type suffix
@@ -312,10 +312,10 @@ LiteralToken LiteralSupport::getOctalNumeral(std::stringstream &ss) {
  * Returns the count of chars consumed.
  */
 int LiteralSupport::consumeDigitsPOrUnderscores(
-  std::stringstream &ss, bool (*fnDigitP) (char)) {
+  stringstream &ss, bool (*fnDigitP) (char)) {
 
   char c;
-  std::stringstream stack;
+  stringstream stack;
   src->mark();
 
   while ((c = src->getChar()) && ((fnDigitP)(c) || c == '_')) {
@@ -332,7 +332,7 @@ int LiteralSupport::consumeDigitsPOrUnderscores(
   }
 
   // Unget underscore chars if any.
-  std::string underscores = stack.str();
+  string underscores = stack.str();
   if (underscores.length()) {
     src->ungetChar(underscores.length());
     // The syntax at this point is invalid but we return the valid number
@@ -351,7 +351,7 @@ int LiteralSupport::consumeDigitsPOrUnderscores(
  * Sign: one of + -
  * Returns the count of chars consumed.
  */
-int LiteralSupport::consumeExponentPart(std::stringstream &ss) {
+int LiteralSupport::consumeExponentPart(stringstream &ss) {
   src->mark();
   ss << src->getChar(); // consume ExponentIndicator
 
@@ -371,7 +371,7 @@ int LiteralSupport::consumeExponentPart(std::stringstream &ss) {
   return 0;
 }
 
-LiteralToken LiteralSupport::getTokWithLeadingZero(std::stringstream &ss) {
+LiteralToken LiteralSupport::getTokWithLeadingZero(stringstream &ss) {
   // Decimal numeral
   char lookahead = src->getChar();
   if (lookahead == 'l' || lookahead == 'L') {

@@ -75,7 +75,7 @@ unsigned int SourceCodeStream::getMarkOffset() {
  * We assume that any whitespace has been previously consumed.
  */
 bool SourceCodeStream::lookaheadInterface(int point) {
-  std::string result = std::string(buffer, point, 9);
+  string result = string(buffer, point, 9);
   if (result == "interface") return true;
   return false;
 }
