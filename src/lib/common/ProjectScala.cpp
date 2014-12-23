@@ -1,4 +1,9 @@
+#include <memory>
+
 #include "c4/common/ProjectScala.h"
+#include "c4/scala/TypeDefs.h"
+
+using std::make_shared;
 
 namespace c4 {
 
@@ -16,10 +21,9 @@ void ProjectScala::compile(spCompilation comp) {
 
   // TODO: we should only instantiate one global object per project and keep
   // feeding it compilation units as they arrive from the client.
-  c4s::Global *global = new c4s::Global;
+  c4s::spGlobal global = make_shared<c4s::Global>();
   global->compile(units);
 
-  delete global;
   for (auto u: units) { delete u; }
   delete source;
 }

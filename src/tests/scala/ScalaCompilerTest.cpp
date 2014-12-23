@@ -1,3 +1,4 @@
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -10,6 +11,7 @@
 #include "c4/scala/CompilationUnits.h"
 
 using namespace c4s;
+using std::make_shared;
 using std::string;
 using std::vector;
 
@@ -34,10 +36,9 @@ TEST(ScalaCompiler, HelloWorld) {
   vector<CompilationUnit *> units;
   units.push_back(unit);
 
-  Global *global = new Global;
+  spGlobal global = make_shared<Global>();
   global->compile(units);
 
-  delete global;
   for (auto u : units) { delete u; }
   delete source;
 }
