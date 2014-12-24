@@ -15,6 +15,7 @@
 #include "c4/java/SymbolTable.h"
 #include "c4/java/Token.h"
 
+using std::make_shared;
 using std::shared_ptr;
 using std::string;
 using std::vector;

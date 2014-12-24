@@ -309,7 +309,7 @@ void Parser::restoreState(State &state) {
  * Annotation: @ QualifiedIdentifier [ ( [AnnotationElement] ) ]
  */
 spAnnotation Parser::parseAnnotation() {
-  spAnnotation annotation = spAnnotation(new Annotation);
+  spAnnotation annotation = spAnnotation(make_shared<Annotation>());
   annotation->posTokAt = lexer->getCursor() - 1;
   lexer->getNextToken(); // Consume '@'
 
@@ -321,7 +321,7 @@ spAnnotation Parser::parseAnnotation() {
   }
 
 
-  annotation->qualifiedId = spQualifiedIdentifier(new QualifiedIdentifier);
+  annotation->qualifiedId = make_shared<QualifiedIdentifier>();
   parseQualifiedIdentifier(annotation->qualifiedId);
 
   // If the current token is '(' we consume the token and expect
@@ -332,7 +332,7 @@ spAnnotation Parser::parseAnnotation() {
 
     // Empty annotation element
     if (lexer->getCurToken() != TOK_RPAREN) {
-      annotation->elem = spAnnotationElement(new AnnotationElement);
+      annotation->elem = make_shared<AnnotationElement>();
       parseAnnotationElement(annotation->elem);
       if (annotation->elem->err) {
         annotation->err = true;
@@ -367,7 +367,7 @@ void Parser::parseAnnotationElement(spAnnotationElement &elem) {
 
   // ElementValue
   elem->opt = AnnotationElement::OPT_ELEMENT_VALUE;
-  elem->value = spElementValue(new ElementValue);
+  elem->value = make_shared<ElementValue>();
   parseElementValue(elem->value);
 }
 
@@ -383,8 +383,7 @@ void Parser::parseAnnotationMethodOrConstantRest(
   if (lexer->getCurToken() == TOK_LPAREN) {
     methodOrConstRest->opt
       = AnnotationMethodOrConstantRest::OPT_ANNOTATION_METHOD_REST;
-    methodOrConstRest->methRest = spAnnotationMethodRest(
-      new AnnotationMethodRest);
+    methodOrConstRest->methRest = make_shared<AnnotationMethodRest>();
     parseAnnotationMethodRest(methodOrConstRest->methRest);
     if (methodOrConstRest->methRest->err) {
       methodOrConstRest->addErr(-1);
@@ -399,8 +398,7 @@ void Parser::parseAnnotationMethodOrConstantRest(
 
     methodOrConstRest->opt
       = AnnotationMethodOrConstantRest::OPT_CONSTANT_DECLARATORS_REST;
-    methodOrConstRest->constRest = spConstantDeclaratorsRest(
-      new ConstantDeclaratorsRest);
+    methodOrConstRest->constRest = make_shared<ConstantDeclaratorsRest>();
     parseConstantDeclaratorsRest(methodOrConstRest->constRest);
     if (methodOrConstRest->constRest->err) {
       methodOrConstRest->addErr(-1);
@@ -455,12 +453,12 @@ void Parser::parseAnnotationMethodRest(spAnnotationMethodRest &methRest) {
     return;
   }
 
-  methRest->tokDefault = spTokenExp(new TokenExp(
+  methRest->tokDefault = make_shared<TokenExp>(
     lexer->getCursor() - tokenUtil.getTokenLength(
-    lexer->getCurToken()), lexer->getCurToken()));
+    lexer->getCurToken()), lexer->getCurToken());
   lexer->getNextToken(); // consume 'default'
 
-  methRest->elemVal = spElementValue(new ElementValue);
+  methRest->elemVal = make_shared<ElementValue>();
   parseElementValue(methRest->elemVal);
   if (methRest->elemVal->err) {
     methRest->addErr(-1);
@@ -482,8 +480,7 @@ void Parser::parseAnnotations(vector<spAnnotation> &annotations) {
  *   [AnnotationTypeElementDeclarations]
  */
 void Parser::parseAnnotationTypeBody(spAnnotationTypeBody &annTypeBody) {
-  annTypeBody->elemDecls = spAnnotationTypeElementDeclarations(
-    new AnnotationTypeElementDeclarations);
+  annTypeBody->elemDecls = make_shared<AnnotationTypeElementDeclarations>();
 
   State state;
   unsigned pos = 0;
@@ -491,7 +488,7 @@ void Parser::parseAnnotationTypeBody(spAnnotationTypeBody &annTypeBody) {
     pos = lexer->getCursor();
     saveState(state);
     spAnnotationTypeElementDeclaration elemDecl =
-      spAnnotationTypeElementDeclaration(new AnnotationTypeElementDeclaration);
+      make_shared<AnnotationTypeElementDeclaration>();
     parseAnnotationTypeElementDeclaration(elemDecl);
     if (elemDecl->err) {
       restoreState(state);
@@ -520,9 +517,9 @@ void Parser::parseAnnotationTypeDeclaration(
     return;
   }
 
-  annotationDecl->tokInterface = spTokenExp(new TokenExp(
+  annotationDecl->tokInterface = make_shared<TokenExp>(
     lexer->getCursor() - tokenUtil.getTokenLength(
-    lexer->getCurToken()), lexer->getCurToken()));
+    lexer->getCurToken()), lexer->getCurToken());
   lexer->getNextToken(); // consume 'interface'
 
   // Identifier
@@ -533,7 +530,7 @@ void Parser::parseAnnotationTypeDeclaration(
   }
 
   // AnnotationTypeBody
-  annotationDecl->annTypeBody = spAnnotationTypeBody(new AnnotationTypeBody);
+  annotationDecl->annTypeBody = make_shared<AnnotationTypeBody>();
   parseAnnotationTypeBody(annotationDecl->annTypeBody);
   if (annotationDecl->annTypeBody->err) {
     annotationDecl->addErr(-1);
@@ -547,11 +544,10 @@ void Parser::parseAnnotationTypeDeclaration(
 void Parser::parseAnnotationTypeElementDeclaration(
   spAnnotationTypeElementDeclaration &elemDecl) {
 
-  elemDecl->modifier = spModifier(new Modifier);
+  elemDecl->modifier = make_shared<Modifier>();
   parseModifier(elemDecl->modifier);
 
-  elemDecl->elemRest = spAnnotationTypeElementRest(
-    new AnnotationTypeElementRest);
+  elemDecl->elemRest = make_shared<AnnotationTypeElementRest>();
   parseAnnotationTypeElementRest(elemDecl->elemRest);
   if (elemDecl->elemRest->err) {
     elemDecl->addErr(-1);
@@ -576,7 +572,7 @@ void Parser::parseAnnotationTypeElementRest(
     elemRest->opt = AnnotationTypeElementRest::OPT_METHOD_OR_CONSTANT;
 
     // Type
-    elemRest->type = spType(new Type);
+    elemRest->type = make_shared<Type>();
     parseType(elemRest->type);
     if (elemRest->type->err) {
       elemRest->addErr(-1);
@@ -584,13 +580,12 @@ void Parser::parseAnnotationTypeElementRest(
     }
 
     // Identifier
-    elemRest->id = spIdentifier(new Identifier(
-      lexer->getCurTokenIni(), lexer->getCurTokenStr()));
+    elemRest->id = make_shared<Identifier>(
+      lexer->getCurTokenIni(), lexer->getCurTokenStr());
     lexer->getNextToken(); // consume 'Identifier'
 
     // AnnotationMethodOrConstantRest
-    elemRest->methodOrConstRest = spAnnotationMethodOrConstantRest(
-      new AnnotationMethodOrConstantRest);
+    elemRest->methodOrConstRest = make_shared<AnnotationMethodOrConstantRest>();
     parseAnnotationMethodOrConstantRest(elemRest->methodOrConstRest);
     if (elemRest->methodOrConstRest->err) {
       elemRest->addErr(-1);
@@ -612,7 +607,7 @@ void Parser::parseAnnotationTypeElementRest(
   // (2) ClassDeclaration
   if (lexer->getCurToken() == TOK_KEY_CLASS) {
     elemRest->opt = AnnotationTypeElementRest::OPT_CLASS_DECLARATION;
-    elemRest->classDecl = spClassDeclaration(new ClassDeclaration);
+    elemRest->classDecl = make_shared<ClassDeclaration>();
     parseClassDeclaration(elemRest->classDecl);
     if (elemRest->classDecl->err) {
       elemRest->addErr(-1);
@@ -623,7 +618,7 @@ void Parser::parseAnnotationTypeElementRest(
   // (3) InterfaceDeclaration
   if (lexer->getCurToken() == TOK_KEY_INTERFACE) {
     elemRest->opt = AnnotationTypeElementRest::OPT_INTERFACE_DECLARATION;
-    elemRest->interfaceDecl = spInterfaceDeclaration(new InterfaceDeclaration);
+    elemRest->interfaceDecl = make_shared<InterfaceDeclaration>();
     parseInterfaceDeclaration(elemRest->interfaceDecl);
     if (elemRest->interfaceDecl->err) {
       elemRest->addErr(-1);
@@ -634,7 +629,7 @@ void Parser::parseAnnotationTypeElementRest(
   // (4) EnumDeclaration
   if (lexer->getCurToken() == TOK_KEY_ENUM) {
     elemRest->opt = AnnotationTypeElementRest::OPT_ENUM_DECLARATION;
-    elemRest->enumDecl = spEnumDeclaration(new EnumDeclaration);
+    elemRest->enumDecl = make_shared<EnumDeclaration>();
     parseEnumDeclaration(elemRest->enumDecl);
     if (elemRest->enumDecl->err) {
       elemRest->addErr(-1);
@@ -645,8 +640,7 @@ void Parser::parseAnnotationTypeElementRest(
   // (5) AnnotationTypeDeclaration
   if (lexer->getCurToken() == TOK_ANNOTATION_TYPE_DECLARATION) {
     elemRest->opt = AnnotationTypeElementRest::OPT_ANNOTATION_DECLARATION;
-    elemRest->annotationDecl = spAnnotationTypeDeclaration(
-      new AnnotationTypeDeclaration);
+    elemRest->annotationDecl = make_shared<AnnotationTypeDeclaration>();
     if (elemRest->annotationDecl->err) {
       elemRest->addErr(-1);
     }
@@ -676,7 +670,7 @@ void Parser::parseArguments(spArguments &args) {
   }
 
   // Expression
-  args->expr = spExpression(new Expression);
+  args->expr = make_shared<Expression>();
   parseExpression(args->expr);
   if (args->expr->isEmpty()) {
     return;
@@ -687,7 +681,7 @@ void Parser::parseArguments(spArguments &args) {
     unsigned int posComma = lexer->getCursor() - 1;
     lexer->getNextToken(); // consume ','
 
-    spExpression expr = spExpression(new Expression);
+    spExpression expr = make_shared<Expression>();
     parseExpression(expr);
     if (expr->isEmpty()) {
       break;
@@ -729,7 +723,7 @@ void Parser::parseArrayCreatorRest(spArrayCreatorRest &arrayCreatorRest) {
   // Option 1
   if (lookahead == TOK_RBRACKET) {
     arrayCreatorRest->opt = ArrayCreatorRest::OPT_ARRAY_INITIALIZER;
-    arrayCreatorRest->opt1 = spArrayCreatorRestOpt1(new ArrayCreatorRestOpt1());
+    arrayCreatorRest->opt1 = make_shared<ArrayCreatorRestOpt1>();
     parseArrayCreatorRestOpt1(arrayCreatorRest->opt1);
     if (arrayCreatorRest->opt1->err) {
       arrayCreatorRest->addErr(-1);
@@ -739,7 +733,7 @@ void Parser::parseArrayCreatorRest(spArrayCreatorRest &arrayCreatorRest) {
 
   // Option 2
   arrayCreatorRest->opt = ArrayCreatorRest::OPT_EXPRESSION;
-  arrayCreatorRest->opt2 = spArrayCreatorRestOpt2(new ArrayCreatorRestOpt2);
+  arrayCreatorRest->opt2 = make_shared<ArrayCreatorRestOpt2>();
   parseArrayCreatorRestOpt2(arrayCreatorRest->opt2);
   if (arrayCreatorRest->opt2->err) {
     arrayCreatorRest->addErr(-1);
@@ -766,7 +760,7 @@ void Parser::parseArrayCreatorRestOpt1(spArrayCreatorRestOpt1 &opt1) {
   }
 
   // ArrayInitializer
-  opt1->arrayInitializer = spArrayInitializer(new ArrayInitializer());
+  opt1->arrayInitializer = make_shared<ArrayInitializer>();
   parseArrayInitializer(opt1->arrayInitializer);
 
   if (opt1->arrayInitializer->err) { opt1->addErr(-1); }
@@ -778,7 +772,7 @@ void Parser::parseArrayCreatorRestOpt1(spArrayCreatorRestOpt1 &opt1) {
  */
 void Parser::parseArrayCreatorRestOpt2(spArrayCreatorRestOpt2 &opt2) {
   // '[' Expression ']'
-  opt2->exprInBrackets = spExpressionInBrackets(new ExpressionInBrackets);
+  opt2->exprInBrackets = make_shared<ExpressionInBrackets>();
 
   if (lexer->getCurToken() != TOK_LBRACKET) {
     opt2->addErr(diag->addErr(c4::ERR_EXP_LBRACKET, lexer->getCursor() - 1));
@@ -788,7 +782,7 @@ void Parser::parseArrayCreatorRestOpt2(spArrayCreatorRestOpt2 &opt2) {
   opt2->exprInBrackets->posLBracket = lexer->getCursor() - 1;
   lexer->getNextToken(); // consume '['
 
-  opt2->exprInBrackets->expr = spExpression(new Expression);
+  opt2->exprInBrackets->expr = make_shared<Expression>();
   parseExpression(opt2->exprInBrackets->expr);
   if (opt2->exprInBrackets->expr->isEmpty()) {
     opt2->addErr(-1);
@@ -808,8 +802,7 @@ void Parser::parseArrayCreatorRestOpt2(spArrayCreatorRestOpt2 &opt2) {
   while (lexer->getCurToken() == TOK_LBRACKET) {
     saveState(openBracketState);
 
-    spExpressionInBrackets exprInBr
-      = spExpressionInBrackets(new ExpressionInBrackets);
+    spExpressionInBrackets exprInBr = make_shared<ExpressionInBrackets>();
     exprInBr->posLBracket = lexer->getCurTokenIni();
     lexer->getNextToken(); // consume '['
 
@@ -820,7 +813,7 @@ void Parser::parseArrayCreatorRestOpt2(spArrayCreatorRestOpt2 &opt2) {
     }
 
     // Our only option is an expression in brackets.
-    exprInBr->expr = spExpression(new Expression);
+    exprInBr->expr = make_shared<Expression>();
     parseExpression(exprInBr->expr);
     if (exprInBr->expr->isEmpty()) {
       opt2->addErr(-1);
@@ -908,7 +901,7 @@ void Parser::parseArrayInitializer(spArrayInitializer &arrayInit) {
   }
 
   // VariableInitializer { , VariableInitializer } [,] '}'
-  arrayInit->varInit = spVariableInitializer(new VariableInitializer);
+  arrayInit->varInit = make_shared<VariableInitializer>();
   parseVariableInitializer(arrayInit->varInit);
   if (arrayInit->varInit->err) { arrayInit->addErr(-1); }
 
@@ -925,8 +918,7 @@ void Parser::parseArrayInitializer(spArrayInitializer &arrayInit) {
     }
 
     // pair: comma and variable initializer
-    spVariableInitializer varInit
-      = spVariableInitializer(new VariableInitializer);
+    spVariableInitializer varInit = make_shared<VariableInitializer>();
     parseVariableInitializer(varInit);
     if (varInit->err) {
       arrayInit->addErr(-1);
@@ -960,8 +952,7 @@ void Parser::parseElementValue(spElementValue &value) {
   // ElementValueArrayInitializer
   if (lexer->getCurToken() == TOK_LCURLY_BRACKET) {
     value->opt = ElementValue::OPT_ELEMENT_VALUE_ARRAY_INITIALIZER;
-    value->elemValArrayInit = spElementValueArrayInitializer(
-      new ElementValueArrayInitializer);
+    value->elemValArrayInit = make_shared<ElementValueArrayInitializer>();
     parseElementValueArrayInitializer(value->elemValArrayInit);
     if (value->elemValArrayInit->err) {
       value->addErr(-1);
@@ -970,7 +961,7 @@ void Parser::parseElementValue(spElementValue &value) {
   }
 
   // Expression1
-  spExpression1 expr1 = spExpression1(new Expression1);
+  spExpression1 expr1 = make_shared<Expression1>();
   parseExpression1(expr1);
   if (expr1->isEmpty() == false) {
     value->opt = ElementValue::OPT_EXPRESSION1;
@@ -986,7 +977,7 @@ void Parser::parseElementValue(spElementValue &value) {
  *   ElementValue { , ElementValue }
  */
 void Parser::parseElementValues(spElementValues &values) {
-  values->elemVal = spElementValue(new ElementValue);
+  values->elemVal = make_shared<ElementValue>();
   parseElementValue(values->elemVal);
   if (values->elemVal->err) {
     values->addErr(-1);
@@ -998,7 +989,7 @@ void Parser::parseElementValues(spElementValues &values) {
     saveState(state);
     unsigned pos = lexer->getCursor() - 1;
     lexer->getNextToken(); // consume ','
-    spElementValue val = spElementValue(new ElementValue);
+    spElementValue val = make_shared<ElementValue>();
     parseElementValue(val);
     if (val->err) {
       restoreState(state);
@@ -1029,7 +1020,7 @@ void Parser::parseElementValueArrayInitializer(
   // [ ElementValues ]
   if (lexer->getCurToken() != TOK_COMMA
     && lexer->getCurToken() != TOK_RCURLY_BRACKET) {
-    elemValArrayInit->elemVals = spElementValues(new ElementValues);
+    elemValArrayInit->elemVals = make_shared<ElementValues>();
     parseElementValues(elemValArrayInit->elemVals);
     if (elemValArrayInit->elemVals->err) {
       elemValArrayInit->addErr(-1);
@@ -1072,7 +1063,7 @@ void Parser::parseEnumBody(spEnumBody &enumBody) {
   if (lexer->getCurToken() == TOK_ANNOTATION
     || lexer->getCurToken() == TOK_IDENTIFIER) {
 
-    enumBody->enumConsts = spEnumConstants(new EnumConstants);
+    enumBody->enumConsts = make_shared<EnumConstants>();
     parseEnumConstants(enumBody->enumConsts);
     if (enumBody->enumConsts->err) {
       enumBody->addErr(-1);
@@ -1087,7 +1078,7 @@ void Parser::parseEnumBody(spEnumBody &enumBody) {
 
   // EnumBodyDeclarations
   if (lexer->getCurToken() == TOK_SEMICOLON) {
-    enumBody->bodyDecls = spEnumBodyDeclarations(new EnumBodyDeclarations);
+    enumBody->bodyDecls = make_shared<EnumBodyDeclarations>();
     parseEnumBodyDeclarations(enumBody->bodyDecls);
     if (enumBody->bodyDecls->err) {
       enumBody->addErr(-1);
@@ -1140,13 +1131,13 @@ void Parser::parseEnumConstant(spEnumConstant &enumConst) {
     return;
   }
 
-  enumConst->id = spIdentifier(new Identifier(
-    lexer->getCurTokenIni(), lexer->getCurTokenStr()));
+  enumConst->id = make_shared<Identifier>(
+    lexer->getCurTokenIni(), lexer->getCurTokenStr());
   lexer->getNextToken(); // consume 'Identifier'
 
   // [Arguments]
   if (lexer->getCurToken() == TOK_LPAREN) {
-    enumConst->args = spArguments(new Arguments);
+    enumConst->args = make_shared<Arguments>();
     parseArguments(enumConst->args);
     if (enumConst->args->err) {
       enumConst->addErr(-1);
@@ -1156,7 +1147,7 @@ void Parser::parseEnumConstant(spEnumConstant &enumConst) {
 
   // [ClassBody]
   if (lexer->getCurToken() == TOK_LCURLY_BRACKET) {
-    enumConst->classBody = spClassBody(new ClassBody);
+    enumConst->classBody = make_shared<ClassBody>();
     parseClassBody(enumConst->classBody);
     if (enumConst->classBody->err) {
       enumConst->addErr(-1);
@@ -1171,7 +1162,7 @@ void Parser::parseEnumConstant(spEnumConstant &enumConst) {
  *   EnumConstants , EnumConstant
  */
 void Parser::parseEnumConstants(spEnumConstants &enumConsts) {
-  enumConsts->enumConst = spEnumConstant(new EnumConstant);
+  enumConsts->enumConst = make_shared<EnumConstant>();
   parseEnumConstant(enumConsts->enumConst);
   if (enumConsts->enumConst->err) {
     enumConsts->addErr(-1);
@@ -1184,7 +1175,7 @@ void Parser::parseEnumConstants(spEnumConstants &enumConsts) {
     unsigned pos = lexer->getCursor() - 1;
     lexer->getNextToken(); // consume ','
 
-    spEnumConstant enumConst = spEnumConstant(new EnumConstant);
+    spEnumConstant enumConst = make_shared<EnumConstant>();
     parseEnumConstant(enumConst);
     if (enumConst->err) {
       restoreState(state);
@@ -1206,9 +1197,9 @@ void Parser::parseEnumDeclaration(spEnumDeclaration &enumDecl) {
     return;
   }
 
-  enumDecl->tokEnum = spTokenExp(new TokenExp(
+  enumDecl->tokEnum = make_shared<TokenExp>(
     lexer->getCursor() - tokenUtil.getTokenLength(
-    lexer->getCurToken()), lexer->getCurToken()));
+    lexer->getCurToken()), lexer->getCurToken());
   lexer->getNextToken(); // consume 'enum'
 
   // Identifier
@@ -1218,8 +1209,8 @@ void Parser::parseEnumDeclaration(spEnumDeclaration &enumDecl) {
     return;
   }
 
-  enumDecl->id = spIdentifier(new Identifier(
-    lexer->getCurTokenIni(), lexer->getCurTokenStr()));
+  enumDecl->id = make_shared<Identifier>(
+    lexer->getCurTokenIni(), lexer->getCurTokenStr());
 
   st.addSym(ST_IDENTIFIER, lexer->getCurTokenIni(), lexer->getCursor(),
     src->getLine(), lexer->getCurTokenStr());
@@ -1228,12 +1219,12 @@ void Parser::parseEnumDeclaration(spEnumDeclaration &enumDecl) {
 
   // [implements TypeList]
   if (lexer->getCurToken() == TOK_KEY_IMPLEMENTS) {
-    enumDecl->tokImpl = spTokenExp(new TokenExp(
+    enumDecl->tokImpl = make_shared<TokenExp>(
       lexer->getCursor() - tokenUtil.getTokenLength(
-        lexer->getCurToken()), lexer->getCurToken()));
+        lexer->getCurToken()), lexer->getCurToken());
     lexer->getNextToken(); // consume 'implements'
 
-    enumDecl->typeList = spTypeList(new TypeList);
+    enumDecl->typeList = make_shared<TypeList>();
     parseTypeList(enumDecl->typeList);
     if (enumDecl->typeList->err) {
       enumDecl->addErr(-1);
@@ -1241,7 +1232,7 @@ void Parser::parseEnumDeclaration(spEnumDeclaration &enumDecl) {
     }
   }
 
-  enumDecl->enumBody = spEnumBody(new EnumBody);
+  enumDecl->enumBody = make_shared<EnumBody>();
   parseEnumBody(enumDecl->enumBody);
   if (enumDecl->enumBody->err) {
     enumDecl->addErr(-1);
@@ -1295,7 +1286,7 @@ void Parser::parseBlockStatement(spBlockStatement &blockStmt) {
   State state;
   saveState(state);
   spLocalVariableDeclarationStatement localVar =
-    spLocalVariableDeclarationStatement(new LocalVariableDeclarationStatement);
+    make_shared<LocalVariableDeclarationStatement>();
   parseLocalVariableDeclarationStatement(localVar);
   if (localVar->err) {
     restoreState(state);
@@ -1308,8 +1299,8 @@ void Parser::parseBlockStatement(spBlockStatement &blockStmt) {
   // ClassOrInterfaceDeclaration
   saveState(state);
   if (isClassOrInterfaceDeclarationCandidate(lexer->getCurToken())) {
-    spClassOrInterfaceDeclaration decl = spClassOrInterfaceDeclaration(
-      new ClassOrInterfaceDeclaration);
+    spClassOrInterfaceDeclaration decl =
+      make_shared<ClassOrInterfaceDeclaration>();
     parseClassOrInterfaceDeclaration(decl);
     if (decl->err == false) {
       blockStmt->opt = BlockStatement::OPT_CLASS_OR_INTERFACE_DECL;
@@ -1324,8 +1315,8 @@ void Parser::parseBlockStatement(spBlockStatement &blockStmt) {
   blockStmt->opt = BlockStatement::OPT_ID_STMT;
   if (lexer->getCurToken() == TOK_IDENTIFIER) {
     saveState(state);
-    spIdentifier id = spIdentifier(new Identifier(
-      state.cursor - state.tokenStr.length(), state.tokenStr));
+    spIdentifier id = make_shared<Identifier>(
+      state.cursor - state.tokenStr.length(), state.tokenStr);
     lexer->getNextToken(); // consume Identifier
 
     if (lexer->getCurToken() == TOK_OP_COLON) {
@@ -1337,7 +1328,7 @@ void Parser::parseBlockStatement(spBlockStatement &blockStmt) {
     }
   }
 
-  spStatement stmt = spStatement(new Statement);
+  spStatement stmt = make_shared<Statement>();
   parseStatement(stmt);
   if (stmt->err) {
     blockStmt->addErr(-1);
@@ -1359,7 +1350,7 @@ void Parser::parseBlockStatements(vector<spBlockStatement> &blockStmts) {
     && pos != lexer->getCursor()) {
 
     pos = lexer->getCursor();
-    spBlockStatement blockStmt = spBlockStatement(new BlockStatement);
+    spBlockStatement blockStmt = make_shared<BlockStatement>();
     parseBlockStatement(blockStmt);
     if (blockStmt->err) {
       return;
@@ -1383,7 +1374,7 @@ void Parser::parseBooleanLiteral(spBooleanLiteral &boolLit) {
  *   ReferenceType { & ReferenceType }
  */
 void Parser::parseBound(spBound &bound) {
-  bound->refType = spReferenceType(new ReferenceType);
+  bound->refType = make_shared<ReferenceType>();
   parseReferenceType(bound->refType);
   if (bound->refType->err) {
     bound->addErr(-1);
@@ -1394,7 +1385,7 @@ void Parser::parseBound(spBound &bound) {
     unsigned pos = lexer->getCursor() - 1;
     lexer->getNextToken(); // consume '&'
 
-    spReferenceType refType = spReferenceType(new ReferenceType);
+    spReferenceType refType = make_shared<ReferenceType>();
     parseReferenceType(refType);
     if (refType->err) {
       bound->addErr(-1);
@@ -1417,9 +1408,9 @@ void Parser::parseCatchClause(spCatchClause &catchClause) {
     return;
   }
 
-  catchClause->tokCatch = spTokenExp(new TokenExp(
+  catchClause->tokCatch = make_shared<TokenExp>(
     lexer->getCursor() - tokenUtil.getTokenLength(
-      lexer->getCurToken()), lexer->getCurToken()));
+      lexer->getCurToken()), lexer->getCurToken());
   lexer->getNextToken(); // consume 'catch'
 
   // '('
@@ -1434,7 +1425,7 @@ void Parser::parseCatchClause(spCatchClause &catchClause) {
 
   // {VariableModifier}
   if (isVariableModifier(lexer->getCurToken())) {
-    catchClause->varMod = spVariableModifier(new VariableModifier);
+    catchClause->varMod = make_shared<VariableModifier>();
     parseVariableModifier(catchClause->varMod);
     if (catchClause->varMod->err) {
       catchClause->addErr(-1);
@@ -1442,7 +1433,7 @@ void Parser::parseCatchClause(spCatchClause &catchClause) {
   }
 
   // CatchType
-  catchClause->catchType = spCatchType(new CatchType);
+  catchClause->catchType = make_shared<CatchType>();
   parseCatchType(catchClause->catchType);
   if (catchClause->catchType->err) {
     catchClause->addErr(-1);
@@ -1450,8 +1441,8 @@ void Parser::parseCatchClause(spCatchClause &catchClause) {
   }
 
   // Identifier
-  catchClause->id = spIdentifier(new Identifier(
-    lexer->getCurTokenIni(), lexer->getCurTokenStr()));
+  catchClause->id = make_shared<Identifier>(
+    lexer->getCurTokenIni(), lexer->getCurTokenStr());
   lexer->getNextToken(); // consume Identifier
 
   // ')'
@@ -1465,7 +1456,7 @@ void Parser::parseCatchClause(spCatchClause &catchClause) {
   lexer->getNextToken(); // consume ')'
 
   // Block
-  catchClause->block = spBlock(new Block);
+  catchClause->block = make_shared<Block>();
   parseBlock(catchClause->block);
   if (catchClause->block->err) {
     catchClause->addErr(-1);
@@ -1477,7 +1468,7 @@ void Parser::parseCatchClause(spCatchClause &catchClause) {
  * Catches: CatchClause { CatchClause }
  */
 void Parser::parseCatches(spCatches &catches) {
-  catches->catchClause = spCatchClause(new CatchClause);
+  catches->catchClause = make_shared<CatchClause>();
   parseCatchClause(catches->catchClause);
   if (catches->catchClause->err) {
     catches->addErr(-1);
@@ -1485,7 +1476,7 @@ void Parser::parseCatches(spCatches &catches) {
   }
 
   while (lexer->getCurToken() == TOK_KEY_CATCH) {
-    spCatchClause catchClause = spCatchClause(new CatchClause);
+    spCatchClause catchClause = make_shared<CatchClause>();
     parseCatchClause(catchClause);
     if (catchClause->err) {
       return;
@@ -1506,7 +1497,7 @@ void Parser::parseCatchType(spCatchType &catchType) {
     return;
   }
 
-  catchType->qualifiedId = spQualifiedIdentifier(new QualifiedIdentifier);
+  catchType->qualifiedId = make_shared<QualifiedIdentifier>();
   parseQualifiedIdentifier(catchType->qualifiedId);
 
   // { '|' QualifiedIdentifier }
@@ -1520,8 +1511,7 @@ void Parser::parseCatchType(spCatchType &catchType) {
       return; // let upper levels deal with the error
     }
 
-    spQualifiedIdentifier qualifiedId
-      = spQualifiedIdentifier(new QualifiedIdentifier);
+    spQualifiedIdentifier qualifiedId = make_shared<QualifiedIdentifier>();
     parseQualifiedIdentifier(qualifiedId);
 
     catchType->pairs.push_back(std::make_pair(pos, qualifiedId));
@@ -1545,7 +1535,7 @@ void Parser::parseCreator(spCreator &creator) {
   // Option 1
   if (lexer->getCurToken() == TOK_OP_LT) {
     creator->opt = Creator::OPT_NON_WILDCARD_TYPE_ARGUMENTS;
-    creator->opt1 = spCreatorOpt1(new CreatorOpt1);
+    creator->opt1 = make_shared<CreatorOpt1>();
     parseCreatorOpt1(creator->opt1);
     return;
   }
@@ -1553,7 +1543,7 @@ void Parser::parseCreator(spCreator &creator) {
   // Option 3
   if (isBasicType(lexer->getCurToken())) {
     creator->opt = Creator::OPT_BASIC_TYPE;
-    creator->opt3 = spCreatorOpt3(new CreatorOpt3);
+    creator->opt3 = make_shared<CreatorOpt3>();
     parseCreatorOpt3(creator->opt3);
     if (creator->opt3->err) {
       creator->addErr(-1);
@@ -1563,7 +1553,7 @@ void Parser::parseCreator(spCreator &creator) {
 
   // Option 2
   creator->opt = Creator::OPT_CREATED_NAME;
-  creator->opt2 = spCreatorOpt2(new CreatorOpt2);
+  creator->opt2 = make_shared<CreatorOpt2>();
   parseCreatorOpt2(creator->opt2);
 }
 
@@ -1572,8 +1562,7 @@ void Parser::parseCreator(spCreator &creator) {
  */
 void Parser::parseCreatorOpt1(spCreatorOpt1 &opt1) {
   // NonWildcardTypeArguments
-  opt1->nonWildcardTypeArguments = spNonWildcardTypeArguments(
-    new NonWildcardTypeArguments());
+  opt1->nonWildcardTypeArguments = make_shared<NonWildcardTypeArguments>();
   parseNonWildcardTypeArguments(opt1->nonWildcardTypeArguments);
 
   if (opt1->nonWildcardTypeArguments->err) {
@@ -1582,7 +1571,7 @@ void Parser::parseCreatorOpt1(spCreatorOpt1 &opt1) {
   }
 
   // CreatedName
-  opt1->createdName = spCreatedName(new CreatedName());
+  opt1->createdName = make_shared<CreatedName>();
   parseCreatedName(opt1->createdName);
 
   if (opt1->createdName->err) {
@@ -1592,8 +1581,7 @@ void Parser::parseCreatorOpt1(spCreatorOpt1 &opt1) {
 
   // ClassCreatorRest
   // GCC(4.6.3). Assign it in two steps.
-  spClassCreatorRest classCreatorRest = spClassCreatorRest(
-    new ClassCreatorRest());
+  spClassCreatorRest classCreatorRest = make_shared<ClassCreatorRest>();
   opt1->classCreatorRest = classCreatorRest;
   parseClassCreatorRest(opt1->classCreatorRest);
   if (opt1->classCreatorRest->err) {
@@ -1606,7 +1594,7 @@ void Parser::parseCreatorOpt1(spCreatorOpt1 &opt1) {
  */
 void Parser::parseCreatorOpt2(spCreatorOpt2 &opt2) {
   // CreatedName
-  opt2->createdName = spCreatedName(new CreatedName);
+  opt2->createdName = make_shared<CreatedName>();
   parseCreatedName(opt2->createdName);
 
   if (opt2->createdName->err) {
@@ -1617,14 +1605,14 @@ void Parser::parseCreatorOpt2(spCreatorOpt2 &opt2) {
   // ( ClassCreatorRest | ArrayCreatorRest )
   // ClassCreatorRest
   if (lexer->getCurToken() == TOK_LPAREN) {
-    opt2->classCreatorRest = spClassCreatorRest(new ClassCreatorRest);
+    opt2->classCreatorRest = make_shared<ClassCreatorRest>();
     parseClassCreatorRest(opt2->classCreatorRest);
     return;
   }
 
   // ArrayCreatorRest
   if (lexer->getCurToken() == TOK_LBRACKET) {
-    opt2->arrayCreatorRest = spArrayCreatorRest(new ArrayCreatorRest);
+    opt2->arrayCreatorRest = make_shared<ArrayCreatorRest>();
     parseArrayCreatorRest(opt2->arrayCreatorRest);
     return;
   }
@@ -1638,9 +1626,9 @@ void Parser::parseCreatorOpt2(spCreatorOpt2 &opt2) {
  * CreatorOpt3: BasicType ArrayCreatorRest
  */
 void Parser::parseCreatorOpt3(spCreatorOpt3 &opt3) {
-  spTokenExp token = spTokenExp(new TokenExp(lexer->getCursor()
-    - tokenUtil.getTokenLength(lexer->getCurToken()), lexer->getCurToken()));
-  opt3->basicType = spBasicType(new BasicType(token));
+  spTokenExp token = make_shared<TokenExp>(lexer->getCursor()
+    - tokenUtil.getTokenLength(lexer->getCurToken()), lexer->getCurToken());
+  opt3->basicType = make_shared<BasicType>(token);
   lexer->getNextToken(); // consume BasicType
 
   if (lexer->getCurToken() != TOK_LBRACKET) {
@@ -1648,7 +1636,7 @@ void Parser::parseCreatorOpt3(spCreatorOpt3 &opt3) {
     return;
   }
 
-  opt3->arrayCreatorRest = spArrayCreatorRest(new ArrayCreatorRest);
+  opt3->arrayCreatorRest = make_shared<ArrayCreatorRest>();
   parseArrayCreatorRest(opt3->arrayCreatorRest);
   if (opt3->arrayCreatorRest->err) {
     opt3->addErr(-1);
@@ -1659,7 +1647,7 @@ void Parser::parseCreatorOpt3(spCreatorOpt3 &opt3) {
  * Expression: Expression1 [ AssignmentOperator Expression ]
  */
 void Parser::parseExpression(spExpression &expr) {
-  spExpression1 expr1 = spExpression1(new Expression1);
+  spExpression1 expr1 = make_shared<Expression1>();
   parseExpression1(expr1);
   if (expr1->isEmpty()) {
     return;
@@ -1673,13 +1661,13 @@ void Parser::parseExpression(spExpression &expr) {
     saveState(state);
 
     spAssignmentOperator assignOp
-      = spAssignmentOperator(new AssignmentOperator);
-    assignOp->tok = spTokenExp(new TokenExp(
+      = make_shared<AssignmentOperator>();
+    assignOp->tok = make_shared<TokenExp>(
       lexer->getCursor() - tokenUtil.getTokenLength(
-        lexer->getCurToken()), lexer->getCurToken()));
+        lexer->getCurToken()), lexer->getCurToken());
     lexer->getNextToken(); // consume assignment token
 
-    spExpression assignExpr = spExpression(new Expression);
+    spExpression assignExpr = make_shared<Expression>();
     parseExpression(assignExpr);
     if (assignExpr->isEmpty()) {
       restoreState(state);
@@ -1695,7 +1683,7 @@ void Parser::parseExpression(spExpression &expr) {
  * Expression1: Expression2 [Expression1Rest]
  */
 void Parser::parseExpression1(spExpression1 &expr1) {
-  spExpression2 expr2 = spExpression2(new Expression2);
+  spExpression2 expr2 = make_shared<Expression2>();
   parseExpression2(expr2);
   if (expr2->isEmpty()) {
     return;
@@ -1707,7 +1695,7 @@ void Parser::parseExpression1(spExpression1 &expr1) {
   if (lexer->getCurToken() == TOK_OP_QUESTION_MARK) {
     State state;
     saveState(state);
-    spExpression1Rest expr1Rest = spExpression1Rest(new Expression1Rest);
+    spExpression1Rest expr1Rest = make_shared<Expression1Rest>();
     parseExpression1Rest(expr1Rest);
     if (expr1Rest->err) {
       restoreState(state);
@@ -1728,7 +1716,7 @@ void Parser::parseExpression1Rest(spExpression1Rest &expr1Rest) {
   lexer->getNextToken(); // consume '?'
 
   // Expression
-  expr1Rest->expr = spExpression(new Expression);
+  expr1Rest->expr = make_shared<Expression>();
   parseExpression(expr1Rest->expr);
   if (expr1Rest->expr->isEmpty()) {
     expr1Rest->addErr(-1);
@@ -1745,7 +1733,7 @@ void Parser::parseExpression1Rest(spExpression1Rest &expr1Rest) {
   expr1Rest->posColon = lexer->getCursor() - 1;
   lexer->getNextToken(); // consume ':'
 
-  expr1Rest->expr1 = spExpression1(new Expression1);
+  expr1Rest->expr1 = make_shared<Expression1>();
   parseExpression1(expr1Rest->expr1);
   if (expr1Rest->expr1->isEmpty()) {
     expr1Rest->addErr(-1);
@@ -1756,7 +1744,7 @@ void Parser::parseExpression1Rest(spExpression1Rest &expr1Rest) {
  * Expression2: Expression3 [ Expression2Rest ]
  */
 void Parser::parseExpression2(spExpression2 &expr2) {
-  spExpression3 expr3 = spExpression3(new Expression3);
+  spExpression3 expr3 = make_shared<Expression3>();
   parseExpression3(expr3);
   if (expr3->isEmpty()) {
     return;
@@ -1765,7 +1753,7 @@ void Parser::parseExpression2(spExpression2 &expr2) {
   expr2->expr3 = expr3;
 
   // [ Expression2Rest ]
-  spExpression2Rest expr2Rest = spExpression2Rest(new Expression2Rest);
+  spExpression2Rest expr2Rest = make_shared<Expression2Rest>();
   parseExpression2Rest(expr2Rest);
   if (expr2Rest->pairs.size()) {
     expr2->expr2Rest = expr2Rest;
@@ -1783,18 +1771,17 @@ void Parser::parseExpression2Rest(spExpression2Rest &expr2Rest) {
     || isInfixOp(lexer->getCurToken())) {
 
     saveState(state);
-    spExpression2RestHelper helper
-      = spExpression2RestHelper(new Expression2RestHelper);
+    spExpression2RestHelper helper = make_shared<Expression2RestHelper>();
 
     // (2) instanceof Type
     if (lexer->getCurToken() == TOK_KEY_INSTANCEOF) {
       helper->opt = Expression2RestHelper::OPT_INSTANCEOF_TYPE;
-      helper->tokInstanceOf = spTokenExp(new TokenExp(
+      helper->tokInstanceOf = make_shared<TokenExp>(
         lexer->getCursor() - tokenUtil.getTokenLength(
-          lexer->getCurToken()), lexer->getCurToken()));
+          lexer->getCurToken()), lexer->getCurToken());
       lexer->getNextToken(); // consume 'instanceof'
 
-      helper->type = spType(new Type);
+      helper->type = make_shared<Type>();
       parseType(helper->type);
 
       if (helper->type->err) {
@@ -1808,12 +1795,12 @@ void Parser::parseExpression2Rest(spExpression2Rest &expr2Rest) {
 
     // (1) { InfixOp Expression3 }
     helper->opt = Expression2RestHelper::OPT_INFIXOP_EXPR3;
-    helper->tokInfixOp = spTokenExp(new TokenExp(
+    helper->tokInfixOp = make_shared<TokenExp>(
       lexer->getCursor() - tokenUtil.getTokenLength(
-        lexer->getCurToken()), lexer->getCurToken()));
+        lexer->getCurToken()), lexer->getCurToken());
     lexer->getNextToken(); // consume InfixOp
 
-    helper->expr3 = spExpression3(new Expression3);
+    helper->expr3 = make_shared<Expression3>();
     parseExpression3(helper->expr3);
 
     if (helper->expr3->isEmpty()) {
@@ -1840,11 +1827,11 @@ void Parser::parseExpression3(spExpression3 &expr3) {
   // (1) PrefixOp Expression3
   if (isPrefixOp(lexer->getCurToken())) {
     expr3->opt = Expression3::OPT_PREFIXOP_EXPRESSION3;
-    expr3->prefixOp = spPrefixOp(new PrefixOp(
-      lexer->getCurTokenIni(), lexer->getCurToken()));
+    expr3->prefixOp = make_shared<PrefixOp>(
+      lexer->getCurTokenIni(), lexer->getCurToken());
     lexer->getNextToken(); // consume PrefixOp
 
-    expr3->expr3 = spExpression3(new Expression3);
+    expr3->expr3 = make_shared<Expression3>();
     parseExpression3(expr3->expr3);
     return;
   }
@@ -1858,7 +1845,7 @@ void Parser::parseExpression3(spExpression3 &expr3) {
 
     // Let's try Type first
     // Option 2
-    spExpression3Opt2 opt2 = spExpression3Opt2(new Expression3Opt2);
+    spExpression3Opt2 opt2 = make_shared<Expression3Opt2>();
     parseExpression3Opt2(opt2);
     if (opt2->err == false) {
       expr3->opt = Expression3::OPT_TYPE_EXPRESSION3;
@@ -1871,7 +1858,7 @@ void Parser::parseExpression3(spExpression3 &expr3) {
 
     // Option 3
     expr3->opt = Expression3::OPT_EXPRESSION_EXPRESSION3;
-    expr3->opt3 = spExpression3Opt3(new Expression3Opt3);
+    expr3->opt3 = make_shared<Expression3Opt3>();
     parseExpression3Opt3(expr3->opt3);
     if (expr3->opt3->err == false) {
       return;
@@ -1883,7 +1870,7 @@ void Parser::parseExpression3(spExpression3 &expr3) {
 
   // (4) Primary { Selector } { PostfixOp }
   if (isPrimary(lexer->getCurToken())) {
-    spPrimary primary = spPrimary(new Primary);
+    spPrimary primary = make_shared<Primary>();
     parsePrimary(primary);
     if (primary->isEmpty() == false && primary->err == false) {
       expr3->opt = Expression3::OPT_PRIMARY_SELECTOR_POSTFIXOP;
@@ -1892,7 +1879,7 @@ void Parser::parseExpression3(spExpression3 &expr3) {
       // { Selector }
       while (lexer->getCurToken() == TOK_PERIOD
         || lexer->getCurToken() == TOK_LBRACKET) {
-        spSelector selector = spSelector(new Selector);
+        spSelector selector = make_shared<Selector>();
         parseSelector(selector);
         if (selector->err) {
           expr3->addErr(-1);
@@ -1905,7 +1892,7 @@ void Parser::parseExpression3(spExpression3 &expr3) {
       // { PostfixOp }
       while (lexer->getCurToken() == TOK_OP_PLUS_PLUS
         || lexer->getCurToken() == TOK_OP_MINUS_MINUS) {
-        spPostfixOp postfixOp = spPostfixOp(new PostfixOp);
+        spPostfixOp postfixOp = make_shared<PostfixOp>();
         parsePostfixOp(postfixOp);
         expr3->postfixOps.push_back(postfixOp);
       }
@@ -1923,7 +1910,7 @@ void Parser::parseExpression3Opt2(spExpression3Opt2 &opt2) {
   lexer->getNextToken(); // consue '('
 
   // Type
-  opt2->type = spType(new Type);
+  opt2->type = make_shared<Type>();
   parseType(opt2->type);
   if (opt2->type->err) {
     opt2->addErr(-1);
@@ -1940,7 +1927,7 @@ void Parser::parseExpression3Opt2(spExpression3Opt2 &opt2) {
   lexer->getNextToken(); // consume ')'
 
   // Expression3
-  opt2->expr3 = spExpression3(new Expression3);
+  opt2->expr3 = make_shared<Expression3>();
   parseExpression3(opt2->expr3);
   if (opt2->expr3->err) {
     opt2->addErr(-1);
