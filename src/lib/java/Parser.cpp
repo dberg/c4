@@ -1941,7 +1941,7 @@ void Parser::parseExpression3Opt3(spExpression3Opt3 &opt3) {
   lexer->getNextToken(); // consume '('
 
   // Expression
-  opt3->expr = spExpression(new Expression);
+  opt3->expr = make_shared<Expression>();
   parseExpression(opt3->expr);
   if (opt3->expr->isEmpty()) {
     opt3->addErr(-1);
@@ -1957,7 +1957,7 @@ void Parser::parseExpression3Opt3(spExpression3Opt3 &opt3) {
   lexer->getNextToken(); // consume ')'
 
   // Expression3
-  opt3->expr3 = spExpression3(new Expression3);
+  opt3->expr3 = make_shared<Expression3>();
   parseExpression3(opt3->expr3);
   if (opt3->expr3->err) {
     opt3->addErr(-1);
@@ -1975,13 +1975,13 @@ void Parser::parseFinally(spFinally &finally) {
     return;
   }
 
-  finally->tokFinally = spTokenExp(new TokenExp(
+  finally->tokFinally = make_shared<TokenExp>(
     lexer->getCursor() - tokenUtil.getTokenLength(
-      lexer->getCurToken()), lexer->getCurToken()));
+      lexer->getCurToken()), lexer->getCurToken());
   lexer->getNextToken(); // consume 'finally'
 
   // Block
-  finally->block = spBlock(new Block);
+  finally->block = make_shared<Block>();
   parseBlock(finally->block);
   if (finally->block->err) {
     finally->addErr(-1);
@@ -1993,8 +1993,7 @@ void Parser::parseFinally(spFinally &finally) {
  */
 void Parser::parseFieldDeclaratorsRest(spFieldDeclaratorsRest &fieldDeclsRest) {
   // VariableDeclaratorRest
-  fieldDeclsRest->varDeclRest
-    = spVariableDeclaratorRest(new VariableDeclaratorRest());
+  fieldDeclsRest->varDeclRest = make_shared<VariableDeclaratorRest>();
   parseVariableDeclaratorRest(fieldDeclsRest->varDeclRest);
   if (fieldDeclsRest->varDeclRest->err) {
     fieldDeclsRest->addErr(-1);
@@ -2007,7 +2006,7 @@ void Parser::parseFieldDeclaratorsRest(spFieldDeclaratorsRest &fieldDeclsRest) {
     saveState(state);
     unsigned pos = lexer->getCursor() - 1;
     lexer->getNextToken(); // consume ','
-    spVariableDeclarator varDecl = spVariableDeclarator(new VariableDeclarator);
+    spVariableDeclarator varDecl = make_shared<VariableDeclarator>();
     parseVariableDeclarator(varDecl);
     if (varDecl->err) {
       restoreState(state);
@@ -2028,7 +2027,7 @@ void Parser::parseForControl(spForControl &forCtrl) {
   saveState(state);
 
   // (1) ForVarControl
-  spForVarControl varCtrl = spForVarControl(new ForVarControl);
+  spForVarControl varCtrl = make_shared<ForVarControl>();
   parseForVarControl(varCtrl);
   if (varCtrl->err == false) {
     forCtrl->opt = ForControl::OPT_FOR_VAR_CTRL;
@@ -2041,7 +2040,7 @@ void Parser::parseForControl(spForControl &forCtrl) {
 
   // (2) [ForInit] ; [Expression] ; [ForUpdate]
   if (lexer->getCurToken() != TOK_SEMICOLON) {
-    forCtrl->forInit = spForInit(new ForInit);
+    forCtrl->forInit = make_shared<ForInit>();
     parseForInit(forCtrl->forInit);
   }
 
@@ -2057,7 +2056,7 @@ void Parser::parseForControl(spForControl &forCtrl) {
 
   // [Expression]
   if (lexer->getCurToken() != TOK_SEMICOLON) {
-    forCtrl->expr = spExpression(new Expression);
+    forCtrl->expr = make_shared<Expression>();
     parseExpression(forCtrl->expr);
     if (forCtrl->expr->isEmpty()) {
       forCtrl->addErr(-1);
@@ -2076,7 +2075,7 @@ void Parser::parseForControl(spForControl &forCtrl) {
 
   // [ForUpdate]
   if (lexer->getCurToken() != TOK_RPAREN) {
-    forCtrl->forUpdate = spForUpdate(new ForUpdate);
+    forCtrl->forUpdate = make_shared<ForUpdate>();
     parseForUpdate(forCtrl->forUpdate);
     if (forCtrl->forUpdate->err) {
       forCtrl->addErr(-1);
@@ -2090,7 +2089,7 @@ void Parser::parseForControl(spForControl &forCtrl) {
  *   StatementExpression { , StatementExpression }
  */
 void Parser::parseForInit(spForInit &forInit) {
-  forInit->stmtExpr = spStatementExpression(new StatementExpression);
+  forInit->stmtExpr = make_shared<StatementExpression>();
   parseStatementExpression(forInit->stmtExpr);
   if (forInit->stmtExpr->err) {
     forInit->addErr(-1);
@@ -2102,8 +2101,7 @@ void Parser::parseForInit(spForInit &forInit) {
     unsigned pos = lexer->getCursor();
     lexer->getNextToken(); // consume ';'
 
-    spStatementExpression stmtExpr
-      = spStatementExpression(new StatementExpression);
+    spStatementExpression stmtExpr = make_shared<StatementExpression>();
     parseStatementExpression(stmtExpr);
     if (stmtExpr->err) { return; }
 
@@ -2130,11 +2128,11 @@ void Parser::parseForUpdate(spForUpdate &forUpdate) {
  */
 void Parser::parseForVarControl(spForVarControl &forVarCtrl) {
   // {VariableModifier}
-  forVarCtrl->varMod = spVariableModifier(new VariableModifier);
+  forVarCtrl->varMod = make_shared<VariableModifier>();
   parseVariableModifier(forVarCtrl->varMod);
 
   // Type
-  forVarCtrl->type = spType(new Type);
+  forVarCtrl->type = make_shared<Type>();
   parseType(forVarCtrl->type);
   if (forVarCtrl->type->err) {
     forVarCtrl->addErr(-1);
@@ -2142,14 +2140,14 @@ void Parser::parseForVarControl(spForVarControl &forVarCtrl) {
   }
 
   // VariableDeclaratorId
-  forVarCtrl->varDeclId = spVariableDeclaratorId(new VariableDeclaratorId);
+  forVarCtrl->varDeclId = make_shared<VariableDeclaratorId>();
   parseVariableDeclaratorId(forVarCtrl->varDeclId);
   if (forVarCtrl->varDeclId->err) {
     forVarCtrl->addErr(-1);
   }
 
   // ForVarControlRest
-  forVarCtrl->forVarCtrlRest = spForVarControlRest(new ForVarControlRest);
+  forVarCtrl->forVarCtrlRest = make_shared<ForVarControlRest>();
   parseForVarControlRest(forVarCtrl->forVarCtrlRest);
   if (forVarCtrl->forVarCtrlRest->err) {
     forVarCtrl->addErr(-1);
@@ -2167,7 +2165,7 @@ void Parser::parseForVarControlRest(spForVarControlRest &forVarCtrlRest) {
     forVarCtrlRest->opt = ForVarControlRest::OPT_COLON_EXPR;
     forVarCtrlRest->posColon = lexer->getCursor() - 1;
     lexer->getNextToken(); // consume ':'
-    forVarCtrlRest->expr = spExpression(new Expression);
+    forVarCtrlRest->expr = make_shared<Expression>();
     parseExpression(forVarCtrlRest->expr);
     if (forVarCtrlRest->expr->isEmpty()) {
       forVarCtrlRest->addErr(-1);
@@ -2179,8 +2177,7 @@ void Parser::parseForVarControlRest(spForVarControlRest &forVarCtrlRest) {
   forVarCtrlRest->opt = ForVarControlRest::OPT_FOR_VAR_DECLS_REST;
 
   // ForVariableDeclaratorsRest
-  forVarCtrlRest->forVarDeclsRest
-    = spForVariableDeclaratorsRest(new ForVariableDeclaratorsRest);
+  forVarCtrlRest->forVarDeclsRest = make_shared<ForVariableDeclaratorsRest>();
   parseForVariableDeclaratorsRest(forVarCtrlRest->forVarDeclsRest);
   if (forVarCtrlRest->forVarDeclsRest->err) {
     forVarCtrlRest->addErr(-1);
@@ -2198,7 +2195,7 @@ void Parser::parseForVarControlRest(spForVarControlRest &forVarCtrlRest) {
 
   // [Expression]
   if (lexer->getCurToken() != TOK_SEMICOLON) {
-    forVarCtrlRest->expr = spExpression(new Expression);
+    forVarCtrlRest->expr = make_shared<Expression>();
     parseExpression(forVarCtrlRest->expr);
     if (forVarCtrlRest->expr->isEmpty()) {
       forVarCtrlRest->addErr(-1);
@@ -2217,7 +2214,7 @@ void Parser::parseForVarControlRest(spForVarControlRest &forVarCtrlRest) {
 
   // [ForUpdate]
   if (lexer->getCurToken() != TOK_RPAREN) {
-    forVarCtrlRest->forUpdate = spForUpdate(new ForUpdate);
+    forVarCtrlRest->forUpdate = make_shared<ForUpdate>();
     parseForUpdate(forVarCtrlRest->forUpdate);
     if (forVarCtrlRest->forUpdate->err) {
       forVarCtrlRest->addErr(-1);
@@ -2237,7 +2234,7 @@ void Parser::parseForVariableDeclaratorsRest(
     forVarDeclsRest->posEquals = lexer->getCursor() - 1;
     lexer->getNextToken(); // consume '='
 
-    forVarDeclsRest->varInit = spVariableInitializer(new VariableInitializer);
+    forVarDeclsRest->varInit = make_shared<VariableInitializer>();
     parseVariableInitializer(forVarDeclsRest->varInit);
     if (forVarDeclsRest->varInit->err) {
       forVarDeclsRest->addErr(-1);
@@ -2250,7 +2247,7 @@ void Parser::parseForVariableDeclaratorsRest(
 
     unsigned pos = lexer->getCursor() - 1;
     lexer->getNextToken(); // consume ','
-    spVariableDeclarator varDecl = spVariableDeclarator(new VariableDeclarator);
+    spVariableDeclarator varDecl = make_shared<VariableDeclarator>();
     parseVariableDeclarator(varDecl);
     if (varDecl->err) {
       restoreState(state);
@@ -2271,15 +2268,14 @@ void Parser::parseForVariableDeclaratorsRest(
 void Parser::parseGenericMethodOrConstructorDecl(
   spGenericMethodOrConstructorDecl &genMethodOrConstDecl) {
 
-  genMethodOrConstDecl->typeParams = spTypeParameters(new TypeParameters);
+  genMethodOrConstDecl->typeParams = make_shared<TypeParameters>();
   parseTypeParameters(genMethodOrConstDecl->typeParams);
   if (genMethodOrConstDecl->typeParams->err) {
     genMethodOrConstDecl->addErr(-1);
     return;
   }
 
-  genMethodOrConstDecl->rest
-    = spGenericMethodOrConstructorRest(new GenericMethodOrConstructorRest);
+  genMethodOrConstDecl->rest = make_shared<GenericMethodOrConstructorRest>();
   parseGenericMethodOrConstructorRest(genMethodOrConstDecl->rest);
   if (genMethodOrConstDecl->rest->err) {
     genMethodOrConstDecl->addErr(-1);
@@ -2300,9 +2296,9 @@ void Parser::parseGenericMethodOrConstructorRest(
   if (lexer->getCurToken() == TOK_KEY_VOID) {
     // 'void'
     rest->opt = GenericMethodOrConstructorRest::OPT_VOID_IDENTIFIER;
-    rest->tokVoid = spTokenExp(new TokenExp(
+    rest->tokVoid = make_shared<TokenExp>(
       lexer->getCursor() - tokenUtil.getTokenLength(
-        lexer->getCurToken()), lexer->getCurToken()));
+        lexer->getCurToken()), lexer->getCurToken());
     lexer->getNextToken(); // consume 'void'
 
     // Identifier
@@ -2312,12 +2308,12 @@ void Parser::parseGenericMethodOrConstructorRest(
       return;
     }
 
-    rest->id = spIdentifier(new Identifier(
-      lexer->getCurTokenIni(), lexer->getCurTokenStr()));
+    rest->id = make_shared<Identifier>(
+      lexer->getCurTokenIni(), lexer->getCurTokenStr());
     lexer->getNextToken(); // consume Identifier
 
     // MethodDeclaratorRest
-    rest->methodDeclRest = spMethodDeclaratorRest(new MethodDeclaratorRest);
+    rest->methodDeclRest = make_shared<MethodDeclaratorRest>();
     parseMethodDeclaratorRest(rest->methodDeclRest);
     if (rest->methodDeclRest->err) {
       rest->addErr(-1);
@@ -2332,15 +2328,14 @@ void Parser::parseGenericMethodOrConstructorRest(
   State state;
   saveState(state);
   if (lexer->getCurToken() == TOK_IDENTIFIER) {
-    spIdentifier id = spIdentifier(new Identifier(
-      lexer->getCurTokenIni(), lexer->getCurTokenStr()));
+    spIdentifier id = make_shared<Identifier>(
+      lexer->getCurTokenIni(), lexer->getCurTokenStr());
     lexer->getNextToken(); // consume Identifier
     if (lexer->getCurToken() == TOK_LPAREN) {
       // (3) Identifier ConstructorDeclaratorRest
       rest->opt = GenericMethodOrConstructorRest::OPT_IDENTIFIER_CONSTRUCTOR;
       rest->id = id;
-      rest->constDeclRest
-        = spConstructorDeclaratorRest(new ConstructorDeclaratorRest);
+      rest->constDeclRest = make_shared<ConstructorDeclaratorRest>();
       parseConstructorDeclaratorRest(rest->constDeclRest);
       if (rest->constDeclRest->err) {
         rest->addErr(-1);
@@ -2354,7 +2349,7 @@ void Parser::parseGenericMethodOrConstructorRest(
   // (1) Type Identifier MethodDeclaratorRest
   rest->opt = GenericMethodOrConstructorRest::OPT_TYPE_IDENTIFIER;
   // Type
-  rest->type = spType(new Type);
+  rest->type = make_shared<Type>();
   parseType(rest->type);
   if (rest->type->err) {
     rest->addErr(-1);
@@ -2362,12 +2357,12 @@ void Parser::parseGenericMethodOrConstructorRest(
   }
 
   // Identifier
-  rest->id = spIdentifier(new Identifier(
-    lexer->getCurTokenIni(), lexer->getCurTokenStr()));
+  rest->id = make_shared<Identifier>(
+    lexer->getCurTokenIni(), lexer->getCurTokenStr());
   lexer->getNextToken(); // consume Identifier
 
   // MethodDeclaratorRest
-  rest->methodDeclRest = spMethodDeclaratorRest(new MethodDeclaratorRest);
+  rest->methodDeclRest = make_shared<MethodDeclaratorRest>();
   parseMethodDeclaratorRest(rest->methodDeclRest);
   if (rest->methodDeclRest->err) {
     rest->addErr(-1);
@@ -2395,8 +2390,8 @@ void Parser::parseInterfaceBody(spInterfaceBody &body) {
     && pos != lexer->getCursor()) {
     pos = lexer->getCursor();
 
-    spInterfaceBodyDeclaration bodyDecl = spInterfaceBodyDeclaration(
-      new InterfaceBodyDeclaration);
+    spInterfaceBodyDeclaration bodyDecl =
+      make_shared<InterfaceBodyDeclaration>();
     parseInterfaceBodyDeclaration(bodyDecl);
     body->bodyDecls.push_back(bodyDecl);
 
@@ -2437,9 +2432,9 @@ void Parser::parseInterfaceBodyDeclaration(
   // (2) {Modifier} InterfaceMemberDecl
   st.addSym(ST_MEMBER_DECL, lexer->getCurTokenIni(), 0, src->getLine(), "");
   bodyDecl->opt = InterfaceBodyDeclaration::OPT_MEMBER_DECL;
-  bodyDecl->modifier = spModifier(new Modifier);
+  bodyDecl->modifier = make_shared<Modifier>();
   parseModifier(bodyDecl->modifier);
-  bodyDecl->memberDecl = spInterfaceMemberDecl(new InterfaceMemberDecl);
+  bodyDecl->memberDecl = make_shared<InterfaceMemberDecl>();
   parseInterfaceMemberDecl(bodyDecl->memberDecl);
   if (bodyDecl->memberDecl->err) {
     bodyDecl->addErr(-1);
@@ -2456,8 +2451,7 @@ void Parser::parseInterfaceDeclaration(spInterfaceDeclaration &interfaceDecl) {
   // AnnotationTypeDeclaration
   if (lexer->getCurToken() == TOK_ANNOTATION_TYPE_DECLARATION) {
     interfaceDecl->opt = InterfaceDeclaration::OPT_ANNOTATION;
-    interfaceDecl->annotationDecl = spAnnotationTypeDeclaration(
-      new AnnotationTypeDeclaration);
+    interfaceDecl->annotationDecl = make_shared<AnnotationTypeDeclaration>();
     parseAnnotationTypeDeclaration(interfaceDecl->annotationDecl);
     if (interfaceDecl->annotationDecl->err) {
       interfaceDecl->addErr(-1);
@@ -2468,8 +2462,7 @@ void Parser::parseInterfaceDeclaration(spInterfaceDeclaration &interfaceDecl) {
   // NormalInterfaceDeclaration
   if (lexer->getCurToken() == TOK_KEY_INTERFACE) {
     interfaceDecl->opt = InterfaceDeclaration::OPT_NORMAL;
-    interfaceDecl->normalDecl = spNormalInterfaceDeclaration(
-      new NormalInterfaceDeclaration);
+    interfaceDecl->normalDecl = make_shared<NormalInterfaceDeclaration>();
     parseNormalInterfaceDeclaration(interfaceDecl->normalDecl);
     if (interfaceDecl->normalDecl->err) {
       interfaceDecl->addErr(-1);
@@ -2490,7 +2483,7 @@ void Parser::parseInterfaceGenericMethodDecl(
   spInterfaceGenericMethodDecl &genMethDecl) {
 
   // TypeParameters
-  genMethDecl->typeParams = spTypeParameters(new TypeParameters);
+  genMethDecl->typeParams = make_shared<TypeParameters>();
   parseTypeParameters(genMethDecl->typeParams);
   if (genMethDecl->typeParams->err) {
     genMethDecl->addErr(-1);
@@ -2499,12 +2492,12 @@ void Parser::parseInterfaceGenericMethodDecl(
 
   // Type | void
   if (lexer->getCurToken() == TOK_KEY_VOID) {
-    genMethDecl->tokVoid = spTokenExp(new TokenExp(
+    genMethDecl->tokVoid = make_shared<TokenExp>(
       lexer->getCursor() - tokenUtil.getTokenLength(
-      lexer->getCurToken()), lexer->getCurToken()));
+      lexer->getCurToken()), lexer->getCurToken());
     lexer->getNextToken(); // consume 'void'
   } else {
-    genMethDecl->type = spType(new Type);
+    genMethDecl->type = make_shared<Type>();
     parseType(genMethDecl->type);
     if (genMethDecl->type->err) {
       genMethDecl->addErr(-1);
@@ -2519,13 +2512,12 @@ void Parser::parseInterfaceGenericMethodDecl(
     return;
   }
 
-  genMethDecl->id = spIdentifier(new Identifier(
-      lexer->getCurTokenIni(), lexer->getCurTokenStr()));
+  genMethDecl->id = make_shared<Identifier>(
+      lexer->getCurTokenIni(), lexer->getCurTokenStr());
   lexer->getNextToken(); // consume Identifier
 
   // InterfaceMethodDeclaratorRest
-  genMethDecl->methDeclRest = spInterfaceMethodDeclaratorRest(
-    new InterfaceMethodDeclaratorRest);
+  genMethDecl->methDeclRest = make_shared<InterfaceMethodDeclaratorRest>();
   parseInterfaceMethodDeclaratorRest(genMethDecl->methDeclRest);
   if (genMethDecl->methDeclRest->err) {
     genMethDecl->addErr(-1);
@@ -2546,8 +2538,7 @@ void Parser::parseInterfaceMemberDecl(spInterfaceMemberDecl &memberDecl) {
     || lexer->getCurToken() == TOK_IDENTIFIER) {
 
     memberDecl->opt = InterfaceMemberDecl::OPT_INTERFACE_METHOD_OR_FIELD_DECL;
-    memberDecl->methodOrFieldDecl = spInterfaceMethodOrFieldDecl(
-      new InterfaceMethodOrFieldDecl);
+    memberDecl->methodOrFieldDecl = make_shared<InterfaceMethodOrFieldDecl>();
     parseInterfaceMethodOrFieldDecl(memberDecl->methodOrFieldDecl);
     if (memberDecl->methodOrFieldDecl->err) {
       memberDecl->addErr(-1);
@@ -2561,9 +2552,9 @@ void Parser::parseInterfaceMemberDecl(spInterfaceMemberDecl &memberDecl) {
     memberDecl->opt = InterfaceMemberDecl::OPT_VOID_IDENTIFIER;
 
     // void
-    memberDecl->tokVoid = spTokenExp(new TokenExp(
+    memberDecl->tokVoid = make_shared<TokenExp>(
       lexer->getCursor() - tokenUtil.getTokenLength(
-      lexer->getCurToken()), lexer->getCurToken()));
+      lexer->getCurToken()), lexer->getCurToken());
     lexer->getNextToken(); // consume 'void'
 
     // Identifier
@@ -2573,15 +2564,15 @@ void Parser::parseInterfaceMemberDecl(spInterfaceMemberDecl &memberDecl) {
       return;
     }
 
-    memberDecl->id = spIdentifier(new Identifier(
-      lexer->getCurTokenIni(), lexer->getCurTokenStr()));
+    memberDecl->id = make_shared<Identifier>(
+      lexer->getCurTokenIni(), lexer->getCurTokenStr());
     st.addSym(ST_IDENTIFIER, lexer->getCurTokenIni(), lexer->getCursor(),
       src->getLine(), lexer->getCurTokenStr());
     lexer->getNextToken(); // consume Identifier
 
     // VoidInterfaceMethodDeclaratorRest
-    memberDecl->voidMethDeclRest = spVoidInterfaceMethodDeclaratorRest(
-      new VoidInterfaceMethodDeclaratorRest);
+    memberDecl->voidMethDeclRest
+      = make_shared<VoidInterfaceMethodDeclaratorRest>();
     parseVoidInterfaceMethodDeclaratorRest(memberDecl->voidMethDeclRest);
     if (memberDecl->voidMethDeclRest->err) {
       memberDecl->addErr(-1);
@@ -2593,8 +2584,7 @@ void Parser::parseInterfaceMemberDecl(spInterfaceMemberDecl &memberDecl) {
   // (3) InterfaceGenericMethodDecl
   if (lexer->getCurToken() == TOK_OP_LT) {
     memberDecl->opt = InterfaceMemberDecl::OPT_INTERFACE_GENERIC;
-    memberDecl->genMethodDecl = spInterfaceGenericMethodDecl(
-      new InterfaceGenericMethodDecl);
+    memberDecl->genMethodDecl = make_shared<InterfaceGenericMethodDecl>();
     parseInterfaceGenericMethodDecl(memberDecl->genMethodDecl);
     if (memberDecl->genMethodDecl->err) {
       memberDecl->addErr(-1);
@@ -2613,7 +2603,7 @@ void Parser::parseInterfaceMemberDecl(spInterfaceMemberDecl &memberDecl) {
       st.updateScopeType(ST_ENUM);
     }
 
-    memberDecl->classDecl = spClassDeclaration(new ClassDeclaration);
+    memberDecl->classDecl = make_shared<ClassDeclaration>();
     parseClassDeclaration(memberDecl->classDecl);
     if (memberDecl->classDecl->err) {
       memberDecl->addErr(-1);
@@ -2624,8 +2614,7 @@ void Parser::parseInterfaceMemberDecl(spInterfaceMemberDecl &memberDecl) {
   // (5) InterfaceDeclaration
   if (lexer->getCurToken() == TOK_KEY_INTERFACE) {
     memberDecl->opt = InterfaceMemberDecl::OPT_INTERFACE_DECLARATION;
-    memberDecl->interfaceDecl = spInterfaceDeclaration(
-      new InterfaceDeclaration);
+    memberDecl->interfaceDecl = make_shared<InterfaceDeclaration>();
     parseInterfaceDeclaration(memberDecl->interfaceDecl);
     if (memberDecl->interfaceDecl->err) {
       memberDecl->addErr(-1);
@@ -2643,7 +2632,7 @@ void Parser::parseInterfaceMemberDecl(spInterfaceMemberDecl &memberDecl) {
 void Parser::parseInterfaceMethodDeclaratorRest(
   spInterfaceMethodDeclaratorRest &methDeclRest) {
   // FormalParameters
-  methDeclRest->formParams = spFormalParameters(new FormalParameters);
+  methDeclRest->formParams = make_shared<FormalParameters>();
   parseFormalParameters(methDeclRest->formParams);
   if (methDeclRest->formParams->err) {
     methDeclRest->addErr(-1);
@@ -2655,13 +2644,12 @@ void Parser::parseInterfaceMethodDeclaratorRest(
 
   // [throws QualifiedIdentifierList]
   if (lexer->getCurToken() == TOK_KEY_THROWS) {
-    methDeclRest->tokThrows = spTokenExp(new TokenExp(
+    methDeclRest->tokThrows = make_shared<TokenExp>(
       lexer->getCursor() - tokenUtil.getTokenLength(
-        lexer->getCurToken()), lexer->getCurToken()));
+        lexer->getCurToken()), lexer->getCurToken());
     lexer->getNextToken(); // consume 'throws'
 
-    methDeclRest->qualifiedIdList = spQualifiedIdentifierList(
-      new QualifiedIdentifierList);
+    methDeclRest->qualifiedIdList = make_shared<QualifiedIdentifierList>();
     parseQualifiedIdentifierList(methDeclRest->qualifiedIdList);
     if (methDeclRest->qualifiedIdList->err) {
       methDeclRest->addErr(-1);
@@ -2688,7 +2676,7 @@ void Parser::parseInterfaceMethodOrFieldDecl(
   spInterfaceMethodOrFieldDecl &methodOrFieldDecl) {
 
   // Type
-  methodOrFieldDecl->type = spType(new Type);
+  methodOrFieldDecl->type = make_shared<Type>();
   parseType(methodOrFieldDecl->type);
   if (methodOrFieldDecl->type->err) {
     methodOrFieldDecl->addErr(-1);
@@ -2702,13 +2690,12 @@ void Parser::parseInterfaceMethodOrFieldDecl(
     return;
   }
 
-  methodOrFieldDecl->id = spIdentifier(new Identifier(
-    lexer->getCurTokenIni(), lexer->getCurTokenStr()));
+  methodOrFieldDecl->id = make_shared<Identifier>(
+    lexer->getCurTokenIni(), lexer->getCurTokenStr());
   lexer->getNextToken(); // consume Identifier
 
   // InterfaceMethodOrFieldRest
-  methodOrFieldDecl->rest = spInterfaceMethodOrFieldRest(
-    new InterfaceMethodOrFieldRest);
+  methodOrFieldDecl->rest = make_shared<InterfaceMethodOrFieldRest>();
   parseInterfaceMethodOrFieldRest(methodOrFieldDecl->rest);
   if (methodOrFieldDecl->rest->err) {
     methodOrFieldDecl->addErr(-1);
@@ -2729,8 +2716,7 @@ void Parser::parseInterfaceMethodOrFieldRest(
     rest->opt = InterfaceMethodOrFieldRest::OPT_CONSTANT_REST;
 
     // ConstantDeclaratorsRest
-    rest->constDeclsRest = spConstantDeclaratorsRest(
-      new ConstantDeclaratorsRest);
+    rest->constDeclsRest = make_shared<ConstantDeclaratorsRest>();
     parseConstantDeclaratorsRest(rest->constDeclsRest);
     if (rest->constDeclsRest->err) {
       rest->addErr(-1);
@@ -2751,8 +2737,7 @@ void Parser::parseInterfaceMethodOrFieldRest(
   // InterfaceMethodDeclaratorRest
   if (lexer->getCurToken() == TOK_LPAREN) {
     rest->opt = InterfaceMethodOrFieldRest::OPT_METHOD_REST;
-    rest->methDeclRest = spInterfaceMethodDeclaratorRest(
-      new InterfaceMethodDeclaratorRest);
+    rest->methDeclRest = make_shared<InterfaceMethodDeclaratorRest>();
     parseInterfaceMethodDeclaratorRest(rest->methDeclRest);
     if (rest->methDeclRest->err) {
       rest->addErr(-1);
@@ -2806,9 +2791,9 @@ void Parser::parseIdentifierSuffix(spIdentifierSuffix &idSuffix) {
       }
 
       // class
-      idSuffix->tokSuper = spTokenExp(new TokenExp(
+      idSuffix->tokSuper = make_shared<TokenExp>(
         lexer->getCursor() - tokenUtil.getTokenLength(
-          lexer->getCurToken()), lexer->getCurToken()));
+          lexer->getCurToken()), lexer->getCurToken());
       lexer->getNextToken(); // consume 'class'
       return;
     }
@@ -2816,7 +2801,7 @@ void Parser::parseIdentifierSuffix(spIdentifierSuffix &idSuffix) {
     // opt2
     // '[' Expression ']'
     idSuffix->opt = IdentifierSuffix::OPT_ARRAY_EXPRESSION;
-    idSuffix->expr = spExpression(new Expression);
+    idSuffix->expr = make_shared<Expression>();
     parseExpression(idSuffix->expr);
     if (idSuffix->expr->isEmpty()) {
       idSuffix->addErr(-1);
@@ -2838,7 +2823,7 @@ void Parser::parseIdentifierSuffix(spIdentifierSuffix &idSuffix) {
   // opt3: Arguments
   if (lexer->getCurToken() == TOK_LPAREN) {
     idSuffix->opt = IdentifierSuffix::OPT_ARGUMENTS;
-    idSuffix->args = spArguments(new Arguments);
+    idSuffix->args = make_shared<Arguments>();
     parseArguments(idSuffix->args);
     if (idSuffix->args->err) { idSuffix->addErr(-1); }
     return;
@@ -2852,9 +2837,9 @@ void Parser::parseIdentifierSuffix(spIdentifierSuffix &idSuffix) {
     // opt4: . class
     if (lexer->getCurToken() == TOK_KEY_CLASS) {
       idSuffix->opt = IdentifierSuffix::OPT_PERIOD_CLASS;
-      idSuffix->tokClass = spTokenExp(new TokenExp(
+      idSuffix->tokClass = make_shared<TokenExp>(
         lexer->getCursor() - tokenUtil.getTokenLength(
-          lexer->getCurToken()), lexer->getCurToken()));
+          lexer->getCurToken()), lexer->getCurToken());
       lexer->getNextToken(); // consume 'class'
       return;
     }
@@ -2862,8 +2847,7 @@ void Parser::parseIdentifierSuffix(spIdentifierSuffix &idSuffix) {
     // opt5: . ExplicitGenericInvocation
     if (lexer->getCurToken() == TOK_OP_LT) {
       idSuffix->opt = IdentifierSuffix::OPT_PERIOD_EXPLICIT_GENERIC_INVOCATION;
-      idSuffix->explGenInvocation = spExplicitGenericInvocation(
-        new ExplicitGenericInvocation());
+      idSuffix->explGenInvocation = make_shared<ExplicitGenericInvocation>();
       parseExplicitGenericInvocation(idSuffix->explGenInvocation);
       if (idSuffix->explGenInvocation->err) { idSuffix->addErr(-1); }
       return;
@@ -2872,9 +2856,9 @@ void Parser::parseIdentifierSuffix(spIdentifierSuffix &idSuffix) {
     // opt6: . this
     if (lexer->getCurToken() == TOK_KEY_THIS) {
       idSuffix->opt = IdentifierSuffix::OPT_PERIOD_THIS;
-      idSuffix->tokThis = spTokenExp(new TokenExp(
+      idSuffix->tokThis = make_shared<TokenExp>(
         lexer->getCursor() - tokenUtil.getTokenLength(
-          lexer->getCurToken()), lexer->getCurToken()));
+          lexer->getCurToken()), lexer->getCurToken());
       lexer->getNextToken(); // consume 'this'
       return;
     }
@@ -2882,9 +2866,9 @@ void Parser::parseIdentifierSuffix(spIdentifierSuffix &idSuffix) {
     // opt7: . super Arguments
     if (lexer->getCurToken() == TOK_KEY_SUPER) {
       idSuffix->opt = IdentifierSuffix::OPT_PERIOD_SUPER_ARGUMENTS;
-      idSuffix->tokSuper = spTokenExp(new TokenExp(
+      idSuffix->tokSuper = make_shared<TokenExp>(
         lexer->getCursor() - tokenUtil.getTokenLength(
-          lexer->getCurToken()), lexer->getCurToken()));
+          lexer->getCurToken()), lexer->getCurToken());
       lexer->getNextToken(); // consume 'super'
 
       // Error: expected '('
@@ -2894,7 +2878,7 @@ void Parser::parseIdentifierSuffix(spIdentifierSuffix &idSuffix) {
         return;
       }
 
-      idSuffix->args = spArguments(new Arguments);
+      idSuffix->args = make_shared<Arguments>();
       parseArguments(idSuffix->args);
       if (idSuffix->args->err) { idSuffix->addErr(-1); }
       return;
@@ -2903,15 +2887,15 @@ void Parser::parseIdentifierSuffix(spIdentifierSuffix &idSuffix) {
     // opt8: . new [NonWildcardTypeArguments] InnerCreator
     if (lexer->getCurToken() == TOK_KEY_NEW) {
       idSuffix->opt = IdentifierSuffix::OPT_NEW;
-      idSuffix->tokNew = spTokenExp(new TokenExp(
+      idSuffix->tokNew = make_shared<TokenExp>(
         lexer->getCursor() - tokenUtil.getTokenLength(
-          lexer->getCurToken()), lexer->getCurToken()));
+          lexer->getCurToken()), lexer->getCurToken());
       lexer->getNextToken(); // consume 'new'
 
       // NonWildcardTypeArguments
       if (lexer->getCurToken() == TOK_OP_LT) {
-        idSuffix->nonWildcardTypeArguments = spNonWildcardTypeArguments(
-          new NonWildcardTypeArguments());
+        idSuffix->nonWildcardTypeArguments =
+          make_shared<NonWildcardTypeArguments>();
         parseNonWildcardTypeArguments(idSuffix->nonWildcardTypeArguments);
 
         // Error: invalid NonWildcardTypeArguments
@@ -2922,7 +2906,7 @@ void Parser::parseIdentifierSuffix(spIdentifierSuffix &idSuffix) {
       }
 
       // InnerCreator
-      idSuffix->innerCreator = spInnerCreator(new InnerCreator);
+      idSuffix->innerCreator = make_shared<InnerCreator>();
       parseInnerCreator(idSuffix->innerCreator);
 
       // Error: invalid InnerCreator
@@ -2960,11 +2944,11 @@ void Parser::parseElementValuePairs(vector<spElementValuePair> &pairs) {
   // We know we have an identifier in our saved state and the current token is
   // an assignment. We should process the identifier and expect an ElementValue.
   lexer->getNextToken(); // consume '='
-  spElementValuePair pair = spElementValuePair(new ElementValuePair());
-  pair->id = spIdentifier(new Identifier(
+  spElementValuePair pair = make_shared<ElementValuePair>();
+  pair->id = make_shared<Identifier>(
     identifierState.cursor - identifierState.tokenStr.length(),
-    identifierState.tokenStr));
-  pair->value = spElementValue(new ElementValue());
+    identifierState.tokenStr);
+  pair->value = make_shared<ElementValue>();
   parseElementValue(pair->value);
   if (pair->value->opt == ElementValue::OPT_UNDEFINED) {
     diag->addErr(c4::ERR_EXP_ELEMENT_VALUE,
@@ -2989,8 +2973,8 @@ void Parser::parseExplicitGenericInvocation(
   spExplicitGenericInvocation &explGenInvocation) {
 
   // NonWildcardTypeArguments
-  explGenInvocation->nonWildcardTypeArguments = spNonWildcardTypeArguments(
-    new NonWildcardTypeArguments());
+  explGenInvocation->nonWildcardTypeArguments =
+    make_shared<NonWildcardTypeArguments>();
   parseNonWildcardTypeArguments(explGenInvocation->nonWildcardTypeArguments);
   if (explGenInvocation->nonWildcardTypeArguments->err) {
     explGenInvocation->addErr(-1);
@@ -2998,8 +2982,7 @@ void Parser::parseExplicitGenericInvocation(
   }
 
   // ExplicitGenericInvocationSuffix
-  explGenInvocation->explGen = spExplicitGenericInvocationSuffix(
-    new ExplicitGenericInvocationSuffix());
+  explGenInvocation->explGen = make_shared<ExplicitGenericInvocationSuffix>();
   parseExplicitGenericInvocationSuffix(explGenInvocation->explGen);
   if (explGenInvocation->explGen->err) {
     explGenInvocation->addErr(-1);
@@ -3019,13 +3002,13 @@ void Parser::parseExplicitGenericInvocationSuffix(
     explGen->opt = ExplicitGenericInvocationSuffix::OPT_SUPER;
 
     // Token 'super'
-    explGen->tokSuper = spTokenExp(new TokenExp(
+    explGen->tokSuper = make_shared<TokenExp>(
       lexer->getCursor() - tokenUtil.getTokenLength(
-        lexer->getCurToken()), lexer->getCurToken()));
+        lexer->getCurToken()), lexer->getCurToken());
 
     lexer->getNextToken(); // consume 'super';
 
-    explGen->superSuffix = spSuperSuffix(new SuperSuffix());
+    explGen->superSuffix = make_shared<SuperSuffix>();
     parseSuperSuffix(explGen->superSuffix);
 
     if (explGen->superSuffix->err) {
@@ -3040,13 +3023,13 @@ void Parser::parseExplicitGenericInvocationSuffix(
     explGen->opt = ExplicitGenericInvocationSuffix::OPT_IDENTIFIER;
 
     // Identifier
-    explGen->id = spIdentifier(
-      new Identifier(lexer->getCurTokenIni(), lexer->getCurTokenStr()));
+    explGen->id = make_shared<Identifier>(
+      lexer->getCurTokenIni(), lexer->getCurTokenStr());
 
     lexer->getNextToken(); // consume Identifier
 
     // Arguments
-    explGen->args = spArguments(new Arguments);
+    explGen->args = make_shared<Arguments>();
     parseArguments(explGen->args);
 
     if (explGen->args->err) {
@@ -3074,9 +3057,9 @@ spPackageDeclaration Parser::parsePackageDeclaration(
   }
 
   // package
-  pkgDecl->tokPackage = spTokenExp(new TokenExp(
+  pkgDecl->tokPackage = make_shared<TokenExp>(
     lexer->getCursor() - tokenUtil.getTokenLength(
-      lexer->getCurToken()), lexer->getCurToken()));
+      lexer->getCurToken()), lexer->getCurToken());
   lexer->getNextToken(); // Consume 'package'
 
   if (lexer->getCurToken() != TOK_IDENTIFIER) {
@@ -3085,7 +3068,7 @@ spPackageDeclaration Parser::parsePackageDeclaration(
     return pkgDecl;
   }
 
-  pkgDecl->qualifiedId = spQualifiedIdentifier(new QualifiedIdentifier);
+  pkgDecl->qualifiedId = make_shared<QualifiedIdentifier>();
   parseQualifiedIdentifier(pkgDecl->qualifiedId);
   st.addSym(ST_PACKAGE, lexer->getCurTokenIni(), lexer->getCursor(),
     src->getLine(), lexer->getCurTokenStr());
@@ -3134,13 +3117,12 @@ spImportDeclarations Parser::parseImportDeclarations() {
     imports.push_back(import);
   }
 
-  spImportDeclarations impDecls = spImportDeclarations(
-    new ImportDeclarations(imports));
+  spImportDeclarations impDecls = make_shared<ImportDeclarations>(imports);
   return impDecls;
 }
 
 spImportDeclaration Parser::parseImportDeclaration() {
-  spImportDeclaration import = spImportDeclaration(new ImportDeclaration);
+  spImportDeclaration import = make_shared<ImportDeclaration>();
   import->type = SINGLE_TYPE_IMPORT_DECLARATION;
   import->posTokImport = lexer->getCursor()
     - tokenUtil.getTokenLength(TOK_KEY_IMPORT);
@@ -3158,7 +3140,7 @@ spImportDeclaration Parser::parseImportDeclaration() {
     return import;
   }
 
-  import->qualifiedId = spQualifiedIdentifier(new QualifiedIdentifier);
+  import->qualifiedId = make_shared<QualifiedIdentifier>();
   parseQualifiedIdentifier(import->qualifiedId);
 
   // Check [.*]
@@ -3202,14 +3184,14 @@ void Parser::parseInnerCreator(spInnerCreator &innerCreator) {
   }
 
   // Identifier
-  innerCreator->id = spIdentifier(new Identifier(
-    lexer->getCurTokenIni(), lexer->getCurTokenStr()));
+  innerCreator->id = make_shared<Identifier>(
+    lexer->getCurTokenIni(), lexer->getCurTokenStr());
   lexer->getNextToken(); // consume Identifier
 
   // NonWildcardTypeArgumentsOrDiamond
   if (lexer->getCurToken() == TOK_OP_LT) {
-    innerCreator->nonWildcardOrDiam = spNonWildcardTypeArgumentsOrDiamond(
-      new NonWildcardTypeArgumentsOrDiamond());
+    innerCreator->nonWildcardOrDiam =
+      make_shared<NonWildcardTypeArgumentsOrDiamond>();
     parseNonWildcardTypeArgumentsOrDiamond(innerCreator->nonWildcardOrDiam);
 
     // Error: invalid NonWildcardTypeArgumentsOrDiamond
@@ -3220,7 +3202,7 @@ void Parser::parseInnerCreator(spInnerCreator &innerCreator) {
   }
 
   // ClassCreatorRest
-  innerCreator->classCreatorRest = spClassCreatorRest(new ClassCreatorRest);
+  innerCreator->classCreatorRest = make_shared<ClassCreatorRest>();
   parseClassCreatorRest(innerCreator->classCreatorRest);
   if (innerCreator->classCreatorRest->err) {
     innerCreator->addErr(-1);
@@ -3319,14 +3301,14 @@ void Parser::parseFloatingPointLiteral(spFloatingPointLiteral &fpLiteral) {
 void Parser::parseLiteral(spLiteral &literal) {
   if (isIntegerLiteral(lexer->getCurToken())) {
     literal->opt = Literal::OPT_INTEGER;
-    literal->intLiteral = spIntegerLiteral(new IntegerLiteral);
+    literal->intLiteral = make_shared<IntegerLiteral>();
     parseIntegerLiteral(literal->intLiteral);
     return;
   }
 
   if (isFloatingPointLiteral(lexer->getCurToken())) {
     literal->opt = Literal::OPT_FLOATING_POINT;
-    literal->fpLiteral = spFloatingPointLiteral(new FloatingPointLiteral);
+    literal->fpLiteral = make_shared<FloatingPointLiteral>();
     parseFloatingPointLiteral(literal->fpLiteral);
     return;
   }
@@ -3334,7 +3316,7 @@ void Parser::parseLiteral(spLiteral &literal) {
   // CharacterLiteral
   if (lexer->getCurToken() == TOK_CHARACTER_LITERAL) {
     literal->opt = Literal::OPT_CHAR;
-    literal->charLiteral = spCharacterLiteral(new CharacterLiteral);
+    literal->charLiteral = make_shared<CharacterLiteral>();
     parseCharacterLiteral(literal->charLiteral);
     return;
   }
@@ -3342,21 +3324,21 @@ void Parser::parseLiteral(spLiteral &literal) {
   // StringLiteral
   if (lexer->getCurToken() == TOK_STRING_LITERAL) {
     literal->opt = Literal::OPT_STRING;
-    literal->strLiteral = spStringLiteral(new StringLiteral);
+    literal->strLiteral = make_shared<StringLiteral>();
     parseStringLiteral(literal->strLiteral);
     return;
   }
 
   if (lexer->getCurToken() == TOK_BOOLEAN_LITERAL) {
     literal->opt = Literal::OPT_BOOLEAN;
-    literal->boolLiteral = spBooleanLiteral(new BooleanLiteral);
+    literal->boolLiteral = make_shared<BooleanLiteral>();
     parseBooleanLiteral(literal->boolLiteral);
     return;
   }
 
   if (lexer->getCurToken() == TOK_NULL_LITERAL) {
     literal->opt = Literal::OPT_NULL;
-    literal->nullLiteral = spNullLiteral(new NullLiteral);
+    literal->nullLiteral = make_shared<NullLiteral>();
     parseNullLiteral(literal->nullLiteral);
   }
 }
@@ -3369,7 +3351,7 @@ void Parser::parseLocalVariableDeclarationStatement(
   spLocalVariableDeclarationStatement &localVar) {
 
   // { VariableModifier }
-  localVar->varModifier = spVariableModifier(new VariableModifier);
+  localVar->varModifier = make_shared<VariableModifier>();
   parseVariableModifier(localVar->varModifier);
   if (localVar->varModifier->err) {
     localVar->addErr(-1);
@@ -3377,7 +3359,7 @@ void Parser::parseLocalVariableDeclarationStatement(
   }
 
   // Type
-  localVar->type = spType(new Type);
+  localVar->type = make_shared<Type>();
   parseType(localVar->type);
   if (localVar->type->err) {
     localVar->addErr(-1);
@@ -3385,7 +3367,7 @@ void Parser::parseLocalVariableDeclarationStatement(
   }
 
   // VariableDeclarators
-  localVar->varDecls = spVariableDeclarators(new VariableDeclarators);
+  localVar->varDecls = make_shared<VariableDeclarators>();
   parseVariableDeclarators(localVar->varDecls);
   if (localVar->varDecls->err) {
     localVar->addErr(-1);
@@ -3420,8 +3402,8 @@ void Parser::parsePrimary(spPrimary &primary) {
   // (6) NonWildcardTypeArguments
   if (lexer->getCurToken() == TOK_OP_LT) {
     primary->opt = Primary::OPT_NON_WILDCARD_TYPE_ARGUMENTS;
-    primary->nonWildcardTypeArguments = spPrimaryNonWildcardTypeArguments(
-      new PrimaryNonWildcardTypeArguments);
+    primary->nonWildcardTypeArguments =
+      make_shared<PrimaryNonWildcardTypeArguments>();
     parsePrimaryNonWildcardTypeArguments(primary->nonWildcardTypeArguments);
     if (primary->nonWildcardTypeArguments->err) {
       primary->addErr(-1);
@@ -3431,7 +3413,7 @@ void Parser::parsePrimary(spPrimary &primary) {
 
   // (2) ParExpression
   if (lexer->getCurToken() == TOK_LPAREN) {
-    spParExpression parExpr = spParExpression(new ParExpression);
+    spParExpression parExpr = make_shared<ParExpression>();
     parseParExpression(parExpr);
     if (parExpr->err) { return; }
 
@@ -3443,7 +3425,7 @@ void Parser::parsePrimary(spPrimary &primary) {
   // (3) this [Arguments]
   if (lexer->getCurToken() == TOK_KEY_THIS) {
     primary->opt = Primary::OPT_THIS_ARGUMENTS;
-    primary->thisArgs = spPrimaryThisArguments(new PrimaryThisArguments);
+    primary->thisArgs = make_shared<PrimaryThisArguments>();
     parsePrimaryThisArguments(primary->thisArgs);
     return;
   }
@@ -3451,8 +3433,7 @@ void Parser::parsePrimary(spPrimary &primary) {
   // (4) super SuperSuffix
   if (lexer->getCurToken() == TOK_KEY_SUPER) {
     primary->opt = Primary::OPT_SUPER_SUPER_SUFFIX;
-    primary->superSuperSuffix = spPrimarySuperSuperSuffix(
-      new PrimarySuperSuperSuffix);
+    primary->superSuperSuffix = make_shared<PrimarySuperSuperSuffix>();
     parsePrimarySuperSuperSuffix(primary->superSuperSuffix);
     return;
   }
@@ -3460,7 +3441,7 @@ void Parser::parsePrimary(spPrimary &primary) {
   // (5) new Creator
   if (lexer->getCurToken() == TOK_KEY_NEW) {
     primary->opt = Primary::OPT_NEW_CREATOR;
-    primary->newCreator = spPrimaryNewCreator(new PrimaryNewCreator);
+    primary->newCreator = make_shared<PrimaryNewCreator>();
     parsePrimaryNewCreator(primary->newCreator);
     return;
   }
@@ -3468,7 +3449,7 @@ void Parser::parsePrimary(spPrimary &primary) {
   // (7) Identifier { . Identifier } [IdentifierSuffix]
   if (lexer->getCurToken() == TOK_IDENTIFIER) {
     primary->opt = Primary::OPT_IDENTIFIER;
-    primary->primaryId = spPrimaryIdentifier(new PrimaryIdentifier);
+    primary->primaryId = make_shared<PrimaryIdentifier>();
     parsePrimaryIdentifier(primary->primaryId);
     if (primary->primaryId->err) {
       primary->addErr(-1);
@@ -3479,7 +3460,7 @@ void Parser::parsePrimary(spPrimary &primary) {
   // (8) BasicType {[]} . class
   if (isBasicType(lexer->getCurToken())) {
     primary->opt = Primary::OPT_BASIC_TYPE;
-    primary->primaryBasicType = spPrimaryBasicType(new PrimaryBasicType);
+    primary->primaryBasicType = make_shared<PrimaryBasicType>();
     parsePrimaryBasicType(primary->primaryBasicType);
     return;
   }
@@ -3487,13 +3468,13 @@ void Parser::parsePrimary(spPrimary &primary) {
   // (9) void . class
   if (lexer->getCurToken() == TOK_KEY_VOID) {
     primary->opt = Primary::OPT_VOID_CLASS;
-    primary->primaryVoidClass = spPrimaryVoidClass(new PrimaryVoidClass);
+    primary->primaryVoidClass = make_shared<PrimaryVoidClass>();
     parsePrimaryVoidClass(primary->primaryVoidClass);
     return;
   }
 
   // (1) Literal
-  spLiteral literal = spLiteral(new Literal);
+  spLiteral literal = make_shared<Literal>();
   parseLiteral(literal);
   if (literal->isEmpty() == false) {
     primary->opt = Primary::OPT_LITERAL;
@@ -3507,9 +3488,9 @@ void Parser::parsePrimary(spPrimary &primary) {
  */
 void Parser::parsePrimaryBasicType(spPrimaryBasicType &primaryBasicType) {
   // Basic Type
-  spTokenExp token = spTokenExp(new TokenExp(lexer->getCursor()
-    - tokenUtil.getTokenLength(lexer->getCurToken()), lexer->getCurToken()));
-  primaryBasicType->basicType = spBasicType(new BasicType(token));
+  spTokenExp token = make_shared<TokenExp>(lexer->getCursor()
+    - tokenUtil.getTokenLength(lexer->getCurToken()), lexer->getCurToken());
+  primaryBasicType->basicType = make_shared<BasicType>(token);
   lexer->getNextToken(); // consume 'BasicType'
 
   // {[]}
@@ -3532,9 +3513,9 @@ void Parser::parsePrimaryBasicType(spPrimaryBasicType &primaryBasicType) {
     return;
   }
 
-  primaryBasicType->tokClass = spTokenExp(new TokenExp(
+  primaryBasicType->tokClass = make_shared<TokenExp>(
     lexer->getCursor() - tokenUtil.getTokenLength(
-      lexer->getCurToken()), lexer->getCurToken()));
+      lexer->getCurToken()), lexer->getCurToken());
   lexer->getNextToken(); // consume 'class'
 }
 
@@ -3544,8 +3525,8 @@ void Parser::parsePrimaryBasicType(spPrimaryBasicType &primaryBasicType) {
 void Parser::parsePrimaryIdentifier(spPrimaryIdentifier &primaryId) {
 
   // Identifier
-  primaryId->id = spIdentifier(new Identifier(
-      lexer->getCurTokenIni(), lexer->getCurTokenStr()));
+  primaryId->id = make_shared<Identifier>(
+      lexer->getCurTokenIni(), lexer->getCurTokenStr());
   lexer->getNextToken(); // consume Identifier
 
   // { . Identifier }
@@ -3561,8 +3542,8 @@ void Parser::parsePrimaryIdentifier(spPrimaryIdentifier &primaryId) {
       break;
     }
 
-    spIdentifier id = spIdentifier(new Identifier(
-      lexer->getCurTokenIni(), lexer->getCurTokenStr()));
+    spIdentifier id = make_shared<Identifier>(
+      lexer->getCurTokenIni(), lexer->getCurTokenStr());
     lexer->getNextToken(); // consume Identifier
 
     primaryId->pairs.push_back(std::make_pair(pos, id));
@@ -3573,7 +3554,7 @@ void Parser::parsePrimaryIdentifier(spPrimaryIdentifier &primaryId) {
     || lexer->getCurToken() == TOK_LPAREN
     || lexer->getCurToken() == TOK_PERIOD) {
 
-    primaryId->idSuffix = spIdentifierSuffix(new IdentifierSuffix);
+    primaryId->idSuffix = make_shared<IdentifierSuffix>();
     parseIdentifierSuffix(primaryId->idSuffix);
     if (primaryId->idSuffix->err) {
       primaryId->addErr(-1);
@@ -3588,15 +3569,15 @@ void Parser::parsePrimaryThisArguments(
   spPrimaryThisArguments &primaryThisArgs) {
 
   // Token 'this'
-  primaryThisArgs->tokThis = spTokenExp(new TokenExp(
+  primaryThisArgs->tokThis = make_shared<TokenExp>(
     lexer->getCursor() - tokenUtil.getTokenLength(
-      lexer->getCurToken()), lexer->getCurToken()));
+      lexer->getCurToken()), lexer->getCurToken());
 
   lexer->getNextToken(); // consume 'this'
 
   // [Arguments]
   if (lexer->getCurToken() == TOK_LPAREN) {
-    primaryThisArgs->args = spArguments(new Arguments);
+    primaryThisArgs->args = make_shared<Arguments>();
     parseArguments(primaryThisArgs->args);
   }
 }
@@ -3608,16 +3589,16 @@ void Parser::parsePrimarySuperSuperSuffix(
   spPrimarySuperSuperSuffix &primarySuperSuperSuffix) {
 
   // Token 'super'
-  primarySuperSuperSuffix->tokSuper = spTokenExp(new TokenExp(
+  primarySuperSuperSuffix->tokSuper = make_shared<TokenExp>(
     lexer->getCursor() - tokenUtil.getTokenLength(
-      lexer->getCurToken()), lexer->getCurToken()));
+      lexer->getCurToken()), lexer->getCurToken());
 
   lexer->getNextToken(); // consume 'super'
 
   // SuperSuffix
   if (lexer->getCurToken() == TOK_LPAREN
     || lexer->getCurToken() == TOK_PERIOD) {
-    primarySuperSuperSuffix->superSuffix = spSuperSuffix(new SuperSuffix);
+    primarySuperSuperSuffix->superSuffix = make_shared<SuperSuffix>();
     parseSuperSuffix(primarySuperSuperSuffix->superSuffix);
   }
 }
@@ -3627,14 +3608,14 @@ void Parser::parsePrimarySuperSuperSuffix(
  */
 void Parser::parsePrimaryNewCreator(spPrimaryNewCreator &primaryNewCreator) {
   // Token 'new'
-  primaryNewCreator->tokNew = spTokenExp(new TokenExp(
+  primaryNewCreator->tokNew = make_shared<TokenExp>(
     lexer->getCursor() - tokenUtil.getTokenLength(
-      lexer->getCurToken()), lexer->getCurToken()));
+      lexer->getCurToken()), lexer->getCurToken());
 
   lexer->getNextToken(); // consume 'new'
 
   // Creator
-  primaryNewCreator->creator = spCreator(new Creator);
+  primaryNewCreator->creator = make_shared<Creator>();
   parseCreator(primaryNewCreator->creator);
 }
 
@@ -3647,8 +3628,8 @@ void Parser::parsePrimaryNonWildcardTypeArguments(
   spPrimaryNonWildcardTypeArguments &primaryNonWildcard) {
 
   // NonWildcardTypeArguments
-  primaryNonWildcard->nonWildcardTypeArguments = spNonWildcardTypeArguments(
-    new NonWildcardTypeArguments);
+  primaryNonWildcard->nonWildcardTypeArguments =
+    make_shared<NonWildcardTypeArguments>();
   parseNonWildcardTypeArguments(primaryNonWildcard->nonWildcardTypeArguments);
 
   if (primaryNonWildcard->nonWildcardTypeArguments->err) {
@@ -3662,8 +3643,8 @@ void Parser::parsePrimaryNonWildcardTypeArguments(
 
     primaryNonWildcard->opt =
       PrimaryNonWildcardTypeArguments::OPT_EXPLICIT_GENERIC_INVOCATION_SUFFIX;
-    primaryNonWildcard->explGen = spExplicitGenericInvocationSuffix(
-      new ExplicitGenericInvocationSuffix());
+    primaryNonWildcard->explGen =
+      make_shared<ExplicitGenericInvocationSuffix>();
     parseExplicitGenericInvocationSuffix(primaryNonWildcard->explGen);
     return;
   }
@@ -3674,9 +3655,9 @@ void Parser::parsePrimaryNonWildcardTypeArguments(
       PrimaryNonWildcardTypeArguments::OPT_THIS_ARGUMENTS;
 
     // Token 'this'
-    primaryNonWildcard->tokThis = spTokenExp(new TokenExp(
+    primaryNonWildcard->tokThis = make_shared<TokenExp>(
       lexer->getCursor() - tokenUtil.getTokenLength(
-        lexer->getCurToken()), lexer->getCurToken()));
+        lexer->getCurToken()), lexer->getCurToken());
 
     lexer->getNextToken(); // consume 'this'
 
@@ -3687,7 +3668,7 @@ void Parser::parsePrimaryNonWildcardTypeArguments(
       return;
     }
 
-    primaryNonWildcard->args = spArguments(new Arguments());
+    primaryNonWildcard->args = make_shared<Arguments>();
     parseArguments(primaryNonWildcard->args);
 
     if (primaryNonWildcard->err) {
@@ -3711,9 +3692,9 @@ void Parser::parsePrimaryVoidClass(spPrimaryVoidClass &primaryVoidClass) {
   }
 
   // 'void'
-  primaryVoidClass->tokVoid = spTokenExp(new TokenExp(
+  primaryVoidClass->tokVoid = make_shared<TokenExp>(
     lexer->getCursor() - tokenUtil.getTokenLength(
-      lexer->getCurToken()), lexer->getCurToken()));
+      lexer->getCurToken()), lexer->getCurToken());
   lexer->getNextToken(); // consume 'void'
 
   // '.'
@@ -3733,9 +3714,9 @@ void Parser::parsePrimaryVoidClass(spPrimaryVoidClass &primaryVoidClass) {
     return;
   }
 
-  primaryVoidClass->tokClass = spTokenExp(new TokenExp(
+  primaryVoidClass->tokClass = make_shared<TokenExp>(
     lexer->getCursor() - tokenUtil.getTokenLength(
-      lexer->getCurToken()), lexer->getCurToken()));
+      lexer->getCurToken()), lexer->getCurToken());
   lexer->getNextToken(); // consume 'class'
 }
 
@@ -3752,8 +3733,8 @@ void Parser::parseQualifiedIdentifier(
   }
 
   // QualifiedIdentifier
-  qualifiedId->id = spIdentifier(new Identifier(
-    lexer->getCurTokenIni(), lexer->getCurTokenStr()));
+  qualifiedId->id = make_shared<Identifier>(
+    lexer->getCurTokenIni(), lexer->getCurTokenStr());
   lexer->getNextToken(); // consume identifier
 
   // { . Identifier }
@@ -3769,8 +3750,8 @@ void Parser::parseQualifiedIdentifier(
       return;
     }
 
-    spIdentifier id = spIdentifier(new Identifier(
-      lexer->getCurTokenIni(), lexer->getCurTokenStr()));
+    spIdentifier id = make_shared<Identifier>(
+      lexer->getCurTokenIni(), lexer->getCurTokenStr());
     lexer->getNextToken(); // consume identifier
 
     qualifiedId->pairs.push_back(std::make_pair(pos, id));
@@ -3791,7 +3772,7 @@ void Parser::parseQualifiedIdentifierList(
     return;
   }
 
-  qualifiedIdList->qualifiedId = spQualifiedIdentifier(new QualifiedIdentifier);
+  qualifiedIdList->qualifiedId = make_shared<QualifiedIdentifier>();
   parseQualifiedIdentifier(qualifiedIdList->qualifiedId);
 
   // { , QualifiedIdentifier }
@@ -3807,8 +3788,7 @@ void Parser::parseQualifiedIdentifierList(
       return;
     }
 
-    spQualifiedIdentifier qualifiedId
-      = spQualifiedIdentifier(new QualifiedIdentifier);
+    spQualifiedIdentifier qualifiedId = make_shared<QualifiedIdentifier>();
     parseQualifiedIdentifier(qualifiedId);
 
     qualifiedIdList->pairs.push_back(std::make_pair(pos, qualifiedId));
@@ -3821,13 +3801,13 @@ void Parser::parseQualifiedIdentifierList(
  */
 void Parser::parseReferenceType(spReferenceType &refType) {
   // indentifier
-  refType->id = spIdentifier(new Identifier(
-    lexer->getCurTokenIni(), lexer->getCurTokenStr()));
+  refType->id = make_shared<Identifier>(
+    lexer->getCurTokenIni(), lexer->getCurTokenStr());
   lexer->getNextToken(); // consume identifier
 
   // [TypeArguments]
   if (lexer->getCurToken() == TOK_OP_LT) {
-    refType->typeArgs = spTypeArguments(new TypeArguments);
+    refType->typeArgs = make_shared<TypeArguments>();
     parseTypeArguments(refType->typeArgs);
     if (refType->typeArgs->err) { refType->addErr(-1); }
   }
@@ -3836,8 +3816,7 @@ void Parser::parseReferenceType(spReferenceType &refType) {
   State state;
   while (lexer->getCurToken() == TOK_PERIOD) {
     saveState(state);
-    spReferenceTypeTriplet tri
-      = spReferenceTypeTriplet(new ReferenceTypeTriplet);
+    spReferenceTypeTriplet tri = make_shared<ReferenceTypeTriplet>();
 
     // '.'
     tri->posPeriod = lexer->getCursor() - 1;
@@ -3849,13 +3828,13 @@ void Parser::parseReferenceType(spReferenceType &refType) {
       return;
     }
 
-    tri->id = spIdentifier(new Identifier(
-      lexer->getCurTokenIni(), lexer->getCurTokenStr()));
+    tri->id = make_shared<Identifier>(
+      lexer->getCurTokenIni(), lexer->getCurTokenStr());
     lexer->getNextToken(); // consume Identifier
 
     // [TypeArguments]
     if (lexer->getCurToken() == TOK_OP_LT) {
-      tri->typeArgs = spTypeArguments(new TypeArguments);
+      tri->typeArgs = make_shared<TypeArguments>();
       parseTypeArguments(tri->typeArgs);
       if (tri->typeArgs->err) {
         restoreState(state);
@@ -3873,11 +3852,11 @@ void Parser::parseReferenceType(spReferenceType &refType) {
  */
 void Parser::parseResource(spResource &res) {
   // {VariableModifier}
-  res->varModifier = spVariableModifier(new VariableModifier);
+  res->varModifier = make_shared<VariableModifier>();
   parseVariableModifier(res->varModifier);
 
   // ReferenceType
-  res->refType = spReferenceType(new ReferenceType);
+  res->refType = make_shared<ReferenceType>();
   parseReferenceType(res->refType);
   if (res->refType->err) {
     res->addErr(-1);
@@ -3885,7 +3864,7 @@ void Parser::parseResource(spResource &res) {
   }
 
   // VariableDeclaratorId
-  res->varDeclId = spVariableDeclaratorId(new VariableDeclaratorId);
+  res->varDeclId = make_shared<VariableDeclaratorId>();
   parseVariableDeclaratorId(res->varDeclId);
   if (res->varDeclId->err) {
     res->addErr(-1);
@@ -3897,7 +3876,7 @@ void Parser::parseResource(spResource &res) {
   lexer->getNextToken(); // consume '='
 
   // Expression
-  res->expr = spExpression(new Expression);
+  res->expr = make_shared<Expression>();
   parseExpression(res->expr);
   if (res->expr->isEmpty()) {
     res->addErr(-1);
@@ -3910,7 +3889,7 @@ void Parser::parseResource(spResource &res) {
  */
 void Parser::parseResources(spResources &resources) {
   // Resource
-  resources->res = spResource(new Resource);
+  resources->res = make_shared<Resource>();
   parseResource(resources->res);
   if (resources->res->err) {
     resources->addErr(-1);
@@ -3924,7 +3903,7 @@ void Parser::parseResources(spResources &resources) {
     unsigned pos = lexer->getCursor() - 1;
     lexer->getNextToken(); // consume ';'
 
-    spResource res = spResource(new Resource);
+    spResource res = make_shared<Resource>();
     parseResource(res);
     if (res->err) {
       // We let upper layers handle the error
@@ -3951,7 +3930,7 @@ void Parser::parseResourceSpecification(spResourceSpecification &resSpec) {
   lexer->getNextToken(); // consume '('
 
   // Resources
-  resSpec->resources = spResources(new Resources);
+  resSpec->resources = make_shared<Resources>();
   parseResources(resSpec->resources);
   if (resSpec->resources->err) {
     resSpec->addErr(-1);
@@ -3991,13 +3970,13 @@ void Parser::parseSelector(spSelector &selector) {
     // . Identifier [Arguments]
     if (lexer->getCurToken() == TOK_IDENTIFIER) {
       selector->opt = Selector::OPT_IDENTIFIER_ARGUMENTS;
-      selector->id = spIdentifier(new Identifier(
-        lexer->getCurTokenIni(), lexer->getCurTokenStr()));
+      selector->id = make_shared<Identifier>(
+        lexer->getCurTokenIni(), lexer->getCurTokenStr());
       lexer->getNextToken(); // consume Identifier
 
       // [Arguments]
       if (lexer->getCurToken() == TOK_LPAREN) {
-        selector->args = spArguments(new Arguments);
+        selector->args = make_shared<Arguments>();
         parseArguments(selector->args);
         if (selector->args->err) { selector->addErr(-1); }
       }
@@ -4008,8 +3987,7 @@ void Parser::parseSelector(spSelector &selector) {
     // . ExplicitGenericInvocation
     if (lexer->getCurToken() == TOK_OP_LT) {
       selector->opt = Selector::OPT_IDENTIFIER_ARGUMENTS;
-      selector->explGenInvocation = spExplicitGenericInvocation(
-        new ExplicitGenericInvocation());
+      selector->explGenInvocation = make_shared<ExplicitGenericInvocation>();
       parseExplicitGenericInvocation(selector->explGenInvocation);
       if (selector->explGenInvocation->err) { selector->addErr(-1); }
       return;
@@ -4018,9 +3996,9 @@ void Parser::parseSelector(spSelector &selector) {
     // . this
     if (lexer->getCurToken() == TOK_KEY_THIS) {
       selector->opt = Selector::OPT_THIS;
-      selector->tokThis = spTokenExp(new TokenExp(
+      selector->tokThis = make_shared<TokenExp>(
         lexer->getCursor() - tokenUtil.getTokenLength(
-        lexer->getCurToken()), lexer->getCurToken()));
+        lexer->getCurToken()), lexer->getCurToken());
       lexer->getNextToken(); // consume 'this'
       return;
     }
@@ -4028,12 +4006,12 @@ void Parser::parseSelector(spSelector &selector) {
     // . super SuperSuffix
     if (lexer->getCurToken() == TOK_KEY_SUPER) {
       selector->opt = Selector::OPT_SUPER_SUPER_SUFFIX;
-      selector->tokSuper = spTokenExp(new TokenExp(
+      selector->tokSuper = make_shared<TokenExp>(
         lexer->getCursor() - tokenUtil.getTokenLength(
-        lexer->getCurToken()), lexer->getCurToken()));
+        lexer->getCurToken()), lexer->getCurToken());
       lexer->getNextToken(); // consume 'super'
 
-      selector->superSuffix = spSuperSuffix(new SuperSuffix());
+      selector->superSuffix = make_shared<SuperSuffix>();
       parseSuperSuffix(selector->superSuffix);
       if (selector->superSuffix->err) { selector->addErr(-1); }
 
@@ -4043,15 +4021,15 @@ void Parser::parseSelector(spSelector &selector) {
     // . new [NonWildcardTypeArguments] InnerCreator
     if (lexer->getCurToken() == TOK_KEY_NEW) {
       selector->opt = Selector::OPT_NEW;
-      selector->tokNew = spTokenExp(new TokenExp(
+      selector->tokNew = make_shared<TokenExp>(
         lexer->getCursor() - tokenUtil.getTokenLength(
-        lexer->getCurToken()), lexer->getCurToken()));
+        lexer->getCurToken()), lexer->getCurToken());
       lexer->getNextToken(); // consume 'new'
 
       // [NonWildcardTypeArguments]
       if (lexer->getCurToken() == TOK_OP_LT) {
-        selector->nonWildcardTypeArguments = spNonWildcardTypeArguments(
-          new NonWildcardTypeArguments());
+        selector->nonWildcardTypeArguments =
+          make_shared<NonWildcardTypeArguments>();
         parseNonWildcardTypeArguments(selector->nonWildcardTypeArguments);
         if (selector->nonWildcardTypeArguments->err) {
           selector->addErr(-1);
@@ -4060,7 +4038,7 @@ void Parser::parseSelector(spSelector &selector) {
       }
 
       // InnerCreator
-      selector->innerCreator = spInnerCreator(new InnerCreator());
+      selector->innerCreator = make_shared<InnerCreator>();
       parseInnerCreator(selector->innerCreator);
       if (selector->innerCreator->err) { selector->addErr(-1); }
       return;
@@ -4077,7 +4055,7 @@ void Parser::parseSelector(spSelector &selector) {
     lexer->getNextToken(); // consume '['
 
     // Expression
-    selector->expr = spExpression(new Expression);
+    selector->expr = make_shared<Expression>();
     parseExpression(selector->expr);
     if (selector->expr->isEmpty()) {
       selector->addErr(-1);
@@ -4122,7 +4100,7 @@ void Parser::parseStatement(spStatement &stmt) {
   // (1) Block
   if (lexer->getCurToken() == TOK_LCURLY_BRACKET) {
     stmt->opt = Statement::OPT_BLOCK;
-    stmt->block = spBlock(new Block);
+    stmt->block = make_shared<Block>();
     parseBlock(stmt->block);
     return;
   }
@@ -4141,13 +4119,13 @@ void Parser::parseStatement(spStatement &stmt) {
   if (lexer->getCurToken() == TOK_KEY_IF) {
     // 'if'
     stmt->opt = Statement::OPT_IF;
-    stmt->tokIf = spTokenExp(new TokenExp(
+    stmt->tokIf = make_shared<TokenExp>(
       lexer->getCursor() - tokenUtil.getTokenLength(
-      lexer->getCurToken()), lexer->getCurToken()));
+      lexer->getCurToken()), lexer->getCurToken());
     lexer->getNextToken(); // consume 'if'
 
     // ParExpression
-    stmt->parExpr = spParExpression(new ParExpression);
+    stmt->parExpr = make_shared<ParExpression>();
     parseParExpression(stmt->parExpr);
     if (stmt->parExpr->err) {
       stmt->addErr(-1);
@@ -4155,7 +4133,7 @@ void Parser::parseStatement(spStatement &stmt) {
     }
 
     // Statement
-    stmt->stmtIf = spStatement(new Statement);
+    stmt->stmtIf = make_shared<Statement>();
     parseStatement(stmt->stmtIf);
     if (stmt->stmtIf->err) {
       stmt->addErr(-1);
@@ -4164,12 +4142,12 @@ void Parser::parseStatement(spStatement &stmt) {
 
     // [else Statement]
     if (lexer->getCurToken() == TOK_KEY_ELSE) {
-      stmt->tokElse = spTokenExp(new TokenExp(
+      stmt->tokElse = make_shared<TokenExp>(
         lexer->getCursor() - tokenUtil.getTokenLength(
-        lexer->getCurToken()), lexer->getCurToken()));
+        lexer->getCurToken()), lexer->getCurToken());
       lexer->getNextToken(); // consume 'else'
 
-      stmt->stmtElse = spStatement(new Statement);
+      stmt->stmtElse = make_shared<Statement>();
       parseStatement(stmt->stmtElse);
       if (stmt->stmtElse->err) { stmt->addErr(-1); }
     }
@@ -4181,13 +4159,13 @@ void Parser::parseStatement(spStatement &stmt) {
   if (lexer->getCurToken() == TOK_KEY_ASSERT) {
     stmt->opt = Statement::OPT_ASSERT;
     // assert
-    stmt->tokAssert = spTokenExp(new TokenExp(
+    stmt->tokAssert = make_shared<TokenExp>(
       lexer->getCursor() - tokenUtil.getTokenLength(
-      lexer->getCurToken()), lexer->getCurToken()));
+      lexer->getCurToken()), lexer->getCurToken());
     lexer->getNextToken(); // consume 'assert'
 
     // Expression
-    spExpression expr = spExpression(new Expression);
+    spExpression expr = make_shared<Expression>();
     parseExpression(expr);
     if (expr->isEmpty()) {
       stmt->addErr(-1);
@@ -4201,7 +4179,7 @@ void Parser::parseStatement(spStatement &stmt) {
       stmt->posColon = lexer->getCursor() - 1;
       lexer->getNextToken(); // consume ':'
 
-      spExpression expr = spExpression(new Expression);
+      spExpression expr = make_shared<Expression>();
       parseExpression(expr);
       if (expr->isEmpty()) {
         stmt->addErr(-1);
@@ -4226,13 +4204,13 @@ void Parser::parseStatement(spStatement &stmt) {
   if (lexer->getCurToken() == TOK_KEY_SWITCH) {
     // switch
     stmt->opt = Statement::OPT_SWITCH;
-    stmt->tokSwitch = spTokenExp(new TokenExp(
+    stmt->tokSwitch = make_shared<TokenExp>(
       lexer->getCursor() - tokenUtil.getTokenLength(
-      lexer->getCurToken()), lexer->getCurToken()));
+      lexer->getCurToken()), lexer->getCurToken());
     lexer->getNextToken(); // consume 'switch'
 
     // ParExpression
-    stmt->parExpr = spParExpression(new ParExpression);
+    stmt->parExpr = make_shared<ParExpression>();
     parseParExpression(stmt->parExpr);
     if (stmt->parExpr->err) {
       stmt->addErr(-1);
@@ -4254,8 +4232,7 @@ void Parser::parseStatement(spStatement &stmt) {
     lexer->getNextToken(); // consume '{'
 
     // SwitchBlockStatementGroups
-    stmt->switchStmtGroups = spSwitchBlockStatementGroups(
-      new SwitchBlockStatementGroups);
+    stmt->switchStmtGroups = make_shared<SwitchBlockStatementGroups>();
     parseSwitchBlockStatementGroups(stmt->switchStmtGroups);
     if (stmt->switchStmtGroups->err) {
       stmt->addErr(-1);
@@ -4285,13 +4262,13 @@ void Parser::parseStatement(spStatement &stmt) {
   if (lexer->getCurToken() == TOK_KEY_WHILE) {
     // while
     stmt->opt = Statement::OPT_WHILE;
-    stmt->tokWhile = spTokenExp(new TokenExp(
+    stmt->tokWhile = make_shared<TokenExp>(
       lexer->getCursor() - tokenUtil.getTokenLength(
-      lexer->getCurToken()), lexer->getCurToken()));
+      lexer->getCurToken()), lexer->getCurToken());
     lexer->getNextToken(); // consume 'while'
 
     // ParExpression
-    stmt->parExpr = spParExpression(new ParExpression);
+    stmt->parExpr = make_shared<ParExpression>();
     parseParExpression(stmt->parExpr);
     if (stmt->parExpr->err) {
       stmt->addErr(-1);
@@ -4299,7 +4276,7 @@ void Parser::parseStatement(spStatement &stmt) {
     }
 
     // Statement
-    stmt->stmtWhile = spStatement(new Statement);
+    stmt->stmtWhile = make_shared<Statement>();
     parseStatement(stmt->stmtWhile);
     if (stmt->stmtWhile->err) {
       stmt->addErr(-1);
@@ -4313,13 +4290,13 @@ void Parser::parseStatement(spStatement &stmt) {
     stmt->opt = Statement::OPT_DO;
 
     // do
-    stmt->tokDo = spTokenExp(new TokenExp(
+    stmt->tokDo = make_shared<TokenExp>(
       lexer->getCursor() - tokenUtil.getTokenLength(
-      lexer->getCurToken()), lexer->getCurToken()));
+      lexer->getCurToken()), lexer->getCurToken());
     lexer->getNextToken(); // consume 'do'
 
     // Statement
-    stmt->stmtDo = spStatement(new Statement);
+    stmt->stmtDo = make_shared<Statement>();
     parseStatement(stmt->stmtDo);
     if (stmt->stmtDo->err) {
       stmt->addErr(-1);
@@ -4332,13 +4309,13 @@ void Parser::parseStatement(spStatement &stmt) {
       return;
     }
 
-    stmt->tokWhile = spTokenExp(new TokenExp(
+    stmt->tokWhile = make_shared<TokenExp>(
       lexer->getCursor() - tokenUtil.getTokenLength(
-      lexer->getCurToken()), lexer->getCurToken()));
+      lexer->getCurToken()), lexer->getCurToken());
     lexer->getNextToken(); // consume 'while'
 
     // ParExpression
-    stmt->parExpr = spParExpression(new ParExpression);
+    stmt->parExpr = make_shared<ParExpression>();
     parseParExpression(stmt->parExpr);
     if (stmt->parExpr->err) {
       stmt->addErr(-1);
@@ -4361,9 +4338,9 @@ void Parser::parseStatement(spStatement &stmt) {
     stmt->opt = Statement::OPT_FOR;
 
     // for
-    stmt->tokFor = spTokenExp(new TokenExp(
+    stmt->tokFor = make_shared<TokenExp>(
       lexer->getCursor() - tokenUtil.getTokenLength(
-      lexer->getCurToken()), lexer->getCurToken()));
+      lexer->getCurToken()), lexer->getCurToken());
     lexer->getNextToken(); // consume 'for'
 
     // '('
@@ -4377,7 +4354,7 @@ void Parser::parseStatement(spStatement &stmt) {
     lexer->getNextToken(); // consume '('
 
     // ForControl
-    stmt->forCtrl = spForControl(new ForControl);
+    stmt->forCtrl = make_shared<ForControl>();
     parseForControl(stmt->forCtrl);
     if (stmt->forCtrl->err) {
       // We don't exit and try to parse the next token.
@@ -4395,7 +4372,7 @@ void Parser::parseStatement(spStatement &stmt) {
     lexer->getNextToken(); // consume ')'
 
     // Statement
-    stmt->stmtFor = spStatement(new Statement);
+    stmt->stmtFor = make_shared<Statement>();
     parseStatement(stmt->stmtFor);
     if (stmt->stmtFor->err) {
       stmt->addErr(-1);
@@ -4407,14 +4384,14 @@ void Parser::parseStatement(spStatement &stmt) {
   // (11) break [Identifier] ;
   if (lexer->getCurToken() == TOK_KEY_BREAK) {
     stmt->opt = Statement::OPT_BREAK;
-    stmt->tokBreak = spTokenExp(new TokenExp(
+    stmt->tokBreak = make_shared<TokenExp>(
       lexer->getCursor() - tokenUtil.getTokenLength(
-      lexer->getCurToken()), lexer->getCurToken()));
+      lexer->getCurToken()), lexer->getCurToken());
     lexer->getNextToken(); // consume 'break'
 
     if (lexer->getCurToken() == TOK_IDENTIFIER) {
-      stmt->id = spIdentifier(new Identifier(
-        lexer->getCurTokenIni(), lexer->getCurTokenStr()));
+      stmt->id = make_shared<Identifier>(
+        lexer->getCurTokenIni(), lexer->getCurTokenStr());
       lexer->getNextToken(); // consume Identifier
     }
 
@@ -4433,15 +4410,15 @@ void Parser::parseStatement(spStatement &stmt) {
   if (lexer->getCurToken() == TOK_KEY_CONTINUE) {
     // continue
     stmt->opt = Statement::OPT_CONTINUE;
-    stmt->tokContinue = spTokenExp(new TokenExp(
+    stmt->tokContinue = make_shared<TokenExp>(
       lexer->getCursor() - tokenUtil.getTokenLength(
-      lexer->getCurToken()), lexer->getCurToken()));
+      lexer->getCurToken()), lexer->getCurToken());
     lexer->getNextToken(); // consume 'continue'
 
     // [Identifier]
     if (lexer->getCurToken() == TOK_IDENTIFIER) {
-      stmt->id = spIdentifier(new Identifier(
-        lexer->getCurTokenIni(), lexer->getCurTokenStr()));
+      stmt->id = make_shared<Identifier>(
+        lexer->getCurTokenIni(), lexer->getCurTokenStr());
       lexer->getNextToken(); // consume Identifier
     }
 
@@ -4461,14 +4438,14 @@ void Parser::parseStatement(spStatement &stmt) {
   if (lexer->getCurToken() == TOK_KEY_RETURN) {
     stmt->opt = Statement::OPT_RETURN;
     // 'return'
-    stmt->tokReturn = spTokenExp(new TokenExp(
+    stmt->tokReturn = make_shared<TokenExp>(
       lexer->getCursor() - tokenUtil.getTokenLength(
-      lexer->getCurToken()), lexer->getCurToken()));
+      lexer->getCurToken()), lexer->getCurToken());
     lexer->getNextToken(); // consume 'return'
 
     // [Expression]
     if (lexer->getCurToken() != TOK_SEMICOLON) {
-      stmt->exprReturn = spExpression(new Expression);
+      stmt->exprReturn = make_shared<Expression>();
       parseExpression(stmt->exprReturn);
       if (stmt->exprReturn->isEmpty()) {
         stmt->addErr(-1);
@@ -4490,12 +4467,12 @@ void Parser::parseStatement(spStatement &stmt) {
   // (14) throw Expression ;
   if (lexer->getCurToken() == TOK_KEY_THROW) {
     stmt->opt = Statement::OPT_THROW;
-    stmt->tokThrow = spTokenExp(new TokenExp(
+    stmt->tokThrow = make_shared<TokenExp>(
       lexer->getCursor() - tokenUtil.getTokenLength(
-      lexer->getCurToken()), lexer->getCurToken()));
+      lexer->getCurToken()), lexer->getCurToken());
     lexer->getNextToken(); // consume 'throw'
 
-    stmt->throwExpr = spExpression(new Expression);
+    stmt->throwExpr = make_shared<Expression>();
     parseExpression(stmt->throwExpr);
     if (stmt->throwExpr->isEmpty()) {
       stmt->addErr(-1);
@@ -4516,13 +4493,13 @@ void Parser::parseStatement(spStatement &stmt) {
   if (lexer->getCurToken() == TOK_KEY_SYNCHRONIZED) {
     // synchronized
     stmt->opt = Statement::OPT_SYNC;
-    stmt->tokSync = spTokenExp(new TokenExp(
+    stmt->tokSync = make_shared<TokenExp>(
       lexer->getCursor() - tokenUtil.getTokenLength(
-      lexer->getCurToken()), lexer->getCurToken()));
+      lexer->getCurToken()), lexer->getCurToken());
     lexer->getNextToken(); // consume 'synchronized'
 
     // ParExpression
-    stmt->parExpr = spParExpression(new ParExpression);
+    stmt->parExpr = make_shared<ParExpression>();
     parseParExpression(stmt->parExpr);
     if (stmt->parExpr->err) {
       stmt->addErr(-1);
@@ -4530,7 +4507,7 @@ void Parser::parseStatement(spStatement &stmt) {
     }
 
     // Block
-    stmt->block = spBlock(new Block);
+    stmt->block = make_shared<Block>();
     parseBlock(stmt->block);
     if (stmt->block->err) {
       stmt->addErr(-1);
@@ -4542,9 +4519,9 @@ void Parser::parseStatement(spStatement &stmt) {
   // (16) try Block ( Catches | [Catches] Finally )
   // (17) try ResourceSpecification Block [Catches] [Finally]
   if (lexer->getCurToken() == TOK_KEY_TRY) {
-    stmt->tokTry = spTokenExp(new TokenExp(
+    stmt->tokTry = make_shared<TokenExp>(
       lexer->getCursor() - tokenUtil.getTokenLength(
-      lexer->getCurToken()), lexer->getCurToken()));
+      lexer->getCurToken()), lexer->getCurToken());
     lexer->getNextToken(); // consume 'try'
 
     // (16) try Block ( Catches | [Catches] Finally )
@@ -4552,7 +4529,7 @@ void Parser::parseStatement(spStatement &stmt) {
       stmt->opt = Statement::OPT_TRY_BLOCK;
 
       // Block
-      stmt->block = spBlock(new Block);
+      stmt->block = make_shared<Block>();
       parseBlock(stmt->block);
       if (stmt->block->err) {
         stmt->addErr(-1);
@@ -4561,7 +4538,7 @@ void Parser::parseStatement(spStatement &stmt) {
 
       // Catches
       if (lexer->getCurToken() == TOK_KEY_CATCH) {
-        stmt->catches = spCatches(new Catches);
+        stmt->catches = make_shared<Catches>();
         parseCatches(stmt->catches);
         if (stmt->catches->err) {
           stmt->addErr(-1);
@@ -4571,7 +4548,7 @@ void Parser::parseStatement(spStatement &stmt) {
 
       // Finally
       if (lexer->getCurToken() == TOK_KEY_FINALLY) {
-        stmt->finally = spFinally(new Finally);
+        stmt->finally = make_shared<Finally>();
         parseFinally(stmt->finally);
         if (stmt->finally->err) {
           stmt->addErr(-1);
@@ -4583,7 +4560,7 @@ void Parser::parseStatement(spStatement &stmt) {
 
     // (17) try ResourceSpecification Block [Catches] [Finally]
     // ResourceSpecification
-    stmt->resSpec = spResourceSpecification(new ResourceSpecification);
+    stmt->resSpec = make_shared<ResourceSpecification>();
     parseResourceSpecification(stmt->resSpec);
     if (stmt->resSpec->err) {
       stmt->addErr(-1);
@@ -4591,7 +4568,7 @@ void Parser::parseStatement(spStatement &stmt) {
     }
 
     // Block
-    stmt->block = spBlock(new Block);
+    stmt->block = make_shared<Block>();
     parseBlock(stmt->block);
     if (stmt->block->err) {
       stmt->addErr(-1);
@@ -4600,7 +4577,7 @@ void Parser::parseStatement(spStatement &stmt) {
 
     // [Catches]
     if (lexer->getCurToken() == TOK_KEY_CATCH) {
-      stmt->catches = spCatches(new Catches);
+      stmt->catches = make_shared<Catches>();
       parseCatches(stmt->catches);
       if (stmt->catches->err) {
 	stmt->addErr(-1);
@@ -4610,7 +4587,7 @@ void Parser::parseStatement(spStatement &stmt) {
 
     // [Finally]
     if (lexer->getCurToken() == TOK_KEY_FINALLY) {
-      stmt->finally = spFinally(new Finally);
+      stmt->finally = make_shared<Finally>();
       parseFinally(stmt->finally);
       if (stmt->finally->err) {
 	stmt->addErr(-1);
@@ -4625,8 +4602,8 @@ void Parser::parseStatement(spStatement &stmt) {
   if (lexer->getCurToken() == TOK_IDENTIFIER) {
     State state;
     saveState(state);
-    spIdentifier id = spIdentifier(new Identifier(
-      lexer->getCurTokenIni(), lexer->getCurTokenStr()));
+    spIdentifier id = make_shared<Identifier>(
+      lexer->getCurTokenIni(), lexer->getCurTokenStr());
     lexer->getNextToken(); // consume Identifier
 
     // (3)
@@ -4635,7 +4612,7 @@ void Parser::parseStatement(spStatement &stmt) {
       stmt->id = id;
       stmt->posColon = lexer->getCursor() - 1;
       lexer->getNextToken(); // consume ':'
-      stmt->stmt = spStatement(new Statement);
+      stmt->stmt = make_shared<Statement>();
       parseStatement(stmt->stmt);
       if (stmt->stmt->err) { stmt->addErr(-1); }
       return;
@@ -4646,7 +4623,7 @@ void Parser::parseStatement(spStatement &stmt) {
 
   // (4)
   stmt->opt = Statement::OPT_STMT_EXPR;
-  stmt->stmtExpr = spStatementExpression(new StatementExpression);
+  stmt->stmtExpr = make_shared<StatementExpression>();
   parseStatementExpression(stmt->stmtExpr);
   if (stmt->stmtExpr->err) { stmt->addErr(-1); }
 
@@ -4663,7 +4640,7 @@ void Parser::parseStatement(spStatement &stmt) {
  * StatementExpression: Expression
  */
 void Parser::parseStatementExpression(spStatementExpression &stmtExpr) {
-  stmtExpr->expr = spExpression(new Expression);
+  stmtExpr->expr = make_shared<Expression>();
   parseExpression(stmtExpr->expr);
   if (stmtExpr->expr->isEmpty()) { stmtExpr->addErr(-1); }
 }
@@ -4678,7 +4655,7 @@ void Parser::parseTypeArgument(spTypeArgument &typeArg) {
   if (lexer->getCurToken() == TOK_IDENTIFIER
     || isBasicType(lexer->getCurToken())) {
     typeArg->opt = TypeArgument::OPT_TYPE;
-    typeArg->type = spType(new Type);
+    typeArg->type = make_shared<Type>();
     parseType(typeArg->type);
     // TODO: it's an error if we have a non-array basic type
     return;
@@ -4687,7 +4664,7 @@ void Parser::parseTypeArgument(spTypeArgument &typeArg) {
   // option 2
   if (lexer->getCurToken() == TOK_OP_QUESTION_MARK) {
     typeArg->opt = TypeArgument::OPT_QUESTION_MARK;
-    typeArg->opt2 = spTypeArgumentOpt2(new TypeArgumentOpt2);
+    typeArg->opt2 = make_shared<TypeArgumentOpt2>();
     parseTypeArgumentOpt2(typeArg->opt2);
     return;
   }
@@ -4711,9 +4688,9 @@ void Parser::parseTypeArgumentOpt2(spTypeArgumentOpt2 &opt2) {
   }
 
   // Token 'extends' or 'super'
-  opt2->tokExtendsOrSuper = spTokenExp(new TokenExp(
+  opt2->tokExtendsOrSuper = make_shared<TokenExp>(
     lexer->getCursor() - tokenUtil.getTokenLength(
-      lexer->getCurToken()), lexer->getCurToken()));
+      lexer->getCurToken()), lexer->getCurToken());
   lexer->getNextToken(); // consume token
 
   if (lexer->getCurToken() != TOK_IDENTIFIER) {
@@ -4722,7 +4699,7 @@ void Parser::parseTypeArgumentOpt2(spTypeArgumentOpt2 &opt2) {
   }
 
   // Type
-  opt2->type = spType(new Type);
+  opt2->type = make_shared<Type>();
   parseType(opt2->type);
   // TODO: it's an error if we have a non-array basic type
 }
@@ -4734,7 +4711,7 @@ void Parser::parseTypeArguments(spTypeArguments &typeArgs) {
   typeArgs->posLt = lexer->getCursor() - 1;
   lexer->getNextToken(); // consume '<'
 
-  spTypeArgument typeArg = spTypeArgument(new TypeArgument);
+  spTypeArgument typeArg = make_shared<TypeArgument>();
   typeArgs->typeArg = typeArg;
   parseTypeArgument(typeArgs->typeArg);
   if (typeArg->err) {
@@ -4752,7 +4729,7 @@ void Parser::parseTypeArguments(spTypeArguments &typeArgs) {
     lexer->getNextToken(); // consume ','
 
     // TypeArgument
-    spTypeArgument typeArgTmp = spTypeArgument(new TypeArgument);
+    spTypeArgument typeArgTmp = make_shared<TypeArgument>();
     parseTypeArgument(typeArgTmp);
     if (typeArgTmp->err) {
       typeArgs->addErr(-1);
@@ -4824,7 +4801,7 @@ void Parser::parseTypeArgumentsOrDiamond(
   // GCC(4.6.3). If we don't create typeArgs separately and then assign
   // it to typeArgsOrDiam things get weird with the last 'if' condition.
   // Clang is fine either way.
-  spTypeArguments typeArgs = spTypeArguments(new TypeArguments);
+  spTypeArguments typeArgs = make_shared<TypeArguments>();
   typeArgsOrDiam->typeArgs = typeArgs;
   parseTypeArguments(typeArgsOrDiam->typeArgs);
 
@@ -4843,12 +4820,11 @@ vector<spTypeDeclaration> Parser::parseTypeDeclarations(
   vector<spTypeDeclaration> typeDecls = vector<spTypeDeclaration>();
 
   if (annotations.size() > 0) {
-    spModifier modifier = spModifier(new Modifier);
+    spModifier modifier = make_shared<Modifier>();
     modifier->annotations = annotations;
 
-    spTypeDeclaration typeDecl = spTypeDeclaration(new TypeDeclaration);
-    typeDecl->classOrIntDecl = spClassOrInterfaceDeclaration(
-      new ClassOrInterfaceDeclaration);
+    spTypeDeclaration typeDecl = make_shared<TypeDeclaration>();
+    typeDecl->classOrIntDecl = make_shared<ClassOrInterfaceDeclaration>();
     typeDecl->classOrIntDecl->modifier = modifier;
 
     parseClassOrInterfaceDeclaration(typeDecl->classOrIntDecl);
@@ -4856,9 +4832,8 @@ vector<spTypeDeclaration> Parser::parseTypeDeclarations(
   }
 
   while (isValidInitTokenOfTypeDeclaration(lexer->getCurToken())) {
-    spTypeDeclaration typeDecl = spTypeDeclaration(new TypeDeclaration);
-    typeDecl->classOrIntDecl = spClassOrInterfaceDeclaration(
-      new ClassOrInterfaceDeclaration);
+    spTypeDeclaration typeDecl = make_shared<TypeDeclaration>();
+    typeDecl->classOrIntDecl = make_shared<ClassOrInterfaceDeclaration>();
     parseClassOrInterfaceDeclaration(typeDecl->classOrIntDecl);
     typeDecls.push_back(typeDecl);
   }
@@ -4878,7 +4853,7 @@ void Parser::parseClassOrInterfaceDeclaration(
 
   // Modifier
   if (!decl->modifier) {
-    decl->modifier = spModifier(new Modifier);
+    decl->modifier = make_shared<Modifier>();
   }
 
   parseModifier(decl->modifier);
@@ -4887,7 +4862,7 @@ void Parser::parseClassOrInterfaceDeclaration(
   if (lexer->getCurToken() == TOK_KEY_CLASS) {
     decl->opt = ClassOrInterfaceDeclaration::OPT_CLASS;
     st.updateScopeType(ST_CLASS);
-    decl->classDecl = spClassDeclaration(new ClassDeclaration);
+    decl->classDecl = make_shared<ClassDeclaration>();
     parseClassDeclaration(decl->classDecl);
     st.scopePop();
     return;
@@ -4897,7 +4872,7 @@ void Parser::parseClassOrInterfaceDeclaration(
   if (lexer->getCurToken() == TOK_KEY_ENUM) {
     decl->opt = ClassOrInterfaceDeclaration::OPT_CLASS;
     st.updateScopeType(ST_ENUM);
-    decl->classDecl = spClassDeclaration(new ClassDeclaration);
+    decl->classDecl = make_shared<ClassDeclaration>();
     parseClassDeclaration(decl->classDecl);
     st.scopePop();
     return;
@@ -4908,7 +4883,7 @@ void Parser::parseClassOrInterfaceDeclaration(
       || lexer->getCurToken() == TOK_ANNOTATION_TYPE_DECLARATION) {
     decl->opt = ClassOrInterfaceDeclaration::OPT_INTERFACE;
     st.updateScopeType(ST_INTERFACE);
-    decl->interfaceDecl = spInterfaceDeclaration(new InterfaceDeclaration);
+    decl->interfaceDecl = make_shared<InterfaceDeclaration>();
     parseInterfaceDeclaration(decl->interfaceDecl);
     st.scopePop();
     return;
@@ -4927,9 +4902,9 @@ void Parser::parseModifier(spModifier &modifier) {
     }
 
     // Tokens
-    spTokenExp token = spTokenExp(new TokenExp(
+    spTokenExp token = make_shared<TokenExp>(
       lexer->getCursor() - tokenUtil.getTokenLength(
-        lexer->getCurToken()), lexer->getCurToken()));
+        lexer->getCurToken()), lexer->getCurToken());
     modifier->tokens.push_back(token);
     lexer->getNextToken();
   }
@@ -4941,15 +4916,14 @@ void Parser::parseModifier(spModifier &modifier) {
 void Parser::parseClassDeclaration(spClassDeclaration &classDecl) {
   // NormalClassDeclaration
   if (lexer->getCurToken() == TOK_KEY_CLASS) {
-    classDecl->nClassDecl = spNormalClassDeclaration(
-      new NormalClassDeclaration);
+    classDecl->nClassDecl = make_shared<NormalClassDeclaration>();
     parseNormalClassDeclaration(classDecl->nClassDecl);
     return;
   }
 
   // EnumDeclaration
   if (lexer->getCurToken() == TOK_KEY_ENUM) {
-    classDecl->enumDecl = spEnumDeclaration(new EnumDeclaration);
+    classDecl->enumDecl = make_shared<EnumDeclaration>();
     parseEnumDeclaration(classDecl->enumDecl);
     return;
   }
@@ -4970,8 +4944,8 @@ void Parser::parseNormalClassDeclaration(spNormalClassDeclaration &nClassDecl) {
   }
 
   // 'class'
-  nClassDecl->tokClass = spTokenExp(new TokenExp(lexer->getCursor()
-    - tokenUtil.getTokenLength(TOK_KEY_CLASS), lexer->getCurToken()));
+  nClassDecl->tokClass = make_shared<TokenExp>(lexer->getCursor()
+    - tokenUtil.getTokenLength(TOK_KEY_CLASS), lexer->getCurToken());
   lexer->getNextToken(); // consume 'class'
 
   // Identifier
@@ -4981,8 +4955,8 @@ void Parser::parseNormalClassDeclaration(spNormalClassDeclaration &nClassDecl) {
     return;
   }
 
-  nClassDecl->id = spIdentifier(new Identifier(
-    lexer->getCurTokenIni(), lexer->getCurTokenStr()));
+  nClassDecl->id = make_shared<Identifier>(
+    lexer->getCurTokenIni(), lexer->getCurTokenStr());
 
   st.addSym(ST_IDENTIFIER, lexer->getCurTokenIni(), lexer->getCursor(),
     src->getLine(), lexer->getCurTokenStr());
@@ -4991,7 +4965,7 @@ void Parser::parseNormalClassDeclaration(spNormalClassDeclaration &nClassDecl) {
 
   // [TypeParameters]
   if (lexer->getCurToken() == TOK_OP_LT) {
-    nClassDecl->typeParams = spTypeParameters(new TypeParameters);
+    nClassDecl->typeParams = make_shared<TypeParameters>();
     parseTypeParameters(nClassDecl->typeParams);
     if (nClassDecl->typeParams->err) {
       nClassDecl->addErr(-1);
@@ -5001,8 +4975,8 @@ void Parser::parseNormalClassDeclaration(spNormalClassDeclaration &nClassDecl) {
 
   // [extends Type]
   if (lexer->getCurToken() == TOK_KEY_EXTENDS) {
-    nClassDecl->tokExtends = spTokenExp(new TokenExp(lexer->getCursor()
-      - tokenUtil.getTokenLength(TOK_KEY_EXTENDS), lexer->getCurToken()));
+    nClassDecl->tokExtends = make_shared<TokenExp>(lexer->getCursor()
+      - tokenUtil.getTokenLength(TOK_KEY_EXTENDS), lexer->getCurToken());
     lexer->getNextToken(); // consume 'extends'
 
     // Type. We can only inherit from a ReferenceType with no array depth.
@@ -5012,20 +4986,20 @@ void Parser::parseNormalClassDeclaration(spNormalClassDeclaration &nClassDecl) {
       return;
     }
 
-    nClassDecl->type = spType(new Type);
+    nClassDecl->type = make_shared<Type>();
     nClassDecl->type->opt = Type::OPT_REFERENCE_TYPE;
-    nClassDecl->type->refType = spReferenceType(new ReferenceType);
+    nClassDecl->type->refType = make_shared<ReferenceType>();
     parseReferenceType(nClassDecl->type->refType);
   }
 
   // [implements TypeList]
   if (lexer->getCurToken() == TOK_KEY_IMPLEMENTS) {
-    nClassDecl->implementsTok = spTokenExp(new TokenExp(
+    nClassDecl->implementsTok = make_shared<TokenExp>(
       lexer->getCursor() - tokenUtil.getTokenLength(TOK_KEY_IMPLEMENTS),
-      lexer->getCurToken()));
+      lexer->getCurToken());
     lexer->getNextToken(); // consume 'implements'
 
-    nClassDecl->typeList = spTypeList(new TypeList);
+    nClassDecl->typeList = make_shared<TypeList>();
     parseTypeList(nClassDecl->typeList);
     if (nClassDecl->typeList->err) {
       nClassDecl->addErr(-1);
@@ -5033,7 +5007,7 @@ void Parser::parseNormalClassDeclaration(spNormalClassDeclaration &nClassDecl) {
     }
   }
 
-  nClassDecl->classBody = spClassBody(new ClassBody);
+  nClassDecl->classBody = make_shared<ClassBody>();
   parseClassBody(nClassDecl->classBody);
 }
 
@@ -5045,9 +5019,9 @@ void Parser::parseNormalInterfaceDeclaration(
   spNormalInterfaceDeclaration &normalDecl) {
 
   // interface
-  normalDecl->tokInterface = spTokenExp(new TokenExp(
+  normalDecl->tokInterface = make_shared<TokenExp>(
     lexer->getCursor() - tokenUtil.getTokenLength(
-      lexer->getCurToken()), lexer->getCurToken()));
+      lexer->getCurToken()), lexer->getCurToken());
   lexer->getNextToken(); // consume 'interface'
 
   // Identifier
@@ -5057,8 +5031,8 @@ void Parser::parseNormalInterfaceDeclaration(
     return;
   }
 
-  normalDecl->id = spIdentifier(new Identifier(
-    lexer->getCurTokenIni(), lexer->getCurTokenStr()));
+  normalDecl->id = make_shared<Identifier>(
+    lexer->getCurTokenIni(), lexer->getCurTokenStr());
 
   st.addSym(ST_IDENTIFIER, lexer->getCurTokenIni(), lexer->getCursor(),
     src->getLine(), lexer->getCurTokenStr());
@@ -5067,7 +5041,7 @@ void Parser::parseNormalInterfaceDeclaration(
 
   // [TypeParameters]
   if (lexer->getCurToken() == TOK_OP_LT) {
-    normalDecl->typeParams = spTypeParameters(new TypeParameters);
+    normalDecl->typeParams = make_shared<TypeParameters>();
     parseTypeParameters(normalDecl->typeParams);
     if (normalDecl->typeParams->err) {
       normalDecl->addErr(-1);
@@ -5078,13 +5052,13 @@ void Parser::parseNormalInterfaceDeclaration(
   // [extends TypeList]
   if (lexer->getCurToken() == TOK_KEY_EXTENDS) {
     // extends
-    normalDecl->tokExtends = spTokenExp(new TokenExp(
+    normalDecl->tokExtends = make_shared<TokenExp>(
       lexer->getCursor() - tokenUtil.getTokenLength(TOK_KEY_EXTENDS),
-      lexer->getCurToken()));
+      lexer->getCurToken());
     lexer->getNextToken(); // consume 'extends'
 
     // TypeList
-    normalDecl->typeList = spTypeList(new TypeList);
+    normalDecl->typeList = make_shared<TypeList>();
     parseTypeList(normalDecl->typeList);
     if (normalDecl->typeList->err) {
       normalDecl->addErr(-1);
@@ -5092,7 +5066,7 @@ void Parser::parseNormalInterfaceDeclaration(
     }
   }
 
-  normalDecl->body = spInterfaceBody(new InterfaceBody);
+  normalDecl->body = make_shared<InterfaceBody>();
   parseInterfaceBody(normalDecl->body);
   if (normalDecl->body->err) {
     normalDecl->addErr(-1);
@@ -5119,7 +5093,7 @@ void Parser::parseParExpression(spParExpression &parExpr) {
   lexer->getNextToken(); // consume '('
 
   // Expression
-  parExpr->expr = spExpression(new Expression);
+  parExpr->expr = make_shared<Expression>();
   parseExpression(parExpr->expr);
   if (parExpr->expr->isEmpty()) {
     parExpr->addErr(-1);
@@ -5182,8 +5156,7 @@ void Parser::parseClassBodyDeclarationsHelper(
       continue;
     }
 
-    spClassBodyDeclaration decl = spClassBodyDeclaration(
-      new ClassBodyDeclaration);
+    spClassBodyDeclaration decl = make_shared<ClassBodyDeclaration>();
     parseClassBodyDeclaration(decl);
     classBodyDecls.push_back(decl);
   }
@@ -5217,9 +5190,9 @@ void Parser::parseClassBodyDeclaration(spClassBodyDeclaration &decl) {
     decl->opt = ClassBodyDeclaration::OPT_STATIC_BLOCK;
     // [static]
     if (lexer->getCurToken() == TOK_KEY_STATIC) {
-      decl->tokStatic = spTokenExp(new TokenExp(
+      decl->tokStatic = make_shared<TokenExp>(
         lexer->getCursor() - tokenUtil.getTokenLength(
-          lexer->getCurToken()), lexer->getCurToken()));
+          lexer->getCurToken()), lexer->getCurToken());
       lexer->getNextToken(); // consume 'static'
     }
 
@@ -5230,7 +5203,7 @@ void Parser::parseClassBodyDeclaration(spClassBodyDeclaration &decl) {
       return;
     }
 
-    decl->block = spBlock(new Block);
+    decl->block = make_shared<Block>();
     parseBlock(decl->block);
     if (decl->block->err) {
       decl->addErr(-1);
@@ -5243,9 +5216,9 @@ void Parser::parseClassBodyDeclaration(spClassBodyDeclaration &decl) {
   if (isModifierOrMemberMemberDeclCandidate(lexer->getCurToken())) {
     st.addSym(ST_MEMBER_DECL, lexer->getCurTokenIni(), 0, src->getLine(), "");
     decl->opt = ClassBodyDeclaration::OPT_MODIFIER_MEMBER_DECL;
-    decl->modifier = spModifier(new Modifier);
+    decl->modifier = make_shared<Modifier>();
     parseModifier(decl->modifier);
-    decl->memberDecl = spMemberDecl(new MemberDecl);
+    decl->memberDecl = make_shared<MemberDecl>();
     parseMemberDecl(decl->memberDecl);
     st.scopePop();
     return;
@@ -5268,7 +5241,7 @@ void Parser::parseClassBodyDeclaration(spClassBodyDeclaration &decl) {
  */
 void Parser::parseClassCreatorRest(spClassCreatorRest &classCreatorRest) {
   // Arguments
-  spArguments args = spArguments(new Arguments);
+  spArguments args = make_shared<Arguments>();
   classCreatorRest->args = args;
   parseArguments(classCreatorRest->args);
   if (classCreatorRest->args->err) {
@@ -5277,7 +5250,7 @@ void Parser::parseClassCreatorRest(spClassCreatorRest &classCreatorRest) {
 
   // ClassBody
   if (lexer->getCurToken() == TOK_LCURLY_BRACKET) {
-    spClassBody classBody = spClassBody(new ClassBody);
+    spClassBody classBody = make_shared<ClassBody>();
     classCreatorRest->classBody = classBody;
     parseClassBody(classCreatorRest->classBody);
   }
@@ -5324,15 +5297,14 @@ void Parser::parseMemberDecl(spMemberDecl &memberDecl) {
     st.updateScopeType(ST_METHOD);
 
     // Identifier
-    memberDecl->id = spIdentifier(new Identifier(lexer->getCurTokenIni(),
-      lexer->getCurTokenStr()));
+    memberDecl->id = make_shared<Identifier>(lexer->getCurTokenIni(),
+      lexer->getCurTokenStr());
     st.addSym(ST_IDENTIFIER, lexer->getCurTokenIni(), lexer->getCursor(),
       src->getLine(), lexer->getCurTokenStr());
     lexer->getNextToken(); // consume Identifier
 
     // ConstructorDeclaratorRest
-    memberDecl->constDeclRest = spConstructorDeclaratorRest(
-      new ConstructorDeclaratorRest);
+    memberDecl->constDeclRest = make_shared<ConstructorDeclaratorRest>();
     parseConstructorDeclaratorRest(memberDecl->constDeclRest);
     return;
   }
@@ -5341,8 +5313,7 @@ void Parser::parseMemberDecl(spMemberDecl &memberDecl) {
   if (lexer->getCurToken() == TOK_IDENTIFIER
     || isBasicType(lexer->getCurToken())) {
     memberDecl->opt = MemberDecl::OPT_METHOD_OR_FIELD_DECL;
-    memberDecl->methodOrFieldDecl
-      = spMethodOrFieldDecl(new MethodOrFieldDecl);
+    memberDecl->methodOrFieldDecl = make_shared<MethodOrFieldDecl>();
     parseMethodOrFieldDecl(memberDecl->methodOrFieldDecl);
     return;
   }
@@ -5354,9 +5325,9 @@ void Parser::parseMemberDecl(spMemberDecl &memberDecl) {
     st.updateScopeType(ST_METHOD);
 
     // void
-    memberDecl->tokVoid = spTokenExp(new TokenExp(
+    memberDecl->tokVoid = make_shared<TokenExp>(
       lexer->getCursor() - tokenUtil.getTokenLength(
-      lexer->getCurToken()), lexer->getCurToken()));
+      lexer->getCurToken()), lexer->getCurToken());
     lexer->getNextToken(); // consume 'void'
 
     // Identifier
@@ -5366,15 +5337,14 @@ void Parser::parseMemberDecl(spMemberDecl &memberDecl) {
       return;
     }
 
-    memberDecl->id = spIdentifier(new Identifier(
-      lexer->getCurTokenIni(), lexer->getCurTokenStr()));
+    memberDecl->id = make_shared<Identifier>(
+      lexer->getCurTokenIni(), lexer->getCurTokenStr());
     st.addSym(ST_IDENTIFIER, lexer->getCurTokenIni(), lexer->getCursor(),
       src->getLine(), lexer->getCurTokenStr());
     lexer->getNextToken(); // consume Identifier
 
     // VoidMethodDeclaratorRest
-    memberDecl->voidMethDeclRest = spVoidMethodDeclaratorRest(
-      new VoidMethodDeclaratorRest);
+    memberDecl->voidMethDeclRest = make_shared<VoidMethodDeclaratorRest>();
     parseVoidMethodDeclaratorRest(memberDecl->voidMethDeclRest);
     if (memberDecl->voidMethDeclRest->err) {
       memberDecl->addErr(-1);
@@ -5387,7 +5357,7 @@ void Parser::parseMemberDecl(spMemberDecl &memberDecl) {
   if (lexer->getCurToken() == TOK_OP_LT) {
     memberDecl->opt = MemberDecl::OPT_GENERIC_METHOD_OR_CONSTRUCTOR_DECL;
     memberDecl->genMethodOrConstDecl
-      = spGenericMethodOrConstructorDecl(new GenericMethodOrConstructorDecl);
+      = make_shared<GenericMethodOrConstructorDecl>();
     parseGenericMethodOrConstructorDecl(memberDecl->genMethodOrConstDecl);
     if (memberDecl->genMethodOrConstDecl->err) {
       memberDecl->addErr(-1);
@@ -5405,7 +5375,7 @@ void Parser::parseMemberDecl(spMemberDecl &memberDecl) {
     } else {
       st.updateScopeType(ST_ENUM);
     }
-    memberDecl->classDecl = spClassDeclaration(new ClassDeclaration);
+    memberDecl->classDecl = make_shared<ClassDeclaration>();
     parseClassDeclaration(memberDecl->classDecl);
     if (memberDecl->classDecl->err) {
       memberDecl->addErr(-1);
@@ -5418,8 +5388,7 @@ void Parser::parseMemberDecl(spMemberDecl &memberDecl) {
     || lexer->getCurToken() == TOK_ANNOTATION_TYPE_DECLARATION) {
 
     memberDecl->opt = MemberDecl::OPT_INTERFACE_DECLARATION;
-    memberDecl->interfaceDecl = spInterfaceDeclaration(
-      new InterfaceDeclaration);
+    memberDecl->interfaceDecl = make_shared<InterfaceDeclaration>();
     parseInterfaceDeclaration(memberDecl->interfaceDecl);
     if (memberDecl->interfaceDecl->err) {
       memberDecl->addErr(-1);
@@ -5437,7 +5406,7 @@ void Parser::parseMemberDecl(spMemberDecl &memberDecl) {
  */
 void Parser::parseMethodDeclaratorRest(spMethodDeclaratorRest &methodDeclRest) {
   // FormalParameters
-  methodDeclRest->formParams = spFormalParameters(new FormalParameters);
+  methodDeclRest->formParams = make_shared<FormalParameters>();
   parseFormalParameters(methodDeclRest->formParams);
   if (methodDeclRest->formParams->err) {
     methodDeclRest->addErr(-1);
@@ -5452,14 +5421,13 @@ void Parser::parseMethodDeclaratorRest(spMethodDeclaratorRest &methodDeclRest) {
   // [throws QualifiedIdentifierList]
   if (lexer->getCurToken() == TOK_KEY_THROWS) {
     // 'throws'
-    methodDeclRest->tokThrows = spTokenExp(new TokenExp(
+    methodDeclRest->tokThrows = make_shared<TokenExp>(
       lexer->getCursor() - tokenUtil.getTokenLength(
-        lexer->getCurToken()), lexer->getCurToken()));
+        lexer->getCurToken()), lexer->getCurToken());
     lexer->getNextToken(); // consume 'throws'
 
     // QualifiedIdentifierList
-    methodDeclRest->qualifiedIdList = spQualifiedIdentifierList(
-      new QualifiedIdentifierList);
+    methodDeclRest->qualifiedIdList = make_shared<QualifiedIdentifierList>();
     parseQualifiedIdentifierList(methodDeclRest->qualifiedIdList);
     if (methodDeclRest->qualifiedIdList->err) {
       methodDeclRest->addErr(-1);
@@ -5476,7 +5444,7 @@ void Parser::parseMethodDeclaratorRest(spMethodDeclaratorRest &methodDeclRest) {
   }
 
   // (2) Block
-  methodDeclRest->block = spBlock(new Block);
+  methodDeclRest->block = make_shared<Block>();
   parseBlock(methodDeclRest->block);
   if (methodDeclRest->block->err) {
     methodDeclRest->addErr(-1);
@@ -5490,7 +5458,7 @@ void Parser::parseMethodDeclaratorRest(spMethodDeclaratorRest &methodDeclRest) {
  */
 void Parser::parseMethodOrFieldDecl(spMethodOrFieldDecl &methodOrFieldDecl) {
   // Type
-  methodOrFieldDecl->type = spType(new Type);
+  methodOrFieldDecl->type = make_shared<Type>();
   parseType(methodOrFieldDecl->type);
   if (methodOrFieldDecl->type->err) {
     methodOrFieldDecl->addErr(-1);
@@ -5504,15 +5472,15 @@ void Parser::parseMethodOrFieldDecl(spMethodOrFieldDecl &methodOrFieldDecl) {
     return;
   }
 
-  methodOrFieldDecl->id = spIdentifier(new Identifier(
-    lexer->getCurTokenIni(), lexer->getCurTokenStr()));
+  methodOrFieldDecl->id = make_shared<Identifier>(
+    lexer->getCurTokenIni(), lexer->getCurTokenStr());
   st.addSym(ST_IDENTIFIER, lexer->getCurTokenIni(), lexer->getCursor(),
     src->getLine(), lexer->getCurTokenStr());
   lexer->getNextToken(); // consume identifier
 
   // MethodOrFieldRest
   methodOrFieldDecl->methodOrFieldRest
-    = spMethodOrFieldRest(new MethodOrFieldRest);
+    = make_shared<MethodOrFieldRest>();
   parseMethodOrFieldRest(methodOrFieldDecl->methodOrFieldRest);
   if (methodOrFieldDecl->methodOrFieldRest->err) {
     methodOrFieldDecl->addErr(-1);
@@ -5530,8 +5498,7 @@ void Parser::parseMethodOrFieldRest(spMethodOrFieldRest &methodOrFieldRest) {
     methodOrFieldRest->opt = MethodOrFieldRest::OPT_METHOD;
     st.updateScopeType(ST_METHOD);
 
-    methodOrFieldRest->methodDeclRest = spMethodDeclaratorRest(
-      new MethodDeclaratorRest);
+    methodOrFieldRest->methodDeclRest = make_shared<MethodDeclaratorRest>();
     parseMethodDeclaratorRest(methodOrFieldRest->methodDeclRest);
     if (methodOrFieldRest->methodDeclRest->err) {
       methodOrFieldRest->addErr(-1);
@@ -5543,8 +5510,7 @@ void Parser::parseMethodOrFieldRest(spMethodOrFieldRest &methodOrFieldRest) {
   methodOrFieldRest->opt = MethodOrFieldRest::OPT_FIELD;
   st.updateScopeType(ST_FIELD);
 
-  methodOrFieldRest->fieldDeclsRest
-    = spFieldDeclaratorsRest(new FieldDeclaratorsRest());
+  methodOrFieldRest->fieldDeclsRest = make_shared<FieldDeclaratorsRest>();
   parseFieldDeclaratorsRest(methodOrFieldRest->fieldDeclsRest);
   if (methodOrFieldRest->fieldDeclsRest->err) {
     methodOrFieldRest->addErr(-1);
@@ -5578,7 +5544,7 @@ void Parser::parseNonWildcardTypeArguments(
   nonWildcardTypeArguments->posLt = lexer->getCursor() - 1;
   lexer->getNextToken(); // consume '<'
 
-  nonWildcardTypeArguments->typeList2 = spTypeList2(new TypeList2);
+  nonWildcardTypeArguments->typeList2 = make_shared<TypeList2>();
   parseTypeList2(nonWildcardTypeArguments->typeList2);
   if (nonWildcardTypeArguments->typeList2->err) {
     nonWildcardTypeArguments->addErr(-1);
@@ -5622,10 +5588,10 @@ void Parser::parseNonWildcardTypeArgumentsOrDiamond(
   }
 
   // opt2: NonWildcardTypeArguments
-  nonWildcardOrDiam->opt
-    = NonWildcardTypeArgumentsOrDiamond::OPT_NON_WILDCARD_TYPE_ARGUMENTS;
-  nonWildcardOrDiam->nonWildcardTypeArguments = spNonWildcardTypeArguments(
-    new NonWildcardTypeArguments);
+  nonWildcardOrDiam->opt =
+    NonWildcardTypeArgumentsOrDiamond::OPT_NON_WILDCARD_TYPE_ARGUMENTS;
+  nonWildcardOrDiam->nonWildcardTypeArguments =
+    make_shared<NonWildcardTypeArguments>();
   parseNonWildcardTypeArguments(nonWildcardOrDiam->nonWildcardTypeArguments);
   if (nonWildcardOrDiam->nonWildcardTypeArguments->err) {
     nonWildcardOrDiam->addErr(-1);
@@ -5643,7 +5609,7 @@ void Parser::parseCompilationUnit() {
   }
 
   if (lexer->getCurToken() == TOK_KEY_PACKAGE) {
-    compilationUnit->pkgDecl = spPackageDeclaration(new PackageDeclaration);
+    compilationUnit->pkgDecl = make_shared<PackageDeclaration>();
     parsePackageDeclaration(annotations, compilationUnit->pkgDecl);
   }
 
@@ -5682,7 +5648,7 @@ void Parser::parseConstantDeclaratorRest(
   constDeclRest->posEquals = lexer->getCursor() - 1;
   lexer->getNextToken(); // consume '='
 
-  constDeclRest->varInit = spVariableInitializer(new VariableInitializer);
+  constDeclRest->varInit = make_shared<VariableInitializer>();
   parseVariableInitializer(constDeclRest->varInit);
   if (constDeclRest->varInit->err) {
     constDeclRest->addErr(-1);
@@ -5696,8 +5662,7 @@ void Parser::parseConstantDeclaratorRest(
 void Parser::parseConstantDeclaratorsRest(
   spConstantDeclaratorsRest &constDeclsRest) {
 
-  constDeclsRest->constDeclRest = spConstantDeclaratorRest(
-    new ConstantDeclaratorRest);
+  constDeclsRest->constDeclRest = make_shared<ConstantDeclaratorRest>();
   parseConstantDeclaratorRest(constDeclsRest->constDeclRest);
   if (constDeclsRest->constDeclRest->err) {
     constDeclsRest->addErr(-1);
@@ -5708,8 +5673,8 @@ void Parser::parseConstantDeclaratorsRest(
   while (lexer->getCurToken() == TOK_COMMA) {
     saveState(state);
     unsigned pos = lexer->getCursor() - 1;
-    spConstantDeclaratorRest constDeclRest = spConstantDeclaratorRest(
-      new ConstantDeclaratorRest);
+    spConstantDeclaratorRest constDeclRest =
+      make_shared<ConstantDeclaratorRest>();
     parseConstantDeclaratorRest(constDeclRest);
     // If we find an error we restore the state and exit leaving upper levels to
     // handle the error.
@@ -5730,20 +5695,19 @@ void Parser::parseConstructorDeclaratorRest(
   spConstructorDeclaratorRest &constDeclRest) {
 
   // FormalParameters
-  constDeclRest->formParams = spFormalParameters(new FormalParameters());
+  constDeclRest->formParams = make_shared<FormalParameters>();
   parseFormalParameters(constDeclRest->formParams);
 
   // [throws QualifiedIdentifierList] Block
   if (lexer->getCurToken() == TOK_KEY_THROWS) {
     // 'throws'
-    constDeclRest->tokThrows = spTokenExp(new TokenExp(
+    constDeclRest->tokThrows = make_shared<TokenExp>(
       lexer->getCursor() - tokenUtil.getTokenLength(
-        lexer->getCurToken()), lexer->getCurToken()));
+        lexer->getCurToken()), lexer->getCurToken());
     lexer->getNextToken(); // consume 'throws'
 
     // QualifiedIdentifierList
-    constDeclRest->qualifiedIdList = spQualifiedIdentifierList(
-      new QualifiedIdentifierList);
+    constDeclRest->qualifiedIdList = make_shared<QualifiedIdentifierList>();
     parseQualifiedIdentifierList(constDeclRest->qualifiedIdList);
     if (constDeclRest->qualifiedIdList->err) {
       constDeclRest->addErr(-1);
@@ -5751,7 +5715,7 @@ void Parser::parseConstructorDeclaratorRest(
   }
 
   // Block
-  constDeclRest->block = spBlock(new Block);
+  constDeclRest->block = make_shared<Block>();
   parseBlock(constDeclRest->block);
   if (constDeclRest->block->err) {
     constDeclRest->addErr(-1);
@@ -5777,7 +5741,7 @@ void Parser::parseCreatedName(spCreatedName &createdName) {
   while (lexer->getCurToken() == TOK_PERIOD) {
     saveState(state);
 
-    spCreatedNameTriplet triplet = spCreatedNameTriplet(new CreatedNameTriplet);
+    spCreatedNameTriplet triplet = make_shared<CreatedNameTriplet>();
 
     // .
     triplet->posPeriod = lexer->getCursor();
@@ -5789,8 +5753,8 @@ void Parser::parseCreatedName(spCreatedName &createdName) {
       return;
     }
 
-    triplet->id = spIdentifier(new Identifier(
-        lexer->getCurTokenIni(), lexer->getCurTokenStr()));
+    triplet->id = make_shared<Identifier>(
+        lexer->getCurTokenIni(), lexer->getCurTokenStr());
     lexer->getNextToken(); // consume identifier
 
     // TypeArgumentsOrDiamond
@@ -5798,8 +5762,7 @@ void Parser::parseCreatedName(spCreatedName &createdName) {
       continue;
     }
 
-    triplet->typeArgsOrDiam = spTypeArgumentsOrDiamond(
-      new TypeArgumentsOrDiamond);
+    triplet->typeArgsOrDiam = make_shared<TypeArgumentsOrDiamond>();
     parseTypeArgumentsOrDiamond(createdName->typeArgsOrDiam);
 
     if (triplet->typeArgsOrDiam->err) {
@@ -5819,8 +5782,8 @@ void Parser::parseCreatedNameHelper(spCreatedName &createdName) {
     return;
   }
 
-  createdName->id = spIdentifier(new Identifier(
-    lexer->getCurTokenIni(), lexer->getCurTokenStr()));
+  createdName->id = make_shared<Identifier>(
+    lexer->getCurTokenIni(), lexer->getCurTokenStr());
   lexer->getNextToken(); // consume identifier
 
   // TypeArgumentsOrDiamond
@@ -5834,8 +5797,8 @@ void Parser::parseCreatedNameHelper(spCreatedName &createdName) {
   // The conditional 'if (createdName->typeArgsOrDiam->err)'
   // is always true, even when the value of err is false
   // (as seen in the debugger). The same problem does not occur in clang.
-  spTypeArgumentsOrDiamond typeArgsOrDiam = spTypeArgumentsOrDiamond(
-    new TypeArgumentsOrDiamond());
+  spTypeArgumentsOrDiamond typeArgsOrDiam =
+    make_shared<TypeArgumentsOrDiamond>();
   createdName->typeArgsOrDiam = typeArgsOrDiam;
   parseTypeArgumentsOrDiamond(createdName->typeArgsOrDiam);
 
@@ -5864,8 +5827,7 @@ void Parser::parseFormalParameters(spFormalParameters &formParams) {
     return;
   }
 
-  formParams->formParamDecls = spFormalParameterDecls(
-    new FormalParameterDecls());
+  formParams->formParamDecls = make_shared<FormalParameterDecls>();
   parseFormalParameterDecls(formParams->formParamDecls);
 
   if (lexer->getCurToken() != TOK_RPAREN) {
@@ -5883,11 +5845,11 @@ void Parser::parseFormalParameters(spFormalParameters &formParams) {
  */
 void Parser::parseFormalParameterDecls(spFormalParameterDecls &formParamDecls) {
   // {VariableModifier}
-  formParamDecls->varModifier = spVariableModifier(new VariableModifier);
+  formParamDecls->varModifier = make_shared<VariableModifier>();
   parseVariableModifier(formParamDecls->varModifier);
 
   // Type
-  formParamDecls->type = spType(new Type());
+  formParamDecls->type = make_shared<Type>();
   parseType(formParamDecls->type);
 
   // At this point if we have a VariableModifier and no Type we're in an
@@ -5900,8 +5862,8 @@ void Parser::parseFormalParameterDecls(spFormalParameterDecls &formParamDecls) {
 
   // If we have a Type we expect a FormalParameterDeclRest
   if (formParamDecls->type->err == false) {
-    formParamDecls->formParamDeclsRest = spFormalParameterDeclsRest(
-      new FormalParameterDeclsRest);
+    formParamDecls->formParamDeclsRest =
+      make_shared<FormalParameterDeclsRest>();
     parseFormalParameterDeclsRest(formParamDecls->formParamDeclsRest);
   }
 }
@@ -5921,9 +5883,9 @@ void Parser::parseVariableModifier(spVariableModifier &varModifier) {
           lexer->getCurTokenIni(), lexer->getCursor()));
         return;
       } else {
-        varModifier->tokFinal = spTokenExp(new TokenExp(
+        varModifier->tokFinal = make_shared<TokenExp>(
           lexer->getCursor() - tokenUtil.getTokenLength(
-            lexer->getCurToken()), lexer->getCurToken()));
+            lexer->getCurToken()), lexer->getCurToken());
       }
 
       lexer->getNextToken(); // consume 'final'
@@ -5944,7 +5906,7 @@ void Parser::parseVoidInterfaceMethodDeclaratorRest(
   spVoidInterfaceMethodDeclaratorRest &voidMethDeclRest) {
 
   // FormalParameters
-  voidMethDeclRest->formParams = spFormalParameters(new FormalParameters);
+  voidMethDeclRest->formParams = make_shared<FormalParameters>();
   parseFormalParameters(voidMethDeclRest->formParams);
   if (voidMethDeclRest->formParams->err) {
     voidMethDeclRest->addErr(-1);
@@ -5953,13 +5915,12 @@ void Parser::parseVoidInterfaceMethodDeclaratorRest(
 
   // [throws QualifiedIdentifierList]
   if (lexer->getCurToken() == TOK_KEY_THROWS) {
-    voidMethDeclRest->tokThrows = spTokenExp(new TokenExp(
+    voidMethDeclRest->tokThrows = make_shared<TokenExp>(
       lexer->getCursor() - tokenUtil.getTokenLength(
-        lexer->getCurToken()), lexer->getCurToken()));
+        lexer->getCurToken()), lexer->getCurToken());
     lexer->getNextToken(); // consume 'throws'
 
-    voidMethDeclRest->qualifiedIdList = spQualifiedIdentifierList(
-      new QualifiedIdentifierList);
+    voidMethDeclRest->qualifiedIdList = make_shared<QualifiedIdentifierList>();
     parseQualifiedIdentifierList(voidMethDeclRest->qualifiedIdList);
     if (voidMethDeclRest->qualifiedIdList->err) {
       voidMethDeclRest->addErr(-1);
@@ -5986,7 +5947,7 @@ void Parser::parseVoidMethodDeclaratorRest(
   spVoidMethodDeclaratorRest &voidMethDeclRest) {
 
   // FormalParameters
-  voidMethDeclRest->formParams = spFormalParameters(new FormalParameters);
+  voidMethDeclRest->formParams = make_shared<FormalParameters>();
   parseFormalParameters(voidMethDeclRest->formParams);
   if (voidMethDeclRest->formParams->err) {
     voidMethDeclRest->addErr(-1);
@@ -5996,14 +5957,13 @@ void Parser::parseVoidMethodDeclaratorRest(
   // [throws QualifiedIdentifierList]
   if (lexer->getCurToken() == TOK_KEY_THROWS) {
     // 'throws'
-    voidMethDeclRest->tokThrows = spTokenExp(new TokenExp(
+    voidMethDeclRest->tokThrows = make_shared<TokenExp>(
       lexer->getCursor() - tokenUtil.getTokenLength(
-        lexer->getCurToken()), lexer->getCurToken()));
+        lexer->getCurToken()), lexer->getCurToken());
     lexer->getNextToken(); // consume 'throws'
 
     // QualifiedIdentifierList
-    voidMethDeclRest->qualifiedIdList = spQualifiedIdentifierList(
-      new QualifiedIdentifierList);
+    voidMethDeclRest->qualifiedIdList = make_shared<QualifiedIdentifierList>();
     parseQualifiedIdentifierList(voidMethDeclRest->qualifiedIdList);
     if (voidMethDeclRest->qualifiedIdList->err) {
       voidMethDeclRest->addErr(-1);
@@ -6019,7 +5979,7 @@ void Parser::parseVoidMethodDeclaratorRest(
   }
 
   // (2) Block
-  voidMethDeclRest->block = spBlock(new Block);
+  voidMethDeclRest->block = make_shared<Block>();
   parseBlock(voidMethDeclRest->block);
   if (voidMethDeclRest->block->err) {
     voidMethDeclRest->addErr(-1);
@@ -6037,7 +5997,7 @@ void Parser::parseSuperSuffix(spSuperSuffix &superSuffix) {
   // 1st option - Arguments
   if (lexer->getCurToken() == TOK_LPAREN) {
     superSuffix->opt = SuperSuffix::OPT_ARGUMENTS;
-    superSuffix->args = spArguments(new Arguments());
+    superSuffix->args = make_shared<Arguments>();
     parseArguments(superSuffix->args);
     return;
   }
@@ -6056,12 +6016,12 @@ void Parser::parseSuperSuffix(spSuperSuffix &superSuffix) {
     }
 
     // Identifier
-    superSuffix->id = spIdentifier(new Identifier(
-      lexer->getCurTokenIni(), lexer->getCurTokenStr()));
+    superSuffix->id = make_shared<Identifier>(
+      lexer->getCurTokenIni(), lexer->getCurTokenStr());
     lexer->getNextToken(); // consume Identifier
 
     if (lexer->getCurToken() == TOK_LPAREN) {
-      superSuffix->args = spArguments(new Arguments);
+      superSuffix->args = make_shared<Arguments>();
       parseArguments(superSuffix->args);
     }
   }
@@ -6081,8 +6041,8 @@ void Parser::parseSwitchBlockStatementGroups(
     // errors found here.
     State state;
     saveState(state);
-    spSwitchBlockStatementGroup group = spSwitchBlockStatementGroup(
-      new SwitchBlockStatementGroup);
+    spSwitchBlockStatementGroup group =
+      make_shared<SwitchBlockStatementGroup>();
     parseSwitchBlockStatementGroup(group);
     if (group->err) {
       restoreState(state);
@@ -6102,7 +6062,7 @@ void Parser::parseSwitchBlockStatementGroup(
   spSwitchBlockStatementGroup &group) {
 
   // SwitchLabels
-  group->labels = spSwitchLabels(new SwitchLabels);
+  group->labels = make_shared<SwitchLabels>();
   parseSwitchLabels(group->labels);
   if (group->labels->err) {
     group->addErr(-1);
@@ -6124,9 +6084,9 @@ void Parser::parseSwitchLabel(spSwitchLabel &label) {
     label->opt = SwitchLabel::OPT_DEFAULT;
 
     // default
-    label->tokDefault = spTokenExp(new TokenExp(
+    label->tokDefault = make_shared<TokenExp>(
       lexer->getCursor() - tokenUtil.getTokenLength(
-      lexer->getCurToken()), lexer->getCurToken()));
+      lexer->getCurToken()), lexer->getCurToken());
     lexer->getNextToken(); // consume 'default'
 
     if (lexer->getCurToken() != TOK_OP_COLON) {
@@ -6146,9 +6106,9 @@ void Parser::parseSwitchLabel(spSwitchLabel &label) {
   }
 
   // case
-  label->tokCase = spTokenExp(new TokenExp(
+  label->tokCase = make_shared<TokenExp>(
     lexer->getCursor() - tokenUtil.getTokenLength(
-      lexer->getCurToken()), lexer->getCurToken()));
+      lexer->getCurToken()), lexer->getCurToken());
   lexer->getNextToken(); // consume 'case'
 
   // Try the production rule
@@ -6156,12 +6116,12 @@ void Parser::parseSwitchLabel(spSwitchLabel &label) {
   State state;
   if (lexer->getCurToken() == TOK_IDENTIFIER) {
     saveState(state);
-    spIdentifier id = spIdentifier(new Identifier(
-      lexer->getCurTokenIni(), lexer->getCurTokenStr()));
+    spIdentifier id = make_shared<Identifier>(
+      lexer->getCurTokenIni(), lexer->getCurTokenStr());
     lexer->getNextToken(); // consume Identifier
     if (lexer->getCurToken() == TOK_OP_COLON) {
       label->opt = SwitchLabel::OPT_ENUM;
-      label->enumConstName = spEnumConstantName(new EnumConstantName);
+      label->enumConstName = make_shared<EnumConstantName>();
       label->enumConstName->id = id;
       label->posColon = lexer->getCursor() - 1;
       lexer->setPrevTokenSwitchLabelColon(true);
@@ -6175,7 +6135,7 @@ void Parser::parseSwitchLabel(spSwitchLabel &label) {
 
   // (1) case Expression :
   label->opt = SwitchLabel::OPT_EXPRESSION;
-  label->expr = spExpression(new Expression);
+  label->expr = make_shared<Expression>();
   parseExpression(label->expr);
   if (label->expr->isEmpty()) {
     label->addErr(-1);
@@ -6199,7 +6159,7 @@ void Parser::parseSwitchLabel(spSwitchLabel &label) {
  */
 void Parser::parseSwitchLabels(spSwitchLabels &labels) {
   // SwtichLabel
-  labels->label = spSwitchLabel(new SwitchLabel);
+  labels->label = make_shared<SwitchLabel>();
   parseSwitchLabel(labels->label);
   if (labels->label->err) {
     labels->addErr(-1);
@@ -6211,7 +6171,7 @@ void Parser::parseSwitchLabels(spSwitchLabels &labels) {
     || lexer->getCurToken() == TOK_KEY_DEFAULT) {
     State state;
     saveState(state);
-    spSwitchLabel label = spSwitchLabel(new SwitchLabel);
+    spSwitchLabel label = make_shared<SwitchLabel>();
     parseSwitchLabel(label);
     if (label->err) {
       restoreState(state);
@@ -6228,10 +6188,10 @@ void Parser::parseSwitchLabels(spSwitchLabels &labels) {
  */
 void Parser::parseType(spType &type) {
   if (isBasicType(lexer->getCurToken())) {
-    spTokenExp token = spTokenExp(new TokenExp(lexer->getCursor()
-      - tokenUtil.getTokenLength(lexer->getCurToken()), lexer->getCurToken()));
+    spTokenExp token = make_shared<TokenExp>(lexer->getCursor()
+      - tokenUtil.getTokenLength(lexer->getCurToken()), lexer->getCurToken());
     type->opt = Type::OPT_BASIC_TYPE;
-    type->basicType = spBasicType(new BasicType(token));
+    type->basicType = make_shared<BasicType>(token);
     lexer->getNextToken(); // consume basic type
     parseArrayDepth(type->arrayDepth);
     return;
@@ -6240,7 +6200,7 @@ void Parser::parseType(spType &type) {
   // ReferenceType
   if (lexer->getCurToken() == TOK_IDENTIFIER) {
     type->opt = Type::OPT_REFERENCE_TYPE;
-    type->refType = spReferenceType(new ReferenceType);
+    type->refType = make_shared<ReferenceType>();
     parseReferenceType(type->refType);
     if (type->refType->err) { type->addErr(-1); }
     parseArrayDepth(type->arrayDepth);
@@ -6259,7 +6219,7 @@ void Parser::parseTypeList(spTypeList &typeList) {
     return;
   }
 
-  typeList->refType = spReferenceType(new ReferenceType);
+  typeList->refType = make_shared<ReferenceType>();
   parseReferenceType(typeList->refType);
 
   // { , ReferenceType }
@@ -6275,7 +6235,7 @@ void Parser::parseTypeList(spTypeList &typeList) {
       return;
     }
 
-    spReferenceType refType = spReferenceType(new ReferenceType);
+    spReferenceType refType = make_shared<ReferenceType>();
     parseReferenceType(refType);
     if (refType->err) {
       restoreState(state);
@@ -6291,7 +6251,7 @@ void Parser::parseTypeList(spTypeList &typeList) {
  */
 void Parser::parseTypeList2(spTypeList2 &typeList2) {
 
-  typeList2->type = spType(new Type);
+  typeList2->type = make_shared<Type>();
   parseType(typeList2->type);
 
   if (typeList2->type->err) {
@@ -6305,7 +6265,7 @@ void Parser::parseTypeList2(spTypeList2 &typeList2) {
     unsigned int pos = lexer->getCursor() - 1;
     lexer->getNextToken(); // consume ','
 
-    spType type = spType(new Type);
+    spType type = make_shared<Type>();
     parseType(type);
     if (type->err) {
       // we let the above layer to handle the error
@@ -6329,8 +6289,8 @@ void Parser::parseTypeParameter(spTypeParameter &typeParam) {
     return;
   }
 
-  typeParam->id = spIdentifier(new Identifier(
-    lexer->getCurTokenIni(), lexer->getCurTokenStr()));
+  typeParam->id = make_shared<Identifier>(
+    lexer->getCurTokenIni(), lexer->getCurTokenStr());
   lexer->getNextToken(); // consume Identifier
 
   if (lexer->getCurToken() != TOK_KEY_EXTENDS) {
@@ -6338,13 +6298,13 @@ void Parser::parseTypeParameter(spTypeParameter &typeParam) {
   }
 
   // 'extends'
-  typeParam->tokExtends = spTokenExp(new TokenExp(
+  typeParam->tokExtends = make_shared<TokenExp>(
     lexer->getCursor() - tokenUtil.getTokenLength(
-      lexer->getCurToken()), lexer->getCurToken()));
+      lexer->getCurToken()), lexer->getCurToken());
   lexer->getNextToken(); // consume 'extends'
 
   // Bound
-  typeParam->bound = spBound(new Bound);
+  typeParam->bound = make_shared<Bound>();
   parseBound(typeParam->bound);
   if (typeParam->bound->err) {
     typeParam->addErr(-1);
@@ -6364,7 +6324,7 @@ void Parser::parseTypeParameters(spTypeParameters &typeParams) {
   typeParams->posLt = lexer->getCursor() - 1;
   lexer->getNextToken(); // consume '<'
 
-  typeParams->typeParam = spTypeParameter(new TypeParameter);
+  typeParams->typeParam = make_shared<TypeParameter>();
   parseTypeParameter(typeParams->typeParam);
   if (typeParams->typeParam->err) {
     typeParams->addErr(-1);
@@ -6377,7 +6337,7 @@ void Parser::parseTypeParameters(spTypeParameters &typeParams) {
     unsigned pos = lexer->getCursor() - 1;
     lexer->getNextToken();
 
-    spTypeParameter typeParam = spTypeParameter(new TypeParameter);
+    spTypeParameter typeParam = make_shared<TypeParameter>();
     parseTypeParameter(typeParam);
     if (typeParam->err) {
       restoreState(state);
@@ -6411,8 +6371,7 @@ void Parser::parseStringLiteral(spStringLiteral &strLit) {
 void Parser::parseFormalParameterDeclsRest(
   spFormalParameterDeclsRest &formParamDeclsRest) {
 
-  formParamDeclsRest->varDeclId = spVariableDeclaratorId(
-    new VariableDeclaratorId());
+  formParamDeclsRest->varDeclId = make_shared<VariableDeclaratorId>();
 
   if (lexer->getCurToken() == TOK_ELLIPSIS) {
     formParamDeclsRest->opt = FormalParameterDeclsRest::OPT_VAR_ARITY;
@@ -6452,8 +6411,7 @@ void Parser::parseFormalParameterDeclsRest(
   if (lexer->getCurToken() == TOK_COMMA) {
     lexer->getNextToken(); // consume ','
 
-    formParamDeclsRest->formParamDecls = spFormalParameterDecls(
-      new FormalParameterDecls());
+    formParamDeclsRest->formParamDecls = make_shared<FormalParameterDecls>();
     parseFormalParameterDecls(formParamDeclsRest->formParamDecls);
   }
 }
@@ -6468,8 +6426,8 @@ void Parser::parseVariableDeclaratorId(spVariableDeclaratorId &varDeclId) {
     return;
   }
 
-  varDeclId->id = spIdentifier(new Identifier(
-    lexer->getCurTokenIni(), lexer->getCurTokenStr()));
+  varDeclId->id = make_shared<Identifier>(
+    lexer->getCurTokenIni(), lexer->getCurTokenStr());
   lexer->getNextToken(); // consume Identifier
   parseArrayDepth(varDeclId->arrayDepth);
 }
@@ -6486,7 +6444,7 @@ void Parser::parseVariableDeclaratorRest(spVariableDeclaratorRest &varDeclRest) 
     varDeclRest->posEquals = lexer->getCursor() - 1;
     lexer->getNextToken(); // consume '='
 
-    varDeclRest->varInit = spVariableInitializer(new VariableInitializer);
+    varDeclRest->varInit = make_shared<VariableInitializer>();
     parseVariableInitializer(varDeclRest->varInit);
     if (varDeclRest->varInit->err) {
       varDeclRest->addErr(-1);
@@ -6505,12 +6463,12 @@ void Parser::parseVariableDeclarator(spVariableDeclarator &varDecl) {
   }
 
   // Identifier
-  varDecl->id = spIdentifier(
-    new Identifier(lexer->getCurTokenIni(), lexer->getCurTokenStr()));
+  varDecl->id = make_shared<Identifier>(
+    lexer->getCurTokenIni(), lexer->getCurTokenStr());
   lexer->getNextToken(); // consume Identifier
 
   // VariableDeclaratorRest
-  varDecl->varDeclRest = spVariableDeclaratorRest(new VariableDeclaratorRest);
+  varDecl->varDeclRest = make_shared<VariableDeclaratorRest>();
   parseVariableDeclaratorRest(varDecl->varDeclRest);
   if (varDecl->varDeclRest->err) {
     varDecl->addErr(-1);
@@ -6523,7 +6481,7 @@ void Parser::parseVariableDeclarator(spVariableDeclarator &varDecl) {
  */
 void Parser::parseVariableDeclarators(spVariableDeclarators &varDecls) {
   // VariableDeclarator
-  varDecls->varDecl = spVariableDeclarator(new VariableDeclarator);
+  varDecls->varDecl = make_shared<VariableDeclarator>();
   parseVariableDeclarator(varDecls->varDecl);
   if (varDecls->varDecl->err) {
     varDecls->addErr(-1);
@@ -6537,7 +6495,7 @@ void Parser::parseVariableDeclarators(spVariableDeclarators &varDecls) {
     unsigned posComma = lexer->getCursor() - 1;
     lexer->getNextToken(); // consume ','
 
-    spVariableDeclarator varDecl = spVariableDeclarator(new VariableDeclarator);
+    spVariableDeclarator varDecl = make_shared<VariableDeclarator>();
     parseVariableDeclarator(varDecl);
     if (varDecl->err) {
       restoreState(state);
@@ -6561,7 +6519,7 @@ void Parser::parseVariableInitializer(spVariableInitializer &varInit) {
   // ArrayInitializer
   if (lexer->getCurToken() == TOK_LCURLY_BRACKET) {
     varInit->opt = VariableInitializer::OPT_ARRAY_INITIALIZER;
-    varInit->arrayInit = spArrayInitializer(new ArrayInitializer);
+    varInit->arrayInit = make_shared<ArrayInitializer>();
     parseArrayInitializer(varInit->arrayInit);
     if (varInit->arrayInit->err) { varInit->addErr(-1); }
     return;
@@ -6569,7 +6527,7 @@ void Parser::parseVariableInitializer(spVariableInitializer &varInit) {
 
   // Expression
   varInit->opt = VariableInitializer::OPT_EXPRESSION;
-  varInit->expr = spExpression(new Expression);
+  varInit->expr = make_shared<Expression>();
   parseExpression(varInit->expr);
   if (varInit->expr->isEmpty()) {
     varInit->addErr(-1);
