@@ -2,6 +2,10 @@
 
 namespace c4j {
 
+/** Constructor */
+SourceCodeStream::SourceCodeStream(const string &_buffer)
+  : buffer(_buffer), cursor(0), line(0) {}
+
 /**
  * Return the next char in the buffer or '\0' if we hit the end of the buffer.
  */
@@ -79,4 +83,9 @@ bool SourceCodeStream::lookaheadInterface(int point) {
   if (result == "interface") return true;
   return false;
 }
+
+unsigned int SourceCodeStream::getStreamLength() {
+  return buffer.length();
+}
+
 } // namespace

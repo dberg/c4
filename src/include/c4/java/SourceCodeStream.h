@@ -38,10 +38,9 @@ public:
 
   bool lookaheadInterface(int point);
 
-  unsigned int getStreamLength() { return buffer.length(); }
+  unsigned int getStreamLength();
 
-  SourceCodeStream(const string &_buffer)
-   : buffer(_buffer), cursor(0), line(0) {}
+  SourceCodeStream(const string &_buffer);
 };
 
 } // namespace
