@@ -1,6 +1,6 @@
 #include "c4/java/SourceCodeStream.h"
 
-namespace c4 {
+namespace c4j {
 
 /**
  * Return the next char in the buffer or '\0' if we hit the end of the buffer.

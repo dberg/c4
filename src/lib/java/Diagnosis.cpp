@@ -1,6 +1,9 @@
+#include <memory>
 #include "c4/java/Diagnosis.h"
 
-namespace c4 {
+using std::make_shared;
+
+namespace c4j {
 
 /**
  * Add Diagnosis error that can be used by parser clients.
@@ -10,7 +13,7 @@ namespace c4 {
  */
 int Diagnosis::addErr(int err, unsigned ini, unsigned end) {
   if (end == 0) { end = ini + 1; }
-  spError error = spError(new Error(err, ini, end));
+  auto error = make_shared<c4::Error>(err, ini, end);
   int idx = errors.size();
   errors.push_back(error);
   return idx;

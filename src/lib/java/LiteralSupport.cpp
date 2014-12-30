@@ -1,6 +1,6 @@
 #include "c4/java/LiteralSupport.h"
 
-namespace c4 {
+namespace c4j {
 
 //-----------------------------------------------------------------------------
 // Helpers
@@ -212,7 +212,7 @@ LiteralToken LiteralSupport::getHexNumeral(stringstream &ss) {
 
   // Lookahead and confirm that we have valid hex digit.
   if (!(isHexDigit(src->peekChar()) || src->peekChar() == '.')) {
-    diag->addErr(ERR_NVAL_HEX, start, src->getCursor());
+    diag->addErr(c4::ERR_NVAL_HEX, start, src->getCursor());
     return LiteralToken::ERROR;
   }
 
@@ -221,7 +221,7 @@ LiteralToken LiteralSupport::getHexNumeral(stringstream &ss) {
   if (src->peekChar() == '.') {
     if (!isHexDigit(src->peekChar(1))) {
       src->ungetChar(2);
-      diag->addErr(ERR_NVAL_HEX, start, src->getCursor());
+      diag->addErr(c4::ERR_NVAL_HEX, start, src->getCursor());
       return LiteralToken::ERROR;
     }
 
@@ -258,7 +258,7 @@ LiteralToken LiteralSupport::getHexNumeral(stringstream &ss) {
   // We have a floating point.
   // The binary exponent indicator is mandatory.
   if (!isBinaryExponentIndicator(src->peekChar())) {
-    diag->addErr(ERR_NVAL_HEX, start, src->getCursor());
+    diag->addErr(c4::ERR_NVAL_HEX, start, src->getCursor());
     return LiteralToken::ERROR;
   }
 
@@ -274,7 +274,7 @@ LiteralToken LiteralSupport::getHexNumeral(stringstream &ss) {
   int digitCount = consumeDigitsPOrUnderscores(ss, isDecimalDigit);
   if (digitCount <= 0) {
     // Invalid or missing Signed integer
-    diag->addErr(ERR_NVAL_HEX, start, src->getCursor());
+    diag->addErr(c4::ERR_NVAL_HEX, start, src->getCursor());
     return LiteralToken::ERROR;
   }
 

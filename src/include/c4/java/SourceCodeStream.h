@@ -8,7 +8,7 @@
 using std::shared_ptr;
 using std::string;
 
-namespace c4 {
+namespace c4j {
 
 class SourceCodeStream;
 typedef shared_ptr<SourceCodeStream> spSourceCodeStream;

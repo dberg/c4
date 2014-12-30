@@ -32,7 +32,7 @@ class EmacsOutput {
   spCompilationUnit compilationUnit;
   vector<spComment> comments;
   ST st;
-  c4::spDiagnosis diag;
+  spDiagnosis diag;
   LineIndentationMap &indentMap;
 
   TokenUtil tokenUtil;

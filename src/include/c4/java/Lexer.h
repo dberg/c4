@@ -23,7 +23,7 @@ using std::vector;
 
 namespace c4j {
 
-int toJavaTok(c4::LiteralToken litTok);
+int toJavaTok(LiteralToken litTok);
 bool isJavaLetter(char c);
 bool isJavaLetterOrDigit(char c);
 
@@ -36,9 +36,9 @@ class Lexer {
   string curTokenStr;
   bool isPrevTokenSwitchLabelColon;
   int curIndentationLevel;
-  c4::spDiagnosis diag;
-  c4::spSourceCodeStream src;
-  c4::spLiteralSupport litSupport;
+  spDiagnosis diag;
+  spSourceCodeStream src;
+  spLiteralSupport litSupport;
   TokenUtil tokenUtil;
   vector<spComment> comments;
   LineIndentationMap &indentMap;
@@ -69,11 +69,11 @@ class Lexer {
   bool isLineWrap(int prevToken);
 
 public:
-  Lexer(c4::spSourceCodeStream &src, c4::spDiagnosis &diag,
+  Lexer(spSourceCodeStream &src, spDiagnosis &diag,
     LineIndentationMap &indentMap)
     : curToken(0), curTokenStr(""), isPrevTokenSwitchLabelColon(false),
       curIndentationLevel(0), diag(diag), src(src),
-      litSupport(c4::spLiteralSupport(new c4::LiteralSupport(src, diag))),
+      litSupport(spLiteralSupport(new LiteralSupport(src, diag))),
       indentMap(indentMap) {}
 
   void getNextToken();

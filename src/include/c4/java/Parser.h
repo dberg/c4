@@ -45,7 +45,7 @@ bool isVariableModifier(int token);
 
 class Parser {
   const string filename;
-  c4::spSourceCodeStream src;
+  spSourceCodeStream src;
   spLexer lexer;
   vector<string> scopes;
   TokenUtil tokenUtil;
@@ -229,15 +229,15 @@ public:
   Parser(
     const string filename, const string &buffer)
     : filename(filename),
-      src(c4::spSourceCodeStream(new c4::SourceCodeStream(buffer))),
+      src(make_shared<SourceCodeStream>(buffer)),
       compilationUnit(spCompilationUnit(new CompilationUnit)),
       error(0), error_msg("")
   {
-    diag = c4::spDiagnosis(new c4::Diagnosis);
+    diag = spDiagnosis(new Diagnosis);
     lexer = spLexer(new Lexer(src, diag, indentMap));
   }
 
-  c4::spDiagnosis diag;
+  spDiagnosis diag;
   spCompilationUnit compilationUnit;
   vector<spComment> comments;
   LineIndentationMap indentMap;

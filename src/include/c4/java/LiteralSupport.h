@@ -12,7 +12,7 @@ using std::shared_ptr;
 using std::string;
 using std::stringstream;
 
-namespace c4 {
+namespace c4j {
 
 enum class LiteralToken {
   ERROR,
