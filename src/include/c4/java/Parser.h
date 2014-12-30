@@ -44,11 +44,6 @@ bool isValidInitTokenOfTypeDeclaration(int token);
 bool isVariableModifier(int token);
 
 class Parser {
-  const string filename;
-  spSourceCodeStream src;
-  spLexer lexer;
-  vector<string> scopes;
-  TokenUtil tokenUtil;
 
   // Parser
   void buildParseTree();
@@ -225,27 +220,37 @@ class Parser {
   void saveState(State &state);
   void restoreState(State &state);
 
+  vector<string> scopes;
+  TokenUtil tokenUtil;
+
 public:
+
+  const string filename;
+  spSourceCodeStream src;
+
+  spDiagnosis diag;
+  LineIndentationMap indentMap;
+  spLexer lexer;
+
+  spCompilationUnit compilationUnit;
+
+  int error;
+  string error_msg;
+
+  vector<spComment> comments;
+  ST st;
+
   Parser(
     const string filename, const string &buffer)
     : filename(filename),
       src(make_shared<SourceCodeStream>(buffer)),
-      compilationUnit(spCompilationUnit(new CompilationUnit)),
-      error(0), error_msg("")
-  {
-    diag = spDiagnosis(new Diagnosis);
-    lexer = spLexer(new Lexer(src, diag, indentMap));
-  }
-
-  spDiagnosis diag;
-  spCompilationUnit compilationUnit;
-  vector<spComment> comments;
-  LineIndentationMap indentMap;
-  ST st;
-  int error;
-  string error_msg;
+      diag(make_shared<Diagnosis>()),
+      lexer(make_shared<Lexer>(src, diag, indentMap)),
+      compilationUnit(make_shared<CompilationUnit>()),
+      error(0), error_msg("") {}
 
   void parse();
+
 };
 } // namespace
 
