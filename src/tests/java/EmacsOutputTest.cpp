@@ -3,31 +3,32 @@
 #include "c4/java/EmacsOutput.h"
 #include "c4/java/Parser.h"
 #include "gtest/gtest.h"
+
 using namespace c4j;
 
 TEST(EmacsOutput, PackageDeclaration) {
-  std::string filename = "Test.java";
-  std::string buffer = "@myinterface\npackage com.test;";
+  u32string filename = U"Test.java";
+  u32string buffer = U"@myinterface\npackage com.test;";
 
   Parser parser(filename, buffer);
   parser.parse();
   EmacsOutput output(parser);
   output.build();
-  std::string expected =
-    "["
+  u32string expected =
+    U"["
     "(c4j-sh-annotation-tok-at 1 2)"
     "(c4j-sh-identifier 2 13)"
     "(c4j-sh-keyword 14 21)"
     "(c4j-sh-identifier 22 25)"
     "(c4j-sh-op 25 26)"
     "(c4j-sh-identifier 26 30)]";
-  ASSERT_EQ(expected, output.outSH.str());
+  ASSERT_EQ(expected, output.outSH);
 }
 
 TEST(EmacsOutput, ImportDeclaration) {
-  std::string filename = "Test.java";
-  std::string buffer =
-    "import com.test1.Test1;\n"
+  u32string filename = U"Test.java";
+  u32string buffer =
+    U"import com.test1.Test1;\n"
     "import com.test2.*;\n"
     "import static com.test3.Test3;\n"
     "import static com.test4.*;\n";
@@ -36,8 +37,8 @@ TEST(EmacsOutput, ImportDeclaration) {
   parser.parse();
   EmacsOutput output(parser);
   output.build();
-  std::string expected =
-    "["
+  u32string expected =
+    U"["
     "(c4j-sh-keyword 1 7)"
     "(c4j-sh-identifier 8 11)"
     "(c4j-sh-op 11 12)"
@@ -62,53 +63,53 @@ TEST(EmacsOutput, ImportDeclaration) {
     "(c4j-sh-op 93 94)"
     "(c4j-sh-identifier 94 99)"
     "(c4j-sh-op 99 101)]";
-  ASSERT_EQ(expected, output.outSH.str());
+  ASSERT_EQ(expected, output.outSH);
 }
 
 TEST(EmacsOutput, NormalClassDeclaration) {
-  std::string filename = "Test.java";
-  std::string buffer =
-    "public class Test extends Base {}\n";
+  u32string filename = U"Test.java";
+  u32string buffer =
+    U"public class Test extends Base {}\n";
   Parser parser(filename, buffer);
   parser.parse();
   EmacsOutput output(parser);
   output.build();
-  std::string expected =
-    "["
+  u32string expected =
+    U"["
     "(c4j-sh-keyword 1 7)"
     "(c4j-sh-keyword 8 13)"
     "(c4j-sh-reference-type-id 14 18)"
     "(c4j-sh-keyword 19 26)"
     "(c4j-sh-reference-type-id 27 31)]";
-  ASSERT_EQ(expected, output.outSH.str());
+  ASSERT_EQ(expected, output.outSH);
 }
 
 TEST(EmacsOutput, ClassConstructor) {
-  std::string filename = "Test.java";
-  std::string buffer = "class Abc { Abc() {} }";
+  u32string filename = U"Test.java";
+  u32string buffer = U"class Abc { Abc() {} }";
   Parser parser(filename, buffer);
   parser.parse();
   EmacsOutput output(parser);
   output.build();
-  std::string expected =
-    "["
+  u32string expected =
+    U"["
     "(c4j-sh-keyword 1 6)"
     "(c4j-sh-reference-type-id 7 10)"
     "(c4j-sh-identifier 13 16)"
     "(c4j-sh-op 19 20)"
     "(c4j-sh-op 20 21)]";
-  ASSERT_EQ(expected, output.outSH.str());
+  ASSERT_EQ(expected, output.outSH);
 }
 
 TEST(EmacsOutput, ClassConstructorParameters) {
-  std::string filename = "Test.java";
-  std::string buffer = "class Abc { Abc(int a, double b) {} }";
+  u32string filename = U"Test.java";
+  u32string buffer = U"class Abc { Abc(int a, double b) {} }";
   Parser parser(filename, buffer);
   parser.parse();
   EmacsOutput output(parser);
   output.build();
-  std::string expected =
-    "["
+  u32string expected =
+    U"["
     "(c4j-sh-keyword 1 6)"
     "(c4j-sh-reference-type-id 7 10)"
     "(c4j-sh-identifier 13 16)"
@@ -118,18 +119,18 @@ TEST(EmacsOutput, ClassConstructorParameters) {
     "(c4j-sh-identifier 31 32)"
     "(c4j-sh-op 34 35)"
     "(c4j-sh-op 35 36)]";
-  ASSERT_EQ(expected, output.outSH.str());
+  ASSERT_EQ(expected, output.outSH);
 }
 
 TEST(EmacsOutput, Expression2Rest) {
-  std::string filename = "Test.java";
-  std::string buffer = "class C { void m() { if (x == null) { return; }}}";
+  u32string filename = U"Test.java";
+  u32string buffer = U"class C { void m() { if (x == null) { return; }}}";
   Parser parser(filename, buffer);
   parser.parse();
   EmacsOutput output(parser);
   output.build();
-  std::string expected =
-    "["
+  u32string expected =
+    U"["
     "(c4j-sh-keyword 1 6)"
     "(c4j-sh-reference-type-id 7 8)"
     "(c4j-sh-keyword 11 15)" // void
@@ -149,6 +150,6 @@ TEST(EmacsOutput, Expression2Rest) {
     "(c4j-sh-op 47 48)" // }
     "(c4j-sh-op 48 49)]"; // }
 
-  ASSERT_EQ(expected, output.outSH.str());
+  ASSERT_EQ(expected, output.outSH);
 }
 

@@ -3,7 +3,7 @@
 namespace c4s {
 
 /** Constructor */
-SourceFile::SourceFile(string filename, vector<Char> buffer)
+SourceFile::SourceFile(u32string filename, u32string buffer)
   : filename(filename), buffer(buffer) {}
 
 } // namespace

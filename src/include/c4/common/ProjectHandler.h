@@ -7,10 +7,15 @@
 #include <unordered_map>
 
 #include "c4/common/Compilation.h"
+#include "c4/common/Encode.h"
 #include "c4/common/Project.h"
 #include "c4/server/Response.h"
 #include "c4/server/Request.h"
-#include "utf8/utf8.h"
+
+using std::string;
+using std::u32string;
+using std::unordered_map;
+using std::make_shared;
 
 namespace c4 {
 
@@ -20,8 +25,8 @@ typedef std::unique_ptr<ProjectHandler> spProjectHandler;
 class ProjectHandler {
 
 private:
-  std::unordered_map<std::string, spProject> projects;
-  spProject getProject(std::string projectId);
+  unordered_map<u32string, spProject> projects;
+  spProject getProject(u32string projectId);
 
 public:
   ProjectHandler(): projects() {}

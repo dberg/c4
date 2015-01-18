@@ -9,41 +9,49 @@ void EmacsOutput::build() {
   buildIndentationTable();
 }
 
-const string EmacsOutput::body() {
-  stringstream body;
-  body
-    << outSH.str() << endl
-    << outErr.str() << endl
-    << outST.str() << endl
-    << outIT.str();
-
-  return body.str();
+const u32string EmacsOutput::body() {
+  u32string body;
+  body += outSH;
+  body += U"\n";
+  body += outErr;
+  body += U"\n";
+  body += outST;
+  body += U"\n";
+  body += outIT;
+  return body;
 }
 
 void EmacsOutput::buildErrors() {
-  outErr << "[";
+  outErr += U"[";
   setErrors(diag->errors);
-  outErr << "]";
+  outErr += U"]";
 }
 
 void EmacsOutput::buildIndentationTable() {
   // Identation table
   // #s(hash-table size N data
   //   (LineNumber_N0 (IndentLevel_N0 LineWrap_N0 Offset_N0) ... N)
-  outIT << "#s(hash-table size " << indentMap.size() << " data (";
+  outIT += U"#s(hash-table size ";
+  outIT += indentMap.size();
+  outIT += U" data (";
 
   LineIndentationMap::iterator it;
   for (it = indentMap.begin(); it != indentMap.end(); ++it) {
-    outIT << it->first << " (" << it->second->level << " "
-      << ((it->second->lineWrap) ? "1" : "0") << " "
-      << it->second->offset << ") ";
+    outIT += it->first;
+    outIT += U" (";
+    outIT += it->second->level;
+    outIT += U" ";
+    outIT += ((it->second->lineWrap) ? U"1" : U"0");
+    outIT += U" ";
+    outIT += it->second->offset;
+    outIT += U") ";
   }
 
-  outIT << "))";
+  outIT += U"))";
 }
 
 void EmacsOutput::buildSyntaxHighlighting() {
-  outSH << "[";
+  outSH += U"[";
   if (compilationUnit->pkgDecl) {
     setPackageDeclaration(compilationUnit->pkgDecl);
   }
@@ -58,30 +66,35 @@ void EmacsOutput::buildSyntaxHighlighting() {
 
   setComments();
 
-  outSH << "]";
+  outSH += U"]";
 }
 
 void EmacsOutput::buildSymbolTable() {
-  outST << "[";
+  outST += U"[";
   for (unsigned i = 0; i < st.symbols.size(); i++) {
-    outST << "("
-      << getSymbolTableType(st.symbols[i]->type) << " "
-      << st.symbols[i]->scope << " "
-      << st.symbols[i]->pos << " "
-      << st.symbols[i]->end << " "
-      << st.symbols[i]->line;
+    outST += U"(";
+    outST += getSymbolTableType(st.symbols[i]->type);
+    outST += U" ";
+    outST += st.symbols[i]->scope;
+    outST += U" ";
+    outST += st.symbols[i]->pos;
+    outST += U" ";
+    outST += st.symbols[i]->end;
+    outST += U" ";
+    outST += st.symbols[i]->line;
     if (st.symbols[i]->metadata.size()) {
-      outST << " " << st.symbols[i]->metadata;
+      outST += U" ";
+      outST += st.symbols[i]->metadata;
     }
-    outST << ")";
+    outST += U")";
   }
-  outST << "]";
+  outST += U"]";
 }
 
-const string EmacsOutput::getSymbolTableType(int type) {
+const u32string EmacsOutput::getSymbolTableType(int type) {
   STTypes::iterator it = stTypes.find(type);
   if (it == stTypes.end()) {
-    return "unknown";
+    return U"unknown";
   }
 
   return it->second;
@@ -106,8 +119,11 @@ void EmacsOutput::setAnnotation(const spAnnotation &annotation) {
   if (annotation->qualifiedId) {
     // '@'
     unsigned pos = annotation->posTokAt + 1;
-    outSH << "(c4j-sh-annotation-tok-at "
-          << pos << " " << (pos + 1) << ")";
+    outSH += U"(c4j-sh-annotation-tok-at ";
+    outSH += pos;
+    outSH += U" ";
+    outSH += (pos + 1);
+    outSH += U")";
     setQualifiedId(annotation->qualifiedId);
   }
 
@@ -187,8 +203,11 @@ void EmacsOutput::setAnnotationTypeDeclaration(
 
   if (annotationDecl->posAt) {
     unsigned pos = annotationDecl->posAt + 1;
-    outSH << "(c4j-sh-annotation-tok-at "
-      << pos << " " << (pos + 1) << ")";
+    outSH += U"(c4j-sh-annotation-tok-at ";
+    outSH += pos;
+    outSH += U" ";
+    outSH += (pos + 1);
+    outSH += U")";
   }
 
   if (annotationDecl->tokInterface) {
@@ -447,10 +466,11 @@ void EmacsOutput::setCatchType(const spCatchType &catchType) {
 
 void EmacsOutput::setCharacterLiteral(const spCharacterLiteral &charLiteral) {
   if (charLiteral->pos && charLiteral->val.size()) {
-    outSH << "(c4j-sh-literal-char "
-      << charLiteral->pos + 1 << " "
-      << (charLiteral->pos + charLiteral->val.size() + 1);
-    outSH << ")";
+    outSH += U"(c4j-sh-literal-char ";
+    outSH += charLiteral->pos + 1;
+    outSH += U" ";
+    outSH += (charLiteral->pos + charLiteral->val.size() + 1);
+    outSH += U")";
   }
 }
 
@@ -536,8 +556,11 @@ void EmacsOutput::setComments() {
   if (comments.size() == 0) { return; }
 
   for (unsigned int i = 0; i < comments.size(); i++) {
-    outSH << "(c4j-sh-comment " << (comments[i]->posIni + 1) << " "
-      << (comments[i]->posEnd + 2) << ")";
+    outSH += U"(c4j-sh-comment ";
+    outSH += (comments[i]->posIni + 1);
+    outSH += U" ";
+    outSH += (comments[i]->posEnd + 2);
+    outSH += U")";
   }
 }
 
@@ -789,10 +812,13 @@ void EmacsOutput::setEnumDeclaration(spEnumDeclaration &enumDecl) {
 
 void EmacsOutput::setErrors(const vector<c4::spError> &errors) {
   for (std::size_t i = 0; i < errors.size(); i++) {
-    outErr << "("
-      << (errors[i]->ini + 1) << " "
-      << (errors[i]->end + 1) << " \""
-      << errUtil.getMessage(errors[i]->type) << "\")";
+    outErr += U"(";
+    outErr += (errors[i]->ini + 1);
+    outErr += U" ";
+    outErr += (errors[i]->end + 1);
+    outErr += U" \"";
+    outErr += errUtil.getMessage(errors[i]->type);
+    outErr += U"\")";
   }
 }
 
@@ -996,9 +1022,11 @@ void EmacsOutput::setFloatingPointLiteral(
   const spFloatingPointLiteral &fpLiteral) {
 
   if (fpLiteral->pos && fpLiteral->value.size()) {
-    outSH << "(c4j-sh-literal-number "
-      << (fpLiteral->pos + 1) << " "
-      << (fpLiteral->pos + fpLiteral->value.size() + 1) << ")";
+    outSH += U"(c4j-sh-literal-number ";
+    outSH += (fpLiteral->pos + 1);
+    outSH += U" ";
+    outSH += (fpLiteral->pos + fpLiteral->value.size() + 1);
+    outSH += U")";
   }
 }
 
@@ -1231,12 +1259,19 @@ void EmacsOutput::setIdentifier(const spIdentifier &identifier, IdentifierOpt op
   int end = ini + identifier->value.length();
 
   if (opt == EmacsOutput::OPT_IDENTIFIER_REFERENCE_TYPE) {
-    outSH << "(c4j-sh-reference-type-id "
-      << ini << " " << end << ")";
+    outSH += U"(c4j-sh-reference-type-id ";
+    outSH += ini;
+    outSH += U" ";
+    outSH += end;
+    outSH += U")";
     return;
   }
 
-  outSH << "(c4j-sh-identifier " << ini << " " << end << ")";
+  outSH += U"(c4j-sh-identifier ";
+  outSH += ini;
+  outSH += U" ";
+  outSH += end;
+  outSH += U")";
 }
 
 void EmacsOutput::setIdentifierSuffix(const spIdentifierSuffix &idSuffix) {
@@ -1383,7 +1418,7 @@ void EmacsOutput::setImportDeclaration(const spImportDeclaration &import) {
 }
 
 void EmacsOutput::setImportDeclarations(const spImportDeclarations &impDecls) {
-  for (string::size_type i = 0; i < impDecls->imports.size(); i++) {
+  for (u32string::size_type i = 0; i < impDecls->imports.size(); i++) {
     setImportDeclaration(impDecls->imports[i]);
   }
 }
@@ -1404,9 +1439,11 @@ void EmacsOutput::setInnerCreator(const spInnerCreator &innerCreator) {
 
 void EmacsOutput::setIntegerLiteral(const spIntegerLiteral &intLiteral) {
   if (intLiteral->pos && intLiteral->value.size()) {
-    outSH << "(c4j-sh-literal-number "
-      << (intLiteral->pos + 1) << " "
-      << (intLiteral->pos + intLiteral->value.size() + 1) << ")";
+    outSH += U"(c4j-sh-literal-number ";
+    outSH += (intLiteral->pos + 1);
+    outSH += U" ";
+    outSH += (intLiteral->pos + intLiteral->value.size() + 1);
+    outSH += U")";
   }
 }
 
@@ -1599,7 +1636,11 @@ void EmacsOutput::setKeyword(const spTokenExp &token) {
 }
 
 void EmacsOutput::setKeyword(int ini, int end) {
-  outSH << "(c4j-sh-keyword " << ini << " " << end << ")";
+  outSH += U"(c4j-sh-keyword ";
+  outSH += ini;
+  outSH += U" ";
+  outSH += end;
+  outSH += U")";
 }
 
 void EmacsOutput::setLiteral(const spLiteral &literal) {
@@ -1915,7 +1956,11 @@ void EmacsOutput::setNormalInterfaceDeclaration(
 void EmacsOutput::setOp(unsigned int ini, int len) {
   ini++;
   unsigned int end = ini + len;
-  outSH << "(c4j-sh-op " << ini << " " << end << ")";
+  outSH += U"(c4j-sh-op ";
+  outSH += ini;
+  outSH += U" ";
+  outSH += end;
+  outSH += U")";
 }
 
 void EmacsOutput::setPackageDeclaration(const spPackageDeclaration &pkgDecl) {
@@ -2379,7 +2424,11 @@ void EmacsOutput::setStatementExpression(const spStatementExpression &stmtExpr) 
 void EmacsOutput::setStringLiteral(const spStringLiteral &strLiteral) {
   unsigned ini = strLiteral->pos + 1;
   unsigned end = ini + strLiteral->val.length();
-  outSH << "(c4j-sh-string-literal " << ini << " " << end << ")";
+  outSH += U"(c4j-sh-string-literal ";
+  outSH += ini;
+  outSH += U" ";
+  outSH += end;
+  outSH += U")";
 }
 
 void EmacsOutput::setSuperSuffix(const spSuperSuffix &superSuffix) {

@@ -4,7 +4,6 @@
 
 #include <cctype>
 #include <string>
-#include <sstream>
 #include <memory>
 
 #include "c4/java/AST.h"
@@ -17,8 +16,7 @@
 
 using std::map;
 using std::shared_ptr;
-using std::string;
-using std::stringstream;
+using std::u32string;
 using std::vector;
 
 namespace c4j {
@@ -33,7 +31,7 @@ typedef shared_ptr<Lexer> spLexer;
 class Lexer {
 
   int curToken;
-  string curTokenStr;
+  u32string curTokenStr;
   bool isPrevTokenSwitchLabelColon;
   int curIndentationLevel;
   spDiagnosis diag;
@@ -50,14 +48,14 @@ class Lexer {
   int getCharacterLiteral();
   int getCommentOrDivToken();
   int getEqualsToken();
-  int getEscapeSequence(stringstream &ss);
+  int getEscapeSequence(u32string &ss);
   int getExclamationToken();
   int getGreaterThenToken();
   int getLessThenToken();
   int getMinusToken();
   int getNumberToken(char c);
   int getMulToken();
-  int getPeriodOrEllipsisToken(stringstream &ss);
+  int getPeriodOrEllipsisToken(u32string &ss);
   int getPeriodStartingToken();
   int getPipeToken();
   int getPlusToken();
@@ -71,7 +69,7 @@ class Lexer {
 public:
   Lexer(spSourceCodeStream &src, spDiagnosis &diag,
     LineIndentationMap &indentMap)
-    : curToken(0), curTokenStr(""), isPrevTokenSwitchLabelColon(false),
+    : curToken(0), curTokenStr(U""), isPrevTokenSwitchLabelColon(false),
       curIndentationLevel(0), diag(diag), src(src),
       litSupport(spLiteralSupport(new LiteralSupport(src, diag))),
       indentMap(indentMap) {}
@@ -79,7 +77,7 @@ public:
   void getNextToken();
   int getCurToken() { return curToken; }
   unsigned int getCursor() { return src->getCursor(); }
-  const string getCurTokenStr() { return curTokenStr; }
+  const u32string getCurTokenStr() { return curTokenStr; }
   unsigned int getCurTokenIni() {
     return src->getCursor() - curTokenStr.length();
   }

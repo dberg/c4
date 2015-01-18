@@ -4,7 +4,6 @@
 
 #include <iostream>
 #include <map>
-#include <sstream>
 
 #include "c4/java/AST.h"
 #include "c4/java/Diagnosis.h"
@@ -16,8 +15,7 @@
 using std::endl;
 using std::map;
 using std::pair;
-using std::string;
-using std::stringstream;
+using std::u32string;
 using std::vector;
 
 namespace c4j {
@@ -39,7 +37,7 @@ class EmacsOutput {
   c4::ErrorUtil errUtil;
 
   // Symbol table types translation to elisp
-  typedef map<int, string> STTypes;
+  typedef map<int, u32string> STTypes;
   STTypes stTypes;
 
   // We distinguish references identifiers from other identifiers like variable
@@ -54,7 +52,7 @@ class EmacsOutput {
   void buildSymbolTable();
   void buildIndentationTable();
 
-  const string getSymbolTableType(int type);
+  const u32string getSymbolTableType(int type);
   void setAnnotationElement(const spAnnotationElement elem);
   void setAnnotation(const spAnnotation &annotation);
   void setAnnotations(const vector<spAnnotation> &annotations);
@@ -213,33 +211,33 @@ class EmacsOutput {
 
 public:
   // Output sent to emacs
-  stringstream outSH; // syntax highlighting
-  stringstream outErr;
-  stringstream outST; // symbol table
-  stringstream outIT; // indentation table
+  u32string outSH; // syntax highlighting
+  u32string outErr;
+  u32string outST; // symbol table
+  u32string outIT; // indentation table
 
   EmacsOutput(Parser &parser)
     : compilationUnit(parser.compilationUnit), comments(parser.comments),
       st(parser.st), diag(parser.diag), indentMap(parser.indentMap)
   {
     // Symbol table types representation in elisp
-    stTypes[ST_COMPILATION_UNIT] = "_comp_unit";
-    stTypes[ST_PACKAGE] = "_package";
-    stTypes[ST_CLASS_OR_INTERFACE] = "_class_or_interface";
-    stTypes[ST_MEMBER_DECL] = "_member_decl";
-    stTypes[ST_CLASS] = "_class";
-    stTypes[ST_ENUM] = "_enum";
-    stTypes[ST_INTERFACE] = "_interface";
-    stTypes[ST_METHOD] = "_method";
-    stTypes[ST_FIELD] = "_field";
-    stTypes[ST_IDENTIFIER] = "id";
-    stTypes[ST_TYPE] = "type";
+    stTypes[ST_COMPILATION_UNIT] = U"_comp_unit";
+    stTypes[ST_PACKAGE] = U"_package";
+    stTypes[ST_CLASS_OR_INTERFACE] = U"_class_or_interface";
+    stTypes[ST_MEMBER_DECL] = U"_member_decl";
+    stTypes[ST_CLASS] = U"_class";
+    stTypes[ST_ENUM] = U"_enum";
+    stTypes[ST_INTERFACE] = U"_interface";
+    stTypes[ST_METHOD] = U"_method";
+    stTypes[ST_FIELD] = U"_field";
+    stTypes[ST_IDENTIFIER] = U"id";
+    stTypes[ST_TYPE] = U"type";
 
     // TODO: we can infer the size of outIT from indentMap
   }
 
   void build();
-  const string body();
+  const u32string body();
 };
 
 }

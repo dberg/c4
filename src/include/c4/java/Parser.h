@@ -3,7 +3,6 @@
 #define __C4_JAVA_PARSER_H__
 
 #include <string>
-#include <sstream>
 #include <vector>
 
 #include "c4/java/AST.h"
@@ -17,7 +16,7 @@
 
 using std::make_shared;
 using std::shared_ptr;
-using std::string;
+using std::u32string;
 using std::vector;
 
 namespace c4j {
@@ -220,12 +219,12 @@ class Parser {
   void saveState(State &state);
   void restoreState(State &state);
 
-  vector<string> scopes;
+  vector<u32string> scopes;
   TokenUtil tokenUtil;
 
 public:
 
-  const string filename;
+  const u32string filename;
   spSourceCodeStream src;
 
   spDiagnosis diag;
@@ -235,19 +234,19 @@ public:
   spCompilationUnit compilationUnit;
 
   int error;
-  string error_msg;
+  u32string error_msg;
 
   vector<spComment> comments;
   ST st;
 
   Parser(
-    const string filename, const string &buffer)
+    const u32string filename, const u32string &buffer)
     : filename(filename),
       src(make_shared<SourceCodeStream>(buffer)),
       diag(make_shared<Diagnosis>()),
       lexer(make_shared<Lexer>(src, diag, indentMap)),
       compilationUnit(make_shared<CompilationUnit>()),
-      error(0), error_msg("") {}
+      error(0), error_msg(U"") {}
 
   void parse();
 

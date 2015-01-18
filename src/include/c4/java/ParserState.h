@@ -4,6 +4,8 @@
 
 #include <string>
 
+using std::u32string;
+
 namespace c4j {
 
 // Current State of the Parser. We use this to perform lookaheads, backtrack
@@ -15,7 +17,7 @@ struct State {
   unsigned cursor;
   unsigned line;
   int token;
-  std::string tokenStr;
+  u32string tokenStr;
 };
 
 } // namespace

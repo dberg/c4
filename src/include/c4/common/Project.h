@@ -11,6 +11,10 @@
 #include "c4/common/ProjectScala.h"
 #include "c4/common/Util.h"
 
+using std::string;
+using std::unordered_map;
+using std::unique_ptr;
+
 namespace c4 {
 
 class Project;
@@ -18,21 +22,14 @@ typedef std::shared_ptr<Project> spProject;
 
 class Project {
 
-  std::string id;
-  std::unordered_map<std::string, spCompilation> comps;
+  u32string id;
+  unordered_map<u32string, spCompilation> comps;
   spProjectJava projJava;
   spProjectScala projScala;
 
 public:
-
-  Project(std::string id):
-    id(id),
-    projJava(std::unique_ptr<ProjectJava>(new ProjectJava)),
-    projScala(std::unique_ptr<ProjectScala>(new ProjectScala))
-    {}
-
+  Project(u32string id);
   void compile(spCompilation comp);
-
 };
 
 } // namespace

@@ -10,7 +10,7 @@
 
 using std::pair;
 using std::shared_ptr;
-using std::string;
+using std::u32string;
 using std::vector;
 
 /**
@@ -1451,8 +1451,8 @@ struct GenericMethodOrConstructorRest : ASTError {
  */
 struct Identifier {
   int pos;
-  const string value;
-  Identifier(int pos, const string &value) : pos(pos), value(value) {}
+  const u32string value;
+  Identifier(int pos, const u32string &value) : pos(pos), value(value) {}
 };
 
 /**
@@ -2121,7 +2121,7 @@ struct IntegerLiteral {
   IntegerLiteralEnum opt;
   bool intSuffix;
   int pos;
-  string value;
+  u32string value;
 
   IntegerLiteral() : opt(OPT_UNDEFINED), intSuffix(false), pos(-1) {}
 };
@@ -2140,7 +2140,7 @@ struct FloatingPointLiteral {
 
   FloatingPointLiteralEnum opt;
   int pos;
-  string value;
+  u32string value;
 
   FloatingPointLiteral() : opt(OPT_UNDEFINED), pos(-1) {}
 };
@@ -2286,12 +2286,12 @@ struct CatchType : ASTError {
 
 struct CharacterLiteral {
   int pos;
-  string val;
+  u32string val;
 };
 
 struct StringLiteral {
   int pos;
-  string val;
+  u32string val;
 };
 
 /**

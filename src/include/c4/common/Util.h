@@ -5,11 +5,22 @@
 #include <string>
 #include <sstream>
 
+using std::u32string;
+using std::string;
+using std::stringstream;
+
 namespace c4 {
 
-bool endsWith(std::string const &str, std::string const &end);
-const std::string itos(unsigned long l);
-const std::string itos_hex(unsigned long l);
+template<typename T>
+bool endsWith(T const &str, T const &end) {
+  if (str.length() >= end.length()) {
+    return (0 == str.compare(str.length() - end.length(), end.length(), end));
+  }
+  return false;
+}
+
+const string itos(unsigned long l);
+const string itos_hex(unsigned long l);
 
 } // namespace
 

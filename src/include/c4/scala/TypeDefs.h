@@ -4,13 +4,9 @@
 
 #include <memory>
 
-#include "c4/common/TypeDefs.h"
-
 using std::shared_ptr;
 
 namespace c4s {
-
-typedef c4::Char Char;
 
 // Global.h
 class Global;

@@ -6,6 +6,8 @@
 #include <memory>
 #include <string>
 
+using std::u32string;
+
 namespace c4 {
 
 struct Error {
@@ -67,58 +69,58 @@ enum ErrorCode {
 };
 
 class ErrorUtil {
-  std::unordered_map<int, std::string> msgs = {
-    { ERR_EXP_ARGUMENTS, "Expected Arguments" },
-    { ERR_EXP_ARRAY, "Expected Array" },
-    { ERR_EXP_CATCH, "Expected 'catch' expression" },
-    { ERR_EXP_CLASS, "Expected keyword class" },
+  std::unordered_map<int, u32string> msgs = {
+    { ERR_EXP_ARGUMENTS, U"Expected Arguments" },
+    { ERR_EXP_ARRAY, U"Expected Array" },
+    { ERR_EXP_CATCH, U"Expected 'catch' expression" },
+    { ERR_EXP_CLASS, U"Expected keyword class" },
     { ERR_EXP_CLASS_OR_ARRAY_CREATOR_REST,
-      "Expected ClassCreatorRest or ArrayCreatorRest" },
-    { ERR_EXP_COMMA, "Expected comma" },
-    { ERR_EXP_ELEMENT_VALUE, "Expected element value" },
-    { ERR_EXP_EXPRESSION_IN_BRACKETS, "Expected [Expression]" },
-    { ERR_EXP_IDENTIFIER, "Expected identifier" },
-    { ERR_EXP_IMPLICIT, "Expected implicit keyword" },
-    { ERR_EXP_INTERFACE, "Expected interface" },
-    { ERR_EXP_LCURLY_BRACKET, "Expected opening curly brackets" },
-    { ERR_EXP_LBRACKET, "Expected '['" },
-    { ERR_EXP_LPAREN, "Expected opening parenthesis" },
-    { ERR_EXP_NL, "Expected new line" },
-    { ERR_EXP_OP_COLON, "Expected colon" },
-    { ERR_EXP_OP_EQUALS, "Expected operator =" },
-    { ERR_EXP_OP_LT, "Expected operator <" },
-    { ERR_EXP_OP_GT, "Expected operator >" },
-    { ERR_EXP_PERIOD, "Expected period" },
-    { ERR_EXP_QID, "Expected qualified id" },
-    { ERR_EXP_RBRACKET, "Expected ']'" },
-    { ERR_EXP_RCURLY_BRACKET, "Expected closing curly brackets" },
-    { ERR_EXP_REFTYPE, "Expected reference type" },
-    { ERR_EXP_RPAREN, "Expected closing parenthesis" },
-    { ERR_EXP_SEMICOLON, "Expected semi-colon" },
-    { ERR_EXP_STAR, "Expected *" },
-    { ERR_EXP_STRING_LITERAL, "Expected string literal" },
-    { ERR_EXP_SUPER, "Expected keyword super" },
-    { ERR_EXP_TYPE, "Expected Type" },
-    { ERR_EXP_TRAIT, "Expected keyword trait" },
-    { ERR_EXP_UNDERSCORE, "Expected keyword underscore" },
-    { ERR_EXP_VOID, "Expected keyword void" },
-    { ERR_EXP_WHILE, "Expected keyword while" },
-    { ERR_NVAL_ANNOT_ELEM, "Invalid annotation element" },
-    { ERR_NVAL_ARRAY, "Invalid array notation" },
+      U"Expected ClassCreatorRest or ArrayCreatorRest" },
+    { ERR_EXP_COMMA, U"Expected comma" },
+    { ERR_EXP_ELEMENT_VALUE, U"Expected element value" },
+    { ERR_EXP_EXPRESSION_IN_BRACKETS, U"Expected [Expression]" },
+    { ERR_EXP_IDENTIFIER, U"Expected identifier" },
+    { ERR_EXP_IMPLICIT, U"Expected implicit keyword" },
+    { ERR_EXP_INTERFACE, U"Expected interface" },
+    { ERR_EXP_LCURLY_BRACKET, U"Expected opening curly brackets" },
+    { ERR_EXP_LBRACKET, U"Expected '['" },
+    { ERR_EXP_LPAREN, U"Expected opening parenthesis" },
+    { ERR_EXP_NL, U"Expected new line" },
+    { ERR_EXP_OP_COLON, U"Expected colon" },
+    { ERR_EXP_OP_EQUALS, U"Expected operator =" },
+    { ERR_EXP_OP_LT, U"Expected operator <" },
+    { ERR_EXP_OP_GT, U"Expected operator >" },
+    { ERR_EXP_PERIOD, U"Expected period" },
+    { ERR_EXP_QID, U"Expected qualified id" },
+    { ERR_EXP_RBRACKET, U"Expected ']'" },
+    { ERR_EXP_RCURLY_BRACKET, U"Expected closing curly brackets" },
+    { ERR_EXP_REFTYPE, U"Expected reference type" },
+    { ERR_EXP_RPAREN, U"Expected closing parenthesis" },
+    { ERR_EXP_SEMICOLON, U"Expected semi-colon" },
+    { ERR_EXP_STAR, U"Expected *" },
+    { ERR_EXP_STRING_LITERAL, U"Expected string literal" },
+    { ERR_EXP_SUPER, U"Expected keyword super" },
+    { ERR_EXP_TYPE, U"Expected Type" },
+    { ERR_EXP_TRAIT, U"Expected keyword trait" },
+    { ERR_EXP_UNDERSCORE, U"Expected keyword underscore" },
+    { ERR_EXP_VOID, U"Expected keyword void" },
+    { ERR_EXP_WHILE, U"Expected keyword while" },
+    { ERR_NVAL_ANNOT_ELEM, U"Invalid annotation element" },
+    { ERR_NVAL_ARRAY, U"Invalid array notation" },
     { ERR_NVAL_EXPLICIT_GENERIC_INVOCATION_SUFFIX,
-      "Invalid ExplicitGenericInvocationSuffix" },
-    { ERR_NVAL_HEX, "Invalid Hexadecimal" },
-    { ERR_NVAL_IDENTIFIER_SUFFIX, "Invalid IdentifierSuffix" },
-    { ERR_NVAL_SELECTOR, "Invalid Selector" },
-    { ERR_NVAL_TYPE_ARGUMENT, "Invalid Type Argument" },
-    { ERR_VAR_MODIFIER_FINAL, "Duplicate 'final' keyword" },
+      U"Invalid ExplicitGenericInvocationSuffix" },
+    { ERR_NVAL_HEX, U"Invalid Hexadecimal" },
+    { ERR_NVAL_IDENTIFIER_SUFFIX, U"Invalid IdentifierSuffix" },
+    { ERR_NVAL_SELECTOR, U"Invalid Selector" },
+    { ERR_NVAL_TYPE_ARGUMENT, U"Invalid Type Argument" },
+    { ERR_VAR_MODIFIER_FINAL, U"Duplicate 'final' keyword" },
   };
 
 public:
-  const std::string getMessage(int error) {
+  const u32string getMessage(int error) {
     auto it = msgs.find(error);
     if (it == msgs.end()) {
-      return "";
+      return U"";
     }
     return it->second;
   }

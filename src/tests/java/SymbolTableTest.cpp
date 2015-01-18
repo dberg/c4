@@ -1,8 +1,12 @@
-#include <iostream>
+#include <string>
+
 #include "c4/java/Parser.h"
 #include "c4/java/SymbolTable.h"
+
 #include "gtest/gtest.h"
+
 using namespace c4j;
+using std::u32string;
 
 // |------------+-------+-----+-----+------+----+----------|
 // | type       | scope | pos | end | line | id | metadata |
@@ -18,9 +22,9 @@ using namespace c4j;
 // | id         |     7 |  46 |  47 |    3 |  8 | A        |
 // |------------+-------+-----+-----+------+----+----------|
 TEST(SymbolTable, Class) {
-  std::string filename = "Test.java";
-  std::string buffer =
-    "class A {\n"
+  u32string filename = U"Test.java";
+  u32string buffer =
+    U"class A {\n"
     // MemberDecl(1) MethodOrFieldDecl
     "int m1() { return 1; }\n"
     // MemberDecl(2) void Identifier VoidMethodDeclaratorRest

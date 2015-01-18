@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 
+#include "c4/common/Encode.h"
 #include "c4/bytecode/ParserBin.h"
 #include "c4/bytecode/BinOutput.h"
 #include "c4/java/EmacsOutput.h"
@@ -10,13 +11,19 @@
 #include "c4/server/Server.h"
 
 using namespace c4;
+using std::cerr;
+using std::cout;
+using std::endl;
+using std::string;
+using std::u32string;
+using std::vector;
 
 int parseClassFile(CmdInput &ci) {
-  std::vector<unsigned char> buffer;
+  vector<unsigned char> buffer;
 
   File file;
   if (file.read(ci.getFilename(), buffer)) {
-    std::cerr << "Error: Failed to read file:" << ci.getFilename() << std::endl;
+    cerr << "Error: Failed to read file:" << ci.getFilename() << endl;
     return 1;
   }
 
@@ -25,41 +32,45 @@ int parseClassFile(CmdInput &ci) {
 
   BinOutput output(parser);
   output.build();
-  std::cout << output.out.str() << std::endl;
+  cout << output.out.str() << endl;
 
   return 0;
 }
 
 int parseJavaFile(CmdInput &ci) {
-  std::string buffer;
-
+  string buffer;
   File file;
   if (file.read(ci.getFilename(), buffer)) {
-    std::cerr << "Error: Failed to read file:" << ci.getFilename() << std::endl;
+    cerr << "Error: Failed to read file:" << ci.getFilename() << endl;
     return 1;
   }
 
-  c4j::Parser parser(ci.getFilename(), buffer);
+  u32string u32buffer = utf8_to_u32(buffer);
+  u32string u32filename = utf8_to_u32(ci.getFilename());
+
+  c4j::Parser parser(u32buffer, u32filename);
   parser.parse();
   if (parser.error) {
-    std::cerr << "Error( " << parser.error << "): "
-      << parser.error_msg << std::endl;
+    string error_msg = u32_to_utf8(parser.error_msg);
+    cerr << "Error( " << parser.error << "): "
+      << error_msg << endl;
     return 1;
   }
 
-  c4j::EmacsOutput output(parser);
-  output.build();
-  std::cout << output.body();
+  c4j::EmacsOutput emacs(parser);
+  emacs.build();
+  string output = u32_to_utf8(emacs.body());
+  cout << output;
 
   return 0;
 }
 
 int parseScalaFile(CmdInput &ci) {
-  std::string buffer;
+  string buffer;
 
   File file;
   if (file.read(ci.getFilename(), buffer)) {
-    std::cerr << "Error: Failed to read file:" << ci.getFilename() << std::endl;
+    cerr << "Error: Failed to read file:" << ci.getFilename() << endl;
     return 1;
   }
 
@@ -78,12 +89,12 @@ int parseScalaFile(CmdInput &ci) {
 int main(int argc, const char **argv) {
   CmdInput ci(argc, argv);
   if (ci.processCmdArgs()) {
-    std::cerr << "Error: " << ci.getError() << std::endl;
+    cerr << "Error: " << ci.getError() << endl;
     return 1;
   }
 
   if (ci.isOptHelp()) {
-    std::cout << ci.help << std::endl;
+    cout << ci.help << endl;
   } else if (ci.isOptInBytecode()) {
     return parseClassFile(ci);
   } else if (ci.isOptInJava()) {

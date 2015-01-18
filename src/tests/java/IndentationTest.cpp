@@ -2,12 +2,14 @@
 #include "c4/java/Indentation.h"
 #include "c4/java/Parser.h"
 #include "gtest/gtest.h"
+
 using namespace c4j;
+using std::u32string;
 
 TEST(Indentation, Class) {
-  std::string filename = "Test.java";
-  std::string buffer =
-    "class A{\n"
+  u32string filename = U"Test.java";
+  u32string buffer =
+    U"class A{\n"
     "    void m() {}\n"
     "    @Ann\n"
     "    void n() {}\n"

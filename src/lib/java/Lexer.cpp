@@ -296,9 +296,9 @@ int Lexer::getCarretToken() {
  * Returns TOK_ERROR or TOK_CHARACTER_LITERAL
  */
 int Lexer::getCharacterLiteral() {
-  stringstream ss;
-  curTokenStr = "";
-  ss << '\''; // opening single quote
+  u32string ss;
+  curTokenStr = U"";
+  ss += '\''; // opening single quote
 
   char c = src->peekChar();
   if (c == '\n' || c == '\r' || c == '\'') {
@@ -312,19 +312,19 @@ int Lexer::getCharacterLiteral() {
       return TOK_ERROR;
     }
 
-    ss << src->getChar(); // consume closing single quote
-    curTokenStr = ss.str();
+    ss += src->getChar(); // consume closing single quote
+    curTokenStr = ss;
     return TOK_CHARACTER_LITERAL;
   }
 
   // SingleCharacter
-  ss << src->getChar(); // consume SingleCharacter
+  ss += src->getChar(); // consume SingleCharacter
   if (src->peekChar() != '\'') {
     return TOK_ERROR;
   }
 
-  ss << src->getChar(); // consume closing single quote
-  curTokenStr = ss.str();
+  ss += src->getChar(); // consume closing single quote
+  curTokenStr = ss;
   return TOK_CHARACTER_LITERAL;
 }
 
@@ -422,8 +422,8 @@ int Lexer::getEqualsToken() {
  *
  * Returns TOK_ESCAPE_SEQUENCE | TOK_ERROR
  */
-int Lexer::getEscapeSequence(stringstream &ss) {
-  ss << src->getChar(); // consume '\'
+int Lexer::getEscapeSequence(u32string &ss) {
+  ss += src->getChar(); // consume '\'
   switch (src->peekChar()) {
     case 'b': // backspace BS
     case 't': // horizontal tab HT
@@ -433,7 +433,7 @@ int Lexer::getEscapeSequence(stringstream &ss) {
     case '"': // double quote
     case '\'': // single quote
     case '\\': // backslash
-      ss << src->getChar(); // consume special char
+      ss += src->getChar(); // consume special char
       return TOK_ESCAPE_SEQUENCE;
   }
 
@@ -443,11 +443,11 @@ int Lexer::getEscapeSequence(stringstream &ss) {
   //   \ ZeroToThree OctalDigit OctalDigit
   if (isOctalDigit(src->peekChar())) {
     char c = src->getChar(); // consume first octal digit
-    ss << c;
+    ss += c;
     if (isOctalDigit(src->peekChar())) {
-      ss << src->getChar(); // consume second octal digit
+      ss += src->getChar(); // consume second octal digit
       if (isOctalDigit(src->peekChar())) {
-        ss << src->getChar(); // consume third octal digit
+        ss += src->getChar(); // consume third octal digit
         // at this point the first octal digit must be a number
         // from zero to three
         if (!(c >= '0' && c <= '3')) {
@@ -471,13 +471,13 @@ int Lexer::getEscapeSequence(stringstream &ss) {
     //     u
     //     UnicodeMarker u
     while (src->peekChar() == 'u') {
-      ss << src->getChar();
+      ss += src->getChar();
     }
 
     // HexDigit{4}
     for (int i = 0; i < 4; i++) {
       if (isHexDigit(src->peekChar())) {
-        ss << src->getChar(); // consume hex digit
+        ss += src->getChar(); // consume hex digit
       } else {
         return TOK_ERROR;
       }
@@ -524,9 +524,9 @@ int Lexer::getMulToken() {
  *   TOK_ERROR
 */
 int Lexer::getNumberToken(char c) {
-  stringstream ss;
+  u32string ss;
   int tok = toJavaTok(litSupport->getLiteralNumber(c, ss));
-  curTokenStr = ss.str();
+  curTokenStr = ss;
   return tok;
 }
 
@@ -534,19 +534,19 @@ int Lexer::getNumberToken(char c) {
  * Return TOK_PERIOD | TOK_ELLIPS | TOK_DECIMAL_FLOATING_POINT_LITERAL
  */
 int Lexer::getPeriodStartingToken() {
-  stringstream ss;
-  ss << '.';
+  u32string ss;
+  ss += '.';
 
   // If we have a digit following '.' this is a decimal floating point literal.
   if (isdigit(src->peekChar())) {
     int tok = toJavaTok(
       litSupport->getDecimalFloatingPointStartingWithAPeriod(ss));
-    curTokenStr = ss.str();
+    curTokenStr = ss;
     return tok;
   }
 
   int tok = getPeriodOrEllipsisToken(ss);
-  curTokenStr = ss.str();
+  curTokenStr = ss;
   return tok;
 }
 
@@ -568,7 +568,7 @@ int Lexer::getPipeToken() {
 /**
  * Return TOK_PERIOD | TOK_ELLIPSIS
  */
-int Lexer::getPeriodOrEllipsisToken(stringstream &ss) {
+int Lexer::getPeriodOrEllipsisToken(u32string &ss) {
   // We look 2 chars ahead to decide if we have an ellipsis.
   // At this point we have already found one dot char and the
   // cursor is pointing to the next char.
@@ -579,8 +579,8 @@ int Lexer::getPeriodOrEllipsisToken(stringstream &ss) {
     && src->peekChar() == '.'
     && src->peekChar(1) == '.') {
 
-    ss << src->getChar(); // consume 2nd '.'
-    ss << src->getChar(); // consume 3rd '.'
+    ss += src->getChar(); // consume 2nd '.'
+    ss += src->getChar(); // consume 3rd '.'
     return TOK_ELLIPSIS;
   }
 
@@ -623,8 +623,8 @@ int Lexer::getRemToken() {
  * Returns TOK_STRING_LITERAL or TOK_ERROR
  */
 int Lexer::getStringLiteral() {
-  stringstream ss;
-  ss << '"'; // opening double quotes
+  u32string ss;
+  ss += '"'; // opening double quotes
 
   char c;
   int tok;
@@ -633,24 +633,24 @@ int Lexer::getStringLiteral() {
       case '\\':
         tok = getEscapeSequence(ss);
         if (tok != TOK_ESCAPE_SEQUENCE) {
-          curTokenStr = ss.str();
+          curTokenStr = ss;
           return TOK_ERROR;
         }
         break;
       case '\n':
       case '\r':
-	curTokenStr = ss.str();
+	curTokenStr = ss;
 	return TOK_ERROR;
       case '"':
-        ss << src->getChar(); // consume closing double quotes
-        curTokenStr = ss.str();
+        ss += src->getChar(); // consume closing double quotes
+        curTokenStr = ss;
         return TOK_STRING_LITERAL;
       default:
-        ss << src->getChar(); // consume StringCharacter
+        ss += src->getChar(); // consume StringCharacter
     }
   }
 
-  curTokenStr = ss.str();
+  curTokenStr = ss;
   return TOK_ERROR;
 }
 
@@ -723,17 +723,18 @@ int Lexer::getMinusToken() {
  * Return TOK_IDENTIFIER | TOK_INTEGER_TYPE_SUFFIX | TOK_KEY_*
  */
 int Lexer::getTokenIdentifier(char c) {
-  stringstream ss; ss << c;
+  u32string ss;
+  ss += c;
   while ((c = src->getChar())) {
     if (isJavaLetterOrDigit(c)) {
-      ss << c;
+      ss += c;
     } else {
       src->ungetChar(1);
       break;
     }
   }
 
-  curTokenStr = ss.str();
+  curTokenStr = ss;
 
   // If keyword return the matching token
   if (int keywordToken = tokenUtil.getKeywordToken(curTokenStr)) {
@@ -744,17 +745,17 @@ int Lexer::getTokenIdentifier(char c) {
   // TODO: This is the wrong approach as it allows the invalid forms as
   // 1234   L
   if (curToken == TOK_DECIMAL_NUMERAL
-    && (curTokenStr.compare("l") == 0 || curTokenStr.compare("L") == 0)) {
+    && (curTokenStr.compare(U"l") == 0 || curTokenStr.compare(U"L") == 0)) {
     return TOK_INTEGER_TYPE_SUFFIX;
   }
 
   // BooleanLiteral
-  if (curTokenStr.compare("true") == 0 || curTokenStr.compare("false") == 0) {
+  if (curTokenStr.compare(U"true") == 0 || curTokenStr.compare(U"false") == 0) {
     return TOK_BOOLEAN_LITERAL;
   }
 
   // NullLiteral
-  if (curTokenStr.compare("null") == 0) {
+  if (curTokenStr.compare(U"null") == 0) {
     return TOK_NULL_LITERAL;
   }
 

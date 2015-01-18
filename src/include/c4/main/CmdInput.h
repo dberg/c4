@@ -1,9 +1,12 @@
 //-*- C++ -*-
-#ifndef __CMD_INPUT_H__
-#define __CMD_INPUT_H__
+#ifndef __C4_CMD_INPUT_H__
+#define __C4_CMD_INPUT_H__
+
 #include <sstream>
 #include <string>
 #include "c4/common/Util.h"
+
+using std::string;
 
 namespace c4 {
 
@@ -11,7 +14,7 @@ class CmdInput {
 
   int argc;
   const char **argv;
-  std::string error;
+  string error;
 
   // options
   bool optHelp;
@@ -20,7 +23,7 @@ class CmdInput {
   bool optInScala;
   bool optInBytecode;
   bool optOutEmacs;
-  std::string filename;
+  string filename;
   unsigned int port;
 
   int validateInput();
@@ -32,7 +35,7 @@ public:
       optHelp(false), optServer(false), optInJava(false), optInScala(false),
       optInBytecode(false), optOutEmacs(false), filename(""), port(0) {}
 
-  std::string help =
+  string help =
     "Usage:\n"
     "  c4 [-h, --help] \n"
     "  c4 [-i, --input] INPUT_OPTIONS [-f, --filename] FILENAME\n"
@@ -54,9 +57,9 @@ public:
   bool isOptInScala() { return optInScala; }
   bool isOptInBytecode() { return optInBytecode; }
 
-  std::string getFilename() { return filename; }
+  string getFilename() { return filename; }
   unsigned int getServerPort() { return port; }
-  std::string getError() { return error; }
+  string getError() { return error; }
 };
 
 }

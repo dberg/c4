@@ -161,6 +161,7 @@ $(obj_main)/c4.o: $(libdir_main)/c4.cpp
 
 # objects common - libcommon
 $(obj_common)/libcommon.a: \
+  $(obj_common)/Encode.o \
   $(obj_common)/Log.o \
   $(obj_common)/Project.o \
   $(obj_common)/ProjectHandler.o \
@@ -202,7 +203,6 @@ $(obj_java)/%.o: \
 
 # objects scala - libscala
 $(obj_scala)/libscala.a: \
-  $(obj_scala)/CharArrayReader.o \
   $(obj_scala)/Chars.o \
   $(obj_scala)/CompilationUnits.o \
   $(obj_scala)/Global.o \

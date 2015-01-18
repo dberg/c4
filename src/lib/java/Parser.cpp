@@ -1361,7 +1361,7 @@ void Parser::parseBlockStatements(vector<spBlockStatement> &blockStmts) {
 
 void Parser::parseBooleanLiteral(spBooleanLiteral &boolLit) {
   boolLit->pos = lexer->getCurTokenIni();
-  if (lexer->getCurTokenStr().compare("true") == 0) {
+  if (lexer->getCurTokenStr().compare(U"true") == 0) {
     boolLit->val = true;
   } else {
     boolLit->val = false;
@@ -2430,7 +2430,7 @@ void Parser::parseInterfaceBodyDeclaration(
   }
 
   // (2) {Modifier} InterfaceMemberDecl
-  st.addSym(ST_MEMBER_DECL, lexer->getCurTokenIni(), 0, src->getLine(), "");
+  st.addSym(ST_MEMBER_DECL, lexer->getCurTokenIni(), 0, src->getLine(), U"");
   bodyDecl->opt = InterfaceBodyDeclaration::OPT_MEMBER_DECL;
   bodyDecl->modifier = make_shared<Modifier>();
   parseModifier(bodyDecl->modifier);
@@ -4849,7 +4849,7 @@ void Parser::parseClassOrInterfaceDeclaration(
   spClassOrInterfaceDeclaration& decl) {
 
   st.addSym(ST_CLASS_OR_INTERFACE,
-    lexer->getCurTokenIni(), 0, src->getLine(), "");
+    lexer->getCurTokenIni(), 0, src->getLine(), U"");
 
   // Modifier
   if (!decl->modifier) {
@@ -5214,7 +5214,7 @@ void Parser::parseClassBodyDeclaration(spClassBodyDeclaration &decl) {
 
   // (2) {Modifier} MemberDecl
   if (isModifierOrMemberMemberDeclCandidate(lexer->getCurToken())) {
-    st.addSym(ST_MEMBER_DECL, lexer->getCurTokenIni(), 0, src->getLine(), "");
+    st.addSym(ST_MEMBER_DECL, lexer->getCurTokenIni(), 0, src->getLine(), U"");
     decl->opt = ClassBodyDeclaration::OPT_MODIFIER_MEMBER_DECL;
     decl->modifier = make_shared<Modifier>();
     parseModifier(decl->modifier);

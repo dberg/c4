@@ -6,7 +6,7 @@
 #include <string>
 
 using std::shared_ptr;
-using std::string;
+using std::u32string;
 
 namespace c4j {
 
@@ -15,7 +15,7 @@ typedef shared_ptr<SourceCodeStream> spSourceCodeStream;
 
 class SourceCodeStream {
 
-  const string buffer;
+  const u32string buffer;
   unsigned int cursor;
   unsigned int line;
   unsigned int cursorMark;
@@ -40,7 +40,7 @@ public:
 
   unsigned int getStreamLength();
 
-  SourceCodeStream(const string &_buffer);
+  SourceCodeStream(const u32string &_buffer);
 };
 
 } // namespace

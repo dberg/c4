@@ -8,7 +8,7 @@
 #include <vector>
 
 using std::shared_ptr;
-using std::string;
+using std::u32string;
 using std::vector;
 
 namespace c4j {
@@ -35,9 +35,9 @@ enum SymbolType {
 struct Symbol {
   int type;
   unsigned scope, pos, end, line;
-  const string metadata;
+  const u32string metadata;
   Symbol(int type, unsigned scope, unsigned pos, unsigned end, unsigned line,
-    const string metadata)
+    const u32string metadata)
     : type(type), scope(scope), pos(pos), end(end), line(line),
       metadata(metadata) {}
 };
@@ -53,12 +53,12 @@ public:
 
   ST() {
     scopes.push_back(0);
-    addSym(ST_COMPILATION_UNIT, 0, 0, 0, "");
+    addSym(ST_COMPILATION_UNIT, 0, 0, 0, U"");
   }
 
   void addSym(int type, unsigned pos, unsigned end, unsigned line,
-    const string metadata);
-  bool isConstructor(const string identifier);
+    const u32string metadata);
+  bool isConstructor(const u32string identifier);
   void scopePop();
   void scopePush(std::size_t idx);
   void updateScopeType(int type);

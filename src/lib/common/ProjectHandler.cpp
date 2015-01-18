@@ -14,7 +14,7 @@ void ProjectHandler::process(spRequest &request, spResponse &response) {
     return;
   }
 
-  std::string projectId = request->projectid();
+  u32string projectId = utf8_to_u32(request->projectid());
   spProject project = getProject(projectId);
 
   // Project information request
@@ -28,13 +28,15 @@ void ProjectHandler::process(spRequest &request, spResponse &response) {
   if (request->action() == Request::COMPILE) {
     Request::CompilationUnit unit = request->unit();
 
-    spCompilation comp = spCompilation(new Compilation(
-      unit.filename(), unit.buffer()
-    ));
+    u32string filename = utf8_to_u32(unit.filename());
+    u32string buffer = utf8_to_u32(unit.buffer());
 
+    spCompilation comp = make_shared<Compilation>(filename, buffer);
     project->compile(comp);
+
     response->set_code(Response::OK_COMPILE);
-    response->set_body(comp->output);
+    string output = u32_to_utf8(comp->output);
+    response->set_body(output);
     return;
   }
 
@@ -48,10 +50,10 @@ void ProjectHandler::process(spRequest &request, spResponse &response) {
  * Look for the project defined by the projectId. If no project exists we create
  * one.
  */
-spProject ProjectHandler::getProject(std::string projectId) {
+spProject ProjectHandler::getProject(u32string projectId) {
   auto it = projects.find(projectId);
   if (it == projects.end()) {
-    spProject project = std::shared_ptr<Project>(new Project(projectId));
+    spProject project = make_shared<Project>(projectId);
     projects[projectId] = project;
     return project;
   }

@@ -4,7 +4,7 @@
 namespace c4j {
 
 void ST::addSym(int type, unsigned pos, unsigned end, unsigned line,
-  const string metadata) {
+  const u32string metadata) {
 
   spSymbol sym = spSymbol(new Symbol(
     type, scopes.back(), pos, end, line, metadata));
@@ -18,7 +18,7 @@ void ST::addSym(int type, unsigned pos, unsigned end, unsigned line,
 /**
  * We match the identifier name with our current scope name.
  */
-bool ST::isConstructor(const string identifier) {
+bool ST::isConstructor(const u32string identifier) {
   // If the current scope is of type ST_MEMBER_DECL the previous scope should be
   // of type ST_CLASS or ST_ENUM. Given that the first scope is
   // ST_COMPILATION_UNIT unit the scope size should be equal or greater than 3

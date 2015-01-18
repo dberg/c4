@@ -3,14 +3,13 @@
 #define __C4_JAVA_LITERAL_SUPPORT_H__
 
 #include <memory>
-#include <sstream>
+#include <string>
 
 #include "c4/java/Diagnosis.h"
 #include "c4/java/SourceCodeStream.h"
 
 using std::shared_ptr;
-using std::string;
-using std::stringstream;
+using std::u32string;
 
 namespace c4j {
 
@@ -42,22 +41,22 @@ class LiteralSupport {
   spDiagnosis diag;
   spSourceCodeStream src;
 
-  int consumeDigitsPOrUnderscores(stringstream &ss, bool (*fnDigitP) (char));
-  int consumeExponentPart(stringstream &ss);
+  int consumeDigitsPOrUnderscores(u32string &ss, bool (*fnDigitP) (char));
+  int consumeExponentPart(u32string &ss);
 
-  LiteralToken getBinaryNumeral(stringstream &ss);
-  LiteralToken getDecimalNumeral(stringstream &ss);
-  LiteralToken getHexNumeral(stringstream &ss);
-  LiteralToken getOctalNumeral(stringstream &ss);
-  LiteralToken getTokWithLeadingZero(stringstream &ss);
+  LiteralToken getBinaryNumeral(u32string &ss);
+  LiteralToken getDecimalNumeral(u32string &ss);
+  LiteralToken getHexNumeral(u32string &ss);
+  LiteralToken getOctalNumeral(u32string &ss);
+  LiteralToken getTokWithLeadingZero(u32string &ss);
 
 public:
   LiteralSupport(spSourceCodeStream &src, spDiagnosis &diag)
     : diag(diag), src(src) {}
-  LiteralToken getLiteralNumber(char c, stringstream &ss);
+  LiteralToken getLiteralNumber(char c, u32string &ss);
   LiteralToken getDecimalNumeralOrDecimalFloatingPoint(
-    char previous_c, stringstream &ss);
-  LiteralToken getDecimalFloatingPointStartingWithAPeriod(stringstream &ss);
+    char previous_c, u32string &ss);
+  LiteralToken getDecimalFloatingPointStartingWithAPeriod(u32string &ss);
 };
 
 } // namespace

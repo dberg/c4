@@ -4,7 +4,7 @@ namespace c4 {
 
 int CmdInput::processCmdArgs() {
   for (int i = 1; i < argc; i++) {
-    std::string arg = argv[i];
+    string arg = argv[i];
 
     // help option
     if (arg.compare("-h") == 0 || arg.compare("--help") == 0) {
@@ -19,7 +19,7 @@ int CmdInput::processCmdArgs() {
         return 1;
       }
 
-      std::string arg = argv[++i];
+      string arg = argv[++i];
       if (arg.compare("java") == 0) {
         optInJava = optOutEmacs = true;
       } else if (arg.compare("scala") == 0) {
@@ -59,7 +59,7 @@ int CmdInput::processCmdArgs() {
         return 1;
       }
 
-      std::string portStr = argv[++i];
+      string portStr = argv[++i];
       std::stringstream ss(portStr);
       if (!(ss >> port)) {
         error = "Invalid port number.";
@@ -92,11 +92,11 @@ int CmdInput::validateInput() {
   // we try to infer the output type based in the filename extension.
   bool optIn = optInJava || optInScala || optInBytecode;
   if (!optIn && !optServer) {
-    if (endsWith(filename, ".java")) {
+    if (endsWith<string>(filename, ".java")) {
       optInJava = optOutEmacs = true;
-    } else if (endsWith(filename, ".scala")) {
+    } else if (endsWith<string>(filename, ".scala")) {
       optInScala = optOutEmacs = true;
-    } else if (endsWith(filename, ".class")) {
+    } else if (endsWith<string>(filename, ".class")) {
       optInBytecode = true;
     } else {
       error = "Unknown filename type.";

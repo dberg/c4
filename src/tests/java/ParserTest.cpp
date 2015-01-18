@@ -7,6 +7,7 @@
 #include "gtest/gtest.h"
 
 using namespace c4j;
+using std::u32string;
 
 /**
  * -----------------------------------------------------------------------------
@@ -35,8 +36,8 @@ using namespace c4j;
  *   ClassDeclaration
  */
 TEST(Parser, AnnotationElementValueArray) {
-  std::string filename = "Test.java";
-  std::string buffer = "@Ann({\"1\", \"2\"}) class A {}";
+  u32string filename = U"Test.java";
+  u32string buffer = U"@Ann({\"1\", \"2\"}) class A {}";
   Parser parser(filename, buffer);
   parser.parse();
 
@@ -50,9 +51,9 @@ TEST(Parser, AnnotationElementValueArray) {
 }
 
 TEST(Parser, AnnotationElementValuePairs) {
-  std::string filename = "Test.java";
-  std::string buffer =
-    "@myinterface(id=10, group=20L)\n"
+  u32string filename = U"Test.java";
+  u32string buffer =
+    U"@myinterface(id=10, group=20L)\n"
     "package com.test;";
   Parser parser(filename, buffer);
   parser.parse();
@@ -68,14 +69,14 @@ TEST(Parser, AnnotationElementValuePairs) {
   spIntegerLiteral intLiteralPair1 = expr3Pair1->primary->literal->intLiteral;
 
   ASSERT_EQ(13, pair1->id->pos);
-  ASSERT_EQ("id", pair1->id->value);
+  ASSERT_EQ(U"id", pair1->id->value);
   ASSERT_EQ(ElementValue::OPT_EXPRESSION1, pair1->value->opt);
   ASSERT_EQ(Expression3::OPT_PRIMARY_SELECTOR_POSTFIXOP, expr3Pair1->opt);
   ASSERT_EQ(Primary::OPT_LITERAL, expr3Pair1->primary->opt);
   ASSERT_EQ(Literal::OPT_INTEGER, expr3Pair1->primary->literal->opt);
   ASSERT_EQ(IntegerLiteral::OPT_DECIMAL, intLiteralPair1->opt);
   ASSERT_EQ(16, intLiteralPair1->pos);
-  ASSERT_EQ("10", intLiteralPair1->value);
+  ASSERT_EQ(U"10", intLiteralPair1->value);
   ASSERT_FALSE(intLiteralPair1->intSuffix);
 
   // Pair 2
@@ -84,21 +85,21 @@ TEST(Parser, AnnotationElementValuePairs) {
   spIntegerLiteral intLiteralPair2 = expr3Pair2->primary->literal->intLiteral;
 
   ASSERT_EQ(20, pair2->id->pos);
-  ASSERT_EQ("group", pair2->id->value);
+  ASSERT_EQ(U"group", pair2->id->value);
   ASSERT_EQ(ElementValue::OPT_EXPRESSION1, pair2->value->opt);
   ASSERT_EQ(Expression3::OPT_PRIMARY_SELECTOR_POSTFIXOP, expr3Pair2->opt);
   ASSERT_EQ(Primary::OPT_LITERAL, expr3Pair2->primary->opt);
   ASSERT_EQ(Literal::OPT_INTEGER, expr3Pair2->primary->literal->opt);
   ASSERT_EQ(IntegerLiteral::OPT_DECIMAL, intLiteralPair2->opt);
   ASSERT_EQ(26, intLiteralPair2->pos);
-  ASSERT_EQ("20L", intLiteralPair2->value);
+  ASSERT_EQ(U"20L", intLiteralPair2->value);
   ASSERT_TRUE(intLiteralPair2->intSuffix);
 }
 
 TEST(Parser, AnnotationElementValuePairsBoolean) {
-  std::string filename = "Test.java";
-  std::string buffer =
-    "@myinterface(v1=true, v2=false)"
+  u32string filename = U"Test.java";
+  u32string buffer =
+    U"@myinterface(v1=true, v2=false)"
     "package com.test;";
   Parser parser(filename, buffer);
   parser.parse();
@@ -126,11 +127,11 @@ TEST(Parser, AnnotationElementValuePairsBoolean) {
 }
 
 TEST(Parser, AnnotationElementValuePairsCharacterLiteral) {
-  std::string filename = "Test.java";
+  u32string filename = U"Test.java";
   // INFO: We escape the universal character name \uAa89
   // so it's not pre-processed by the c++ compiler.
-  std::string buffer =
-    "@myinterface(v1='A', v2='\034', v3='\\uAa89')"
+  u32string buffer =
+    U"@myinterface(v1='A', v2='\034', v3='\\uAa89')"
     //               16      24      32
     "package com.test;";
   Parser parser(filename, buffer);
@@ -147,7 +148,7 @@ TEST(Parser, AnnotationElementValuePairsCharacterLiteral) {
   ASSERT_EQ(Primary::OPT_LITERAL, expr3Pair1->primary->opt);
   ASSERT_EQ(Literal::OPT_CHAR, expr3Pair1->primary->literal->opt);
   ASSERT_EQ(16, charLiteralPair1->pos);
-  ASSERT_EQ("'A'", charLiteralPair1->val);
+  ASSERT_EQ(U"'A'", charLiteralPair1->val);
 
   // Pair 2
   spElementValuePair pair2 = pairs[1];
@@ -157,7 +158,7 @@ TEST(Parser, AnnotationElementValuePairsCharacterLiteral) {
   ASSERT_EQ(Primary::OPT_LITERAL, expr3Pair2->primary->opt);
   ASSERT_EQ(Literal::OPT_CHAR, expr3Pair2->primary->literal->opt);
   ASSERT_EQ(24, charLiteralPair2->pos);
-  ASSERT_EQ("'\034'", charLiteralPair2->val);
+  ASSERT_EQ(U"'\034'", charLiteralPair2->val);
 
   // Pair 3
   spElementValuePair pair3 = pairs[2];
@@ -167,13 +168,13 @@ TEST(Parser, AnnotationElementValuePairsCharacterLiteral) {
   ASSERT_EQ(Primary::OPT_LITERAL, expr3Pair3->primary->opt);
   ASSERT_EQ(Literal::OPT_CHAR, expr3Pair3->primary->literal->opt);
   ASSERT_EQ(32, charLiteralPair3->pos);
-  ASSERT_EQ("'\\uAa89'", charLiteralPair3->val);
+  ASSERT_EQ(U"'\\uAa89'", charLiteralPair3->val);
 }
 
 TEST(Parser, AnnotationElementValuePairsDecimalFloatingPointLiterals) {
-  std::string filename = "Test.java";
-  std::string buffer =
-    "@myinterface("
+  u32string filename = U"Test.java";
+  u32string buffer =
+    U"@myinterface("
     "v1=12., v2=12.34, v3=12.e34, v4=12.e-34f, v5=12.F,"
     "v6=.1, v7=.1E-23, v8=12e+34d)\n"
     "package com.test;";
@@ -192,7 +193,7 @@ TEST(Parser, AnnotationElementValuePairsDecimalFloatingPointLiterals) {
   ASSERT_EQ(Literal::OPT_FLOATING_POINT, expr3Pair1->primary->literal->opt);
   ASSERT_EQ(FloatingPointLiteral::OPT_DECIMAL, fpLiteralPair1->opt);
   ASSERT_EQ(16, fpLiteralPair1->pos);
-  ASSERT_EQ("12.", fpLiteralPair1->value);
+  ASSERT_EQ(U"12.", fpLiteralPair1->value);
 
   // Pair 2 v2=12.34
   spElementValuePair pair2 = pairs[1];
@@ -203,7 +204,7 @@ TEST(Parser, AnnotationElementValuePairsDecimalFloatingPointLiterals) {
   ASSERT_EQ(Literal::OPT_FLOATING_POINT, expr3Pair2->primary->literal->opt);
   ASSERT_EQ(FloatingPointLiteral::OPT_DECIMAL, fpLiteralPair2->opt);
   ASSERT_EQ(24, fpLiteralPair2->pos);
-  ASSERT_EQ("12.34", fpLiteralPair2->value);
+  ASSERT_EQ(U"12.34", fpLiteralPair2->value);
 
   // Pair 3 v3=12.e34
   spElementValuePair pair3 = pairs[2];
@@ -214,7 +215,7 @@ TEST(Parser, AnnotationElementValuePairsDecimalFloatingPointLiterals) {
   ASSERT_EQ(Literal::OPT_FLOATING_POINT, expr3Pair3->primary->literal->opt);
   ASSERT_EQ(FloatingPointLiteral::OPT_DECIMAL, fpLiteralPair3->opt);
   ASSERT_EQ(34, fpLiteralPair3->pos);
-  ASSERT_EQ("12.e34", fpLiteralPair3->value);
+  ASSERT_EQ(U"12.e34", fpLiteralPair3->value);
 
   // Pair 4 v4=12.e-34f
   spElementValuePair pair4 = pairs[3];
@@ -225,7 +226,7 @@ TEST(Parser, AnnotationElementValuePairsDecimalFloatingPointLiterals) {
   ASSERT_EQ(Literal::OPT_FLOATING_POINT, expr3Pair4->primary->literal->opt);
   ASSERT_EQ(FloatingPointLiteral::OPT_DECIMAL, fpLiteralPair4->opt);
   ASSERT_EQ(45, fpLiteralPair4->pos);
-  ASSERT_EQ("12.e-34f", fpLiteralPair4->value);
+  ASSERT_EQ(U"12.e-34f", fpLiteralPair4->value);
 
   // Pair 5 v5=12.F
   spElementValuePair pair5 = pairs[4];
@@ -236,7 +237,7 @@ TEST(Parser, AnnotationElementValuePairsDecimalFloatingPointLiterals) {
   ASSERT_EQ(Literal::OPT_FLOATING_POINT, expr3Pair5->primary->literal->opt);
   ASSERT_EQ(FloatingPointLiteral::OPT_DECIMAL, fpLiteralPair5->opt);
   ASSERT_EQ(58, fpLiteralPair5->pos);
-  ASSERT_EQ("12.F", fpLiteralPair5->value);
+  ASSERT_EQ(U"12.F", fpLiteralPair5->value);
 
   // Pair 6 v6=.1
   spElementValuePair pair6 = pairs[5];
@@ -247,7 +248,7 @@ TEST(Parser, AnnotationElementValuePairsDecimalFloatingPointLiterals) {
   ASSERT_EQ(Literal::OPT_FLOATING_POINT, expr3Pair6->primary->literal->opt);
   ASSERT_EQ(FloatingPointLiteral::OPT_DECIMAL, fpLiteralPair6->opt);
   ASSERT_EQ(66, fpLiteralPair6->pos);
-  ASSERT_EQ(".1", fpLiteralPair6->value);
+  ASSERT_EQ(U".1", fpLiteralPair6->value);
 
   // Pair 7 v7=.1E-23
   spElementValuePair pair7 = pairs[6];
@@ -258,7 +259,7 @@ TEST(Parser, AnnotationElementValuePairsDecimalFloatingPointLiterals) {
   ASSERT_EQ(Literal::OPT_FLOATING_POINT, expr3Pair7->primary->literal->opt);
   ASSERT_EQ(FloatingPointLiteral::OPT_DECIMAL, fpLiteralPair7->opt);
   ASSERT_EQ(73, fpLiteralPair7->pos);
-  ASSERT_EQ(".1E-23", fpLiteralPair7->value);
+  ASSERT_EQ(U".1E-23", fpLiteralPair7->value);
 
   // Pair 8 v8=12e+34d
   spElementValuePair pair8 = pairs[7];
@@ -269,13 +270,13 @@ TEST(Parser, AnnotationElementValuePairsDecimalFloatingPointLiterals) {
   ASSERT_EQ(Literal::OPT_FLOATING_POINT, expr3Pair8->primary->literal->opt);
   ASSERT_EQ(FloatingPointLiteral::OPT_DECIMAL, fpLiteralPair8->opt);
   ASSERT_EQ(84, fpLiteralPair8->pos);
-  ASSERT_EQ("12e+34d", fpLiteralPair8->value);
+  ASSERT_EQ(U"12e+34d", fpLiteralPair8->value);
 }
 
 TEST(Parser, AnnotationElementValuePairsHexadecimalFloatingPointLiterals) {
-  std::string filename = "Test.java";
-  std::string buffer =
-    "@myinterface("
+  u32string filename = U"Test.java";
+  u32string buffer =
+    U"@myinterface("
     "v1=0x12p10, v2=0X34.P56, v3=0x.12p+12F"
     "package com.test;";
   Parser parser(filename, buffer);
@@ -293,7 +294,7 @@ TEST(Parser, AnnotationElementValuePairsHexadecimalFloatingPointLiterals) {
   ASSERT_EQ(Literal::OPT_FLOATING_POINT, expr3Pair1->primary->literal->opt);
   ASSERT_EQ(FloatingPointLiteral::OPT_HEX, fpLiteralPair1->opt);
   ASSERT_EQ(16, fpLiteralPair1->pos);
-  ASSERT_EQ("0x12p10", fpLiteralPair1->value);
+  ASSERT_EQ(U"0x12p10", fpLiteralPair1->value);
 
   // Pair 2 v2=0X34.P56
   spElementValuePair pair2 = pairs[1];
@@ -304,7 +305,7 @@ TEST(Parser, AnnotationElementValuePairsHexadecimalFloatingPointLiterals) {
   ASSERT_EQ(Literal::OPT_FLOATING_POINT, expr3Pair2->primary->literal->opt);
   ASSERT_EQ(FloatingPointLiteral::OPT_HEX, fpLiteralPair2->opt);
   ASSERT_EQ(28, fpLiteralPair2->pos);
-  ASSERT_EQ("0X34.P56", fpLiteralPair2->value);
+  ASSERT_EQ(U"0X34.P56", fpLiteralPair2->value);
 
   // Pair 3 v3=0x.12p+12F
   spElementValuePair pair3 = pairs[2];
@@ -315,13 +316,13 @@ TEST(Parser, AnnotationElementValuePairsHexadecimalFloatingPointLiterals) {
   ASSERT_EQ(Literal::OPT_FLOATING_POINT, expr3Pair3->primary->literal->opt);
   ASSERT_EQ(FloatingPointLiteral::OPT_HEX, fpLiteralPair3->opt);
   ASSERT_EQ(41, fpLiteralPair3->pos);
-  ASSERT_EQ("0x.12p+12F", fpLiteralPair3->value);
+  ASSERT_EQ(U"0x.12p+12F", fpLiteralPair3->value);
 }
 
 TEST(Parser, AnnotationElementValuePairsIntegerLiterals) {
-  std::string filename = "Test.java";
-  std::string buffer =
-    "@myinterface("
+  u32string filename = U"Test.java";
+  u32string buffer =
+    U"@myinterface("
     "v1=0b01,v2=0B1_1L,v3=10,v4=2_0L,v5=0xA0,v6=0XF_0L,v7=001,v8=0_76L)\n"
     "package com.test;";
   Parser parser(filename, buffer);
@@ -338,7 +339,7 @@ TEST(Parser, AnnotationElementValuePairsIntegerLiterals) {
   ASSERT_EQ(Literal::OPT_INTEGER, expr3Pair1->primary->literal->opt);
   ASSERT_EQ(IntegerLiteral::OPT_BINARY, intLiteralPair1->opt);
   ASSERT_EQ(16, intLiteralPair1->pos);
-  ASSERT_EQ("0b01", intLiteralPair1->value);
+  ASSERT_EQ(U"0b01", intLiteralPair1->value);
   ASSERT_FALSE(intLiteralPair1->intSuffix);
 
   // Pair 2
@@ -349,7 +350,7 @@ TEST(Parser, AnnotationElementValuePairsIntegerLiterals) {
   ASSERT_EQ(Literal::OPT_INTEGER, expr3Pair2->primary->literal->opt);
   ASSERT_EQ(IntegerLiteral::OPT_BINARY, intLiteralPair2->opt);
   ASSERT_EQ(24, intLiteralPair2->pos);
-  ASSERT_EQ("0B1_1L", intLiteralPair2->value);
+  ASSERT_EQ(U"0B1_1L", intLiteralPair2->value);
   ASSERT_TRUE(intLiteralPair2->intSuffix);
 
   // Pair 3
@@ -360,7 +361,7 @@ TEST(Parser, AnnotationElementValuePairsIntegerLiterals) {
   ASSERT_EQ(Literal::OPT_INTEGER, expr3Pair3->primary->literal->opt);
   ASSERT_EQ(IntegerLiteral::OPT_DECIMAL, intLiteralPair3->opt);
   ASSERT_EQ(34, intLiteralPair3->pos);
-  ASSERT_EQ("10", intLiteralPair3->value);
+  ASSERT_EQ(U"10", intLiteralPair3->value);
   ASSERT_FALSE(intLiteralPair3->intSuffix);
 
   // Pair 4
@@ -371,7 +372,7 @@ TEST(Parser, AnnotationElementValuePairsIntegerLiterals) {
   ASSERT_EQ(Literal::OPT_INTEGER, expr3Pair4->primary->literal->opt);
   ASSERT_EQ(IntegerLiteral::OPT_DECIMAL, intLiteralPair4->opt);
   ASSERT_EQ(40, intLiteralPair4->pos);
-  ASSERT_EQ("2_0L", intLiteralPair4->value);
+  ASSERT_EQ(U"2_0L", intLiteralPair4->value);
   ASSERT_TRUE(intLiteralPair4->intSuffix);
 
   // Pair 5
@@ -382,7 +383,7 @@ TEST(Parser, AnnotationElementValuePairsIntegerLiterals) {
   ASSERT_EQ(Literal::OPT_INTEGER, expr3Pair5->primary->literal->opt);
   ASSERT_EQ(IntegerLiteral::OPT_HEX, intLiteralPair5->opt);
   ASSERT_EQ(48, intLiteralPair5->pos);
-  ASSERT_EQ("0xA0", intLiteralPair5->value);
+  ASSERT_EQ(U"0xA0", intLiteralPair5->value);
   ASSERT_FALSE(intLiteralPair5->intSuffix);
 
   // Pair 6
@@ -393,7 +394,7 @@ TEST(Parser, AnnotationElementValuePairsIntegerLiterals) {
   ASSERT_EQ(Literal::OPT_INTEGER, expr3Pair6->primary->literal->opt);
   ASSERT_EQ(IntegerLiteral::OPT_HEX, intLiteralPair6->opt);
   ASSERT_EQ(56, intLiteralPair6->pos);
-  ASSERT_EQ("0XF_0L", intLiteralPair6->value);
+  ASSERT_EQ(U"0XF_0L", intLiteralPair6->value);
   ASSERT_TRUE(intLiteralPair6->intSuffix);
 
   // Pair 7
@@ -404,7 +405,7 @@ TEST(Parser, AnnotationElementValuePairsIntegerLiterals) {
   ASSERT_EQ(Literal::OPT_INTEGER, expr3Pair7->primary->literal->opt);
   ASSERT_EQ(IntegerLiteral::OPT_OCTAL, intLiteralPair7->opt);
   ASSERT_EQ(66, intLiteralPair7->pos);
-  ASSERT_EQ("001", intLiteralPair7->value);
+  ASSERT_EQ(U"001", intLiteralPair7->value);
   ASSERT_FALSE(intLiteralPair7->intSuffix);
 
   // Pair 8
@@ -415,14 +416,14 @@ TEST(Parser, AnnotationElementValuePairsIntegerLiterals) {
   ASSERT_EQ(Literal::OPT_INTEGER, expr3Pair8->primary->literal->opt);
   ASSERT_EQ(IntegerLiteral::OPT_OCTAL, intLiteralPair8->opt);
   ASSERT_EQ(73, intLiteralPair8->pos);
-  ASSERT_EQ("0_76L", intLiteralPair8->value);
+  ASSERT_EQ(U"0_76L", intLiteralPair8->value);
   ASSERT_TRUE(intLiteralPair8->intSuffix);
 }
 
 TEST(Parser, AnnotationElementValuePairsNull) {
-  std::string filename = "Test.java";
-  std::string buffer =
-    "@myinterface(v1=null)"
+  u32string filename = U"Test.java";
+  u32string buffer =
+    U"@myinterface(v1=null)"
     "package com.test;";
   Parser parser(filename, buffer);
   parser.parse();
@@ -441,11 +442,11 @@ TEST(Parser, AnnotationElementValuePairsNull) {
 }
 
 TEST(Parser, AnnotationElementValuePairsStringLiteral) {
-  std::string filename = "Test.java";
+  u32string filename = U"Test.java";
   // INFO: We escape the universal character name \uAa89
   // so it's not pre-processed by the c++ compiler.
-  std::string buffer =
-    "@myinterface(v1=\"Hello, I'm a String!\")"
+  u32string buffer =
+    U"@myinterface(v1=\"Hello, I'm a String!\")"
     "package com.test;";
   Parser parser(filename, buffer);
   parser.parse();
@@ -461,7 +462,7 @@ TEST(Parser, AnnotationElementValuePairsStringLiteral) {
   ASSERT_EQ(Primary::OPT_LITERAL, expr3Pair1->primary->opt);
   ASSERT_EQ(Literal::OPT_STRING, expr3Pair1->primary->literal->opt);
   ASSERT_EQ(16, strLiteralPair1->pos);
-  ASSERT_EQ("\"Hello, I'm a String!\"", strLiteralPair1->val);
+  ASSERT_EQ(U"\"Hello, I'm a String!\"", strLiteralPair1->val);
 }
 
 /**
@@ -500,8 +501,8 @@ TEST(Parser, AnnotationElementValuePairsStringLiteral) {
  *     ';'
  */
 TEST(Parser, ArrayCreatorRest) {
-  std::string filename = "Test.java";
-  std::string buffer = "class A { void m() { String[] a = new String[0]; }}";
+  u32string filename = U"Test.java";
+  u32string buffer = U"class A { void m() { String[] a = new String[0]; }}";
   Parser parser(filename, buffer);
   parser.parse();
 
@@ -530,9 +531,9 @@ TEST(Parser, ArrayCreatorRest) {
 }
 
 TEST(Parser, Block) {
-  std::string filename = "Test.java";
-  std::string buffer =
-    "class A { public String hello() {"
+  u32string filename = U"Test.java";
+  u32string buffer =
+    U"class A { public String hello() {"
     "logger.debug(\"message\", p1);"
     "}";
   Parser parser(filename, buffer);
@@ -556,8 +557,8 @@ TEST(Parser, Block) {
 }
 
 TEST(Parser, ClassConstructor) {
-  std::string filename = "Test.java";
-  std::string buffer = "class Abc { Abc() {} }";
+  u32string filename = U"Test.java";
+  u32string buffer = U"class Abc { Abc() {} }";
   Parser parser(filename, buffer);
   parser.parse();
 
@@ -568,12 +569,12 @@ TEST(Parser, ClassConstructor) {
   ASSERT_EQ(MemberDecl::OPT_IDENTIFIER_CONSTRUCTOR_DECLARATOR_REST,
     classBodyDecl->memberDecl->opt);
   ASSERT_EQ(12, classBodyDecl->memberDecl->id->pos);
-  ASSERT_EQ("Abc", classBodyDecl->memberDecl->id->value);
+  ASSERT_EQ(U"Abc", classBodyDecl->memberDecl->id->value);
 }
 
 TEST(Parser, ClassConstructorAnnotationParameter) {
-  std::string filename = "Test.java";
-  std::string buffer = "class Abc { Abc(@myannotation int a) {} }";
+  u32string filename = U"Test.java";
+  u32string buffer = U"class Abc { Abc(@myannotation int a) {} }";
   Parser parser(filename, buffer);
   parser.parse();
 
@@ -585,8 +586,8 @@ TEST(Parser, ClassConstructorAnnotationParameter) {
 }
 
 TEST(Parser, ClassConstructorParameter) {
-  std::string filename = "Test.java";
-  std::string buffer = "class Abc { Abc(int a) {} }";
+  u32string filename = U"Test.java";
+  u32string buffer = U"class Abc { Abc(int a) {} }";
   Parser parser(filename, buffer);
   parser.parse();
 
@@ -597,13 +598,13 @@ TEST(Parser, ClassConstructorParameter) {
   ASSERT_EQ(16, formParamDecls->type->basicType->tok->pos);
   ASSERT_EQ(TOK_KEY_INT, formParamDecls->type->basicType->tok->type);
   ASSERT_EQ(20, formParamDecls->formParamDeclsRest->varDeclId->id->pos);
-  ASSERT_EQ("a",
+  ASSERT_EQ(U"a",
     formParamDecls->formParamDeclsRest->varDeclId->id->value);
 }
 
 TEST(Parser, ClassConstructorParameterArray) {
-  std::string filename = "Test.java";
-  std::string buffer = "class Abc { Abc(int[] a) {} }";
+  u32string filename = U"Test.java";
+  u32string buffer = U"class Abc { Abc(int[] a) {} }";
   Parser parser(filename, buffer);
   parser.parse();
 
@@ -615,8 +616,8 @@ TEST(Parser, ClassConstructorParameterArray) {
 }
 
 TEST(Parser, ClassConstructorParameterEllipsis) {
-  std::string filename = "Test.java";
-  std::string buffer = "class Abc { Abc(int ... a) {} }";
+  u32string filename = U"Test.java";
+  u32string buffer = U"class Abc { Abc(int ... a) {} }";
   Parser parser(filename, buffer);
   parser.parse();
 
@@ -626,12 +627,12 @@ TEST(Parser, ClassConstructorParameterEllipsis) {
     ->formParamDeclsRest;
   ASSERT_EQ(FormalParameterDeclsRest::OPT_VAR_ARITY, formParamDeclsRest->opt);
   ASSERT_EQ(24, formParamDeclsRest->varDeclId->id->pos);
-  ASSERT_EQ("a", formParamDeclsRest->varDeclId->id->value);
+  ASSERT_EQ(U"a", formParamDeclsRest->varDeclId->id->value);
 }
 
 TEST(Parser, ClassConstructorParameters) {
-  std::string filename = "Test.java";
-  std::string buffer = "class Abc { Abc(int a, double b) {} }";
+  u32string filename = U"Test.java";
+  u32string buffer = U"class Abc { Abc(int a, double b) {} }";
   Parser parser(filename, buffer);
   parser.parse();
 
@@ -644,7 +645,7 @@ TEST(Parser, ClassConstructorParameters) {
   ASSERT_EQ(16, formParamDecls->type->basicType->tok->pos);
   ASSERT_EQ(TOK_KEY_INT, formParamDecls->type->basicType->tok->type);
   ASSERT_EQ(20, formParamDecls->formParamDeclsRest->varDeclId->id->pos);
-  ASSERT_EQ("a",
+  ASSERT_EQ(U"a",
     formParamDecls->formParamDeclsRest->varDeclId->id->value);
 
   // param 2
@@ -655,13 +656,13 @@ TEST(Parser, ClassConstructorParameters) {
   ASSERT_EQ(TOK_KEY_DOUBLE, formParamDecls2->type->basicType->tok->type);
   ASSERT_EQ(30,
     formParamDecls2->formParamDeclsRest->varDeclId->id->pos);
-  ASSERT_EQ("b",
+  ASSERT_EQ(U"b",
     formParamDecls2->formParamDeclsRest->varDeclId->id->value);
 }
 
 TEST(Parser, ClassDeclaration) {
-  std::string filename = "Test.java";
-  std::string buffer = "@myinterface\npublic class Abc extends Def { }";
+  u32string filename = U"Test.java";
+  u32string buffer = U"@myinterface\npublic class Abc extends Def { }";
   Parser parser(filename, buffer);
   parser.parse();
 
@@ -676,11 +677,11 @@ TEST(Parser, ClassDeclaration) {
   ASSERT_EQ(TOK_KEY_CLASS, decl->classDecl->nClassDecl->tokClass->type);
   ASSERT_EQ(20, decl->classDecl->nClassDecl->tokClass->pos);
   ASSERT_EQ(26, decl->classDecl->nClassDecl->id->pos);
-  ASSERT_EQ("Abc", decl->classDecl->nClassDecl->id->value);
+  ASSERT_EQ(U"Abc", decl->classDecl->nClassDecl->id->value);
   ASSERT_EQ(30, decl->classDecl->nClassDecl->tokExtends->pos);
   ASSERT_EQ(Type::OPT_REFERENCE_TYPE, decl->classDecl->nClassDecl->type->opt);
   ASSERT_EQ(38, decl->classDecl->nClassDecl->type->refType->id->pos);
-  ASSERT_EQ("Def", decl->classDecl->nClassDecl->type->refType->id->value);
+  ASSERT_EQ(U"Def", decl->classDecl->nClassDecl->type->refType->id->value);
 }
 
 /**
@@ -701,8 +702,8 @@ TEST(Parser, ClassDeclaration) {
  *   ClassBody
  */
 TEST(Parser, ClassTypeParameters) {
-  std::string filename = "Test.java";
-  std::string buffer = "class A<T,U> {}";
+  u32string filename = U"Test.java";
+  u32string buffer = U"class A<T,U> {}";
   Parser parser(filename, buffer);
   parser.parse();
 
@@ -714,9 +715,9 @@ TEST(Parser, ClassTypeParameters) {
 }
 
 TEST(Parser, Comments) {
-  std::string filename = "Test.java";
-  std::string buffer =
-    "import org.test; // a single line comment\n"
+  u32string filename = U"Test.java";
+  u32string buffer =
+    U"import org.test; // a single line comment\n"
     "/** a class comment */\n"
     "class A {}";
   Parser parser(filename, buffer);
@@ -752,8 +753,8 @@ TEST(Parser, Comments) {
  *           '}'
  */
 TEST(Parser, Enum) {
-  std::string filename = "Test.java";
-  std::string buffer = "enum E { E1, E2 }";
+  u32string filename = U"Test.java";
+  u32string buffer = U"enum E { E1, E2 }";
   Parser parser(filename, buffer);
   parser.parse();
 
@@ -762,12 +763,12 @@ TEST(Parser, Enum) {
   ASSERT_EQ(0, enumDecl->tokEnum->pos);
   ASSERT_EQ(TOK_KEY_ENUM, enumDecl->tokEnum->type);
   ASSERT_EQ(5, enumDecl->id->pos);
-  ASSERT_EQ("E", enumDecl->id->value);
+  ASSERT_EQ(U"E", enumDecl->id->value);
   ASSERT_EQ(7, enumDecl->enumBody->posLCBrace);
   ASSERT_EQ(16, enumDecl->enumBody->posRCBrace);
 
   ASSERT_EQ(9, enumDecl->enumBody->enumConsts->enumConst->id->pos);
-  ASSERT_EQ("E1", enumDecl->enumBody->enumConsts->enumConst->id->value);
+  ASSERT_EQ(U"E1", enumDecl->enumBody->enumConsts->enumConst->id->value);
 
   std::pair<unsigned, spEnumConstant> pair
     = enumDecl->enumBody->enumConsts->pairs[0];
@@ -803,8 +804,8 @@ TEST(Parser, Enum) {
  *     '}'
  */
 TEST(Parser, EnumConstructor) {
-  std::string filename = "Test.java";
-  std::string buffer = "enum E { O1(\"a\"), O2(\"b\"); "
+  u32string filename = U"Test.java";
+  u32string buffer = U"enum E { O1(\"a\"), O2(\"b\"); "
     "private String s; E(String s) { this.s = s; }}";
   Parser parser(filename, buffer);
   parser.parse();
@@ -834,8 +835,8 @@ TEST(Parser, EnumConstructor) {
 }
 
 TEST(Parser, Errors) {
-  std::string filename = "Test.java";
-  std::string buffer = "@";
+  u32string filename = U"Test.java";
+  u32string buffer = U"@";
   Parser parser(filename, buffer);
   parser.parse();
   ASSERT_EQ(1, parser.diag->errors.size());
@@ -880,9 +881,9 @@ TEST(Parser, Errors) {
  *   ')'
  */
 TEST(Parser, ExpressionInfixOp) {
-  std::string filename = "Test.java";
-  std::string buffer
-    = "public class A { public void m() { M.p(\"a\" + b + \"c\"); }}";
+  u32string filename = U"Test.java";
+  u32string buffer
+    = U"public class A { public void m() { M.p(\"a\" + b + \"c\"); }}";
   Parser parser(filename, buffer);
   parser.parse();
 
@@ -903,8 +904,8 @@ TEST(Parser, ExpressionInfixOp) {
 }
 
 TEST(Parser, Expression2Rest) {
-  std::string filename = "Test.java";
-  std::string buffer = "class C { void m() { if (x == null) { return; }}}";
+  u32string filename = U"Test.java";
+  u32string buffer = U"class C { void m() { if (x == null) { return; }}}";
   Parser parser(filename, buffer);
   parser.parse();
 
@@ -963,8 +964,8 @@ TEST(Parser, Expression2Rest) {
  *             ')'
  */
 TEST(Parser, Expression3Opt2) {
-  std::string filename = "Test.java";
-  std::string buffer = "class A { void m() { u = (U) e.get(); }}";
+  u32string filename = U"Test.java";
+  u32string buffer = U"class A { void m() { u = (U) e.get(); }}";
   Parser parser(filename, buffer);
   parser.parse();
 
@@ -1024,8 +1025,8 @@ TEST(Parser, Expression3Opt2) {
  *         ';'
  */
 TEST(Parser, ExpressionMultipleAssignment) {
-  std::string filename = "Test.java";
-  std::string buffer = "class S { void m() { a = b = 10; }}";
+  u32string filename = U"Test.java";
+  u32string buffer = U"class S { void m() { a = b = 10; }}";
   Parser parser(filename, buffer);
   parser.parse();
 
@@ -1037,7 +1038,7 @@ TEST(Parser, ExpressionMultipleAssignment) {
   // 'a'
   ASSERT_EQ(21,
     stmt->stmtExpr->expr->expr1->expr2->expr3->primary->primaryId->id->pos);
-  ASSERT_EQ("a",
+  ASSERT_EQ(U"a",
     stmt->stmtExpr->expr->expr1->expr2->expr3->primary->primaryId->id->value);
 
   // '='
@@ -1047,7 +1048,7 @@ TEST(Parser, ExpressionMultipleAssignment) {
   // 'b'
   ASSERT_EQ(25, stmt->stmtExpr->expr->assignExpr->expr1->expr2->expr3
     ->primary->primaryId->id->pos);
-  ASSERT_EQ("b", stmt->stmtExpr->expr->assignExpr->expr1->expr2->expr3
+  ASSERT_EQ(U"b", stmt->stmtExpr->expr->assignExpr->expr1->expr2->expr3
     ->primary->primaryId->id->value);
 
   // '='
@@ -1097,8 +1098,8 @@ TEST(Parser, ExpressionMultipleAssignment) {
  *       '}'
  */
 TEST(Parser, FieldDeclaratorWithClassBody) {
-  std::string filename = "Test.java";
-  std::string buffer = "class C { C c = new C() { {} }; }";
+  u32string filename = U"Test.java";
+  u32string buffer = U"class C { C c = new C() { {} }; }";
   Parser parser(filename, buffer);
   parser.parse();
 
@@ -1183,9 +1184,9 @@ TEST(Parser, FieldDeclaratorWithClassBody) {
  *         PostfixOp <-- '++'
  */
 TEST(Parser, For) {
-  std::string filename = "Test.java";
-  std::string buffer
-    = "class A { void m() { for (int i = 0; i < max; i++) { ; }}}";
+  u32string filename = U"Test.java";
+  u32string buffer
+    = U"class A { void m() { for (int i = 0; i < max; i++) { ; }}}";
   Parser parser(filename, buffer);
   parser.parse();
 
@@ -1215,8 +1216,8 @@ TEST(Parser, For) {
  *   Statement
  */
 TEST(Parser, ForBreak) {
-  std::string filename = "Test.java";
-  std::string buffer = "class S { void m() { for (;;) { break; }}}";
+  u32string filename = U"Test.java";
+  u32string buffer = U"class S { void m() { for (;;) { break; }}}";
   Parser parser(filename, buffer);
   parser.parse();
 
@@ -1268,9 +1269,9 @@ TEST(Parser, ForBreak) {
  *     Statement
  */
 TEST(Parser, ForExpr) {
-  std::string filename = "Test.java";
-  std::string buffer
-    = "class A { void m() { for (int i = 0; (i + 1) < max; i++) {} }}";
+  u32string filename = U"Test.java";
+  u32string buffer
+    = U"class A { void m() { for (int i = 0; (i + 1) < max; i++) {} }}";
   Parser parser(filename, buffer);
   parser.parse();
 
@@ -1320,9 +1321,9 @@ TEST(Parser, ForExpr) {
  *           '}'
  */
 TEST(Parser, GenericMethod) {
-  std::string filename = "Test.java";
-  std::string buffer
-    = "class A { private <E> E m(List<T> l) { return l.get(0); }}";
+  u32string filename = U"Test.java";
+  u32string buffer
+    = U"class A { private <E> E m(List<T> l) { return l.get(0); }}";
   Parser parser(filename, buffer);
   parser.parse();
 
@@ -1340,7 +1341,7 @@ TEST(Parser, GenericMethod) {
     memberDecl->genMethodOrConstDecl->rest->opt);
   ASSERT_EQ(Type::OPT_REFERENCE_TYPE,
     memberDecl->genMethodOrConstDecl->rest->type->opt);
-  ASSERT_EQ("m", memberDecl->genMethodOrConstDecl->rest->id->value);
+  ASSERT_EQ(U"m", memberDecl->genMethodOrConstDecl->rest->id->value);
 }
 
 /**
@@ -1408,8 +1409,8 @@ TEST(Parser, GenericMethod) {
  *     ClassBody '{}'
  */
 TEST(Parser, Generics) {
-  std::string filename = "Test.java";
-  std::string buffer = "class A { void m() { u = m.r(j, new T<L<G>>() {}); }}";
+  u32string filename = U"Test.java";
+  u32string buffer = U"class A { void m() { u = m.r(j, new T<L<G>>() {}); }}";
   Parser parser(filename, buffer);
   parser.parse();
 
@@ -1453,8 +1454,8 @@ TEST(Parser, Generics) {
  *        '}'
  */
 TEST(Parser, Interface) {
-  std::string filename = "Test.java";
-  std::string buffer = "interface I { void m(); }";
+  u32string filename = U"Test.java";
+  u32string buffer = U"interface I { void m(); }";
   Parser parser(filename, buffer);
   parser.parse();
 
@@ -1491,8 +1492,8 @@ TEST(Parser, Interface) {
  *     '}'
  */
 TEST(Parser, InterfaceInnerClassConstructor) {
-  std::string filename = "Test.java";
-  std::string buffer = "interface A { class B { B() {} }}";
+  u32string filename = U"Test.java";
+  u32string buffer = U"interface A { class B { B() {} }}";
   Parser parser(filename, buffer);
   parser.parse();
 
@@ -1549,8 +1550,8 @@ TEST(Parser, InterfaceInnerClassConstructor) {
  *       ';'
  */
 TEST(Parser, IdentifierSuffix) {
-  std::string filename = "Test.java";
-  std::string buffer = "class A { void m() { p = s[i]; }}";
+  u32string filename = U"Test.java";
+  u32string buffer = U"class A { void m() { p = s[i]; }}";
   Parser parser(filename, buffer);
   parser.parse();
 
@@ -1575,9 +1576,9 @@ TEST(Parser, IdentifierSuffix) {
 }
 
 TEST(Parser, ImportDeclarations) {
-  std::string filename = "Test.java";
-  std::string buffer =
-    "import com.test1.Test1;\n"
+  u32string filename = U"Test.java";
+  u32string buffer =
+    U"import com.test1.Test1;\n"
     "import com.test2.*;\n"
     "import static com.test3.Test3;\n"
     "import static com.test4.*;\n";
@@ -1642,8 +1643,8 @@ TEST(Parser, ImportDeclarations) {
  *           '}'
  */
 TEST(Parser, InnerClass) {
-  std::string filename = "Test.java";
-  std::string buffer = "class A { class B {} }";
+  u32string filename = U"Test.java";
+  u32string buffer = U"class A { class B {} }";
   Parser parser(filename, buffer);
   parser.parse();
 
@@ -1688,9 +1689,9 @@ TEST(Parser, InnerClass) {
  *           '}'
  */
 TEST(Parser, InnerClassInstance) {
-  std::string filename = "Test.java";
-  std::string buffer
-    = "class A { class B {} void m() { A a = new A(); a.new B(); }}";
+  u32string filename = U"Test.java";
+  u32string buffer
+    = U"class A { class B {} void m() { A a = new A(); a.new B(); }}";
   Parser parser(filename, buffer);
   parser.parse();
 
@@ -1749,8 +1750,8 @@ TEST(Parser, InnerClassInstance) {
  *     ';'
  */
 TEST(Parser, LocalVariableDeclarationStatement) {
-  std::string filename = "Test.java";
-  std::string buffer = "class A { void test() { Exec exe = createExec(); }}";
+  u32string filename = U"Test.java";
+  u32string buffer = U"class A { void test() { Exec exe = createExec(); }}";
   Parser parser(filename, buffer);
   parser.parse();
 
@@ -1768,7 +1769,7 @@ TEST(Parser, LocalVariableDeclarationStatement) {
 
   spPrimary primary = varDeclRest->varInit->expr->expr1->expr2->expr3->primary;
   ASSERT_EQ(35, primary->primaryId->id->pos);
-  ASSERT_EQ("createExec",  primary->primaryId->id->value);
+  ASSERT_EQ(U"createExec",  primary->primaryId->id->value);
   ASSERT_EQ(45, primary->primaryId->idSuffix->args->posLParen);
   ASSERT_EQ(46, primary->primaryId->idSuffix->args->posRParen);
 }
@@ -1791,9 +1792,9 @@ TEST(Parser, LocalVariableDeclarationStatement) {
  *     ';'
  */
 TEST(Parser, LocalVariableTypeArguments) {
-  std::string filename = "Test.java";
-  std::string buffer
-    = "class C { void m() { List<A> lst = new ArrayList<A>(); }}";
+  u32string filename = U"Test.java";
+  u32string buffer
+    = U"class C { void m() { List<A> lst = new ArrayList<A>(); }}";
   Parser parser(filename, buffer);
   parser.parse();
 
@@ -1804,7 +1805,7 @@ TEST(Parser, LocalVariableTypeArguments) {
   spLocalVariableDeclarationStatement localVar = blockStmt->localVar;
   ASSERT_EQ(Type::OPT_REFERENCE_TYPE, localVar->type->opt);
   ASSERT_EQ(21, localVar->type->refType->id->pos);
-  ASSERT_EQ("List", localVar->type->refType->id->value);
+  ASSERT_EQ(U"List", localVar->type->refType->id->value);
   ASSERT_EQ(25, localVar->type->refType->typeArgs->posLt);
   ASSERT_EQ(27, localVar->type->refType->typeArgs->posGt);
   ASSERT_EQ(TypeArgument::OPT_TYPE,
@@ -1813,7 +1814,7 @@ TEST(Parser, LocalVariableTypeArguments) {
     localVar->type->refType->typeArgs->typeArg->type->opt);
   ASSERT_EQ(26, localVar->type->refType->typeArgs->typeArg
     ->type->refType->id->pos);
-  ASSERT_EQ("A", localVar->type->refType->typeArgs->typeArg
+  ASSERT_EQ(U"A", localVar->type->refType->typeArgs->typeArg
     ->type->refType->id->value);
   ASSERT_EQ(0, localVar->type->refType->typeArgs->typeArg
     ->type->arrayDepth.size());
@@ -1839,9 +1840,9 @@ TEST(Parser, LocalVariableTypeArguments) {
  *     ';'
  */
 TEST(Parser, LocalVariableTypeArgumentsArray) {
-  std::string filename = "Test.java";
-  std::string buffer
-    = "class C { void m() { List<A[]> lst = new ArrayList<A>(); }}";
+  u32string filename = U"Test.java";
+  u32string buffer
+    = U"class C { void m() { List<A[]> lst = new ArrayList<A>(); }}";
   Parser parser(filename, buffer);
   parser.parse();
 
@@ -1852,7 +1853,7 @@ TEST(Parser, LocalVariableTypeArgumentsArray) {
   spLocalVariableDeclarationStatement localVar = blockStmt->localVar;
   ASSERT_EQ(Type::OPT_REFERENCE_TYPE, localVar->type->opt);
   ASSERT_EQ(21, localVar->type->refType->id->pos);
-  ASSERT_EQ("List", localVar->type->refType->id->value);
+  ASSERT_EQ(U"List", localVar->type->refType->id->value);
   ASSERT_EQ(25, localVar->type->refType->typeArgs->posLt);
   ASSERT_EQ(29, localVar->type->refType->typeArgs->posGt);
   ASSERT_EQ(TypeArgument::OPT_TYPE,
@@ -1861,7 +1862,7 @@ TEST(Parser, LocalVariableTypeArgumentsArray) {
     localVar->type->refType->typeArgs->typeArg->type->opt);
   ASSERT_EQ(26, localVar->type->refType->typeArgs->typeArg
     ->type->refType->id->pos);
-  ASSERT_EQ("A", localVar->type->refType->typeArgs->typeArg
+  ASSERT_EQ(U"A", localVar->type->refType->typeArgs->typeArg
     ->type->refType->id->value);
   ASSERT_EQ(1, localVar->type->refType->typeArgs->typeArg
     ->type->arrayDepth.size());
@@ -1877,8 +1878,8 @@ TEST(Parser, LocalVariableTypeArgumentsArray) {
  *     NormalInterfaceDeclaration
  */
 TEST(Parser, MemberDeclInterfaceDeclaration) {
-  std::string filename = "Test.java";
-  std::string buffer = "class A { interface I {} }";
+  u32string filename = U"Test.java";
+  u32string buffer = U"class A { interface I {} }";
   Parser parser(filename, buffer);
   parser.parse();
 
@@ -1907,8 +1908,8 @@ TEST(Parser, MemberDeclInterfaceDeclaration) {
  *   '}'
  */
 TEST(Parser, MemberDeclOpt1) {
-  std::string filename = "Test.java";
-  std::string buffer = "class A { int m1() { return 1; }}";
+  u32string filename = U"Test.java";
+  u32string buffer = U"class A { int m1() { return 1; }}";
   Parser parser(filename, buffer);
   parser.parse();
 
@@ -1931,9 +1932,9 @@ TEST(Parser, MemberDeclOpt1) {
 }
 
 TEST(Parser, MethodOrFieldRestOptField) {
-  std::string filename = "Test.java";
-  std::string buffer =
-    "class A { protected static Logger l = LoggerFactory.getLogger(A.class);";
+  u32string filename = U"Test.java";
+  u32string buffer =
+    U"class A { protected static Logger l = LoggerFactory.getLogger(A.class);";
   Parser parser(filename, buffer);
   parser.parse();
 
@@ -1945,10 +1946,10 @@ TEST(Parser, MethodOrFieldRestOptField) {
   // Logger l
   ASSERT_EQ(Type::OPT_REFERENCE_TYPE, memberDecl->methodOrFieldDecl->type->opt);
   ASSERT_EQ(27, memberDecl->methodOrFieldDecl->type->refType->id->pos);
-  ASSERT_EQ("Logger",
+  ASSERT_EQ(U"Logger",
     memberDecl->methodOrFieldDecl->type->refType->id->value);
   ASSERT_EQ(34, memberDecl->methodOrFieldDecl->id->pos);
-  ASSERT_EQ("l", memberDecl->methodOrFieldDecl->id->value);
+  ASSERT_EQ(U"l", memberDecl->methodOrFieldDecl->id->value);
 
   // = LoggerFactory.getLogger
   ASSERT_EQ(MethodOrFieldRest::OPT_FIELD,
@@ -1980,7 +1981,7 @@ TEST(Parser, MethodOrFieldRestOptField) {
     = args->expr->expr1->expr2->expr3->primary->primaryId;
   ASSERT_EQ(0, primaryId->pairs.size());
   ASSERT_EQ(62,primaryId->id->pos);
-  ASSERT_EQ("A", primaryId->id->value);
+  ASSERT_EQ(U"A", primaryId->id->value);
   ASSERT_EQ(IdentifierSuffix::OPT_PERIOD_CLASS,
     primaryId->idSuffix->opt);
   ASSERT_EQ(63, primaryId->idSuffix->posPeriod);
@@ -1989,9 +1990,9 @@ TEST(Parser, MethodOrFieldRestOptField) {
 }
 
 TEST(Parser, MethodOrFieldRestOptMethod) {
-  std::string filename = "Test.java";
-  std::string buffer =
-    "abstract class A { "
+  u32string filename = U"Test.java";
+  u32string buffer =
+    U"abstract class A { "
     "abstract public String hello("
     "@A1 Integer year, @A2(\"name\") String name);"
     "}";
@@ -2010,8 +2011,8 @@ TEST(Parser, MethodOrFieldRestOptMethod) {
 }
 
 TEST(Parser, PackageDeclaration) {
-  std::string filename = "Test.java";
-  std::string buffer = "@myinterface\npackage com.test;";
+  u32string filename = U"Test.java";
+  u32string buffer = U"@myinterface\npackage com.test;";
 
   Parser parser(filename, buffer);
   parser.parse();
@@ -2022,9 +2023,9 @@ TEST(Parser, PackageDeclaration) {
 }
 
 TEST(Parser, ParExpression) {
-  std::string filename = "Test.java";
-  std::string buffer
-    = "class A { void h() { if (s.equals(\"x\")) { return; }}}";
+  u32string filename = U"Test.java";
+  u32string buffer
+    = U"class A { void h() { if (s.equals(\"x\")) { return; }}}";
 
   Parser parser(filename, buffer);
   parser.parse();
@@ -2043,7 +2044,7 @@ TEST(Parser, ParExpression) {
     ->expr3->primary->primaryId->idSuffix->args->expr->expr1->expr2->expr3
     ->primary->literal->strLiteral;
   ASSERT_EQ(34, strLiteral->pos);
-  ASSERT_EQ("\"x\"", strLiteral->val);
+  ASSERT_EQ(U"\"x\"", strLiteral->val);
 }
 
 /**
@@ -2066,9 +2067,9 @@ TEST(Parser, ParExpression) {
  * Non-terminals are enclosed in square brackets.
  */
 TEST(Parser, PrimaryNewCreator) {
-  std::string filename = "Test.java";
-  std::string buffer =
-    "@myinterface("
+  u32string filename = U"Test.java";
+  u32string buffer =
+    U"@myinterface("
     "k1 = new <Integer> MyClass<>(),"
     "k2 = new <String, Integer> MyClass<Long>(),"
     "k4 = new MyClass(),"
@@ -2091,10 +2092,10 @@ TEST(Parser, PrimaryNewCreator) {
   ASSERT_EQ(30, creator1->opt1->nonWildcardTypeArguments->posGt);
   ASSERT_EQ(23, creator1->opt1->nonWildcardTypeArguments
     ->typeList2->type->refType->id->pos);
-  ASSERT_EQ("Integer", creator1->opt1->nonWildcardTypeArguments
+  ASSERT_EQ(U"Integer", creator1->opt1->nonWildcardTypeArguments
     ->typeList2->type->refType->id->value);
   ASSERT_EQ(32, creator1->opt1->createdName->id->pos);
-  ASSERT_EQ("MyClass", creator1->opt1->createdName->id->value);
+  ASSERT_EQ(U"MyClass", creator1->opt1->createdName->id->value);
   ASSERT_EQ(TypeArgumentsOrDiamond::OPT_DIAMOND,
     creator1->opt1->createdName->typeArgsOrDiam->opt);
   ASSERT_EQ(39,
@@ -2111,14 +2112,14 @@ TEST(Parser, PrimaryNewCreator) {
   ASSERT_EQ(69, creator2->opt1->nonWildcardTypeArguments->posGt);
   ASSERT_EQ(54, creator2->opt1->nonWildcardTypeArguments
     ->typeList2->type->refType->id->pos);
-  ASSERT_EQ("String", creator2->opt1->nonWildcardTypeArguments
+  ASSERT_EQ(U"String", creator2->opt1->nonWildcardTypeArguments
     ->typeList2->type->refType->id->value);
   std::pair<unsigned int, spType> pair = creator2->opt1
     ->nonWildcardTypeArguments->typeList2->pairs[0];
   ASSERT_EQ(62, pair.second->refType->id->pos);
-  ASSERT_EQ("Integer", pair.second->refType->id->value);
+  ASSERT_EQ(U"Integer", pair.second->refType->id->value);
   ASSERT_EQ(71, creator2->opt1->createdName->id->pos);
-  ASSERT_EQ("MyClass", creator2->opt1->createdName->id->value);
+  ASSERT_EQ(U"MyClass", creator2->opt1->createdName->id->value);
   ASSERT_EQ(TypeArgumentsOrDiamond::OPT_TYPE_ARGUMENTS,
     creator2->opt1->createdName->typeArgsOrDiam->opt);
   ASSERT_EQ(78,
@@ -2130,7 +2131,7 @@ TEST(Parser, PrimaryNewCreator) {
   ASSERT_EQ(79,
     creator2->opt1->createdName->typeArgsOrDiam->typeArgs->typeArg
     ->type->refType->id->pos);
-  ASSERT_EQ("Long",
+  ASSERT_EQ(U"Long",
     creator2->opt1->createdName->typeArgsOrDiam->typeArgs->typeArg
     ->type->refType->id->value);
 
@@ -2140,7 +2141,7 @@ TEST(Parser, PrimaryNewCreator) {
     ->newCreator->creator;
   ASSERT_EQ(Creator::OPT_CREATED_NAME, creator3->opt);
   ASSERT_EQ(96, creator3->opt2->createdName->id->pos);
-  ASSERT_EQ("MyClass", creator3->opt2->createdName->id->value);
+  ASSERT_EQ(U"MyClass", creator3->opt2->createdName->id->value);
   ASSERT_EQ(103, creator3->opt2->classCreatorRest->args->posLParen);
   ASSERT_EQ(104, creator3->opt2->classCreatorRest->args->posRParen);
 
@@ -2150,7 +2151,7 @@ TEST(Parser, PrimaryNewCreator) {
     ->newCreator->creator;
   ASSERT_EQ(Creator::OPT_CREATED_NAME, creator4->opt);
   ASSERT_EQ(115, creator4->opt2->createdName->id->pos);
-  ASSERT_EQ("MyClass", creator4->opt2->createdName->id->value);
+  ASSERT_EQ(U"MyClass", creator4->opt2->createdName->id->value);
   ASSERT_EQ(ArrayCreatorRest::OPT_ARRAY_INITIALIZER,
     creator4->opt2->arrayCreatorRest->opt);
   ASSERT_EQ(1, creator4->opt2->arrayCreatorRest->opt1->arrayDepth.size());
@@ -2175,8 +2176,8 @@ TEST(Parser, PrimaryNewCreator) {
  *   ';'
  */
 TEST(Parser, PrimarySuper) {
-  std::string filename = "Test.java";
-  std::string buffer = "class A { void m() { super.m(); }}";
+  u32string filename = U"Test.java";
+  u32string buffer = U"class A { void m() { super.m(); }}";
   Parser parser(filename, buffer);
   parser.parse();
 
@@ -2199,8 +2200,8 @@ TEST(Parser, PrimarySuper) {
  * Primary
  */
 TEST(Parser, PrimaryThis) {
-  std::string filename = "Test.java";
-  std::string buffer = "class A { void m() { this(); }}";
+  u32string filename = U"Test.java";
+  u32string buffer = U"class A { void m() { this(); }}";
   Parser parser(filename, buffer);
   parser.parse();
 
@@ -2259,9 +2260,9 @@ TEST(Parser, PrimaryThis) {
  *                 ')'
  */
 TEST(Parser, Selector) {
-  std::string filename = "Test.java";
-  std::string buffer
-    = "class A { void m() { long l = (new Long(i)).longValue(); }}";
+  u32string filename = U"Test.java";
+  u32string buffer
+    = U"class A { void m() { long l = (new Long(i)).longValue(); }}";
   Parser parser(filename, buffer);
   parser.parse();
 
@@ -2305,8 +2306,8 @@ TEST(Parser, Selector) {
 //TEST(Parser, PrimaryNonWildcardTypeArguments) {}
 
 TEST(Parser, Statement) {
-  std::string filename = "Test.java";
-  std::string buffer = "class X { void x() { "
+  u32string filename = U"Test.java";
+  u32string buffer = U"class X { void x() { "
     "try {} catch (Exception e) {} }}";
   Parser parser(filename, buffer);
   parser.parse();
@@ -2323,7 +2324,7 @@ TEST(Parser, Statement) {
   ASSERT_EQ(34, stmt->catches->catchClause->posLParen);
   ASSERT_EQ(46, stmt->catches->catchClause->posRParen);
   ASSERT_EQ(45, stmt->catches->catchClause->id->pos);
-  ASSERT_EQ("e", stmt->catches->catchClause->id->value);
+  ASSERT_EQ(U"e", stmt->catches->catchClause->id->value);
 }
 
 /**
@@ -2344,8 +2345,8 @@ TEST(Parser, Statement) {
  *         '}'
  */
 TEST(Parser, StatementContinue) {
-  std::string filename = "Test.java";
-  std::string buffer = "class A { void m() { while (true) { continue; }}}";
+  u32string filename = U"Test.java";
+  u32string buffer = U"class A { void m() { while (true) { continue; }}}";
   Parser parser(filename, buffer);
   parser.parse();
 
@@ -2388,9 +2389,9 @@ TEST(Parser, StatementContinue) {
  *   '}'
  */
 TEST(Parser, StatementSwitch) {
-  std::string filename = "Test.java";
-  std::string buffer
-    = "class C { void m() { switch (getR()) { case R.I: break; default: ; }}}";
+  u32string filename = U"Test.java";
+  u32string buffer
+    = U"class C { void m() { switch (getR()) { case R.I: break; default: ; }}}";
   Parser parser(filename, buffer);
   parser.parse();
 
@@ -2412,8 +2413,8 @@ TEST(Parser, StatementSwitch) {
  *     Block
  */
 TEST(Parser, StatementSynchronized) {
-  std::string filename = "Test.java";
-  std::string buffer = "class A { void m() { synchronized(x) { }}}";
+  u32string filename = U"Test.java";
+  u32string buffer = U"class A { void m() { synchronized(x) { }}}";
   Parser parser(filename, buffer);
   parser.parse();
 
@@ -2446,8 +2447,8 @@ TEST(Parser, StatementSynchronized) {
  *     '}'
  */
 TEST(Parser, StaticInitializer) {
-  std::string filename = "Test.java";
-  std::string buffer = "class A { int a; static { a = 10; }}";
+  u32string filename = U"Test.java";
+  u32string buffer = U"class A { int a; static { a = 10; }}";
   Parser parser(filename, buffer);
   parser.parse();
 
@@ -2496,8 +2497,8 @@ TEST(Parser, StaticInitializer) {
  *     ';'
  */
 TEST(Parser, TernaryCond) {
-  std::string filename = "Test.java";
-  std::string buffer = "class A { void m() { int a = x == 0 ? 1 : 2; }}";
+  u32string filename = U"Test.java";
+  u32string buffer = U"class A { void m() { int a = x == 0 ? 1 : 2; }}";
   Parser parser(filename, buffer);
   parser.parse();
 
@@ -2546,8 +2547,8 @@ TEST(Parser, TernaryCond) {
  *     ';'
  */
 TEST(Parser, Throw) {
-  std::string filename = "Test.java";
-  std::string buffer = "class A { void m() { throw new E(R.Err, \"m\"); }}";
+  u32string filename = U"Test.java";
+  u32string buffer = U"class A { void m() { throw new E(R.Err, \"m\"); }}";
   Parser parser(filename, buffer);
   parser.parse();
 
@@ -2620,8 +2621,8 @@ TEST(Parser, Throw) {
  *     Block
  */
 TEST(Parser, Throws) {
-  std::string filename = "Test.java";
-  std::string buffer = "class A { void m() throws E { ; }}";
+  u32string filename = U"Test.java";
+  u32string buffer = U"class A { void m() throws E { ; }}";
   Parser parser(filename, buffer);
   parser.parse();
 

@@ -3,7 +3,7 @@
 namespace c4j {
 
 /** Constructor */
-SourceCodeStream::SourceCodeStream(const string &_buffer)
+SourceCodeStream::SourceCodeStream(const u32string &_buffer)
   : buffer(_buffer), cursor(0), line(0) {}
 
 /**
@@ -79,8 +79,8 @@ unsigned int SourceCodeStream::getMarkOffset() {
  * We assume that any whitespace has been previously consumed.
  */
 bool SourceCodeStream::lookaheadInterface(int point) {
-  string result = string(buffer, point, 9);
-  if (result == "interface") return true;
+  u32string result = u32string(buffer, point, 9);
+  if (result == U"interface") return true;
   return false;
 }
 
