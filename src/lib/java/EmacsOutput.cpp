@@ -1,4 +1,5 @@
 #include "c4/java/EmacsOutput.h"
+using c4::itou32s;
 
 namespace c4j {
 
@@ -32,18 +33,18 @@ void EmacsOutput::buildIndentationTable() {
   // #s(hash-table size N data
   //   (LineNumber_N0 (IndentLevel_N0 LineWrap_N0 Offset_N0) ... N)
   outIT += U"#s(hash-table size ";
-  outIT += indentMap.size();
+  outIT += itou32s(indentMap.size());
   outIT += U" data (";
 
   LineIndentationMap::iterator it;
   for (it = indentMap.begin(); it != indentMap.end(); ++it) {
-    outIT += it->first;
+    outIT += itou32s(it->first);
     outIT += U" (";
-    outIT += it->second->level;
+    outIT += itou32s(it->second->level);
     outIT += U" ";
     outIT += ((it->second->lineWrap) ? U"1" : U"0");
     outIT += U" ";
-    outIT += it->second->offset;
+    outIT += itou32s(it->second->offset);
     outIT += U") ";
   }
 
@@ -75,13 +76,13 @@ void EmacsOutput::buildSymbolTable() {
     outST += U"(";
     outST += getSymbolTableType(st.symbols[i]->type);
     outST += U" ";
-    outST += st.symbols[i]->scope;
+    outST += itou32s(st.symbols[i]->scope);
     outST += U" ";
-    outST += st.symbols[i]->pos;
+    outST += itou32s(st.symbols[i]->pos);
     outST += U" ";
-    outST += st.symbols[i]->end;
+    outST += itou32s(st.symbols[i]->end);
     outST += U" ";
-    outST += st.symbols[i]->line;
+    outST += itou32s(st.symbols[i]->line);
     if (st.symbols[i]->metadata.size()) {
       outST += U" ";
       outST += st.symbols[i]->metadata;
@@ -120,9 +121,9 @@ void EmacsOutput::setAnnotation(const spAnnotation &annotation) {
     // '@'
     unsigned pos = annotation->posTokAt + 1;
     outSH += U"(c4j-sh-annotation-tok-at ";
-    outSH += pos;
+    outSH += itou32s(pos);
     outSH += U" ";
-    outSH += (pos + 1);
+    outSH += itou32s(pos + 1);
     outSH += U")";
     setQualifiedId(annotation->qualifiedId);
   }
@@ -204,9 +205,9 @@ void EmacsOutput::setAnnotationTypeDeclaration(
   if (annotationDecl->posAt) {
     unsigned pos = annotationDecl->posAt + 1;
     outSH += U"(c4j-sh-annotation-tok-at ";
-    outSH += pos;
+    outSH += itou32s(pos);
     outSH += U" ";
-    outSH += (pos + 1);
+    outSH += itou32s(pos + 1);
     outSH += U")";
   }
 
@@ -467,9 +468,9 @@ void EmacsOutput::setCatchType(const spCatchType &catchType) {
 void EmacsOutput::setCharacterLiteral(const spCharacterLiteral &charLiteral) {
   if (charLiteral->pos && charLiteral->val.size()) {
     outSH += U"(c4j-sh-literal-char ";
-    outSH += charLiteral->pos + 1;
+    outSH += itou32s(charLiteral->pos + 1);
     outSH += U" ";
-    outSH += (charLiteral->pos + charLiteral->val.size() + 1);
+    outSH += itou32s(charLiteral->pos + charLiteral->val.size() + 1);
     outSH += U")";
   }
 }
@@ -557,9 +558,9 @@ void EmacsOutput::setComments() {
 
   for (unsigned int i = 0; i < comments.size(); i++) {
     outSH += U"(c4j-sh-comment ";
-    outSH += (comments[i]->posIni + 1);
+    outSH += itou32s(comments[i]->posIni + 1);
     outSH += U" ";
-    outSH += (comments[i]->posEnd + 2);
+    outSH += itou32s(comments[i]->posEnd + 2);
     outSH += U")";
   }
 }
@@ -813,9 +814,9 @@ void EmacsOutput::setEnumDeclaration(spEnumDeclaration &enumDecl) {
 void EmacsOutput::setErrors(const vector<c4::spError> &errors) {
   for (std::size_t i = 0; i < errors.size(); i++) {
     outErr += U"(";
-    outErr += (errors[i]->ini + 1);
+    outErr += itou32s(errors[i]->ini + 1);
     outErr += U" ";
-    outErr += (errors[i]->end + 1);
+    outErr += itou32s(errors[i]->end + 1);
     outErr += U" \"";
     outErr += errUtil.getMessage(errors[i]->type);
     outErr += U"\")";
@@ -1023,9 +1024,9 @@ void EmacsOutput::setFloatingPointLiteral(
 
   if (fpLiteral->pos && fpLiteral->value.size()) {
     outSH += U"(c4j-sh-literal-number ";
-    outSH += (fpLiteral->pos + 1);
+    outSH += itou32s(fpLiteral->pos + 1);
     outSH += U" ";
-    outSH += (fpLiteral->pos + fpLiteral->value.size() + 1);
+    outSH += itou32s(fpLiteral->pos + fpLiteral->value.size() + 1);
     outSH += U")";
   }
 }
@@ -1260,17 +1261,17 @@ void EmacsOutput::setIdentifier(const spIdentifier &identifier, IdentifierOpt op
 
   if (opt == EmacsOutput::OPT_IDENTIFIER_REFERENCE_TYPE) {
     outSH += U"(c4j-sh-reference-type-id ";
-    outSH += ini;
+    outSH += itou32s(ini);
     outSH += U" ";
-    outSH += end;
+    outSH += itou32s(end);
     outSH += U")";
     return;
   }
 
   outSH += U"(c4j-sh-identifier ";
-  outSH += ini;
+  outSH += itou32s(ini);
   outSH += U" ";
-  outSH += end;
+  outSH += itou32s(end);
   outSH += U")";
 }
 
@@ -1440,9 +1441,9 @@ void EmacsOutput::setInnerCreator(const spInnerCreator &innerCreator) {
 void EmacsOutput::setIntegerLiteral(const spIntegerLiteral &intLiteral) {
   if (intLiteral->pos && intLiteral->value.size()) {
     outSH += U"(c4j-sh-literal-number ";
-    outSH += (intLiteral->pos + 1);
+    outSH += itou32s(intLiteral->pos + 1);
     outSH += U" ";
-    outSH += (intLiteral->pos + intLiteral->value.size() + 1);
+    outSH += itou32s(intLiteral->pos + intLiteral->value.size() + 1);
     outSH += U")";
   }
 }
@@ -1637,9 +1638,9 @@ void EmacsOutput::setKeyword(const spTokenExp &token) {
 
 void EmacsOutput::setKeyword(int ini, int end) {
   outSH += U"(c4j-sh-keyword ";
-  outSH += ini;
+  outSH += itou32s(ini);
   outSH += U" ";
-  outSH += end;
+  outSH += itou32s(end);
   outSH += U")";
 }
 
@@ -1957,9 +1958,9 @@ void EmacsOutput::setOp(unsigned int ini, int len) {
   ini++;
   unsigned int end = ini + len;
   outSH += U"(c4j-sh-op ";
-  outSH += ini;
+  outSH += itou32s(ini);
   outSH += U" ";
-  outSH += end;
+  outSH += itou32s(end);
   outSH += U")";
 }
 
@@ -2425,9 +2426,9 @@ void EmacsOutput::setStringLiteral(const spStringLiteral &strLiteral) {
   unsigned ini = strLiteral->pos + 1;
   unsigned end = ini + strLiteral->val.length();
   outSH += U"(c4j-sh-string-literal ";
-  outSH += ini;
+  outSH += itou32s(ini);
   outSH += U" ";
-  outSH += end;
+  outSH += itou32s(end);
   outSH += U")";
 }
 

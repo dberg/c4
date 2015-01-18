@@ -5,6 +5,7 @@
 #include <iostream>
 #include <map>
 
+#include "c4/common/Util.h"
 #include "c4/java/AST.h"
 #include "c4/java/Diagnosis.h"
 #include "c4/java/Indentation.h"
