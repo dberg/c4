@@ -48,7 +48,7 @@ int parseJavaFile(CmdInput &ci) {
   u32string u32buffer = utf8_to_u32(buffer);
   u32string u32filename = utf8_to_u32(ci.getFilename());
 
-  c4j::Parser parser(u32buffer, u32filename);
+  c4j::Parser parser(u32filename, u32buffer);
   parser.parse();
   if (parser.error) {
     string error_msg = u32_to_utf8(parser.error_msg);
