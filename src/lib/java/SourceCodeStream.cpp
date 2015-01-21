@@ -36,7 +36,7 @@ char SourceCodeStream::ungetChar(int count) {
   return buffer[cursor];
 }
 
-char SourceCodeStream::peekChar(int offset) {
+char32_t SourceCodeStream::peekChar(int offset) {
   size_t idx = cursor + offset;
   if (idx < buffer.size()) {
     return buffer[cursor + offset];

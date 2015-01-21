@@ -24,7 +24,7 @@ public:
   char getChar();
   char getChar(int offset);
   char ungetChar(int count);
-  char peekChar(int offset = 0);
+  char32_t peekChar(int offset = 0);
 
   unsigned int getCursor();
   void setCursor(unsigned int _cursor);

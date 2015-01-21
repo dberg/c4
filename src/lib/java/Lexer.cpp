@@ -626,7 +626,7 @@ int Lexer::getStringLiteral() {
   u32string ss;
   ss += '"'; // opening double quotes
 
-  char c;
+  char32_t c;
   int tok;
   while ((c = src->peekChar())) {
     switch (c) {
