@@ -46,11 +46,19 @@ int toJavaTok(LiteralToken litTok) {
 //-----------------------------------------------------------------------------
 // Helpers
 //-----------------------------------------------------------------------------
-bool isJavaLetter(char c) {
-  return (isalpha(c) || c == '$' || c == '_');
+bool isJavaLetter(char32_t c) {
+  if (c <= 0xFF) {
+    return (isalpha(c) || c == '$' || c == '_');
+  } else {
+    // TODO: According to the spec a "Java letter" is a character for which the
+    // method Character.isJavaIdentifierStart(int) returns true.  We're
+    // currently just checking if this is a valid Unicode range to allow higher
+    // code points than 0xFF.
+    return (c <= 0x10FFFF);
+  }
 }
 
-bool isJavaLetterOrDigit(char c) {
+bool isJavaLetterOrDigit(char32_t c) {
   return (isJavaLetter(c) || isdigit(c));
 }
 
@@ -183,7 +191,7 @@ void Lexer::adjustClosingCurlyBracketIndentation() {
 }
 
 int Lexer::getToken() {
-  char c = src->getChar();
+  char32_t c = src->getChar();
   if (!c) return TOK_EOF;
 
   // Skip any space char.
@@ -250,7 +258,7 @@ int Lexer::getAnnotationToken() {
   // have an annotation type declaration, otherwise it's an annotation.
   // We keep track of our look ahead so we can return to our current
   // buffer position.
-  char c = src->getChar();
+  char32_t c = src->getChar();
   int lookahead = 1;
 
   // Consume whitespaces
@@ -442,7 +450,7 @@ int Lexer::getEscapeSequence(u32string &ss) {
   //   \ OctalDigit OctalDigit
   //   \ ZeroToThree OctalDigit OctalDigit
   if (isOctalDigit(src->peekChar())) {
-    char c = src->getChar(); // consume first octal digit
+    char32_t c = src->getChar(); // consume first octal digit
     ss += c;
     if (isOctalDigit(src->peekChar())) {
       ss += src->getChar(); // consume second octal digit
@@ -722,7 +730,7 @@ int Lexer::getMinusToken() {
 /**
  * Return TOK_IDENTIFIER | TOK_INTEGER_TYPE_SUFFIX | TOK_KEY_*
  */
-int Lexer::getTokenIdentifier(char c) {
+int Lexer::getTokenIdentifier(char32_t c) {
   u32string ss;
   ss += c;
   while ((c = src->getChar())) {

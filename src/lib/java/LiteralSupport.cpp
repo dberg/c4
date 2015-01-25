@@ -160,7 +160,7 @@ LiteralToken LiteralSupport::getDecimalNumeralOrDecimalFloatingPoint(
  */
 LiteralToken LiteralSupport::getBinaryNumeral(u32string &ss) {
   // Lookahead and confirm that we have valid binary digit.
-  char c = src->getChar();
+  char32_t c = src->getChar();
   if (!isBinaryDigit(c)) {
     src->ungetChar(3);
     return LiteralToken::ERROR;
@@ -372,7 +372,7 @@ int LiteralSupport::consumeExponentPart(u32string &ss) {
 
 LiteralToken LiteralSupport::getTokWithLeadingZero(u32string &ss) {
   // Decimal numeral
-  char lookahead = src->getChar();
+  char32_t lookahead = src->getChar();
   if (lookahead == 'l' || lookahead == 'L') {
     ss += '0'; ss += lookahead;
     return LiteralToken::DECIMAL_NUMERAL_WITH_INT_TYPE_SUFFIX;

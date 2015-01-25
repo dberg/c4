@@ -22,8 +22,8 @@ using std::vector;
 namespace c4j {
 
 int toJavaTok(LiteralToken litTok);
-bool isJavaLetter(char c);
-bool isJavaLetterOrDigit(char c);
+bool isJavaLetter(char32_t c);
+bool isJavaLetterOrDigit(char32_t c);
 
 class Lexer;
 typedef shared_ptr<Lexer> spLexer;
@@ -61,7 +61,7 @@ class Lexer {
   int getPlusToken();
   int getRemToken();
   int getStringLiteral();
-  int getTokenIdentifier(char c);
+  int getTokenIdentifier(char32_t c);
   void processIndentation(unsigned prevLine, unsigned curLine,
     int prevToken, int curToken);
   bool isLineWrap(int prevToken);

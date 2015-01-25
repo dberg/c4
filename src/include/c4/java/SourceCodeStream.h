@@ -21,9 +21,9 @@ class SourceCodeStream {
   unsigned int cursorMark;
 
 public:
-  char getChar();
-  char getChar(int offset);
-  char ungetChar(int count);
+  char32_t getChar();
+  char32_t getChar(int offset);
+  char32_t ungetChar(int count);
   char32_t peekChar(int offset = 0);
 
   unsigned int getCursor();

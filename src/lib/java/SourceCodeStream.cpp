@@ -9,7 +9,7 @@ SourceCodeStream::SourceCodeStream(const u32string &_buffer)
 /**
  * Return the next char in the buffer or '\0' if we hit the end of the buffer.
  */
-char SourceCodeStream::getChar() {
+char32_t SourceCodeStream::getChar() {
   if (cursor > buffer.length()) {
     return '\0';
   }
@@ -21,12 +21,12 @@ char SourceCodeStream::getChar() {
   return buffer[cursor++];
 }
 
-char SourceCodeStream::getChar(int offset) {
+char32_t SourceCodeStream::getChar(int offset) {
   for (int i = 0; i < offset; i++) getChar();
   return buffer[cursor];
 }
 
-char SourceCodeStream::ungetChar(int count) {
+char32_t SourceCodeStream::ungetChar(int count) {
   for (int i = count; i > 0; i--) {
     if (buffer[--cursor] == '\n') {
       line--;
