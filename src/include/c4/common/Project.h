@@ -8,7 +8,6 @@
 
 #include "c4/common/Compilation.h"
 #include "c4/common/ProjectJava.h"
-#include "c4/common/ProjectScala.h"
 #include "c4/common/Util.h"
 
 using std::string;
@@ -25,7 +24,6 @@ class Project {
   u32string id;
   unordered_map<u32string, spCompilation> comps;
   spProjectJava projJava;
-  spProjectScala projScala;
 
 public:
   Project(u32string id);

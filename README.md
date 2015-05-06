@@ -1,8 +1,6 @@
 ## C4
 
-C4 is an emacs mode for Java 7, Scala 2.12 and the JVM bytecode.
-
-Scala support is under development.
+C4 is an emacs mode for Java 7.
 
 
 ### A few notes on variables used in this README

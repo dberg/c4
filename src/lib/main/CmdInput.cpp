@@ -22,8 +22,6 @@ int CmdInput::processCmdArgs() {
       string arg = argv[++i];
       if (arg.compare("java") == 0) {
         optInJava = optOutEmacs = true;
-      } else if (arg.compare("scala") == 0) {
-        optInScala = optOutEmacs = true;
       } else if (arg.compare("bytecode") == 0) {
         optInBytecode = true;
       } else {
@@ -90,12 +88,10 @@ int CmdInput::validateInput() {
 
   // If we don't have the input type, and we don't have the server option
   // we try to infer the output type based in the filename extension.
-  bool optIn = optInJava || optInScala || optInBytecode;
+  bool optIn = optInJava || optInBytecode;
   if (!optIn && !optServer) {
     if (endsWith<string>(filename, ".java")) {
       optInJava = optOutEmacs = true;
-    } else if (endsWith<string>(filename, ".scala")) {
-      optInScala = optOutEmacs = true;
     } else if (endsWith<string>(filename, ".class")) {
       optInBytecode = true;
     } else {

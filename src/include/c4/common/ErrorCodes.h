@@ -21,7 +21,7 @@ struct Error {
 typedef std::shared_ptr<struct Error> spError;
 
 /**
- * Error codes for the class Diagnosis shared by Java and Scala.
+ * Error codes for the class Diagnosis.
  */
 enum ErrorCode {
   ERR_EXP_ARGUMENTS,

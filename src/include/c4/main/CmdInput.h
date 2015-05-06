@@ -20,7 +20,6 @@ class CmdInput {
   bool optHelp;
   bool optServer;
   bool optInJava;
-  bool optInScala;
   bool optInBytecode;
   bool optOutEmacs;
   string filename;
@@ -32,7 +31,7 @@ public:
 
   CmdInput(int argc, const char **argv)
     : argc(argc), argv(argv),
-      optHelp(false), optServer(false), optInJava(false), optInScala(false),
+      optHelp(false), optServer(false), optInJava(false),
       optInBytecode(false), optOutEmacs(false), filename(""), port(0) {}
 
   string help =
@@ -40,12 +39,11 @@ public:
     "  c4 [-h, --help] \n"
     "  c4 [-i, --input] INPUT_OPTIONS [-f, --filename] FILENAME\n"
     "  c4 [-s, --server] [-p, --port] PORT_NUMBER\n\n"
-    "Where INPUT_OPTIONS is one of 'java', 'scala' or 'bytecode'.\n\n"
-    "The output for 'java' or 'scala' input types is 'emacs'.\n"
-    "The output for the input type 'bytecode' is plain text.\n\n"
+    "Where INPUT_OPTIONS is 'java' or 'bytecode'.\n\n"
+    "The output for the 'java' input type is 'emacs'.\n"
+    "The output for the 'bytecode' input type is plain text.\n\n"
     "Examples:\n\n"
     "  c4 -i java -f Foo.java\n"
-    "  c4 -i scala -f Bar.scala\n"
     "  c4 --input bytecode --filename Baz.class\n"
     "  c4 --server --port 8000\n";
 
@@ -54,7 +52,6 @@ public:
   bool isOptHelp() { return optHelp; }
   bool isOptServer() { return optServer; }
   bool isOptInJava() { return optInJava; }
-  bool isOptInScala() { return optInScala; }
   bool isOptInBytecode() { return optInBytecode; }
 
   string getFilename() { return filename; }

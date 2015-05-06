@@ -65,27 +65,6 @@ int parseJavaFile(CmdInput &ci) {
   return 0;
 }
 
-int parseScalaFile(CmdInput &ci) {
-  string buffer;
-
-  File file;
-  if (file.read(ci.getFilename(), buffer)) {
-    cerr << "Error: Failed to read file:" << ci.getFilename() << endl;
-    return 1;
-  }
-
-  // TODO: use c4s::Global
-  //c4s::Parser parser(ci.getFilename(), buffer);
-  //parser.parse();
-
-  // TODO: refactor EmacsOutput based on Global
-  //c4s::EmacsOutput output(parser);
-  //output.build();
-  //std::cout << output.body();
-
-  return 0;
-}
-
 int main(int argc, const char **argv) {
   CmdInput ci(argc, argv);
   if (ci.processCmdArgs()) {
@@ -99,8 +78,6 @@ int main(int argc, const char **argv) {
     return parseClassFile(ci);
   } else if (ci.isOptInJava()) {
     return parseJavaFile(ci);
-  } else if (ci.isOptInScala()) {
-    return parseScalaFile(ci);
   } else if (ci.isOptServer()) {
     Server server;
     if (server.start(ci.getServerPort()) < 0) {

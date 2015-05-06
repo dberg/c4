@@ -52,7 +52,6 @@ builddir = $(builddir_name)/$(BUILDTYPE)
 obj_common = $(builddir)/common
 obj_bytecode = $(builddir)/bytecode/obj
 obj_java = $(builddir)/obj/java
-obj_scala = $(builddir)/obj/scala
 obj_server = $(builddir)/obj/server
 obj_main = $(builddir)/obj/main
 
@@ -67,7 +66,6 @@ protobuf_compiler = protoc
 incdir_common := include/c4/common
 incdir_bytecode := include/c4/bytecode
 incdir_java := include/c4/java
-incdir_scala := include/c4/scala
 incdir_server := include/c4/server
 incdir_main := include/c4/main
 
@@ -75,7 +73,6 @@ INC = $(INC_EXTRA) -Iinclude -Ithird_party
 
 libdir_common := lib/common
 libdir_java := lib/java
-libdir_scala := lib/scala
 libdir_bytecode := lib/bytecode
 libdir_server := lib/server
 libdir_main := lib/main
@@ -86,7 +83,6 @@ libdir_main := lib/main
 gtest_inc = $(gtest_dir)/include
 tests_bytecode = tests/bytecode
 tests_java = tests/java
-tests_scala = tests/scala
 tests_server = tests/server
 CXXTESTFLAGS = -g3 $(CXX11FLAGS)
 
@@ -112,8 +108,7 @@ clean-all:
 
 # List of directories to be created or deleted.
 c4_directories := \
-  $(obj_common) $(obj_java) $(obj_scala) \
-  $(obj_bytecode) $(obj_server) $(obj_main) $(bin)
+  $(obj_common) $(obj_java) $(obj_bytecode) $(obj_server) $(obj_main) $(bin)
 
 third_party_directories := $(gtest_obj)
 
@@ -122,14 +117,12 @@ directories:
 	mkdir -p $(c4_directories) $(third_party_directories)
 
 # main c4
-# We repeat libscala.a to make ld happy under linux
 $(bin)/c4: \
   $(obj_bytecode)/BinOutput.o \
   $(obj_bytecode)/BinOutputCode.o \
   $(obj_bytecode)/ParserBin.o \
   $(obj_main)/CmdInput.o \
   $(obj_java)/libjava.a \
-  $(obj_scala)/libscala.a \
   $(obj_server)/libserver.a \
   $(obj_common)/libcommon.a \
   $(obj_main)/c4.o
@@ -142,10 +135,8 @@ $(bin)/c4: \
   $(INC) \
   $(obj_main)/c4.o -o $@ \
   $(obj_java)/libjava.a \
-  $(obj_scala)/libscala.a \
   $(obj_server)/libserver.a \
   $(obj_common)/libcommon.a \
-  $(obj_scala)/libscala.a \
   $(LIB_EXTRA) -lprotobuf
 
 # objects main
@@ -166,7 +157,6 @@ $(obj_common)/libcommon.a: \
   $(obj_common)/Project.o \
   $(obj_common)/ProjectHandler.o \
   $(obj_common)/ProjectJava.o \
-  $(obj_common)/ProjectScala.o \
   $(obj_common)/Util.o
 	ar -rv $@ $+
 
@@ -198,22 +188,6 @@ $(obj_java)/libjava.a: \
 $(obj_java)/%.o: \
   $(libdir_java)/%.cpp \
   $(incdir_java)/%.h
-	$(CXX) $(CFLAGS) $(INC) \
-  -c $< -o $@
-
-# objects scala - libscala
-$(obj_scala)/libscala.a: \
-  $(obj_scala)/Chars.o \
-  $(obj_scala)/CompilationUnits.o \
-  $(obj_scala)/Global.o \
-  $(obj_scala)/NameTransformer.o \
-  $(obj_scala)/SourceFile.o \
-  $(obj_scala)/Tokens.o
-	ar -rv $@ $+
-
-$(obj_scala)/%.o: \
-  $(libdir_scala)/%.cpp \
-  $(incdir_scala)/%.h
 	$(CXX) $(CFLAGS) $(INC) \
   -c $< -o $@
 
@@ -273,7 +247,6 @@ run-all:
 
 .PHONY: $(bin)/test-all
 $(bin)/test-all: run-all $(bin)/test-java \
-                         $(bin)/test-scala \
                          $(bin)/test-bytecode \
                          $(bin)/test-server
 
@@ -296,29 +269,12 @@ $(bin)/test-java: \
   $(gtest_obj)/libgtest.a \
   -lpthread
 
-$(bin)/test-scala: \
-  $(tests_scala)/ScalaTests.cpp \
-  $(tests_scala)/ScalaCompilerTest.cpp \
-  $(obj_common)/libcommon.a \
-  $(obj_scala)/libscala.a \
-  $(gtest_obj)/libgtest.a
-
-	$(CXX) $(CXXTESTFLAGS) $(INC) \
-    -I$(gtest_inc) \
-  $(tests_scala)/ScalaTests.cpp \
-  -o $@ \
-  $(obj_scala)/libscala.a \
-  $(obj_common)/libcommon.a \
-  $(gtest_obj)/libgtest.a \
-  -lpthread
-
 # We reference libcommon twice because it's a circular dependency and we want to
 # make ld happy. Joy.
 $(bin)/test-server: \
   $(tests_server)/ServerTest.cpp \
   $(obj_common)/libcommon.a \
   $(obj_java)/libjava.a \
-  $(obj_scala)/libscala.a \
   $(obj_server)/libserver.a \
   $(gtest_obj)/libgtest.a
 
@@ -330,7 +286,6 @@ $(bin)/test-server: \
   $(obj_server)/libserver.a \
   $(obj_common)/libcommon.a \
   $(obj_java)/libjava.a \
-  $(obj_scala)/libscala.a \
   $(obj_common)/libcommon.a \
   $(LIB_EXTRA) -lprotobuf \
   -lpthread
@@ -339,7 +294,6 @@ $(bin)/test-bytecode: \
   bytecode-classes \
   $(tests_bytecode)/BytecodeTests.cpp \
   $(tests_bytecode)/JHelloWorldTest.cpp \
-  $(tests_bytecode)/SHelloWorldTest.cpp \
   $(gtest_obj)/libgtest.a
 
 	$(CXX) $(CXXTESTFLAGS) $(INC) \
