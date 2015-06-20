@@ -2357,6 +2357,10 @@ void Parser::parseGenericMethodOrConstructorRest(
   }
 
   // Identifier
+  if (lexer->getCurToken() != TOK_IDENTIFIER) {
+    rest->addErr(-1);
+  }
+
   rest->id = make_shared<Identifier>(
     lexer->getCurTokenIni(), lexer->getCurTokenStr());
   lexer->getNextToken(); // consume Identifier
@@ -5763,7 +5767,7 @@ void Parser::parseCreatedName(spCreatedName &createdName) {
     }
 
     triplet->typeArgsOrDiam = make_shared<TypeArgumentsOrDiamond>();
-    parseTypeArgumentsOrDiamond(createdName->typeArgsOrDiam);
+    parseTypeArgumentsOrDiamond(triplet->typeArgsOrDiam);
 
     if (triplet->typeArgsOrDiam->err) {
       restoreState(state);

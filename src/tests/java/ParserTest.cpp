@@ -1726,6 +1726,89 @@ TEST(Parser, InnerClassInstance) {
 
 /**
  * -----------------------------------------------------------------------------
+ * class Test {
+ *   static class A<X> {}
+ *   static <X> Test.A<X> f() {
+ *       return new Test.A<X>();
+ *   }
+ * }
+ * -----------------------------------------------------------------------------
+ * CompilationUnit
+ *   TypeDeclaration
+ *     ClassOrInterfaceDeclaration
+ *       ClassDeclaration
+ *         NormalClassDeclaration
+ *           'class'
+ *           Identifier <-- 'Test'
+ *           ClassBody
+ *             '{'
+ *             ClassBodyDeclaration[0]
+ *             ClassBodyDeclaration[1]
+ *             '}'
+ *
+ * ClassBodyDeclaration[0]
+ *   Modifier[0] <-- 'static'
+ *   MemberDecl
+ *     ClassDeclaration
+ *       NormalClassDeclaration
+ *         'class'
+ *         Identifier <-- 'A'
+ *         TypeParameters
+ *           '<'
+ *           TypeParameter
+ *             Identifier <-- 'X'
+ *           '>'
+ *         ClassBody <-- '{}'
+ *
+ * ClassBodyDeclaration[1]
+ *   Modifier[0] <-- 'static'
+ *   MemberDecl
+ *     GenericMethodOrConstructorDecl
+ *       TypeParameters <-- '<X>'
+ *       GenericMethodOrConstructorRest
+ *         Type
+ *         ReferenceType
+ *           Identifier <-- 'Test'
+ *           '.'
+ *           Identifier <-- 'A'
+ *           TypeArguments <-- '<X>'
+ *         Identifier <-- 'f'
+ *         MethodDeclaratorRest
+ *           FormalParameters <-- '()'
+ *           Block
+ *             '{'
+ *             BlockStatements
+ *               BlockStatement[0]
+ *                 Statement
+ *                   'return'
+ *                   Expression
+ *                     Expression1
+ *                       Expression2
+ *                         Expression3
+ *                           Primary
+ *                             'new'
+ *                             Creator
+ *                               CreatedName <-- Test.A<X>
+ *                                 ClassCreatorRest <-- ()
+ *             '}'
+ */
+TEST(Parser, InnerClassGenerics) {
+  u32string filename = U"Test.java";
+  u32string buffer =
+    U"class Test {\n"
+    U"  static class A<X> {}\n"
+    U"  static <X> Test.A<X> f() {\n"
+    U"      return new Test.A<X>();\n"
+    U"  }\n"
+    U"}";
+
+    Parser parser(filename, buffer);
+    parser.parse();
+
+}
+
+/**
+ * -----------------------------------------------------------------------------
  * class A { void test() { Exec exe = createExec(); }}
  * -----------------------------------------------------------------------------
  * BlockStatement
