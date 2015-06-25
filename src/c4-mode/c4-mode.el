@@ -2,7 +2,6 @@
   (require 'cc-mode))     ; (only) for `c-populate-syntax-table'
 
 (require 'c4j) ;; java support
-(require 'c4s) ;; scala support
 
 ;; TODO: remove hardcoded paths
 (defvar c4-executable "~/dev/c4/src/out/Debug/bin/c4")
@@ -10,12 +9,9 @@
 
 ;;;###autoload
 (defun c4-mode ()
-  "Major mode for Java and Scala"
+  "Major mode for Java"
   (interactive)
-  (let ((ext (file-name-extension buffer-file-name)))
-    (cond ((string= ext "java") (c4j-mode))
-          ((string= ext "scala") (c4j-mode))
-          (t (message "Invalid file extension")))))
+  (c4j-mode))
 
 ;; ----------------------------------------------------------------------------
 ;; Server
