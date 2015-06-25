@@ -93,7 +93,7 @@ class ErrorUtil {
     { ERR_EXP_PERIOD, U"Expected period" },
     { ERR_EXP_QID, U"Expected qualified id" },
     { ERR_EXP_RBRACKET, U"Expected ']'" },
-    { ERR_EXP_RCURLY_BRACKET, U"Expected closing curly brackets" },
+    { ERR_EXP_RCURLY_BRACKET, U"Missing closing curly brackets" },
     { ERR_EXP_REFTYPE, U"Expected reference type" },
     { ERR_EXP_RPAREN, U"Expected closing parenthesis" },
     { ERR_EXP_SEMICOLON, U"Expected semi-colon" },

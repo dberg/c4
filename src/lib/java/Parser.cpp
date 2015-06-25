@@ -4922,6 +4922,9 @@ void Parser::parseClassDeclaration(spClassDeclaration &classDecl) {
   if (lexer->getCurToken() == TOK_KEY_CLASS) {
     classDecl->nClassDecl = make_shared<NormalClassDeclaration>();
     parseNormalClassDeclaration(classDecl->nClassDecl);
+    if (classDecl->err) {
+      classDecl->addErr(-1);
+    }
     return;
   }
 
@@ -4929,6 +4932,9 @@ void Parser::parseClassDeclaration(spClassDeclaration &classDecl) {
   if (lexer->getCurToken() == TOK_KEY_ENUM) {
     classDecl->enumDecl = make_shared<EnumDeclaration>();
     parseEnumDeclaration(classDecl->enumDecl);
+    if (classDecl->err) {
+      classDecl->addErr(-1);
+    }
     return;
   }
 
@@ -5135,7 +5141,10 @@ void Parser::parseClassBody(spClassBody &classBody) {
   // '}'
   if (lexer->getCurToken() != TOK_RCURLY_BRACKET) {
     classBody->addErr(diag->addErr(
-      c4::ERR_EXP_RCURLY_BRACKET, lexer->getCursor() - 1));
+      c4::ERR_EXP_RCURLY_BRACKET,
+      classBody->posLCBrace,
+      lexer->getCursor() - 1)
+    );
     return;
   }
 
