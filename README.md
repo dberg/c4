@@ -1,6 +1,6 @@
 ## C4
 
-C4 is an emacs mode for Java 7.
+C4 is an emacs mode for Java 8.
 
 
 ### A few notes on variables used in this README
