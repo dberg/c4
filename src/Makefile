@@ -53,6 +53,7 @@ builddir = $(builddir_name)/$(BUILDTYPE)
 #------------------------------------------------------------------------------
 # Binaries
 #------------------------------------------------------------------------------
+obj_common = $(builddir)/common
 obj_main = $(builddir)/obj/main
 
 bin = $(builddir)/bin
@@ -60,6 +61,7 @@ bin = $(builddir)/bin
 #------------------------------------------------------------------------------
 # Headers
 #------------------------------------------------------------------------------
+incdir_common := include/c4/common
 incdir_main := include/c4/main
 
 INC = $(INC_EXTRA) -Iinclude -Ithird_party
@@ -67,6 +69,7 @@ INC = $(INC_EXTRA) -Iinclude -Ithird_party
 #------------------------------------------------------------------------------
 # Implementation files
 #------------------------------------------------------------------------------
+libdir_common := lib/common
 libdir_main := lib/main
 
 #------------------------------------------------------------------------------
@@ -76,11 +79,12 @@ libdir_main := lib/main
 all: directories $(bin)/c4
 
 .PHONY: clean
-	rm -r $(builddir_name)
+clean:
+	rm -rf $(builddir_name)
 
 # List of directories to be created or deleted.
 c4_directories := \
-  $(obj_main) $(bin)
+  $(obj_common) $(obj_main) $(bin)
 
 .PHONY: directories
 directories:
@@ -88,16 +92,29 @@ directories:
 
 # main c4
 $(bin)/c4: \
+  $(obj_common)/libcommon.a \
   $(obj_main)/c4.o
 	$(CXX) \
   $(CFLAGS) \
   $(INC) \
-  $(obj_main)/c4.o -o $@
+  $(obj_main)/c4.o -o $@ \
+  $(obj_common)/libcommon.a
 
 # objects main
 $(obj_main)/%.o: \
   $(libdir_main)/%.cpp \
   $(incdir_main)/%.h
+	$(CXX) $(CFLAGS) $(INC) \
+  -c $< -o $@
+
+# objects common - libcommon
+$(obj_common)/libcommon.a: \
+  $(obj_common)/Util.o
+	ar -rv $@ $+
+
+$(obj_common)/%.o: \
+  $(libdir_common)/%.cpp \
+  $(incdir_common)/%.h
 	$(CXX) $(CFLAGS) $(INC) \
   -c $< -o $@
 
