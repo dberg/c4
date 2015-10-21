@@ -90,26 +90,39 @@ c4_directories := \
 directories:
 	mkdir -p $(c4_directories)
 
-# main c4
+# The main program: c4
 $(bin)/c4: \
+  $(obj_main)/CmdInput.o \
   $(obj_common)/libcommon.a \
   $(obj_main)/c4.o
 	$(CXX) \
+  $(obj_main)/CmdInput.o \
   $(CFLAGS) \
   $(INC) \
   $(obj_main)/c4.o -o $@ \
   $(obj_common)/libcommon.a
 
-# objects main
 $(obj_main)/%.o: \
   $(libdir_main)/%.cpp \
   $(incdir_main)/%.h
 	$(CXX) $(CFLAGS) $(INC) \
   -c $< -o $@
 
-# objects common - libcommon
-$(obj_common)/libcommon.a: \
-  $(obj_common)/Util.o
+#------------------------------------------------------------------------------
+# Target libcommon.a
+#------------------------------------------------------------------------------
+# The list of pre-requisite objects that are added to the lib is based on the
+# cpp files found in $libdir_common.
+#
+# For example:
+# (lib/common/A.cpp, lib/common/B.cpp) -> (out/common/A.o out/common/B.o)
+#
+# The same pattern repeats for each component/lib.
+#------------------------------------------------------------------------------
+libcommon_objects := $(addprefix $(obj_common)/,\
+  $(patsubst %.cpp,%.o,$(notdir $(wildcard $(libdir_common)/*.cpp))))
+
+$(obj_common)/libcommon.a: $(libcommon_objects)
 	ar -rv $@ $+
 
 $(obj_common)/%.o: \
