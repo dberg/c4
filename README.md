@@ -28,7 +28,7 @@ dnf -y install protobuf-devel
 brew install protobuf-c
 ```
 
-You can build c4 in `Debug` mode (default), or in `Release` mode.
+You can build c4 in `Debug` mode, or in `Release` mode which is the default.
 
 ```bash
 git clone git://github.com/dberg/c4.git
