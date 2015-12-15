@@ -1,0 +1,4 @@
+[package]
+name = "c4"
+version = "0.1.0"
+authors = ["dberg <danibberg@gmail.com>"]
