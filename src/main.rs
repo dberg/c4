@@ -24,9 +24,20 @@ fn print_usage(program: &str, opts: Options) {
     print!("{}", opts.usage(&brief));
 }
 
-fn main() {
-    println!("Hello, world!");
+// TODO: return success or error
+fn process_file(filename_opt: Option<String>, input_type_opt: Option<String>) {
+    match input_type_opt {
+        Some(input_type) => println!("{}", input_type),
+        None => println!("TODO: read input type from filename extension"),
+    }
 
+    match filename_opt {
+        Some(filename) => println!("TODO: process {}", filename),
+        None => println!("Missing filename"),
+    }
+}
+
+fn main() {
     // parse command line arguments
     let args: Vec<String> = env::args().collect();
     let program = args[0].clone();
@@ -43,7 +54,11 @@ fn main() {
         return;
     }
 
-    // TODO: Filename options.
+    // filename options
+    if matches.opt_present("f") {
+        process_file(matches.opt_str("f"), matches.opt_str("i"));
+        return;
+    }
 
     // TODO: Server options.
 }
